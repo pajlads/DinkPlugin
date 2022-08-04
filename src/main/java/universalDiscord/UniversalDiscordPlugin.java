@@ -24,6 +24,7 @@ import net.runelite.http.api.loottracker.LootRecordType;
 import okhttp3.OkHttpClient;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 
@@ -50,6 +51,7 @@ public class UniversalDiscordPlugin extends Plugin {
     private final PetNotifier petNotifier = new PetNotifier(this);
     private final LevelNotifier levelNotifier = new LevelNotifier(this);
     private final LootNotifier lootNotifier = new LootNotifier(this);
+    private final DeathNotifier deathNotifier = new DeathNotifier(this);
 
     private static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log:.*");
     private static final Pattern PET_REGEX = Pattern.compile("You have a funny feeling like you.*");
@@ -116,7 +118,18 @@ public class UniversalDiscordPlugin extends Plugin {
     }
 
     @Subscribe
+    public void onActorDeath(ActorDeath actor) {
+        if(config.notifyDeath() && Objects.equals(actor.getActor().getName(), Utils.getPlayerName())) {
+            deathNotifier.handleNotify();
+        }
+    }
+
+    @Subscribe
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
+        if(!config.notifyLoot()) {
+            return;
+        }
+
         NPC npc = npcLootReceived.getNpc();
         Collection<ItemStack> items = npcLootReceived.getItems();
 

@@ -35,6 +35,13 @@ public interface UniversalDiscordConfig extends Config {
     )
     String lootSection = "Loot";
 
+    @ConfigSection(
+            name = "Death",
+            description = "Settings for notifying when you die",
+            position = 16
+    )
+    String deathSection = "Death";
+
     @ConfigItem(
             keyName = "discordWebhook",
             name = "Discord Webhook",
@@ -209,5 +216,38 @@ public interface UniversalDiscordConfig extends Config {
     )
     default boolean lootSendImage() {
         return true;
+    }
+
+    @ConfigItem(
+            keyName = "deathEnabled",
+            name = "Enable Death",
+            description = "Enable notifications for when you die",
+            position = 16,
+            section = deathSection
+    )
+    default boolean notifyDeath() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "deathSendImage",
+            name = "Send Image",
+            description = "Send image with the notification",
+            position = 17,
+            section = deathSection
+    )
+    default boolean deathSendImage() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "deathNotifMessage",
+            name = "Notification Message",
+            description = "The message to be sent through the webhook. Use %USERNAME% to insert your username",
+            position = 18,
+            section = deathSection
+    )
+    default String deathNotifyMessage() {
+        return "%USERNAME% has died...";
     }
 }

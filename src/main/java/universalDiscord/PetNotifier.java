@@ -3,7 +3,7 @@ package universalDiscord;
 import javax.inject.Inject;
 
 public class PetNotifier {
-    private UniversalDiscordPlugin plugin;
+    private final UniversalDiscordPlugin plugin;
 
     @Inject
     public PetNotifier(UniversalDiscordPlugin plugin) {
