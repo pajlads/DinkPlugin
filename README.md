@@ -33,7 +33,7 @@ need to be enable in game. You can find this option in `Settings > All Settings 
 Most of the config options are self-explanatory. But the notification messages for each notification type also
 contain some bits that will be replaced with in-game values.
 
-#### All:
+#### All messages:
 `%USERNAME%` will be replaced with the username of the player
 
 #### Collection:
@@ -44,6 +44,7 @@ contain some bits that will be replaced with in-game values.
 
 #### Loot:
 `%LOOT%` will be replaced with a list of the loot and value of said loot
+
 `%SOURCE%` will be replace with the source that dropped or gave the loot
 
 All of these are optional and can be omitted from the message if desired.
