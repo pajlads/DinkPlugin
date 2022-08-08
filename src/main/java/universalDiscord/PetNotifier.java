@@ -2,15 +2,15 @@ package universalDiscord;
 
 import javax.inject.Inject;
 
-public class PetNotifier {
-    private final UniversalDiscordPlugin plugin;
+public class PetNotifier extends BaseNotifier {
 
     @Inject
     public PetNotifier(UniversalDiscordPlugin plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
-    public void handleNotify(String message) {
+    @Override
+    public void handleNotify() {
         String notifyMessage = plugin.config.collectionNotifyMessage().replaceAll("%USERNAME", Utils.getPlayerName());
         plugin.messageHandler.createMessage(notifyMessage, plugin.config.petSendImage(), null);
     }

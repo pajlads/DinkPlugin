@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 @Slf4j
-public class LevelNotifier {
-    private final UniversalDiscordPlugin plugin;
+public class LevelNotifier extends BaseNotifier {
 
     private ArrayList<String> levelledSkills = new ArrayList<String>();
     private Hashtable<String, Integer> currentLevels = new Hashtable<String, Integer>();
@@ -17,7 +16,7 @@ public class LevelNotifier {
 
     @Inject
     public LevelNotifier(UniversalDiscordPlugin plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     public void reset() {

@@ -139,7 +139,7 @@ public class UniversalDiscordPlugin extends Plugin {
             }
 
             if(config.notifyPet() && PET_REGEX.matcher(chatMessage).matches()) {
-                petNotifier.handleNotify(message.getMessage());
+                petNotifier.handleNotify();
                 return;
             }
 
@@ -180,13 +180,13 @@ public class UniversalDiscordPlugin extends Plugin {
         NPC npc = npcLootReceived.getNpc();
         Collection<ItemStack> items = npcLootReceived.getItems();
 
-        lootNotifier.handleLootDrop(items, npc.getName());
+        lootNotifier.handleNotify(items, npc.getName());
     }
 
     @Subscribe
     public void onPlayerLootReceived(PlayerLootReceived playerLootReceived) {
         Collection<ItemStack> items = playerLootReceived.getItems();
-        lootNotifier.handleLootDrop(items, playerLootReceived.getPlayer().getName());
+        lootNotifier.handleNotify(items, playerLootReceived.getPlayer().getName());
     }
 
     @Subscribe
@@ -195,6 +195,6 @@ public class UniversalDiscordPlugin extends Plugin {
             return;
         }
 
-        lootNotifier.handleLootDrop(lootReceived.getItems(), lootReceived.getName());
+        lootNotifier.handleNotify(lootReceived.getItems(), lootReceived.getName());
     }
 }

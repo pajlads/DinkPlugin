@@ -10,16 +10,15 @@ import javax.inject.Inject;
 import java.util.Collection;
 
 
-public class LootNotifier {
-    private final UniversalDiscordPlugin plugin;
+public class LootNotifier extends BaseNotifier {
     private boolean sendMessage = false;
 
     @Inject
     public LootNotifier(UniversalDiscordPlugin plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
-    public void handleLootDrop(Collection<ItemStack> items, String dropper) {
+    public void handleNotify(Collection<ItemStack> items, String dropper) {
         DiscordMessageBody messageBody = new DiscordMessageBody();
         StringBuilder lootMessage = new StringBuilder();
         int minValue = plugin.config.minLootValue();

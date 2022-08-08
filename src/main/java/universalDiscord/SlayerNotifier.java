@@ -2,12 +2,11 @@ package universalDiscord;
 
 import javax.inject.Inject;
 
-public class SlayerNotifier {
-    private final UniversalDiscordPlugin plugin;
+public class SlayerNotifier extends BaseNotifier {
 
     @Inject
     public SlayerNotifier(UniversalDiscordPlugin plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     public void handleNotify(String task, String points, String taskCount) {

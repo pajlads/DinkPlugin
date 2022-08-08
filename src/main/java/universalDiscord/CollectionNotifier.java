@@ -2,12 +2,11 @@ package universalDiscord;
 
 import javax.inject.Inject;
 
-public class CollectionNotifier {
-    private final UniversalDiscordPlugin plugin;
+public class CollectionNotifier extends BaseNotifier {
 
     @Inject
     public CollectionNotifier(UniversalDiscordPlugin plugin) {
-        this.plugin = plugin;
+        super(plugin);
     }
 
     public void handleNotify(String message) {
