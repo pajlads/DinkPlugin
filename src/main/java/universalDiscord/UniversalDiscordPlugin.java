@@ -25,6 +25,7 @@ import okhttp3.OkHttpClient;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -52,9 +53,17 @@ public class UniversalDiscordPlugin extends Plugin {
     private final LevelNotifier levelNotifier = new LevelNotifier(this);
     private final LootNotifier lootNotifier = new LootNotifier(this);
     private final DeathNotifier deathNotifier = new DeathNotifier(this);
+    private final SlayerNotifier slayerNotifier = new SlayerNotifier(this);
+
+    private static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+)\\. You gained.*");
+    private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received \\d+ points, giving you a total of (?<points>[\\d,]+)| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
 
     private static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log:.*");
     private static final Pattern PET_REGEX = Pattern.compile("You have a funny feeling like you.*");
+
+    private String slayerTask = "";
+    private String slayerTasksCompleted = "";
+    private String slayerPoints = "";
 
     @Override
     protected void startUp() throws Exception {
@@ -95,12 +104,31 @@ public class UniversalDiscordPlugin extends Plugin {
     }
 
     @Subscribe
+    public void onVarClientIntChanged(VarClientIntChanged intChanged) {
+        log.warn("Client int");
+        log.warn(intChanged.toString());
+    }
+
+    @Subscribe
+    public void onVarbitChanged(VarbitChanged varbit) {
+        log.warn("varbit");
+        log.warn(String.format("%s - %s", varbit.getIndex(), varbit.toString()));
+    }
+
+    @Subscribe
+    public void onScriptCallbackEvent(ScriptCallbackEvent event) {
+        log.warn("script");
+        log.warn(event.getEventName());
+    }
+
+    @Subscribe
     public void onGameTick(GameTick event) {
         levelNotifier.onTick();
     }
 
     @Subscribe
     public void onChatMessage(ChatMessage message) {
+        log.warn(message.getMessage());
         ChatMessageType msgType = message.getType();
         String chatMessage = message.getMessage().replaceAll("<.*?>", "");
 
@@ -113,6 +141,25 @@ public class UniversalDiscordPlugin extends Plugin {
             if(config.notifyPet() && PET_REGEX.matcher(chatMessage).matches()) {
                 petNotifier.handleNotify(message.getMessage());
                 return;
+            }
+
+            if(config.notifySlayer()) {
+                Matcher taskMatcher = SLAYER_TASK_REGEX.matcher(chatMessage);
+                Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
+                if(taskMatcher.matches()) {
+                    slayerTask = taskMatcher.group("task");
+                } else if(pointsMatcher.matches()) {
+                    slayerPoints = pointsMatcher.group("points");
+                    slayerTasksCompleted = pointsMatcher.group("taskCount");
+
+                    if(slayerPoints == null) {
+                        slayerPoints = pointsMatcher.group("points2");
+                    }
+                }
+
+                if(!Objects.equals(slayerTask, "") && !Objects.equals(slayerPoints, "") && !Objects.equals(slayerTasksCompleted, "")) {
+                    slayerNotifier.handleNotify(slayerTask, slayerPoints, slayerTasksCompleted);
+                }
             }
         }
     }

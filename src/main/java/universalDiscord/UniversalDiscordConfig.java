@@ -42,6 +42,13 @@ public interface UniversalDiscordConfig extends Config {
     )
     String deathSection = "Death";
 
+    @ConfigSection(
+            name = "Slayer",
+            description = "Settings for notifying when you complete a slayer task",
+            position = 19
+    )
+    String slayerSection = "Slayer";
+
     @ConfigItem(
             keyName = "discordWebhook",
             name = "Discord Webhook",
@@ -249,5 +256,38 @@ public interface UniversalDiscordConfig extends Config {
     )
     default String deathNotifyMessage() {
         return "%USERNAME% has died...";
+    }
+
+    @ConfigItem(
+            keyName = "slayerEnabled",
+            name = "Enable Slayer",
+            description = "Enable notifications for when you complete a slayer task",
+            position = 19,
+            section = slayerSection
+    )
+    default boolean notifySlayer() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "slayerSendImage",
+            name = "Send Image",
+            description = "Send image with the notification",
+            position = 20,
+            section = slayerSection
+    )
+    default boolean slayerSendImage() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "slayerNotifMessage",
+            name = "Notification Message",
+            description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %TASK% to insert your task",
+            position = 21,
+            section = slayerSection
+    )
+    default String slayerNotifyMessage() {
+        return "%USERNAME% has completed a slayer task: %TASK%, getting %POINTS%, a total of %TASKCOUNT% completed";
     }
 }
