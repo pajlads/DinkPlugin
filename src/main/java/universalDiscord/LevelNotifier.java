@@ -50,17 +50,19 @@ public class LevelNotifier extends BaseNotifier {
 
         for (String skill : levelledSkills) {
             if(index == levelledSkills.size()) {
-                skillMessage.append(" and");
+                skillMessage.append(" and ");
             } else if (index > 0) {
-                skillMessage.append(",");
+                skillMessage.append(", ");
             }
-            skillMessage.append(String.format(" %s to %s ", skill, currentLevels.get(skill)));
+            skillMessage.append(String.format("%s to %s", skill, currentLevels.get(skill)));
             index++;
         }
 
         String skillString = skillMessage.toString();
         levelledSkills.clear();
-        String fullNotification = plugin.config.levelNotifyMessage().replaceAll("%USERNAME%", Utils.getPlayerName()).replaceAll("%SKILL%", skillString);
+        String fullNotification = plugin.config.levelNotifyMessage()
+                .replaceAll("%USERNAME%", Utils.getPlayerName())
+                .replaceAll("%SKILL%", skillString);
         plugin.messageHandler.createMessage(fullNotification, plugin.config.levelSendImage(), null);
     }
 

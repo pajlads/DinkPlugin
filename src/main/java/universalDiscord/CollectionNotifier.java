@@ -9,9 +9,10 @@ public class CollectionNotifier extends BaseNotifier {
         super(plugin);
     }
 
-    public void handleNotify(String message) {
-        String itemName = message.substring(38);
-        String notifyMessage = plugin.config.collectionNotifyMessage().replaceAll("%USERNAME", Utils.getPlayerName()).replaceAll("%ITEM%", itemName);
+    public void handleNotify(String itemName) {
+        String notifyMessage = plugin.config.collectionNotifyMessage()
+                .replaceAll("%USERNAME%", Utils.getPlayerName())
+                .replaceAll("%ITEM%", itemName);
         plugin.messageHandler.createMessage(notifyMessage, plugin.config.collectionSendImage(), null);
     }
 }
