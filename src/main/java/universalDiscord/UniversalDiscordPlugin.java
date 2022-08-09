@@ -104,24 +104,6 @@ public class UniversalDiscordPlugin extends Plugin {
         levelNotifier.handleLevelUp(statChange.getSkill().getName(), statChange.getLevel());
     }
 
-    /* @Subscribe
-    public void onVarClientIntChanged(VarClientIntChanged intChanged) {
-        log.warn("Client int");
-        log.warn(intChanged.toString());
-    }
-
-    @Subscribe
-    public void onVarbitChanged(VarbitChanged varbit) {
-        log.warn("varbit");
-        log.warn(String.format("%s - %s", varbit.getIndex(), varbit.toString()));
-    }
-
-    @Subscribe
-    public void onScriptCallbackEvent(ScriptCallbackEvent event) {
-        log.warn("script");
-        log.warn(event.getEventName());
-    } */
-
     @Subscribe
     public void onGameTick(GameTick event) {
         levelNotifier.onTick();
