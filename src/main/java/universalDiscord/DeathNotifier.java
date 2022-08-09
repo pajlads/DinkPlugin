@@ -11,7 +11,8 @@ public class DeathNotifier extends BaseNotifier {
 
     @Override
     public void handleNotify() {
-        String notifyMessage = plugin.config.deathNotifyMessage().replaceAll("%USERNAME%", Utils.getPlayerName());
+        String notifyMessage = plugin.config.deathNotifyMessage()
+                .replaceAll("%USERNAME%", Utils.getPlayerName());
         plugin.messageHandler.createMessage(notifyMessage, plugin.config.deathSendImage(), null);
     }
 }

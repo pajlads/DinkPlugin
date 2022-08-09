@@ -6,6 +6,7 @@ I used the following plugins to help with the development of this:
 - Discord Level Notifications: https://github.com/ATremonte/Discord-Level-Notifications
 - Discord Collection Logger: https://github.com/PJGJ210/Discord-Collection-Logger
 - Discord Loot Logger: https://github.com/Adam-/runelite-plugins/tree/discord-loot-logger/src/main/java/info/sigterm/plugins/discordlootlogger
+- Enhanced Discord Notifications: https://github.com/oliverpatrick/Enhanced-Discord-Notifications/
 
 It is not a carbon copy-paste, it was all still written from the ground up using bits of each of these to get it working.
 
@@ -46,5 +47,12 @@ contain some bits that will be replaced with in-game values.
 `%LOOT%` will be replaced with a list of the loot and value of said loot
 
 `%SOURCE%` will be replace with the source that dropped or gave the loot
+
+#### Slayer:
+`%TASK%` will be replaced with the task that you have completed. E.g. `50 monkeys`
+
+`%TASKCOUNT%` will be replaced with the number of tasks that you have completed.
+
+`%POINTS%` will be replaced with the number of points you obtained from the task
 
 All of these are optional and can be omitted from the message if desired.

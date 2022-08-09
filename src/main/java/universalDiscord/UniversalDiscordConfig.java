@@ -49,6 +49,13 @@ public interface UniversalDiscordConfig extends Config {
     )
     String slayerSection = "Slayer";
 
+    @ConfigSection(
+            name = "Quests",
+            description = "Settings for notifying when you complete a quest",
+            position = 22
+    )
+    String questSection = "Quests";
+
     @ConfigItem(
             keyName = "discordWebhook",
             name = "Discord Webhook",
@@ -283,11 +290,44 @@ public interface UniversalDiscordConfig extends Config {
     @ConfigItem(
             keyName = "slayerNotifMessage",
             name = "Notification Message",
-            description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %TASK% to insert your task",
+            description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %TASK% to insert your task, %POINTS% to show how many points you obtained and %TASKCOUNT% to show how many tasks you have completed.",
             position = 21,
             section = slayerSection
     )
     default String slayerNotifyMessage() {
         return "%USERNAME% has completed a slayer task: %TASK%, getting %POINTS% points and making that %TASKCOUNT% tasks completed";
+    }
+
+    @ConfigItem(
+            keyName = "questEnabled",
+            name = "Enable Quest",
+            description = "Enable notifications for when you complete a quest",
+            position = 22,
+            section = questSection
+    )
+    default boolean notifyQuest() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "questSendImage",
+            name = "Send Image",
+            description = "Send image with the notification",
+            position = 23,
+            section = questSection
+    )
+    default boolean questSendImage() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "questNotifMessage",
+            name = "Notification Message",
+            description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %QUEST% to insert the quest that you completed",
+            position = 24,
+            section = questSection
+    )
+    default String questNotifyMessage() {
+        return "%USERNAME% has completed a quest: %QUEST%";
     }
 }

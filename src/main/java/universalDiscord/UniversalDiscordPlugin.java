@@ -7,6 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
 import net.runelite.api.events.*;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.events.NotificationFired;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -28,6 +31,8 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
 
 @Slf4j
@@ -55,6 +60,7 @@ public class UniversalDiscordPlugin extends Plugin {
     private final LootNotifier lootNotifier = new LootNotifier(this);
     private final DeathNotifier deathNotifier = new DeathNotifier(this);
     private final SlayerNotifier slayerNotifier = new SlayerNotifier(this);
+    private final QuestNotifier questNotifier = new QuestNotifier(this);
 
     private static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [\\w,]+)\\..*");
     private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received \\d+ points, giving you a total of (?<points>[\\d,]+)|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
@@ -65,6 +71,9 @@ public class UniversalDiscordPlugin extends Plugin {
     private String slayerTask = "";
     private String slayerTasksCompleted = "";
     private String slayerPoints = "";
+
+    private boolean questCompleted = false;
+    private boolean clueCompleted = false;
 
     @Override
     protected void startUp() throws Exception {
@@ -107,6 +116,16 @@ public class UniversalDiscordPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick event) {
         levelNotifier.onTick();
+
+        if(config.notifyQuest() && questCompleted) {
+            Widget quest = client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
+            if(quest != null) {
+                String questWidget = quest.getText();
+                questNotifier.handleNotify(questWidget);
+            }
+
+            questCompleted = false;
+        }
     }
 
     @Subscribe
@@ -187,5 +206,18 @@ public class UniversalDiscordPlugin extends Plugin {
         }
 
         lootNotifier.handleNotify(lootReceived.getItems(), lootReceived.getName());
+    }
+
+    @Subscribe
+    public void onWidgetLoaded(WidgetLoaded event) {
+        int groupId = event.getGroupId();
+
+        if (groupId == QUEST_COMPLETED_GROUP_ID) {
+            questCompleted = true;
+        }
+
+        if (groupId == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) {
+            clueCompleted = true;
+        }
     }
 }
