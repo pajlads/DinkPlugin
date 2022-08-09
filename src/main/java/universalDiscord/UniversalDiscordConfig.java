@@ -288,6 +288,6 @@ public interface UniversalDiscordConfig extends Config {
             section = slayerSection
     )
     default String slayerNotifyMessage() {
-        return "%USERNAME% has completed a slayer task: %TASK%, getting %POINTS%, a total of %TASKCOUNT% completed";
+        return "%USERNAME% has completed a slayer task: %TASK%, getting %POINTS% points and making that %TASKCOUNT% tasks completed";
     }
 }

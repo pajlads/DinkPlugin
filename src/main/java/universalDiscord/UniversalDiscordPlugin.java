@@ -20,6 +20,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.ui.DrawManager;
+import net.runelite.client.util.Text;
 import net.runelite.http.api.loottracker.LootRecordType;
 import okhttp3.OkHttpClient;
 
@@ -55,8 +56,8 @@ public class UniversalDiscordPlugin extends Plugin {
     private final DeathNotifier deathNotifier = new DeathNotifier(this);
     private final SlayerNotifier slayerNotifier = new SlayerNotifier(this);
 
-    private static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+)\\. You gained.*");
-    private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received \\d+ points, giving you a total of (?<points>[\\d,]+)| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
+    private static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [\\w,]+)\\..*");
+    private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received \\d+ points, giving you a total of (?<points>[\\d,]+)|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
 
     private static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log:.*");
     private static final Pattern PET_REGEX = Pattern.compile("You have a funny feeling like you.*");
@@ -103,7 +104,7 @@ public class UniversalDiscordPlugin extends Plugin {
         levelNotifier.handleLevelUp(statChange.getSkill().getName(), statChange.getLevel());
     }
 
-    @Subscribe
+    /* @Subscribe
     public void onVarClientIntChanged(VarClientIntChanged intChanged) {
         log.warn("Client int");
         log.warn(intChanged.toString());
@@ -119,7 +120,7 @@ public class UniversalDiscordPlugin extends Plugin {
     public void onScriptCallbackEvent(ScriptCallbackEvent event) {
         log.warn("script");
         log.warn(event.getEventName());
-    }
+    } */
 
     @Subscribe
     public void onGameTick(GameTick event) {
@@ -128,9 +129,8 @@ public class UniversalDiscordPlugin extends Plugin {
 
     @Subscribe
     public void onChatMessage(ChatMessage message) {
-        log.warn(message.getMessage());
         ChatMessageType msgType = message.getType();
-        String chatMessage = message.getMessage().replaceAll("<.*?>", "");
+        String chatMessage = Text.removeTags(message.getMessage());
 
         if (msgType.equals(ChatMessageType.GAMEMESSAGE)) {
             if(config.notifyCollectionLog() && COLLECTION_LOG_REGEX.matcher(chatMessage).matches()) {
@@ -143,21 +143,29 @@ public class UniversalDiscordPlugin extends Plugin {
                 return;
             }
 
-            if(config.notifySlayer()) {
+            if(config.notifySlayer() && (chatMessage.contains("Slayer master") || chatMessage.contains("Slayer Master"))) {
                 Matcher taskMatcher = SLAYER_TASK_REGEX.matcher(chatMessage);
                 Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
-                if(taskMatcher.matches()) {
+
+                if(taskMatcher.find()) {
                     slayerTask = taskMatcher.group("task");
-                } else if(pointsMatcher.matches()) {
+                }
+
+                if(pointsMatcher.find()) {
                     slayerPoints = pointsMatcher.group("points");
                     slayerTasksCompleted = pointsMatcher.group("taskCount");
 
                     if(slayerPoints == null) {
                         slayerPoints = pointsMatcher.group("points2");
                     }
-                }
 
-                if(!Objects.equals(slayerTask, "") && !Objects.equals(slayerPoints, "") && !Objects.equals(slayerTasksCompleted, "")) {
+                    // 3 different cases of seeing points, so in our worst case it's 0
+                    if(slayerPoints == null) {
+                        slayerPoints = "0";
+                    }
+
+                    log.warn(slayerTask + " | " + slayerPoints + " | " + slayerTasksCompleted);
+
                     slayerNotifier.handleNotify(slayerTask, slayerPoints, slayerTasksCompleted);
                 }
             }
