@@ -55,4 +55,14 @@ contain some bits that will be replaced with in-game values.
 
 `%POINTS%` will be replaced with the number of points you obtained from the task
 
+#### Quests:
+`%QUEST%` will be replaced with the name of the quest completed
+
+#### Clue Scrolls:
+`%CLUE%` will be replaced with the type of clue (beginner, easy, etc...)
+
+`%LOOT%` will be replaced with the loot that was obtained from the casket
+
+`%COUNT%` will be replaced by the number of times that you have completed that tier of clue scrolls
+
 All of these are optional and can be omitted from the message if desired.
