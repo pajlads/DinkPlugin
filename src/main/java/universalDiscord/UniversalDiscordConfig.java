@@ -56,6 +56,13 @@ public interface UniversalDiscordConfig extends Config {
     )
     String questSection = "Quests";
 
+    @ConfigSection(
+            name = "Clue Scrolls",
+            description = "Settings for notifying when you complete a clue scroll",
+            position = 25
+    )
+    String clueSection = "Clue Scrolls";
+
     @ConfigItem(
             keyName = "discordWebhook",
             name = "Discord Webhook",
@@ -218,7 +225,7 @@ public interface UniversalDiscordConfig extends Config {
             section = lootSection
     )
     default String lootNotifyMessage() {
-        return "%USERNAME% has looted: \n\n%LOOT%\n From: %SOURCE%";
+        return "%USERNAME% has looted: \n\n%LOOT%\nFrom: %SOURCE%";
     }
 
     @ConfigItem(
@@ -330,4 +337,59 @@ public interface UniversalDiscordConfig extends Config {
     default String questNotifyMessage() {
         return "%USERNAME% has completed a quest: %QUEST%";
     }
+
+    @ConfigItem(
+            keyName = "clueEnabled",
+            name = "Enable Clue Scrolls",
+            description = "Enable notifications for when you complete a clue scroll",
+            position = 25,
+            section = clueSection
+    )
+    default boolean notifyClue() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "clueSendImage",
+            name = "Send Image",
+            description = "Send image with the notification",
+            position = 26,
+            section = clueSection
+    )
+    default boolean clueSendImage() {
+        return false;
+    }
+    @ConfigItem(
+            keyName = "clueShowItems",
+            name = "Show Item Icons",
+            description = "Show item icons gained from the clue",
+            position = 27,
+            section = clueSection
+    )
+    default boolean clueShowItems() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "clueMinValue",
+            name = "Min Value",
+            description = "The minimum value of the items to be shown",
+            position = 28,
+            section = clueSection
+    )
+    default int clueMinValue() {
+        return 0;
+    }
+
+    @ConfigItem(
+            keyName = "clueNotifMessage",
+            name = "Notification Message",
+            description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %CLUE% to insert the clue type, %LOOT% to show the loot obtained and %COUNT% to insert how many of those clue types you have completed",
+            position = 29,
+            section = clueSection
+    )
+    default String clueNotifyMessage() {
+        return "%USERNAME% has completed a %CLUE% clue, they have completed %COUNT%.\nThey obtained:\n\n%LOOT%";
+    }
+
 }

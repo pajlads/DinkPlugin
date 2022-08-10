@@ -61,7 +61,9 @@ public class UniversalDiscordPlugin extends Plugin {
     private final DeathNotifier deathNotifier = new DeathNotifier(this);
     private final SlayerNotifier slayerNotifier = new SlayerNotifier(this);
     private final QuestNotifier questNotifier = new QuestNotifier(this);
+    private final ClueNotifier clueNotifier = new ClueNotifier(this);
 
+    private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
     private static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [\\w,]+)\\..*");
     private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received \\d+ points, giving you a total of (?<points>[\\d,]+)|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
 
@@ -74,6 +76,8 @@ public class UniversalDiscordPlugin extends Plugin {
 
     private boolean questCompleted = false;
     private boolean clueCompleted = false;
+    private String clueCount = "";
+    private String clueType = "";
 
     @Override
     protected void startUp() throws Exception {
@@ -116,16 +120,6 @@ public class UniversalDiscordPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick event) {
         levelNotifier.onTick();
-
-        if(config.notifyQuest() && questCompleted) {
-            Widget quest = client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
-            if(quest != null) {
-                String questWidget = quest.getText();
-                questNotifier.handleNotify(questWidget);
-            }
-
-            questCompleted = false;
-        }
     }
 
     @Subscribe
@@ -166,9 +160,24 @@ public class UniversalDiscordPlugin extends Plugin {
                         slayerPoints = "0";
                     }
 
-                    log.warn(slayerTask + " | " + slayerPoints + " | " + slayerTasksCompleted);
-
                     slayerNotifier.handleNotify(slayerTask, slayerPoints, slayerTasksCompleted);
+                }
+            }
+
+            if(config.notifyClue()) {
+                Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(chatMessage);
+                if(clueMatcher.find()) {
+                    String numberCompleted = clueMatcher.group("scrollCount");
+                    String scrollType = clueMatcher.group("scrollType");
+
+                    if(clueCompleted) {
+                        clueNotifier.handleNotify(numberCompleted, scrollType);
+                        clueCompleted = false;
+                    } else {
+                        clueType = scrollType;
+                        clueCount = numberCompleted;
+                        clueCompleted = true;
+                    }
                 }
             }
         }
@@ -213,11 +222,47 @@ public class UniversalDiscordPlugin extends Plugin {
         int groupId = event.getGroupId();
 
         if (groupId == QUEST_COMPLETED_GROUP_ID) {
-            questCompleted = true;
+
+            if(config.notifyQuest()) {
+                Widget quest = client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
+
+                if(quest != null) {
+                    String questWidget = quest.getText();
+                    questNotifier.handleNotify(questWidget);
+                }
+            }
         }
 
         if (groupId == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) {
-            clueCompleted = true;
+            Widget clue = client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER);
+            if(clue != null) {
+                clueNotifier.clueItems.clear();
+                Widget[] children = clue.getChildren();
+
+                if(children == null) {
+                    return;
+                }
+
+                for (Widget child : children) {
+                    if(child == null) {
+                        continue;
+                    }
+
+                    int quantity = child.getItemQuantity();
+                    int itemId = child.getItemId();
+
+                    if (itemId > -1 && quantity > 0) {
+                        clueNotifier.clueItems.put(itemId, quantity);
+                    }
+                }
+
+                if(clueCompleted) {
+                    clueNotifier.handleNotify(clueCount, clueType);
+                    clueCompleted = false;
+                } else {
+                    clueCompleted = true;
+                }
+            }
         }
     }
 }

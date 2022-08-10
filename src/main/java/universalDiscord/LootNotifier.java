@@ -48,7 +48,10 @@ public class LootNotifier extends BaseNotifier {
         if (sendMessage) {
             sendMessage = false;
             String lootString = lootMessage.toString();
-            String notifyMessage = plugin.config.lootNotifyMessage().replaceAll("%USERNAME%", Utils.getPlayerName()).replaceAll("%LOOT%", lootString).replaceAll("%SOURCE%", dropper);
+            String notifyMessage = plugin.config.lootNotifyMessage()
+                    .replaceAll("%USERNAME%", Utils.getPlayerName())
+                    .replaceAll("%LOOT%", lootString)
+                    .replaceAll("%SOURCE%", dropper);
             plugin.messageHandler.createMessage(notifyMessage, plugin.config.lootSendImage(), messageBody);
         }
     }
