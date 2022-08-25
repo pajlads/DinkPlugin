@@ -67,7 +67,7 @@ public class UniversalDiscordPlugin extends Plugin {
     private static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [\\w,]+)\\..*");
     private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received \\d+ points, giving you a total of (?<points>[\\d,]+)|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
 
-    private static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>[\\w,\\s]+)");
+    private static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>[\\w,\\s-.]+)");
     private static final Pattern PET_REGEX = Pattern.compile("You have a funny feeling like you.*");
 
     private String slayerTask = "";
@@ -139,12 +139,18 @@ public class UniversalDiscordPlugin extends Plugin {
                 return;
             }
 
-            if(config.notifySlayer() && (chatMessage.contains("Slayer master") || chatMessage.contains("Slayer Master"))) {
+            if(config.notifySlayer()
+                && (chatMessage.contains("Slayer master")
+                    || chatMessage.contains("Slayer Master")
+                    || chatMessage.contains("completed your task!")
+                )) {
                 Matcher taskMatcher = SLAYER_TASK_REGEX.matcher(chatMessage);
                 Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
 
                 if(taskMatcher.find()) {
                     slayerTask = taskMatcher.group("task");
+                    slayerNotifier.slayerTask = slayerTask;
+                    slayerNotifier.handleNotify();
                 }
 
                 if(pointsMatcher.find()) {
@@ -159,8 +165,10 @@ public class UniversalDiscordPlugin extends Plugin {
                     if(slayerPoints == null) {
                         slayerPoints = "0";
                     }
+                    slayerNotifier.slayerPoints = slayerPoints;
+                    slayerNotifier.slayerCompleted = slayerTasksCompleted;
 
-                    slayerNotifier.handleNotify(slayerTask, slayerPoints, slayerTasksCompleted);
+                    slayerNotifier.handleNotify();
                 }
             }
 

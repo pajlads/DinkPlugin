@@ -18,12 +18,20 @@ public class ClueNotifier extends BaseNotifier{
     public void handleNotify(String numberCompleted, String clueType) {
         messageBody = new DiscordMessageBody();
         StringBuilder lootMessage = new StringBuilder();
+        long totalPrice = 0;
 
         for(Integer itemId : clueItems.keySet()) {
             if(lootMessage.length() > 0) {
                 lootMessage.append("\n");
             }
+            int quantity = clueItems.get(itemId);
+            int price = plugin.itemManager.getItemPrice(itemId);
+            totalPrice += (long) price * quantity;
             lootMessage.append(getItem(itemId, clueItems.get(itemId)));
+        }
+
+        if(totalPrice < plugin.config.clueMinValue()) {
+            return;
         }
 
         String notifyMessage = plugin.config.clueNotifyMessage()
@@ -39,13 +47,9 @@ public class ClueNotifier extends BaseNotifier{
         long totalPrice = (long) price * quantity;
         ItemComposition itemComposition = plugin.itemManager.getItemComposition(itemId);
 
-        if(totalPrice >= plugin.config.clueMinValue()) {
-            if(plugin.config.clueShowItems()) {
-                messageBody.getEmbeds().add(new DiscordMessageBody.Embed(new DiscordMessageBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
-            }
-            return String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice));
-        } else {
-            return "";
+        if(plugin.config.clueShowItems()) {
+            messageBody.getEmbeds().add(new DiscordMessageBody.Embed(new DiscordMessageBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
         }
+        return String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice));
     }
 }

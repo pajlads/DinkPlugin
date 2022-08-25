@@ -9,6 +9,8 @@ import okhttp3.*;
 import javax.inject.Inject;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Objects;
 
 @Slf4j
 public class DiscordMessageHandler {
@@ -30,8 +32,15 @@ public class DiscordMessageHandler {
         if(Strings.isNullOrEmpty(webhookUrl)) {
             return;
         }
+        ArrayList<HttpUrl> urlList = new ArrayList<>();
+        String[] strList = webhookUrl.split("\n");
+        for (String urlString: strList) {
+            if(Objects.equals(urlString, "")) {
+                continue;
+            }
+            urlList.add(HttpUrl.parse(urlString));
+        }
 
-        HttpUrl url = HttpUrl.parse(webhookUrl);
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("payload_json", GSON.toJson(messageBody));
@@ -45,18 +54,24 @@ public class DiscordMessageHandler {
                 } catch (IOException e) {
                     log.warn("There was an error creating bytes from captured image", e);
                     // Still send the message even if the image cannot be created
-                    sendMessage(url, reqBodyBuilder);
+                    sendToMultiple(urlList, reqBodyBuilder);
                     return;
                 }
 
                 reqBodyBuilder.addFormDataPart("file", "collectionImage.png",
                         RequestBody.create(MediaType.parse("image/png"), imageBytes));
-                sendMessage(url, reqBodyBuilder);
+                sendToMultiple(urlList, reqBodyBuilder);
             });
             return;
         }
 
-        sendMessage(url, reqBodyBuilder);
+        sendToMultiple(urlList, reqBodyBuilder);
+    }
+
+    private void sendToMultiple(ArrayList<HttpUrl> urls, MultipartBody.Builder requestBody) {
+        for (HttpUrl url: urls) {
+            sendMessage(url, requestBody);
+        }
     }
 
     private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody) {
