@@ -21,6 +21,8 @@ First step to getting this working is to setup the webhook in discord.
 4. Upon creating a webhook click the `Copy Webhook URL` button.
 5. Paste the copied link into the `Discord Webhook` text field in the plugin settings
 
+You can have multiple webhooks setup at the same time, you simply separate them with a newline between each URL.
+
 ---
 ## Other Setup
 
