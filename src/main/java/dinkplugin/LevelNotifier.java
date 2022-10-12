@@ -46,6 +46,7 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void attemptNotify() {
+        if (plugin.isSpeedrunWorld()) return;
         sendMessage = false;
         StringBuilder skillMessage = new StringBuilder();
         int index = 0;
