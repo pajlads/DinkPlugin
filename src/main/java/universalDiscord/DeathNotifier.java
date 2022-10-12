@@ -5,7 +5,7 @@ import javax.inject.Inject;
 public class DeathNotifier extends BaseNotifier {
 
     @Inject
-    public DeathNotifier(UniversalDiscordPlugin plugin) {
+    public DeathNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 

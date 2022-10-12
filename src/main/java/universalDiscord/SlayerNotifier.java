@@ -9,7 +9,7 @@ public class SlayerNotifier extends BaseNotifier {
     public String slayerCompleted = "";
 
     @Inject
-    public SlayerNotifier(UniversalDiscordPlugin plugin) {
+    public SlayerNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 

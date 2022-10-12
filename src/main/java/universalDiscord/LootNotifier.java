@@ -1,9 +1,7 @@
 package universalDiscord;
 
 import net.runelite.api.ItemComposition;
-import net.runelite.api.NPC;
 import net.runelite.client.game.ItemStack;
-import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 
 import javax.inject.Inject;
@@ -14,7 +12,7 @@ public class LootNotifier extends BaseNotifier {
     private boolean sendMessage = false;
 
     @Inject
-    public LootNotifier(UniversalDiscordPlugin plugin) {
+    public LootNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 

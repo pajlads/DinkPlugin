@@ -5,7 +5,7 @@ import javax.inject.Inject;
 public class PetNotifier extends BaseNotifier {
 
     @Inject
-    public PetNotifier(UniversalDiscordPlugin plugin) {
+    public PetNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 

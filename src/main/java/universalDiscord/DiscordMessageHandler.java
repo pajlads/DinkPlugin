@@ -3,7 +3,6 @@ package universalDiscord;
 import static net.runelite.http.api.RuneLiteAPI.GSON;
 import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.client.ui.DrawManager;
 import okhttp3.*;
 
 import javax.inject.Inject;
@@ -14,10 +13,10 @@ import java.util.Objects;
 
 @Slf4j
 public class DiscordMessageHandler {
-    private UniversalDiscordPlugin plugin;
+    private DinkPlugin plugin;
 
     @Inject
-    public DiscordMessageHandler(UniversalDiscordPlugin plugin) {
+    public DiscordMessageHandler(DinkPlugin plugin) {
         this.plugin = plugin;
     }
 
