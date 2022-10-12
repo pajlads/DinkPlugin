@@ -39,7 +39,7 @@ import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 @PluginDescriptor(
     name = "Universal Discord"
 )
-public class UniversalDiscordPlugin extends Plugin {
+public class DinkPlugin extends Plugin {
     @Inject
     private Client client;
     @Inject

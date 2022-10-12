@@ -15,7 +15,7 @@ public class LevelNotifier extends BaseNotifier {
     private int ticksWaited = 0;
 
     @Inject
-    public LevelNotifier(UniversalDiscordPlugin plugin) {
+    public LevelNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 

@@ -3,7 +3,6 @@ package universalDiscord;
 import net.runelite.api.ItemComposition;
 import net.runelite.client.util.QuantityFormatter;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 
 public class ClueNotifier extends BaseNotifier{
@@ -11,7 +10,7 @@ public class ClueNotifier extends BaseNotifier{
 
     private DiscordMessageBody messageBody;
 
-    public ClueNotifier(UniversalDiscordPlugin plugin) {
+    public ClueNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 
