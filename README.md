@@ -1,4 +1,10 @@
-# Universal Discord Notifier
+# Dink Plugin
+This is a custom version of *Universal Discord Notifier* which is meant to simplify rendering these on IRC and related platforms.
+
+
+---
+# Original readme
+
 I was fed up of having to configure multiple different plugins to get various notifications in discord. So this plugin
 aims to compile all of them into a single plugin.
 
