@@ -17,19 +17,6 @@ I used the following plugins to help with the development of this:
 It is not a carbon copy-paste, it was all still written from the ground up using bits of each of these to get it working.
 
 ---
-## Webhook Setup
-
-First step to getting this working is to setup the webhook in discord.
-
-1. Open the settings for the discord channel that you would like the notifications to be sent into
-2. Click on the `Integrations` tab
-3. Click on `Create webhook` or `View Webhooks` depending on if there is a webhook already for the channel
-4. Upon creating a webhook click the `Copy Webhook URL` button.
-5. Paste the copied link into the `Discord Webhook` text field in the plugin settings
-
-You can have multiple webhooks setup at the same time, you simply separate them with a newline between each URL.
-
----
 ## Other Setup
 
 As the collection notification uses the chat message to determine when a collection log item has been added, these messages
