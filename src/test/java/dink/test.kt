@@ -36,7 +36,7 @@ class Matchers {
         override fun provideArguments(context: ExtensionContext?): Stream<out Arguments> = Stream.of(
             Arguments.of(
                 "You have completed your task! You killed 125 Kalphite. You gained 11,150 xp.",
-                "125 Kalphite"
+                "125 Kalphite BAD TEXT ASDASD"
             ),
             Arguments.of("You have completed your task! You killed 7 Ankous. You gained 75 xp.", "7 Ankous"),
             Arguments.of(
