@@ -1,4 +1,4 @@
-package universalDiscord;
+package dinkplugin;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package universalDiscord;
+package dinkplugin;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,8 +11,8 @@ import java.util.Map;
 @Slf4j
 public class LevelNotifier extends BaseNotifier {
 
-    private ArrayList<String> levelledSkills = new ArrayList<String>();
-    private Hashtable<String, Integer> currentLevels = new Hashtable<String, Integer>();
+    private final ArrayList<String> levelledSkills = new ArrayList<String>();
+    private final Hashtable<String, Integer> currentLevels = new Hashtable<String, Integer>();
     private boolean sendMessage = false;
     private int ticksWaited = 0;
 
@@ -28,12 +28,12 @@ public class LevelNotifier extends BaseNotifier {
 
     private boolean checkLevelInterval(int level) {
         return plugin.config.levelInterval() <= 1
-                || level == 99
-                || level % plugin.config.levelInterval() == 0;
+            || level == 99
+            || level % plugin.config.levelInterval() == 0;
     }
 
     public void onTick() {
-        if(!sendMessage) {
+        if (!sendMessage) {
             return;
         }
 
@@ -52,7 +52,7 @@ public class LevelNotifier extends BaseNotifier {
         Map<String, Integer> lSkills = new HashMap<>();
 
         for (String skill : levelledSkills) {
-            if(index == levelledSkills.size()) {
+            if (index == levelledSkills.size()) {
                 skillMessage.append(" and ");
             } else if (index > 0) {
                 skillMessage.append(", ");
@@ -79,8 +79,8 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void handleLevelUp(String skill, int level) {
-        if(checkLevelInterval(level) && currentLevels.get(skill) != null) {
-            if(level == currentLevels.get(skill)) {
+        if (checkLevelInterval(level) && currentLevels.get(skill) != null) {
+            if (level == currentLevels.get(skill)) {
                 return;
             }
             levelledSkills.add(skill);

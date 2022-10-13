@@ -1,6 +1,5 @@
-package universalDiscord;
+package dinkplugin;
 
-import static net.runelite.http.api.RuneLiteAPI.GSON;
 import com.google.common.base.Strings;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +11,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import static net.runelite.http.api.RuneLiteAPI.GSON;
+
 @Slf4j
 public class DiscordMessageHandler {
-    private DinkPlugin plugin;
+    private final DinkPlugin plugin;
 
     @Inject
     public DiscordMessageHandler(DinkPlugin plugin) {
@@ -24,13 +25,13 @@ public class DiscordMessageHandler {
     public <T> void createMessage(boolean sendImage, @NonNull NotificationBody<T> mBody) {
         mBody.setPlayerName(Utils.getPlayerName());
         String webhookUrl = plugin.config.discordWebhook();
-        if(Strings.isNullOrEmpty(webhookUrl)) {
+        if (Strings.isNullOrEmpty(webhookUrl)) {
             return;
         }
         ArrayList<HttpUrl> urlList = new ArrayList<>();
         String[] strList = webhookUrl.split("\n");
-        for (String urlString: strList) {
-            if(Objects.equals(urlString, "")) {
+        for (String urlString : strList) {
+            if (Objects.equals(urlString, "")) {
                 continue;
             }
             urlList.add(HttpUrl.parse(urlString));
@@ -53,6 +54,7 @@ public class DiscordMessageHandler {
                     return;
                 }
 
+
                 reqBodyBuilder.addFormDataPart(
                         "file",
                         "collectionImage.png",
@@ -70,7 +72,7 @@ public class DiscordMessageHandler {
     }
 
     private void sendToMultiple(ArrayList<HttpUrl> urls, MultipartBody.Builder requestBody) {
-        for (HttpUrl url: urls) {
+        for (HttpUrl url : urls) {
             sendMessage(url, requestBody);
         }
     }
@@ -78,9 +80,9 @@ public class DiscordMessageHandler {
     private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody) {
         RequestBody body = requestBody.build();
         Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
+            .url(url)
+            .post(body)
+            .build();
         plugin.httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

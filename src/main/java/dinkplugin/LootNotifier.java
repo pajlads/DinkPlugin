@@ -1,4 +1,4 @@
-package universalDiscord;
+package dinkplugin;
 
 import net.runelite.api.ItemComposition;
 import net.runelite.client.game.ItemStack;
@@ -32,7 +32,7 @@ public class LootNotifier extends BaseNotifier {
 
             ItemComposition itemComposition = plugin.itemManager.getItemComposition(itemId);
             if (totalPrice >= minValue) {
-                if(totalStackValue != 0) {
+                if (totalStackValue != 0) {
                     lootMessage.append("\n");
                 }
                 sendMessage = true;

@@ -1,11 +1,12 @@
-package universalDiscord;
+package dinkplugin;
 
 import com.google.common.collect.ImmutableList;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class QuestNotifier extends BaseNotifier{
+public class QuestNotifier extends BaseNotifier {
+
     public QuestNotifier(DinkPlugin plugin) {
         super(plugin);
     }
@@ -45,8 +46,7 @@ public class QuestNotifier extends BaseNotifier{
 
         if (verb.contains("kind of")) {
             quest += " partial completion";
-        }
-        else if (verb.contains("completely")) {
+        } else if (verb.contains("completely")) {
             quest += " II";
         }
 

@@ -1,13 +1,14 @@
-package universalDiscord;
+package dinkplugin;
 
 import net.runelite.api.ItemComposition;
 import net.runelite.client.util.QuantityFormatter;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ClueNotifier extends BaseNotifier{
+public class ClueNotifier extends BaseNotifier {
     public HashMap<Integer, Integer> clueItems = new HashMap<Integer, Integer>();
 
     private NotificationBody<ClueNotificationData> messageBody;
@@ -22,8 +23,8 @@ public class ClueNotifier extends BaseNotifier{
         long totalPrice = 0;
         List<SerializedItemStack> itemStacks = new ArrayList<>();
 
-        for(Integer itemId : clueItems.keySet()) {
-            if(lootMessage.length() > 0) {
+        for (Integer itemId : clueItems.keySet()) {
+            if (lootMessage.length() > 0) {
                 lootMessage.append("\n");
             }
             int quantity = clueItems.get(itemId);
@@ -35,7 +36,7 @@ public class ClueNotifier extends BaseNotifier{
             itemStacks.add(new SerializedItemStack(itemId, quantity, price, itemComposition.getName()));
         }
 
-        if(totalPrice < plugin.config.clueMinValue()) {
+        if (totalPrice < plugin.config.clueMinValue()) {
             return;
         }
 

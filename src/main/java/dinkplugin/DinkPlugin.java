@@ -1,20 +1,18 @@
-package universalDiscord;
+package dinkplugin;
 
 import com.google.inject.Provides;
-import javax.inject.Inject;
-
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
+import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.events.NotificationFired;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.NotificationFired;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
@@ -27,6 +25,7 @@ import net.runelite.client.util.Text;
 import net.runelite.http.api.loottracker.LootRecordType;
 import okhttp3.OkHttpClient;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -37,7 +36,7 @@ import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
 @Slf4j
 @PluginDescriptor(
-    name = "Universal Discord"
+    name = "Dink"
 )
 public class DinkPlugin extends Plugin {
     @Inject
@@ -48,7 +47,7 @@ public class DinkPlugin extends Plugin {
     @Inject
     public DrawManager drawManager;
     @Inject
-    public UniversalDiscordConfig config;
+    public DinkPluginConfig config;
 
     @Inject
     public ItemManager itemManager;
@@ -64,8 +63,8 @@ public class DinkPlugin extends Plugin {
     private final ClueNotifier clueNotifier = new ClueNotifier(this);
 
     private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
-    private static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [\\w,]+)\\..*");
-    private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received \\d+ points, giving you a total of (?<points>[\\d,]+)|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
+    public static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
+    private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
 
     private static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>[\\w,\\s-.]+)");
     private static final Pattern PET_REGEX = Pattern.compile("You have a funny feeling like you.*");
@@ -74,7 +73,7 @@ public class DinkPlugin extends Plugin {
     private String slayerTasksCompleted = "";
     private String slayerPoints = "";
 
-    private boolean questCompleted = false;
+    private final boolean questCompleted = false;
     private boolean clueCompleted = false;
     private String clueCount = "";
     private String clueType = "";
@@ -82,17 +81,17 @@ public class DinkPlugin extends Plugin {
     @Override
     protected void startUp() throws Exception {
         Utils.client = client;
-        log.info("Started up Universal Discord");
+        log.info("Started up Dink");
     }
 
     @Override
     protected void shutDown() throws Exception {
-        log.info("Shutting down Universal Discord");
+        log.info("Shutting down Dink");
     }
 
     @Provides
-    UniversalDiscordConfig provideConfig(ConfigManager configManager) {
-        return configManager.getConfig(UniversalDiscordConfig.class);
+    DinkPluginConfig provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(DinkPluginConfig.class);
     }
 
     @Subscribe
@@ -129,40 +128,40 @@ public class DinkPlugin extends Plugin {
 
         if (msgType.equals(ChatMessageType.GAMEMESSAGE)) {
             Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(chatMessage);
-            if(config.notifyCollectionLog() && collectionMatcher.find()) {
+            if (config.notifyCollectionLog() && collectionMatcher.find()) {
                 collectionNotifier.handleNotify(collectionMatcher.group("itemName"));
                 return;
             }
 
-            if(config.notifyPet() && PET_REGEX.matcher(chatMessage).matches()) {
+            if (config.notifyPet() && PET_REGEX.matcher(chatMessage).matches()) {
                 petNotifier.handleNotify();
                 return;
             }
 
-            if(config.notifySlayer()
+            if (config.notifySlayer()
                 && (chatMessage.contains("Slayer master")
-                    || chatMessage.contains("Slayer Master")
-                    || chatMessage.contains("completed your task!")
-                )) {
+                || chatMessage.contains("Slayer Master")
+                || chatMessage.contains("completed your task!")
+            )) {
                 Matcher taskMatcher = SLAYER_TASK_REGEX.matcher(chatMessage);
                 Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
 
-                if(taskMatcher.find()) {
+                if (taskMatcher.find()) {
                     slayerTask = taskMatcher.group("task");
                     slayerNotifier.slayerTask = slayerTask;
                     slayerNotifier.handleNotify();
                 }
 
-                if(pointsMatcher.find()) {
+                if (pointsMatcher.find()) {
                     slayerPoints = pointsMatcher.group("points");
                     slayerTasksCompleted = pointsMatcher.group("taskCount");
 
-                    if(slayerPoints == null) {
+                    if (slayerPoints == null) {
                         slayerPoints = pointsMatcher.group("points2");
                     }
 
                     // 3 different cases of seeing points, so in our worst case it's 0
-                    if(slayerPoints == null) {
+                    if (slayerPoints == null) {
                         slayerPoints = "0";
                     }
                     slayerNotifier.slayerPoints = slayerPoints;
@@ -172,13 +171,13 @@ public class DinkPlugin extends Plugin {
                 }
             }
 
-            if(config.notifyClue()) {
+            if (config.notifyClue()) {
                 Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(chatMessage);
-                if(clueMatcher.find()) {
+                if (clueMatcher.find()) {
                     String numberCompleted = clueMatcher.group("scrollCount");
                     String scrollType = clueMatcher.group("scrollType");
 
-                    if(clueCompleted) {
+                    if (clueCompleted) {
                         clueNotifier.handleNotify(numberCompleted, scrollType);
                         clueCompleted = false;
                     } else {
@@ -193,14 +192,14 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onActorDeath(ActorDeath actor) {
-        if(config.notifyDeath() && Objects.equals(actor.getActor().getName(), Utils.getPlayerName())) {
+        if (config.notifyDeath() && Objects.equals(actor.getActor().getName(), Utils.getPlayerName())) {
             deathNotifier.handleNotify();
         }
     }
 
     @Subscribe
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
-        if(!config.notifyLoot()) {
+        if (!config.notifyLoot()) {
             return;
         }
 
@@ -231,10 +230,10 @@ public class DinkPlugin extends Plugin {
 
         if (groupId == QUEST_COMPLETED_GROUP_ID) {
 
-            if(config.notifyQuest()) {
+            if (config.notifyQuest()) {
                 Widget quest = client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
 
-                if(quest != null) {
+                if (quest != null) {
                     String questWidget = quest.getText();
                     questNotifier.handleNotify(questWidget);
                 }
@@ -243,16 +242,16 @@ public class DinkPlugin extends Plugin {
 
         if (groupId == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) {
             Widget clue = client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER);
-            if(clue != null) {
+            if (clue != null) {
                 clueNotifier.clueItems.clear();
                 Widget[] children = clue.getChildren();
 
-                if(children == null) {
+                if (children == null) {
                     return;
                 }
 
                 for (Widget child : children) {
-                    if(child == null) {
+                    if (child == null) {
                         continue;
                     }
 
@@ -264,7 +263,7 @@ public class DinkPlugin extends Plugin {
                     }
                 }
 
-                if(clueCompleted) {
+                if (clueCompleted) {
                     clueNotifier.handleNotify(clueCount, clueType);
                     clueCompleted = false;
                 } else {
