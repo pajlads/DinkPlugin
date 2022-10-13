@@ -1,4 +1,4 @@
-package universalDiscord;
+package dinkplugin;
 
 import com.google.inject.Provides;
 import javax.inject.Inject;
@@ -37,7 +37,7 @@ import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
 @Slf4j
 @PluginDescriptor(
-    name = "Universal Discord"
+    name = "Dink Plugin"
 )
 public class DinkPlugin extends Plugin {
     @Inject
@@ -82,12 +82,12 @@ public class DinkPlugin extends Plugin {
     @Override
     protected void startUp() throws Exception {
         Utils.client = client;
-        log.info("Started up Universal Discord");
+        log.info("Started up Dink Plugin");
     }
 
     @Override
     protected void shutDown() throws Exception {
-        log.info("Shutting down Universal Discord");
+        log.info("Shutting down Dink Plugin");
     }
 
     @Provides

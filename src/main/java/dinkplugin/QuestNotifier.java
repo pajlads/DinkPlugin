@@ -1,4 +1,4 @@
-package universalDiscord;
+package dinkplugin;
 
 import com.google.common.collect.ImmutableList;
 

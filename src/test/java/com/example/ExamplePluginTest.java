@@ -2,7 +2,7 @@ package com.example;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
-import universalDiscord.DinkPlugin;
+import dinkplugin.DinkPlugin;
 
 public class ExamplePluginTest
 {

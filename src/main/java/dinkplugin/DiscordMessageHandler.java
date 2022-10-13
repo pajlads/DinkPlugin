@@ -1,4 +1,4 @@
-package universalDiscord;
+package dinkplugin;
 
 import static net.runelite.http.api.RuneLiteAPI.GSON;
 import com.google.common.base.Strings;

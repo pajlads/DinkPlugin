@@ -1,4 +1,4 @@
-package universalDiscord;
+package dinkplugin;
 
 import net.runelite.api.ItemComposition;
 import net.runelite.client.game.ItemStack;
