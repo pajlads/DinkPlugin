@@ -48,7 +48,7 @@ public class DinkPlugin extends Plugin {
     @Inject
     public DrawManager drawManager;
     @Inject
-    public UniversalDiscordConfig config;
+    public DinkPluginConfig config;
 
     @Inject
     public ItemManager itemManager;
@@ -91,8 +91,8 @@ public class DinkPlugin extends Plugin {
     }
 
     @Provides
-    UniversalDiscordConfig provideConfig(ConfigManager configManager) {
-        return configManager.getConfig(UniversalDiscordConfig.class);
+    DinkPluginConfig provideConfig(ConfigManager configManager) {
+        return configManager.getConfig(DinkPluginConfig.class);
     }
 
     @Subscribe

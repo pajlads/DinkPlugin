@@ -6,7 +6,7 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 
 @ConfigGroup("dinkplugin")
-public interface UniversalDiscordConfig extends Config {
+public interface DinkPluginConfig extends Config {
     @ConfigSection(
             name = "Collection Log",
             description = "Settings for notifying about collection log",
