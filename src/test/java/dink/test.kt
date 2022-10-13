@@ -54,10 +54,10 @@ class Matchers {
 
     @ParameterizedTest(name = "Collection log message should trigger {0}")
     @ArgumentsSource(CollectionLogProvider::class)
-    fun `Collection log regex finds match`(message: String, task: String) {
+    fun `Collection log regex finds match`(message: String, item: String) {
         val matcher = DinkPlugin.COLLECTION_LOG_REGEX.matcher(message)
         assertTrue(matcher.find())
-        assertEquals(task, matcher.group("collection"))
+        assertEquals(item, matcher.group("collection"))
     }
 
     @ParameterizedTest(name = "Collection log message should not trigger {0}")
