@@ -195,10 +195,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 12,
+        section = lootSection
+    )
+    default boolean lootSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "lootIcons",
         name = "Show loot icons",
         description = "Show icons for the loot obtained",
-        position = 12,
+        position = 13,
         section = lootSection
     )
     default boolean lootIcons() {
@@ -209,7 +220,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "minLootValue",
         name = "Min Loot value",
         description = "Minimum value of the loot to notify",
-        position = 13,
+        position = 14,
         section = lootSection
     )
     default int minLootValue() {
@@ -220,22 +231,11 @@ public interface DinkPluginConfig extends Config {
         keyName = "lootNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %LOOT% to insert the loot and %SOURCE% to show the source of the loot",
-        position = 14,
+        position = 15,
         section = lootSection
     )
     default String lootNotifyMessage() {
         return "%USERNAME% has looted: \n\n%LOOT%\nFrom: %SOURCE%";
-    }
-
-    @ConfigItem(
-        keyName = "lootSendImage",
-        name = "Send Image",
-        description = "Send image with the notification",
-        position = 15,
-        section = lootSection
-    )
-    default boolean lootSendImage() {
-        return true;
     }
 
     @ConfigItem(
