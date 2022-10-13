@@ -37,5 +37,5 @@ jobs:
     - name: Upload shadowJar
       uses: actions/upload-artifact@v3
       with:
-        name: dinkplugin-shadow.jar
+        name: dinkplugin-shadow.zip
         path: build/libs/dinkplugin-*-all.jar
