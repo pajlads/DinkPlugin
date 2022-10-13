@@ -51,4 +51,40 @@ class Matchers {
             Arguments.of("You have completed your task! You killed 31 TzKal-Zuk. You gained 75 xp.", "31 TzKal-Zuk")
         )
     }
+
+    @ParameterizedTest(name = "Collection log message should trigger {0}")
+    @ArgumentsSource(CollectionLogProvider::class)
+    fun `Collection log regex finds match`(message: String, item: String) {
+        val matcher = DinkPlugin.COLLECTION_LOG_REGEX.matcher(message)
+        assertTrue(matcher.find())
+        assertEquals(item, matcher.group("itemName"))
+    }
+
+    @ParameterizedTest(name = "Collection log message should not trigger {0}")
+    @ValueSource(
+        strings = [
+            "Forsen: forsen", // todo: add more bad examples
+        ]
+    )
+    fun `Collection log regex does not match`(message: String) {
+        val matcher = DinkPlugin.COLLECTION_LOG_REGEX.matcher(message)
+        assertFalse(matcher.find())
+    }
+
+    private class CollectionLogProvider : ArgumentsProvider {
+        override fun provideArguments(context: ExtensionContext?): Stream<out Arguments> = Stream.of(
+            Arguments.of("New item added to your collection log: Red d'hide body (t)",
+                "Red d'hide body (t)"),
+            Arguments.of("New item added to your collection log: Rune full helm (g)",
+                "Rune full helm (g)"),
+            Arguments.of("New item added to your collection log: Robin hood hat",
+                "Robin hood hat"),
+            Arguments.of("New item added to your collection log: Amulet of glory (t4)",
+                "Amulet of glory (t4)"),
+            Arguments.of("New item added to your collection log: Blue d'hide chaps (t)",
+                "Blue d'hide chaps (t)"),
+            Arguments.of("New item added to your collection log: Lumberjack boots",
+                "Lumberjack boots")
+        )
+    }
 }
