@@ -83,7 +83,7 @@ class Matchers {
                 "Amulet of glory (t4)"),
             Arguments.of("New item added to your collection log: Blue d'hide chaps (t)",
                 "Blue d'hide chaps (t)"),
-            Arguments.of("New item added to your collection log: Lumberjack Boots",
+            Arguments.of("New item added to your collection log: Lumberjack boots",
                 "Lumberjack boots")
         )
     }
