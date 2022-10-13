@@ -5,7 +5,7 @@ import net.runelite.client.util.QuantityFormatter;
 
 import java.util.HashMap;
 
-public class ClueNotifier extends BaseNotifier{
+public class ClueNotifier extends BaseNotifier {
     public HashMap<Integer, Integer> clueItems = new HashMap<Integer, Integer>();
 
     private DiscordMessageBody messageBody;
@@ -19,8 +19,8 @@ public class ClueNotifier extends BaseNotifier{
         StringBuilder lootMessage = new StringBuilder();
         long totalPrice = 0;
 
-        for(Integer itemId : clueItems.keySet()) {
-            if(lootMessage.length() > 0) {
+        for (Integer itemId : clueItems.keySet()) {
+            if (lootMessage.length() > 0) {
                 lootMessage.append("\n");
             }
             int quantity = clueItems.get(itemId);
@@ -29,15 +29,15 @@ public class ClueNotifier extends BaseNotifier{
             lootMessage.append(getItem(itemId, clueItems.get(itemId)));
         }
 
-        if(totalPrice < plugin.config.clueMinValue()) {
+        if (totalPrice < plugin.config.clueMinValue()) {
             return;
         }
 
         String notifyMessage = plugin.config.clueNotifyMessage()
-                .replaceAll("%USERNAME%", Utils.getPlayerName())
-                .replaceAll("%CLUE%", clueType)
-                .replaceAll("%COUNT%", numberCompleted)
-                .replaceAll("%LOOT%", lootMessage.toString());
+            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%CLUE%", clueType)
+            .replaceAll("%COUNT%", numberCompleted)
+            .replaceAll("%LOOT%", lootMessage.toString());
         plugin.messageHandler.createMessage(notifyMessage, plugin.config.clueSendImage(), null);
     }
 
@@ -46,7 +46,7 @@ public class ClueNotifier extends BaseNotifier{
         long totalPrice = (long) price * quantity;
         ItemComposition itemComposition = plugin.itemManager.getItemComposition(itemId);
 
-        if(plugin.config.clueShowItems()) {
+        if (plugin.config.clueShowItems()) {
             messageBody.getEmbeds().add(new DiscordMessageBody.Embed(new DiscordMessageBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
         }
         return String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice));

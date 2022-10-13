@@ -12,7 +12,7 @@ public class PetNotifier extends BaseNotifier {
     @Override
     public void handleNotify() {
         String notifyMessage = plugin.config.petNotifyMessage()
-                .replaceAll("%USERNAME%", Utils.getPlayerName());
+            .replaceAll("%USERNAME%", Utils.getPlayerName());
         plugin.messageHandler.createMessage(notifyMessage, plugin.config.petSendImage(), null);
     }
 }
