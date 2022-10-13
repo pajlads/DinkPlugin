@@ -12,6 +12,9 @@ class Matchers {
         "You have completed your task! You killed 125 Kalphite. You gained 11,150 xp.",
         "You have completed your task! You killed 7 Ankous. You gained 75 xp.",
         "You have completed your task! You killed 134 Abyssal demons. You gained 75 xp.",
+        "You have completed your task! You killed 134 Fossil Island Wyverns. You gained 75 xp.",
+        "You have completed your task! You killed 31 Kree'Arra. You gained 75 xp.",
+        "You have completed your task! You killed 31 TzKal-Zuk. You gained 75 xp.",
     ])
     fun `Slayer task completion regex finds match`(message: String) {
         var matcher = UniversalDiscordPlugin.SLAYER_TASK_REGEX.matcher(message);
