@@ -1,12 +1,12 @@
-package universalDiscord;
+package dinkplugin;
 
 import javax.inject.Inject;
 
 public class BaseNotifier {
-    protected final UniversalDiscordPlugin plugin;
+    protected final DinkPlugin plugin;
 
     @Inject
-    public BaseNotifier(UniversalDiscordPlugin plugin) {
+    public BaseNotifier(DinkPlugin plugin) {
         this.plugin = plugin;
     }
 

@@ -1,4 +1,4 @@
-# Dink Plugin
+# Dink
 This is a custom version of *Universal Discord Notifier* which is meant to simplify rendering these on IRC and related platforms.
 
 

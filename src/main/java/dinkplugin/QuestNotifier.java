@@ -1,4 +1,4 @@
-package universalDiscord;
+package dinkplugin;
 
 import com.google.common.collect.ImmutableList;
 
@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class QuestNotifier extends BaseNotifier{
-    public QuestNotifier(UniversalDiscordPlugin plugin) {
+    public QuestNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 

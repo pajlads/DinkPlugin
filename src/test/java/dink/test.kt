@@ -9,14 +9,14 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.ArgumentsProvider
 import org.junit.jupiter.params.provider.ArgumentsSource
 import org.junit.jupiter.params.provider.ValueSource
-import universalDiscord.UniversalDiscordPlugin
+import dinkplugin.DinkPlugin
 import java.util.stream.Stream
 
 class Matchers {
     @ParameterizedTest(name = "Slayer task completion message should trigger {0}")
     @ArgumentsSource(SlayerTaskProvider::class)
     fun `Slayer task completion regex finds match`(message: String, task: String) {
-        val matcher = UniversalDiscordPlugin.SLAYER_TASK_REGEX.matcher(message)
+        val matcher = DinkPlugin.SLAYER_TASK_REGEX.matcher(message)
         assertTrue(matcher.find())
         assertEquals(task, matcher.group("task"))
     }
@@ -28,7 +28,7 @@ class Matchers {
         "You've completed 234 tasks and received 15 points, giving you a total of 801; return to a Slayer master.",
     ])
     fun `Slayer task completion regex does not match`(message: String) {
-        val matcher = UniversalDiscordPlugin.SLAYER_TASK_REGEX.matcher(message)
+        val matcher = DinkPlugin.SLAYER_TASK_REGEX.matcher(message)
         assertFalse(matcher.find())
     }
 

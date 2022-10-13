@@ -1,10 +1,9 @@
-package universalDiscord;
+package dinkplugin;
 
 import net.runelite.api.Client;
 import net.runelite.client.game.ItemStack;
 
 import javax.imageio.ImageIO;
-import javax.inject.Inject;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

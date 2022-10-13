@@ -1,4 +1,4 @@
-package universalDiscord;
+package dinkplugin;
 
 import javax.inject.Inject;
 import java.util.Objects;
@@ -9,7 +9,7 @@ public class SlayerNotifier extends BaseNotifier {
     public String slayerCompleted = "";
 
     @Inject
-    public SlayerNotifier(UniversalDiscordPlugin plugin) {
+    public SlayerNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 
