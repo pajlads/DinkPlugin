@@ -23,10 +23,10 @@ public class SlayerNotifier extends BaseNotifier {
         }
 
         String notifyMessage = plugin.config.slayerNotifyMessage()
-                .replaceAll("%USERNAME%", Utils.getPlayerName())
-                .replaceAll("%TASK%", slayerTask)
-                .replaceAll("%TASKCOUNT%", slayerCompleted)
-                .replaceAll("%POINTS%", slayerPoints);
+            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%TASK%", slayerTask)
+            .replaceAll("%TASKCOUNT%", slayerCompleted)
+            .replaceAll("%POINTS%", slayerPoints);
         NotificationBody<SlayerNotificationData> body = new NotificationBody<>();
         SlayerNotificationData extra = new SlayerNotificationData();
         extra.setSlayerPoints(slayerPoints);

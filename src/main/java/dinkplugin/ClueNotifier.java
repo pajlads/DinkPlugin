@@ -3,7 +3,6 @@ package dinkplugin;
 import net.runelite.api.ItemComposition;
 import net.runelite.client.util.QuantityFormatter;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,10 +40,10 @@ public class ClueNotifier extends BaseNotifier {
         }
 
         String notifyMessage = plugin.config.clueNotifyMessage()
-                .replaceAll("%USERNAME%", Utils.getPlayerName())
-                .replaceAll("%CLUE%", clueType)
-                .replaceAll("%COUNT%", numberCompleted)
-                .replaceAll("%LOOT%", lootMessage.toString());
+            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%CLUE%", clueType)
+            .replaceAll("%COUNT%", numberCompleted)
+            .replaceAll("%LOOT%", lootMessage.toString());
         messageBody.setContent(notifyMessage);
         ClueNotificationData extra = new ClueNotificationData();
         extra.setClueType(clueType);
@@ -60,7 +59,7 @@ public class ClueNotifier extends BaseNotifier {
         long totalPrice = (long) price * quantity;
         ItemComposition itemComposition = plugin.itemManager.getItemComposition(itemId);
 
-        if(plugin.config.clueShowItems()) {
+        if (plugin.config.clueShowItems()) {
             messageBody.getEmbeds().add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
         }
         return String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice));

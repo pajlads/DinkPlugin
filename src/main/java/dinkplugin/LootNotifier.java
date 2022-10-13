@@ -37,7 +37,7 @@ public class LootNotifier extends BaseNotifier {
                 }
                 sendMessage = true;
                 lootMessage.append(String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice)));
-                if(plugin.config.lootIcons()) {
+                if (plugin.config.lootIcons()) {
                     messageBody.getEmbeds().add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
                 }
             }
@@ -50,9 +50,9 @@ public class LootNotifier extends BaseNotifier {
             sendMessage = false;
             String lootString = lootMessage.toString();
             String notifyMessage = plugin.config.lootNotifyMessage()
-                    .replaceAll("%USERNAME%", Utils.getPlayerName())
-                    .replaceAll("%LOOT%", lootString)
-                    .replaceAll("%SOURCE%", dropper);
+                .replaceAll("%USERNAME%", Utils.getPlayerName())
+                .replaceAll("%LOOT%", lootString)
+                .replaceAll("%SOURCE%", dropper);
             messageBody.setContent(notifyMessage);
             LootNotificationData extra = new LootNotificationData();
             extra.setItems(serializedItems);

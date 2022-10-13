@@ -11,8 +11,8 @@ public class CollectionNotifier extends BaseNotifier {
 
     public void handleNotify(String itemName) {
         String notifyMessage = plugin.config.collectionNotifyMessage()
-                .replaceAll("%USERNAME%", Utils.getPlayerName())
-                .replaceAll("%ITEM%", itemName);
+            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%ITEM%", itemName);
         NotificationBody<CollectionNotificationData> b = new NotificationBody<>();
         b.setContent(notifyMessage);
         CollectionNotificationData extra = new CollectionNotificationData();

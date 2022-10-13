@@ -13,8 +13,8 @@ public class QuestNotifier extends BaseNotifier {
 
     public void handleNotify(String questText) {
         String notifyMessage = plugin.config.questNotifyMessage()
-                .replaceAll("%USERNAME%", Utils.getPlayerName())
-                .replaceAll("%QUEST%", parseQuestWidget(questText));
+            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%QUEST%", parseQuestWidget(questText));
         NotificationBody<QuestNotificationData> body = new NotificationBody<>();
         body.setContent(notifyMessage);
         QuestNotificationData extra = new QuestNotificationData();

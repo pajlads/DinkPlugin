@@ -56,12 +56,12 @@ public class DiscordMessageHandler {
 
 
                 reqBodyBuilder.addFormDataPart(
-                        "file",
-                        "collectionImage.png",
-                        RequestBody.create(
-                                MediaType.parse("image/png"),
-                                imageBytes
-                        )
+                    "file",
+                    "collectionImage.png",
+                    RequestBody.create(
+                        MediaType.parse("image/png"),
+                        imageBytes
+                    )
                 );
                 sendToMultiple(urlList, reqBodyBuilder);
             });

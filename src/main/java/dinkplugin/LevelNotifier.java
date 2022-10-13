@@ -65,8 +65,8 @@ public class LevelNotifier extends BaseNotifier {
         String skillString = skillMessage.toString();
         levelledSkills.clear();
         String fullNotification = plugin.config.levelNotifyMessage()
-                .replaceAll("%USERNAME%", Utils.getPlayerName())
-                .replaceAll("%SKILL%", skillString);
+            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%SKILL%", skillString);
         NotificationBody<LevelNotificationData> body = new NotificationBody<>();
         body.setContent(fullNotification);
 

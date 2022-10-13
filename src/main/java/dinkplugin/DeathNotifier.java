@@ -12,7 +12,7 @@ public class DeathNotifier extends BaseNotifier {
     @Override
     public void handleNotify() {
         String notifyMessage = plugin.config.deathNotifyMessage()
-                .replaceAll("%USERNAME%", Utils.getPlayerName());
+            .replaceAll("%USERNAME%", Utils.getPlayerName());
         NotificationBody<Object> b = new NotificationBody<>();
         b.setContent(notifyMessage);
         b.setType(NotificationType.DEATH);
