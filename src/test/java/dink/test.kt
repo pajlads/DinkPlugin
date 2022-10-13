@@ -57,7 +57,7 @@ class Matchers {
     fun `Collection log regex finds match`(message: String, item: String) {
         val matcher = DinkPlugin.COLLECTION_LOG_REGEX.matcher(message)
         assertTrue(matcher.find())
-        assertEquals(item, matcher.group("collection"))
+        assertEquals(item, matcher.group("itemName"))
     }
 
     @ParameterizedTest(name = "Collection log message should not trigger {0}")
