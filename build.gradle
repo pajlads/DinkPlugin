@@ -28,8 +28,8 @@ dependencies {
 	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
-group = 'universalDiscord'
-version = '1.1-SNAPSHOT'
+group = 'dinkPlugin'
+version = '1.0-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {

@@ -1,11 +1,11 @@
-package universalDiscord;
+package dinkplugin;
 
 import javax.inject.Inject;
 
 public class CollectionNotifier extends BaseNotifier {
 
     @Inject
-    public CollectionNotifier(UniversalDiscordPlugin plugin) {
+    public CollectionNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 
