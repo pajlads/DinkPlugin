@@ -27,7 +27,14 @@ public class SlayerNotifier extends BaseNotifier {
                 .replaceAll("%TASK%", slayerTask)
                 .replaceAll("%TASKCOUNT%", slayerCompleted)
                 .replaceAll("%POINTS%", slayerPoints);
-        plugin.messageHandler.createMessage(notifyMessage, plugin.config.slayerSendImage(), null);
+        NotificationBody<SlayerNotificationData> body = new NotificationBody<>();
+        SlayerNotificationData extra = new SlayerNotificationData();
+        extra.setSlayerPoints(slayerPoints);
+        extra.setSlayerCompleted(slayerCompleted);
+        extra.setSlayerTask(slayerTask);
+        body.setExtra(extra);
+        body.setContent(notifyMessage);
+        plugin.messageHandler.createMessage(plugin.config.slayerSendImage(), body);
 
         slayerTask = "";
         slayerPoints = "";

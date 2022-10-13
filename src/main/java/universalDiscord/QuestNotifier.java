@@ -14,7 +14,12 @@ public class QuestNotifier extends BaseNotifier{
         String notifyMessage = plugin.config.questNotifyMessage()
                 .replaceAll("%USERNAME%", Utils.getPlayerName())
                 .replaceAll("%QUEST%", parseQuestWidget(questText));
-        plugin.messageHandler.createMessage(notifyMessage, plugin.config.questSendImage(), null);
+        NotificationBody<QuestNotificationData> body = new NotificationBody<>();
+        body.setContent(notifyMessage);
+        QuestNotificationData extra = new QuestNotificationData();
+        extra.setQuestName(parseQuestWidget(questText));
+        body.setExtra(extra);
+        plugin.messageHandler.createMessage(plugin.config.questSendImage(), body);
     }
 
     // Credit to: https://github.com/oliverpatrick/Enhanced-Discord-Notifications/blob/master/src/main/java/com/enhanceddiscordnotifications/EnhancedDiscordNotificationsPlugin.java

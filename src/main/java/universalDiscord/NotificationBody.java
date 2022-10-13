@@ -1,11 +1,28 @@
 package universalDiscord;
 
+import lombok.Builder;
 import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 
+enum NotificationType {
+    CLUE,
+    COLLECTION,
+    DEATH,
+    LEVEL,
+    LOOT,
+    PET,
+    QUEST,
+    SLAYER
+}
+
 @Data
-public class DiscordMessageBody {
+public class NotificationBody<T> {
+    private NotificationType type;
+    private T extra;
+    private String playerName;
+
     private String content;
     private List<Embed> embeds = new ArrayList<>();
 

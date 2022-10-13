@@ -2,6 +2,7 @@ package universalDiscord;
 
 import static net.runelite.http.api.RuneLiteAPI.GSON;
 import com.google.common.base.Strings;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
@@ -20,13 +21,8 @@ public class DiscordMessageHandler {
         this.plugin = plugin;
     }
 
-    public void createMessage(String message, boolean sendImage, DiscordMessageBody mBody) {
-        DiscordMessageBody messageBody = new DiscordMessageBody();
-        if(mBody != null) {
-            messageBody = mBody;
-        }
-
-        messageBody.setContent(message);
+    public <T> void createMessage(boolean sendImage, @NonNull NotificationBody<T> mBody) {
+        mBody.setPlayerName(Utils.getPlayerName());
         String webhookUrl = plugin.config.discordWebhook();
         if(Strings.isNullOrEmpty(webhookUrl)) {
             return;
@@ -42,7 +38,7 @@ public class DiscordMessageHandler {
 
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart("payload_json", GSON.toJson(messageBody));
+            .addFormDataPart("payload_json", GSON.toJson(mBody));
 
         if (sendImage) {
             plugin.drawManager.requestNextFrameListener(image -> {
@@ -57,8 +53,14 @@ public class DiscordMessageHandler {
                     return;
                 }
 
-                reqBodyBuilder.addFormDataPart("file", "collectionImage.png",
-                        RequestBody.create(MediaType.parse("image/png"), imageBytes));
+                reqBodyBuilder.addFormDataPart(
+                        "file",
+                        "collectionImage.png",
+                        RequestBody.create(
+                                MediaType.parse("image/png"),
+                                imageBytes
+                        )
+                );
                 sendToMultiple(urlList, reqBodyBuilder);
             });
             return;

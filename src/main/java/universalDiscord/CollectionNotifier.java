@@ -13,6 +13,12 @@ public class CollectionNotifier extends BaseNotifier {
         String notifyMessage = plugin.config.collectionNotifyMessage()
                 .replaceAll("%USERNAME%", Utils.getPlayerName())
                 .replaceAll("%ITEM%", itemName);
-        plugin.messageHandler.createMessage(notifyMessage, plugin.config.collectionSendImage(), null);
+        NotificationBody<CollectionNotificationData> b = new NotificationBody<>();
+        b.setContent(notifyMessage);
+        CollectionNotificationData extra = new CollectionNotificationData();
+        extra.setItemName(itemName);
+        b.setExtra(extra);
+
+        plugin.messageHandler.createMessage(plugin.config.collectionSendImage(), b);
     }
 }
