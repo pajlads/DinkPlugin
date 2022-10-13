@@ -37,7 +37,7 @@ import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
 @Slf4j
 @PluginDescriptor(
-    name = "Dink Plugin"
+    name = "Dink"
 )
 public class DinkPlugin extends Plugin {
     @Inject
@@ -82,12 +82,12 @@ public class DinkPlugin extends Plugin {
     @Override
     protected void startUp() throws Exception {
         Utils.client = client;
-        log.info("Started up Dink Plugin");
+        log.info("Started up Dink");
     }
 
     @Override
     protected void shutDown() throws Exception {
-        log.info("Shutting down Dink Plugin");
+        log.info("Shutting down Dink");
     }
 
     @Provides
