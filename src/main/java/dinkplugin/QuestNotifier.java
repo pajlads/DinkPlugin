@@ -5,15 +5,15 @@ import com.google.common.collect.ImmutableList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class QuestNotifier extends BaseNotifier{
+public class QuestNotifier extends BaseNotifier {
     public QuestNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 
     public void handleNotify(String questText) {
         String notifyMessage = plugin.config.questNotifyMessage()
-                .replaceAll("%USERNAME%", Utils.getPlayerName())
-                .replaceAll("%QUEST%", parseQuestWidget(questText));
+            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%QUEST%", parseQuestWidget(questText));
         plugin.messageHandler.createMessage(notifyMessage, plugin.config.questSendImage(), null);
     }
 
@@ -40,8 +40,7 @@ public class QuestNotifier extends BaseNotifier{
 
         if (verb.contains("kind of")) {
             quest += " partial completion";
-        }
-        else if (verb.contains("completely")) {
+        } else if (verb.contains("completely")) {
             quest += " II";
         }
 

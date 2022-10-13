@@ -13,6 +13,7 @@ import java.util.List;
 
 public class Utils {
     public static Client client;
+
     public static String getPlayerName() {
         return client.getLocalPlayer().getName();
     }

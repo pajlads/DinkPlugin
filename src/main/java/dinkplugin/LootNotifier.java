@@ -29,13 +29,13 @@ public class LootNotifier extends BaseNotifier {
             long totalPrice = (long) price * quantity;
 
             if (totalPrice >= minValue) {
-                if(totalStackValue != 0) {
+                if (totalStackValue != 0) {
                     lootMessage.append("\n");
                 }
                 sendMessage = true;
                 ItemComposition itemComposition = plugin.itemManager.getItemComposition(itemId);
                 lootMessage.append(String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice)));
-                if(plugin.config.lootIcons()) {
+                if (plugin.config.lootIcons()) {
                     messageBody.getEmbeds().add(new DiscordMessageBody.Embed(new DiscordMessageBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
                 }
             }
@@ -47,9 +47,9 @@ public class LootNotifier extends BaseNotifier {
             sendMessage = false;
             String lootString = lootMessage.toString();
             String notifyMessage = plugin.config.lootNotifyMessage()
-                    .replaceAll("%USERNAME%", Utils.getPlayerName())
-                    .replaceAll("%LOOT%", lootString)
-                    .replaceAll("%SOURCE%", dropper);
+                .replaceAll("%USERNAME%", Utils.getPlayerName())
+                .replaceAll("%LOOT%", lootString)
+                .replaceAll("%SOURCE%", dropper);
             plugin.messageHandler.createMessage(notifyMessage, plugin.config.lootSendImage(), messageBody);
         }
     }
