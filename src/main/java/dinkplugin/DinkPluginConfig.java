@@ -151,10 +151,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "levelSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 8,
+        section = levelSection
+    )
+    default boolean levelSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "levelInterval",
         name = "Notify Interval",
         description = "Interval between when a notification should be sent",
-        position = 8,
+        position = 9,
         section = levelSection
     )
     default int levelInterval() {
@@ -165,22 +176,11 @@ public interface DinkPluginConfig extends Config {
         keyName = "levelNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %SKILL% to insert the levelled skill(s)",
-        position = 9,
+        position = 10,
         section = levelSection
     )
     default String levelNotifyMessage() {
         return "%USERNAME% has levelled %SKILL%";
-    }
-
-    @ConfigItem(
-        keyName = "levelSendImage",
-        name = "Send Image",
-        description = "Send image with the notification",
-        position = 10,
-        section = levelSection
-    )
-    default boolean levelSendImage() {
-        return true;
     }
 
     @ConfigItem(
