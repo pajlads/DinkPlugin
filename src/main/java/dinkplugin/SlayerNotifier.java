@@ -34,6 +34,7 @@ public class SlayerNotifier extends BaseNotifier {
         extra.setSlayerTask(slayerTask);
         body.setExtra(extra);
         body.setContent(notifyMessage);
+        body.setType(NotificationType.SLAYER);
         plugin.messageHandler.createMessage(plugin.config.slayerSendImage(), body);
 
         slayerTask = "";

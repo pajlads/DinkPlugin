@@ -75,6 +75,7 @@ public class LevelNotifier extends BaseNotifier {
         extra.setLevelledSkills(lSkills);
 
         body.setExtra(extra);
+        body.setType(NotificationType.LEVEL);
         plugin.messageHandler.createMessage(plugin.config.levelSendImage(), body);
     }
 

@@ -15,6 +15,7 @@ public class PetNotifier extends BaseNotifier {
                 .replaceAll("%USERNAME%", Utils.getPlayerName());
         NotificationBody<Object> body = new NotificationBody<>();
         body.setContent(notifyMessage);
+        body.setType(NotificationType.PET);
         plugin.messageHandler.createMessage(plugin.config.petSendImage(), body);
     }
 }

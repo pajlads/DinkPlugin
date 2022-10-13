@@ -18,7 +18,7 @@ public class CollectionNotifier extends BaseNotifier {
         CollectionNotificationData extra = new CollectionNotificationData();
         extra.setItemName(itemName);
         b.setExtra(extra);
-
+        b.setType(NotificationType.COLLECTION);
         plugin.messageHandler.createMessage(plugin.config.collectionSendImage(), b);
     }
 }

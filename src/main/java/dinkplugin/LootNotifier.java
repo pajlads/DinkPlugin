@@ -58,6 +58,7 @@ public class LootNotifier extends BaseNotifier {
             extra.setItems(serializedItems);
             extra.setSource(dropper);
             messageBody.setExtra(extra);
+            messageBody.setType(NotificationType.LOOT);
             plugin.messageHandler.createMessage(plugin.config.lootSendImage(), messageBody);
         }
     }

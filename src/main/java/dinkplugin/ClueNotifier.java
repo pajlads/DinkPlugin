@@ -51,6 +51,7 @@ public class ClueNotifier extends BaseNotifier {
         extra.setNumberCompleted(Integer.parseInt(numberCompleted));
         extra.setItems(itemStacks);
         messageBody.setExtra(extra);
+        messageBody.setType(NotificationType.CLUE);
         plugin.messageHandler.createMessage(plugin.config.clueSendImage(), messageBody);
     }
 

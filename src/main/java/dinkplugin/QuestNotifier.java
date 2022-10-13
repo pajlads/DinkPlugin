@@ -20,6 +20,7 @@ public class QuestNotifier extends BaseNotifier {
         QuestNotificationData extra = new QuestNotificationData();
         extra.setQuestName(parseQuestWidget(questText));
         body.setExtra(extra);
+        body.setType(NotificationType.QUEST);
         plugin.messageHandler.createMessage(plugin.config.questSendImage(), body);
     }
 

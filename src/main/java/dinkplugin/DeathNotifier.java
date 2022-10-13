@@ -15,6 +15,7 @@ public class DeathNotifier extends BaseNotifier {
                 .replaceAll("%USERNAME%", Utils.getPlayerName());
         NotificationBody<Object> b = new NotificationBody<>();
         b.setContent(notifyMessage);
+        b.setType(NotificationType.DEATH);
         plugin.messageHandler.createMessage(plugin.config.deathSendImage(), b);
     }
 }
