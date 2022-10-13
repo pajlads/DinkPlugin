@@ -39,7 +39,6 @@ import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
     name = "Dink"
 )
 public class DinkPlugin extends Plugin {
-    THIS IS A SYNTAX ERROR LMAO
     @Inject
     private Client client;
     @Inject
