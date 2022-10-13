@@ -1,5 +1,15 @@
 name: Build with Gradle
-on: pull_request
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   gradle:
     strategy:
