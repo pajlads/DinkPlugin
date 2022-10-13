@@ -85,25 +85,25 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "collectionNotifMessage",
-        name = "Notification Message",
-        description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %ITEM% for the item",
-        position = 2,
-        section = collectionSection
-    )
-    default String collectionNotifyMessage() {
-        return "%USERNAME% has added %ITEM% to their collection";
-    }
-
-    @ConfigItem(
         keyName = "collectionSendImage",
         name = "Send Image",
         description = "Send image with the notification",
-        position = 3,
+        position = 2,
         section = collectionSection
     )
     default boolean collectionSendImage() {
         return true;
+    }
+
+    @ConfigItem(
+        keyName = "collectionNotifMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %ITEM% for the item",
+        position = 3,
+        section = collectionSection
+    )
+    default String collectionNotifyMessage() {
+        return "%USERNAME% has added %ITEM% to their collection";
     }
 
     @ConfigItem(
