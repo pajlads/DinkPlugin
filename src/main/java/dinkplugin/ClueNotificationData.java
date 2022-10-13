@@ -8,5 +8,5 @@ import java.util.List;
 public class ClueNotificationData {
     private String clueType;
     private int numberCompleted;
-private List<SerializedItemStack> items;
+    private List<SerializedItemStack> items;
 }
