@@ -73,14 +73,18 @@ class Matchers {
 
     private class CollectionLogProvider : ArgumentsProvider {
         override fun provideArguments(context: ExtensionContext?): Stream<out Arguments> = Stream.of(
-            Arguments.of("New item added to your collection log: Red d'hide body (t)", "Red d'hide body (t)"),
-            Arguments.of("New item added to your collection log: Rune full helm (g)", "Rune full helm (g)"),
-            Arguments.of("New item added to your collection log: Robin hood hat", "Robin hood hat"),
+            Arguments.of("New item added to your collection log: Red d'hide body (t)",
+                "Red d'hide body (t)"),
+            Arguments.of("New item added to your collection log: Rune full helm (g)",
+                "Rune full helm (g)"),
+            Arguments.of("New item added to your collection log: Robin hood hat",
+                "Robin hood hat"),
             Arguments.of("New item added to your collection log: Amulet of glory (t4)",
                 "Amulet of glory (t4)"),
             Arguments.of("New item added to your collection log: Blue d'hide chaps (t)",
                 "Blue d'hide chaps (t)"),
-            Arguments.of("New item added to your collection log: Lumberjack Boots", "Lumberjack boots")
+            Arguments.of("New item added to your collection log: Lumberjack Boots",
+                "Lumberjack boots")
         )
     }
 }
