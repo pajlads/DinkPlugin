@@ -6,17 +6,6 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.List;
 
-enum NotificationType {
-    CLUE,
-    COLLECTION,
-    DEATH,
-    LEVEL,
-    LOOT,
-    PET,
-    QUEST,
-    SLAYER
-}
-
 @Data
 public class NotificationBody<T> {
     private NotificationType type;
