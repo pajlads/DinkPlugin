@@ -118,27 +118,26 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "petNotifMessage",
-        name = "Notification Message",
-        description = "The message to be sent through the webhook. Use %USERNAME% to insert your username",
-        position = 5,
-        section = petSection
-    )
-    default String petNotifyMessage() {
-        return "%USERNAME% has a funny feeling they are being followed";
-    }
-
-    @ConfigItem(
         keyName = "petSendImage",
         name = "Send Image",
         description = "Send image with the notification",
-        position = 6,
+        position = 5,
         section = petSection
     )
     default boolean petSendImage() {
         return true;
     }
 
+    @ConfigItem(
+        keyName = "petNotifMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook. Use %USERNAME% to insert your username",
+        position = 6,
+        section = petSection
+    )
+    default String petNotifyMessage() {
+        return "%USERNAME% has a funny feeling they are being followed";
+    }
 
     @ConfigItem(
         keyName = "levelEnabled",
