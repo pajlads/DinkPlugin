@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class QuestNotifier extends BaseNotifier {
+
     public QuestNotifier(DinkPlugin plugin) {
         super(plugin);
     }
@@ -14,7 +15,13 @@ public class QuestNotifier extends BaseNotifier {
         String notifyMessage = plugin.config.questNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%QUEST%", parseQuestWidget(questText));
-        plugin.messageHandler.createMessage(notifyMessage, plugin.config.questSendImage(), null);
+        NotificationBody<QuestNotificationData> body = new NotificationBody<>();
+        body.setContent(notifyMessage);
+        QuestNotificationData extra = new QuestNotificationData();
+        extra.setQuestName(parseQuestWidget(questText));
+        body.setExtra(extra);
+        body.setType(NotificationType.QUEST);
+        plugin.messageHandler.createMessage(plugin.config.questSendImage(), body);
     }
 
     // Credit to: https://github.com/oliverpatrick/Enhanced-Discord-Notifications/blob/master/src/main/java/com/enhanceddiscordnotifications/EnhancedDiscordNotificationsPlugin.java

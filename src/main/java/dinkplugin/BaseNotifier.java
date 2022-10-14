@@ -11,6 +11,8 @@ public class BaseNotifier {
     }
 
     public void handleNotify() {
-        plugin.messageHandler.createMessage("This is a base notification", false, null);
+        NotificationBody<Object> b = new NotificationBody<>();
+        b.setContent("This is a base notification");
+        plugin.messageHandler.createMessage(false, b);
     }
 }
