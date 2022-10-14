@@ -4,7 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 @Slf4j
 public class LevelNotifier extends BaseNotifier {
@@ -47,6 +49,7 @@ public class LevelNotifier extends BaseNotifier {
         sendMessage = false;
         StringBuilder skillMessage = new StringBuilder();
         int index = 0;
+        Map<String, Integer> lSkills = new HashMap<>();
 
         for (String skill : levelledSkills) {
             if (index == levelledSkills.size()) {
@@ -55,6 +58,7 @@ public class LevelNotifier extends BaseNotifier {
                 skillMessage.append(", ");
             }
             skillMessage.append(String.format("%s to %s", skill, currentLevels.get(skill)));
+            lSkills.put(skill, currentLevels.get(skill));
             index++;
         }
 
@@ -63,7 +67,16 @@ public class LevelNotifier extends BaseNotifier {
         String fullNotification = plugin.config.levelNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%SKILL%", skillString);
-        plugin.messageHandler.createMessage(fullNotification, plugin.config.levelSendImage(), null);
+        NotificationBody<LevelNotificationData> body = new NotificationBody<>();
+        body.setContent(fullNotification);
+
+        LevelNotificationData extra = new LevelNotificationData();
+        extra.setAllSkills(currentLevels);
+        extra.setLevelledSkills(lSkills);
+
+        body.setExtra(extra);
+        body.setType(NotificationType.LEVEL);
+        plugin.messageHandler.createMessage(plugin.config.levelSendImage(), body);
     }
 
     public void handleLevelUp(String skill, int level) {
