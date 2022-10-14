@@ -113,10 +113,6 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onStatChanged(StatChanged statChange) {
-        if (!config.notifyLevel()) {
-            return;
-        }
-
         levelNotifier.handleLevelUp(statChange.getSkill().getName(), statChange.getLevel());
     }
 
