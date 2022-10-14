@@ -85,25 +85,25 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "collectionNotifMessage",
-        name = "Notification Message",
-        description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %ITEM% for the item",
-        position = 2,
-        section = collectionSection
-    )
-    default String collectionNotifyMessage() {
-        return "%USERNAME% has added %ITEM% to their collection";
-    }
-
-    @ConfigItem(
         keyName = "collectionSendImage",
         name = "Send Image",
         description = "Send image with the notification",
-        position = 3,
+        position = 2,
         section = collectionSection
     )
     default boolean collectionSendImage() {
         return true;
+    }
+
+    @ConfigItem(
+        keyName = "collectionNotifMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %ITEM% for the item",
+        position = 3,
+        section = collectionSection
+    )
+    default String collectionNotifyMessage() {
+        return "%USERNAME% has added %ITEM% to their collection";
     }
 
     @ConfigItem(
@@ -118,27 +118,26 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "petNotifMessage",
-        name = "Notification Message",
-        description = "The message to be sent through the webhook. Use %USERNAME% to insert your username",
-        position = 5,
-        section = petSection
-    )
-    default String petNotifyMessage() {
-        return "%USERNAME% has a funny feeling they are being followed";
-    }
-
-    @ConfigItem(
         keyName = "petSendImage",
         name = "Send Image",
         description = "Send image with the notification",
-        position = 6,
+        position = 5,
         section = petSection
     )
     default boolean petSendImage() {
         return true;
     }
 
+    @ConfigItem(
+        keyName = "petNotifMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook. Use %USERNAME% to insert your username",
+        position = 6,
+        section = petSection
+    )
+    default String petNotifyMessage() {
+        return "%USERNAME% has a funny feeling they are being followed";
+    }
 
     @ConfigItem(
         keyName = "levelEnabled",
@@ -152,10 +151,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "levelSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 8,
+        section = levelSection
+    )
+    default boolean levelSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "levelInterval",
         name = "Notify Interval",
         description = "Interval between when a notification should be sent",
-        position = 8,
+        position = 9,
         section = levelSection
     )
     default int levelInterval() {
@@ -166,22 +176,11 @@ public interface DinkPluginConfig extends Config {
         keyName = "levelNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %SKILL% to insert the levelled skill(s)",
-        position = 9,
+        position = 10,
         section = levelSection
     )
     default String levelNotifyMessage() {
         return "%USERNAME% has levelled %SKILL%";
-    }
-
-    @ConfigItem(
-        keyName = "levelSendImage",
-        name = "Send Image",
-        description = "Send image with the notification",
-        position = 10,
-        section = levelSection
-    )
-    default boolean levelSendImage() {
-        return true;
     }
 
     @ConfigItem(
@@ -196,10 +195,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 12,
+        section = lootSection
+    )
+    default boolean lootSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "lootIcons",
         name = "Show loot icons",
         description = "Show icons for the loot obtained",
-        position = 12,
+        position = 13,
         section = lootSection
     )
     default boolean lootIcons() {
@@ -210,7 +220,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "minLootValue",
         name = "Min Loot value",
         description = "Minimum value of the loot to notify",
-        position = 13,
+        position = 14,
         section = lootSection
     )
     default int minLootValue() {
@@ -221,22 +231,11 @@ public interface DinkPluginConfig extends Config {
         keyName = "lootNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %LOOT% to insert the loot and %SOURCE% to show the source of the loot",
-        position = 14,
+        position = 15,
         section = lootSection
     )
     default String lootNotifyMessage() {
         return "%USERNAME% has looted: \n\n%LOOT%\nFrom: %SOURCE%";
-    }
-
-    @ConfigItem(
-        keyName = "lootSendImage",
-        name = "Send Image",
-        description = "Send image with the notification",
-        position = 15,
-        section = lootSection
-    )
-    default boolean lootSendImage() {
-        return true;
     }
 
     @ConfigItem(

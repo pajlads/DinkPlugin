@@ -1,6 +1,7 @@
 plugins {
 	id 'java'
 	id 'org.jetbrains.kotlin.jvm' version '1.7.20'
+	id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
 repositories {
@@ -38,4 +39,12 @@ tasks.withType(JavaCompile) {
 
 test {
 	useJUnitPlatform()
+}
+
+shadowJar {
+	from sourceSets.test.output
+	configurations = [project.configurations.testRuntimeClasspath]
+	manifest {
+		attributes "Main-Class": "com.example.ExamplePluginTest"
+	}
 }
