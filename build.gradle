@@ -45,6 +45,6 @@ shadowJar {
 	from sourceSets.test.output
 	configurations = [project.configurations.testRuntimeClasspath]
 	manifest {
-		attributes "Main-Class": "com.example.ExamplePluginTest"
+		attributes "Main-Class": "dinkplugin.DinkTest"
 	}
 }
