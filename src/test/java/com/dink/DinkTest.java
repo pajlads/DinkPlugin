@@ -1,10 +1,11 @@
-package com.example;
+package com.dink;
 
 import dinkplugin.DinkPlugin;
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class ExamplePluginTest {
+public class DinkTest
+{
     public static void main(String[] args) throws Exception {
         ExternalPluginManager.loadBuiltin(DinkPlugin.class);
         RuneLite.main(args);
