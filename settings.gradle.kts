@@ -1,1 +1,1 @@
-rootProject.name = 'dinkplugin'
+rootProject.name = "dinkplugin"
