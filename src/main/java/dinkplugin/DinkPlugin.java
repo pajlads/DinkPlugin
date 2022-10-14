@@ -61,6 +61,7 @@ public class DinkPlugin extends Plugin {
     private final SlayerNotifier slayerNotifier = new SlayerNotifier(this);
     private final QuestNotifier questNotifier = new QuestNotifier(this);
     private final ClueNotifier clueNotifier = new ClueNotifier(this);
+    private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
 
     private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
     public static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
@@ -68,6 +69,10 @@ public class DinkPlugin extends Plugin {
 
     public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     private static final Pattern PET_REGEX = Pattern.compile("You have a funny feeling like you.*");
+
+    private static final Pattern SPEEDRUN_FINISHED_REGEX = Pattern.compile("Congratulations, you've completed a quest speedrun: (?<quest>.+)");
+    private static final Pattern SPEEDRUN_PB_REGEX = Pattern.compile("Speedrun duration: (?<duration>[\\d.:]+)\\. \\(new personal best\\)");
+
 
     private String slayerTask = "";
     private String slayerTasksCompleted = "";
@@ -120,6 +125,8 @@ public class DinkPlugin extends Plugin {
     public void onGameTick(GameTick event) {
         levelNotifier.onTick();
     }
+
+    private String speedrunLastCompleted = "";
 
     @Subscribe
     public void onChatMessage(ChatMessage message) {
@@ -185,6 +192,16 @@ public class DinkPlugin extends Plugin {
                         clueCount = numberCompleted;
                         clueCompleted = true;
                     }
+                }
+            }
+
+            if (config.notifySpeedrun()) {
+                Matcher finished = SPEEDRUN_FINISHED_REGEX.matcher(chatMessage);
+                Matcher pb = SPEEDRUN_PB_REGEX.matcher(chatMessage);
+                if (finished.find()) {
+                    this.speedrunLastCompleted = finished.group("quest");
+                } else if (pb.find()) {
+                    speedrunNotifier.handleNotify(this.speedrunLastCompleted, pb.group("duration"));
                 }
             }
         }

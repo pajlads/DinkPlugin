@@ -8,5 +8,6 @@ public enum NotificationType {
     LOOT,
     PET,
     QUEST,
-    SLAYER
+    SLAYER,
+    SPEEDRUN
 }
