@@ -80,7 +80,7 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void handleLevelUp(String skill, int level) {
-        if (checkLevelInterval(level) && currentLevels.get(skill) != null) {
+        if (plugin.config.notifyLevel() && checkLevelInterval(level) && currentLevels.get(skill) != null) {
             if (level == currentLevels.get(skill)) {
                 return;
             }
