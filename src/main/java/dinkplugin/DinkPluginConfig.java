@@ -407,7 +407,7 @@ public interface DinkPluginConfig extends Config {
         section = speedrunSection
     )
     default boolean notifySpeedrun() {
-        return true;
+        return false;
     }
 
     @ConfigItem(
