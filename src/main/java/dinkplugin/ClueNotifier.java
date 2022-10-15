@@ -6,9 +6,10 @@ import net.runelite.client.util.QuantityFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ClueNotifier extends BaseNotifier {
-    public HashMap<Integer, Integer> clueItems = new HashMap<Integer, Integer>();
+    public Map<Integer, Integer> clueItems = new HashMap<>();
 
     private NotificationBody<ClueNotificationData> messageBody;
 
