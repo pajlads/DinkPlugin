@@ -126,7 +126,8 @@ public class DinkPlugin extends Plugin {
         levelNotifier.onTick();
     }
 
-    private String speedrunLastCompleted = "";
+    // this contains temporary data to parse two chat messages as one, see SPEEDRUN_FINISHED_REGEX and SPEEDRUN_PB_REGEX
+    private String speedrunLastQuestCompleted = "";
 
     @Subscribe
     public void onChatMessage(ChatMessage message) {
@@ -199,9 +200,9 @@ public class DinkPlugin extends Plugin {
                 Matcher finished = SPEEDRUN_FINISHED_REGEX.matcher(chatMessage);
                 Matcher pb = SPEEDRUN_PB_REGEX.matcher(chatMessage);
                 if (finished.find()) {
-                    this.speedrunLastCompleted = finished.group("quest");
+                    this.speedrunLastQuestCompleted = finished.group("quest");
                 } else if (pb.find()) {
-                    speedrunNotifier.handleNotify(this.speedrunLastCompleted, pb.group("duration"));
+                    speedrunNotifier.handleNotify(this.speedrunLastQuestCompleted, pb.group("duration"));
                 }
             }
         }
