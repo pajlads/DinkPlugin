@@ -217,11 +217,12 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onLootReceived(LootReceived lootReceived) {
-        if (lootReceived.getType() != LootRecordType.EVENT && lootReceived.getType() != LootRecordType.PICKPOCKET) {
-            return;
-        }
+        if (!config.notifyLoot()) return;
 
-        lootNotifier.handleNotify(lootReceived.getItems(), lootReceived.getName());
+        // only consider non-NPC and non-PK loot
+        if (lootReceived.getType() == LootRecordType.EVENT || lootReceived.getType() == LootRecordType.PICKPOCKET) {
+            lootNotifier.handleNotify(lootReceived.getItems(), lootReceived.getName());
+        }
     }
 
     @Subscribe
