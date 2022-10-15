@@ -411,22 +411,25 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "speedrunSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 32,
+        section = speedrunSection
+    )
+    default boolean speedrunSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "speedrunPBMessage",
         name = "PB message",
         description = "%USERNAME% to insert your username, %QUEST% to insert the quest name, %TIME% to insert your new time",
-        position = 32,
+        position = 33,
         section = speedrunSection
     )
     default String speedrunPBMessage() {
         return "%USERNAME% has just beat their in a speedrun of %QUEST% in %TIME%";
     }
 
-    @ConfigItem(
-        keyName = "speedrunSendImage",
-        name = "Send Image",
-        description = "Send image with the notification",
-        position = 33,
-        section = clueSection
-    )
-    default boolean speedrunSendImage() { return true; }
 }
