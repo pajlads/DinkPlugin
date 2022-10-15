@@ -1,5 +1,6 @@
 package dinkplugin;
 
+import lombok.Getter;
 import net.runelite.api.ItemComposition;
 import net.runelite.client.util.QuantityFormatter;
 
@@ -9,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ClueNotifier extends BaseNotifier {
-    public Map<Integer, Integer> clueItems = new HashMap<>();
+    @Getter
+    private final Map<Integer, Integer> clueItems = new HashMap<>();
 
     private NotificationBody<ClueNotificationData> messageBody;
 
@@ -18,7 +20,7 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     public void handleNotify(String numberCompleted, String clueType) {
-        messageBody = new NotificationBody();
+        messageBody = new NotificationBody<>();
         StringBuilder lootMessage = new StringBuilder();
         long totalPrice = 0;
         List<SerializedItemStack> itemStacks = new ArrayList<>();

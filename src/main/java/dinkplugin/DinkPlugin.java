@@ -69,10 +69,6 @@ public class DinkPlugin extends Plugin {
     public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     private static final Pattern PET_REGEX = Pattern.compile("You have a funny feeling like you.*");
 
-    private String slayerTask = "";
-    private String slayerTasksCompleted = "";
-    private String slayerPoints = "";
-
     private final boolean questCompleted = false;
     private boolean clueCompleted = false;
     private String clueCount = "";
@@ -147,14 +143,14 @@ public class DinkPlugin extends Plugin {
                 Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
 
                 if (taskMatcher.find()) {
-                    slayerTask = taskMatcher.group("task");
-                    slayerNotifier.slayerTask = slayerTask;
+                    String slayerTask = taskMatcher.group("task");
+                    slayerNotifier.setSlayerTask(slayerTask);
                     slayerNotifier.handleNotify();
                 }
 
                 if (pointsMatcher.find()) {
-                    slayerPoints = pointsMatcher.group("points");
-                    slayerTasksCompleted = pointsMatcher.group("taskCount");
+                    String slayerPoints = pointsMatcher.group("points");
+                    String slayerTasksCompleted = pointsMatcher.group("taskCount");
 
                     if (slayerPoints == null) {
                         slayerPoints = pointsMatcher.group("points2");
@@ -164,8 +160,8 @@ public class DinkPlugin extends Plugin {
                     if (slayerPoints == null) {
                         slayerPoints = "0";
                     }
-                    slayerNotifier.slayerPoints = slayerPoints;
-                    slayerNotifier.slayerCompleted = slayerTasksCompleted;
+                    slayerNotifier.setSlayerPoints(slayerPoints);
+                    slayerNotifier.setSlayerCompleted(slayerTasksCompleted);
 
                     slayerNotifier.handleNotify();
                 }
@@ -243,7 +239,7 @@ public class DinkPlugin extends Plugin {
         if (groupId == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) {
             Widget clue = client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER);
             if (clue != null) {
-                clueNotifier.clueItems.clear();
+                clueNotifier.getClueItems().clear();
                 Widget[] children = clue.getChildren();
 
                 if (children == null) {
@@ -259,7 +255,7 @@ public class DinkPlugin extends Plugin {
                     int itemId = child.getItemId();
 
                     if (itemId > -1 && quantity > 0) {
-                        clueNotifier.clueItems.put(itemId, quantity);
+                        clueNotifier.getClueItems().put(itemId, quantity);
                     }
                 }
 
