@@ -20,9 +20,9 @@ public class SpeedrunNotifier extends BaseNotifier {
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%QUEST%", questName)
             .replaceAll("%TIME%", pb);
-        NotificationBody<SpeedrunPBNotificationData> body = new NotificationBody<>();
+        NotificationBody<SpeedrunNotificationData> body = new NotificationBody<>();
         body.setContent(notifyMessage);
-        SpeedrunPBNotificationData extra = new SpeedrunPBNotificationData();
+        SpeedrunNotificationData extra = new SpeedrunNotificationData();
         extra.setQuestName(questName);
         extra.setPersonalBest(bestTime.toString());
 //        extra.setCurrentTime(currentTime.toString());
