@@ -429,7 +429,7 @@ public interface DinkPluginConfig extends Config {
         section = speedrunSection
     )
     default String speedrunPBMessage() {
-        return "%USERNAME% has just beat their in a speedrun of %QUEST% in %TIME%";
+        return "%USERNAME% has just beat their personal best in a speedrun of %QUEST% in %TIME%";
     }
 
 }
