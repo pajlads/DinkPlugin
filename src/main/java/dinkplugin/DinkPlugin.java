@@ -70,7 +70,6 @@ public class DinkPlugin extends Plugin {
     public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     private static final Pattern PET_REGEX = Pattern.compile("You have a funny feeling like you.*");
 
-
     private String slayerTask = "";
     private String slayerTasksCompleted = "";
     private String slayerPoints = "";
