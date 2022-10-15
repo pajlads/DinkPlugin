@@ -1,6 +1,5 @@
-package dink
+package dinkplugin
 
-import dinkplugin.DinkPlugin
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
@@ -10,7 +9,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource
 import org.junit.jupiter.params.provider.ValueSource
 import java.util.stream.Stream
 
-class Matchers {
+class MatchersTest {
     @ParameterizedTest(name = "Slayer task completion message should trigger {0}")
     @ArgumentsSource(SlayerTaskProvider::class)
     fun `Slayer task completion regex finds match`(message: String, task: String) {
