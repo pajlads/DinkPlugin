@@ -6,5 +6,6 @@ import java.time.Duration;
 
 @Data
 public class SpeedrunPBNotificationData extends QuestNotificationData {
-    private Duration personalBest;
+    private String personalBest;
+//    private String currentTime;
 }

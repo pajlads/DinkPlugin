@@ -9,8 +9,13 @@ public class SpeedrunNotifier extends BaseNotifier {
         super(plugin);
     }
 
-    public void handleNotify(String questName, String pb) {
+    public void attemptNotify(String questName, String duration, String pb) {
         Duration bestTime = this.parseTime(pb);
+        Duration currentTime = this.parseTime(duration);
+        if (bestTime.compareTo(currentTime) > 0) {
+            return;
+        }
+        // pb! hurray!
         String notifyMessage = plugin.config.speedrunPBMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%QUEST%", questName)
@@ -19,7 +24,8 @@ public class SpeedrunNotifier extends BaseNotifier {
         body.setContent(notifyMessage);
         SpeedrunPBNotificationData extra = new SpeedrunPBNotificationData();
         extra.setQuestName(questName);
-        extra.setPersonalBest(bestTime);
+        extra.setPersonalBest(bestTime.toString());
+//        extra.setCurrentTime(currentTime.toString());
         body.setExtra(extra);
         body.setType(NotificationType.SPEEDRUN);
         plugin.messageHandler.createMessage(plugin.config.speedrunSendImage(), body);

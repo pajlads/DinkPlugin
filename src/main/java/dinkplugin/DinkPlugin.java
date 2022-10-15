@@ -70,9 +70,6 @@ public class DinkPlugin extends Plugin {
     public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     private static final Pattern PET_REGEX = Pattern.compile("You have a funny feeling like you.*");
 
-    private static final Pattern SPEEDRUN_FINISHED_REGEX = Pattern.compile("Congratulations, you've completed a quest speedrun: (?<quest>.+)");
-    private static final Pattern SPEEDRUN_PB_REGEX = Pattern.compile("Speedrun duration: (?<duration>[\\d.:]+)\\. \\(new personal best\\)");
-
 
     private String slayerTask = "";
     private String slayerTasksCompleted = "";
@@ -125,9 +122,6 @@ public class DinkPlugin extends Plugin {
     public void onGameTick(GameTick event) {
         levelNotifier.onTick();
     }
-
-    // this contains temporary data to parse two chat messages as one, see SPEEDRUN_FINISHED_REGEX and SPEEDRUN_PB_REGEX
-    private String speedrunLastQuestCompleted = "";
 
     @Subscribe
     public void onChatMessage(ChatMessage message) {
@@ -193,16 +187,6 @@ public class DinkPlugin extends Plugin {
                         clueCount = numberCompleted;
                         clueCompleted = true;
                     }
-                }
-            }
-
-            if (config.notifySpeedrun()) {
-                Matcher finished = SPEEDRUN_FINISHED_REGEX.matcher(chatMessage);
-                Matcher pb = SPEEDRUN_PB_REGEX.matcher(chatMessage);
-                if (finished.find()) {
-                    this.speedrunLastQuestCompleted = finished.group("quest");
-                } else if (pb.find()) {
-                    speedrunNotifier.handleNotify(this.speedrunLastQuestCompleted, pb.group("duration"));
                 }
             }
         }
@@ -288,6 +272,21 @@ public class DinkPlugin extends Plugin {
                     clueCompleted = true;
                 }
             }
+        }
+
+        final int SPEEDRUN_COMPLETED_GROUP_ID = 781;
+        final int SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID = 4;
+        final int SPEEDRUN_COMPLETED_DURATION_CHILD_ID = 10;
+        final int SPEEDRUN_COMPLETED_PB_CHILD_ID = 12;
+        if (config.notifySpeedrun() && groupId == SPEEDRUN_COMPLETED_GROUP_ID) {
+            Widget questName = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID);
+            Widget duration = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID);
+            Widget personalBest = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID);
+            if (questName == null || duration == null || personalBest == null) {
+                log.error("Found speedrun finished widget (group id {}) but it is missing something, questName={}, duration={}, pb={}", SPEEDRUN_COMPLETED_GROUP_ID, questName, duration, personalBest);
+            }
+//            log.info("quest name is {}, duration: {}, pb: {}", questName.getText(), duration.getText(), personalBest.getText());
+            this.speedrunNotifier.attemptNotify(Utils.parseQuestWidget(questName.getText()), duration.getText(), personalBest.getText());
         }
     }
 }
