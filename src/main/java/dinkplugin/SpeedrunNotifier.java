@@ -9,8 +9,6 @@ public class SpeedrunNotifier extends BaseNotifier {
         super(plugin);
     }
 
-    public boolean cheat = true;
-
     public void handleNotify(String questName, String pb) {
         Duration bestTime = this.parseTime(pb);
         String notifyMessage = plugin.config.speedrunPBMessage()
