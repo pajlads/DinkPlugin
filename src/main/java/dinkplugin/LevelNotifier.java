@@ -5,14 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 public class LevelNotifier extends BaseNotifier {
 
-    private final ArrayList<String> levelledSkills = new ArrayList<String>();
-    private final Hashtable<String, Integer> currentLevels = new Hashtable<String, Integer>();
+    private final List<String> levelledSkills = new ArrayList<>();
+    private final Map<String, Integer> currentLevels = new HashMap<>();
     private boolean sendMessage = false;
     private int ticksWaited = 0;
 

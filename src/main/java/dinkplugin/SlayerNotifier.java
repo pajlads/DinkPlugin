@@ -1,12 +1,16 @@
 package dinkplugin;
 
-import javax.inject.Inject;
-import java.util.Objects;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.inject.Inject;
+
+@Getter
+@Setter
 public class SlayerNotifier extends BaseNotifier {
-    public String slayerTask = "";
-    public String slayerPoints = "";
-    public String slayerCompleted = "";
+    private String slayerTask = "";
+    private String slayerPoints = "";
+    private String slayerCompleted = "";
 
     @Inject
     public SlayerNotifier(DinkPlugin plugin) {
@@ -17,9 +21,7 @@ public class SlayerNotifier extends BaseNotifier {
     public void handleNotify() {
         if (plugin.isSpeedrunWorld()) return;
         // Little jank, but it's a bit cleaner than having bools and checking in the main plugin class
-        if (Objects.equals(slayerPoints, "")
-            || Objects.equals(slayerTask, "")
-            || Objects.equals(slayerCompleted, "")) {
+        if (slayerPoints.isEmpty() || slayerTask.isEmpty() || slayerCompleted.isEmpty()) {
             return;
         }
 
