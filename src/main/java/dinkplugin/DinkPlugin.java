@@ -64,6 +64,7 @@ public class DinkPlugin extends Plugin {
     private final SlayerNotifier slayerNotifier = new SlayerNotifier(this);
     private final QuestNotifier questNotifier = new QuestNotifier(this);
     private final ClueNotifier clueNotifier = new ClueNotifier(this);
+    private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
 
     private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
     public static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
@@ -277,6 +278,21 @@ public class DinkPlugin extends Plugin {
                     clueCompleted = true;
                 }
             }
+        }
+
+        final int SPEEDRUN_COMPLETED_GROUP_ID = 781;
+        final int SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID = 4;
+        final int SPEEDRUN_COMPLETED_DURATION_CHILD_ID = 10;
+        final int SPEEDRUN_COMPLETED_PB_CHILD_ID = 12;
+        if (config.notifySpeedrun() && groupId == SPEEDRUN_COMPLETED_GROUP_ID) {
+            Widget questName = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID);
+            Widget duration = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID);
+            Widget personalBest = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID);
+            if (questName == null || duration == null || personalBest == null) {
+                log.error("Found speedrun finished widget (group id {}) but it is missing something, questName={}, duration={}, pb={}", SPEEDRUN_COMPLETED_GROUP_ID, questName, duration, personalBest);
+            }
+//            log.info("quest name is {}, duration: {}, pb: {}", questName.getText(), duration.getText(), personalBest.getText());
+            this.speedrunNotifier.attemptNotify(Utils.parseQuestWidget(questName.getText()), duration.getText(), personalBest.getText());
         }
     }
 
