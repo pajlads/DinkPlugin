@@ -6,6 +6,7 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
+import net.runelite.api.*;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
@@ -17,12 +18,14 @@ import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
+import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.Text;
 import net.runelite.http.api.loottracker.LootRecordType;
+import net.runelite.http.api.worlds.WorldResult;
 import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
@@ -73,6 +76,10 @@ public class DinkPlugin extends Plugin {
     private boolean clueCompleted = false;
     private String clueCount = "";
     private String clueType = "";
+
+    @Inject
+    private WorldService worldService;
+
 
     @Override
     protected void startUp() throws Exception {
@@ -267,5 +274,16 @@ public class DinkPlugin extends Plugin {
                 }
             }
         }
+    }
+
+    final String SPEED_RUN_WORLD_ACTIVITY = "Speedrunning World";
+    public boolean isSpeedrunWorld() {
+        WorldResult worldresult = worldService.getWorlds();
+        if (worldresult == null) {
+            log.warn("Failed to get worlds, assuming non-speedrun world");
+            return false;
+        }
+        net.runelite.http.api.worlds.World w = worldresult.findWorld(client.getWorld());
+        return w.getActivity().equals(SPEED_RUN_WORLD_ACTIVITY);
     }
 }

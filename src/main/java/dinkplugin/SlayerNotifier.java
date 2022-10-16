@@ -19,6 +19,7 @@ public class SlayerNotifier extends BaseNotifier {
 
     @Override
     public void handleNotify() {
+        if (plugin.isSpeedrunWorld()) return;
         // Little jank, but it's a bit cleaner than having bools and checking in the main plugin class
         if (slayerPoints.isEmpty() || slayerTask.isEmpty() || slayerCompleted.isEmpty()) {
             return;
