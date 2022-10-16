@@ -6,6 +6,7 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
+import net.runelite.api.*;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
@@ -17,12 +18,14 @@ import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
+import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.Text;
 import net.runelite.http.api.loottracker.LootRecordType;
+import net.runelite.http.api.worlds.WorldResult;
 import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
@@ -61,6 +64,7 @@ public class DinkPlugin extends Plugin {
     private final SlayerNotifier slayerNotifier = new SlayerNotifier(this);
     private final QuestNotifier questNotifier = new QuestNotifier(this);
     private final ClueNotifier clueNotifier = new ClueNotifier(this);
+    private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
 
     private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
     public static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
@@ -69,14 +73,14 @@ public class DinkPlugin extends Plugin {
     public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     private static final Pattern PET_REGEX = Pattern.compile("You have a funny feeling like you.*");
 
-    private String slayerTask = "";
-    private String slayerTasksCompleted = "";
-    private String slayerPoints = "";
-
     private final boolean questCompleted = false;
     private boolean clueCompleted = false;
     private String clueCount = "";
     private String clueType = "";
+
+    @Inject
+    private WorldService worldService;
+
 
     @Override
     protected void startUp() throws Exception {
@@ -147,14 +151,14 @@ public class DinkPlugin extends Plugin {
                 Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
 
                 if (taskMatcher.find()) {
-                    slayerTask = taskMatcher.group("task");
-                    slayerNotifier.slayerTask = slayerTask;
+                    String slayerTask = taskMatcher.group("task");
+                    slayerNotifier.setSlayerTask(slayerTask);
                     slayerNotifier.handleNotify();
                 }
 
                 if (pointsMatcher.find()) {
-                    slayerPoints = pointsMatcher.group("points");
-                    slayerTasksCompleted = pointsMatcher.group("taskCount");
+                    String slayerPoints = pointsMatcher.group("points");
+                    String slayerTasksCompleted = pointsMatcher.group("taskCount");
 
                     if (slayerPoints == null) {
                         slayerPoints = pointsMatcher.group("points2");
@@ -164,8 +168,8 @@ public class DinkPlugin extends Plugin {
                     if (slayerPoints == null) {
                         slayerPoints = "0";
                     }
-                    slayerNotifier.slayerPoints = slayerPoints;
-                    slayerNotifier.slayerCompleted = slayerTasksCompleted;
+                    slayerNotifier.setSlayerPoints(slayerPoints);
+                    slayerNotifier.setSlayerCompleted(slayerTasksCompleted);
 
                     slayerNotifier.handleNotify();
                 }
@@ -244,7 +248,7 @@ public class DinkPlugin extends Plugin {
         if (groupId == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) {
             Widget clue = client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER);
             if (clue != null) {
-                clueNotifier.clueItems.clear();
+                clueNotifier.getClueItems().clear();
                 Widget[] children = clue.getChildren();
 
                 if (children == null) {
@@ -260,7 +264,7 @@ public class DinkPlugin extends Plugin {
                     int itemId = child.getItemId();
 
                     if (itemId > -1 && quantity > 0) {
-                        clueNotifier.clueItems.put(itemId, quantity);
+                        clueNotifier.getClueItems().put(itemId, quantity);
                     }
                 }
 
@@ -272,5 +276,31 @@ public class DinkPlugin extends Plugin {
                 }
             }
         }
+
+        final int SPEEDRUN_COMPLETED_GROUP_ID = 781;
+        final int SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID = 4;
+        final int SPEEDRUN_COMPLETED_DURATION_CHILD_ID = 10;
+        final int SPEEDRUN_COMPLETED_PB_CHILD_ID = 12;
+        if (config.notifySpeedrun() && groupId == SPEEDRUN_COMPLETED_GROUP_ID) {
+            Widget questName = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID);
+            Widget duration = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID);
+            Widget personalBest = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID);
+            if (questName == null || duration == null || personalBest == null) {
+                log.error("Found speedrun finished widget (group id {}) but it is missing something, questName={}, duration={}, pb={}", SPEEDRUN_COMPLETED_GROUP_ID, questName, duration, personalBest);
+            }
+//            log.info("quest name is {}, duration: {}, pb: {}", questName.getText(), duration.getText(), personalBest.getText());
+            this.speedrunNotifier.attemptNotify(Utils.parseQuestWidget(questName.getText()), duration.getText(), personalBest.getText());
+        }
+    }
+
+    final String SPEED_RUN_WORLD_ACTIVITY = "Speedrunning World";
+    public boolean isSpeedrunWorld() {
+        WorldResult worldresult = worldService.getWorlds();
+        if (worldresult == null) {
+            log.warn("Failed to get worlds, assuming non-speedrun world");
+            return false;
+        }
+        net.runelite.http.api.worlds.World w = worldresult.findWorld(client.getWorld());
+        return w.getActivity().equals(SPEED_RUN_WORLD_ACTIVITY);
     }
 }

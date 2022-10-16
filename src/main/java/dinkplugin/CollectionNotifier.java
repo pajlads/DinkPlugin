@@ -10,6 +10,7 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     public void handleNotify(String itemName) {
+        if (plugin.isSpeedrunWorld()) return;
         String notifyMessage = plugin.config.collectionNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%ITEM%", itemName);
