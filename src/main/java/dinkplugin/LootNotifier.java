@@ -19,6 +19,7 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void handleNotify(Collection<ItemStack> items, String dropper) {
+        if (plugin.isSpeedrunWorld()) return;
         NotificationBody<LootNotificationData> messageBody = new NotificationBody<>();
         StringBuilder lootMessage = new StringBuilder();
         int minValue = plugin.config.minLootValue();

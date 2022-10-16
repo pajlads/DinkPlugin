@@ -63,6 +63,13 @@ public interface DinkPluginConfig extends Config {
     )
     String clueSection = "Clue Scrolls";
 
+    @ConfigSection(
+        name = "Speedruns",
+        description = "Settings for notifying when you finish a speedrun",
+        position = 30
+    )
+    String speedrunSection = "Speedruns";
+
     @ConfigItem(
         keyName = "discordWebhook",
         name = "Discord Webhook",
@@ -392,4 +399,56 @@ public interface DinkPluginConfig extends Config {
         return "%USERNAME% has completed a %CLUE% clue, they have completed %COUNT%.\nThey obtained:\n\n%LOOT%";
     }
 
+    @ConfigItem(
+        keyName = "speedrunEnabled",
+        name = "Enable speedruns",
+        description = "Enable notifications for when you complete a speedrun",
+        position = 31,
+        section = speedrunSection
+    )
+    default boolean notifySpeedrun() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "speedrunSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 32,
+        section = speedrunSection
+    )
+    default boolean speedrunSendImage() {
+        return true;
+    }
+    @ConfigItem(
+        keyName = "speedrunPBOnly",
+        name = "Notify on Personal Best only",
+        description = "Enable notifications only for your best runs",
+        position = 33,
+        section = speedrunSection
+    )
+    default boolean speedrunPBOnly() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "speedrunPBMessage",
+        name = "PB message",
+        description = "%USERNAME% to insert your username, %QUEST% to insert the quest name, %TIME% to insert your new time",
+        position = 34,
+        section = speedrunSection
+    )
+    default String speedrunPBMessage() {
+        return "%USERNAME% has just beat their personal best in a speedrun of %QUEST% with a time of %TIME%";
+    }
+    @ConfigItem(
+        keyName = "speedrunMessage",
+        name = "Notification message",
+        description = "%USERNAME% to insert your username, %QUEST% to insert the quest name, %TIME% to insert your new time, %BEST% to insert your PB",
+        position = 35,
+        section = speedrunSection
+    )
+    default String speedrunMessage() {
+        return "%USERNAME% has just finished a speedrun of %QUEST% with a time of %TIME% (their PB is %BEST%)";
+    }
 }
