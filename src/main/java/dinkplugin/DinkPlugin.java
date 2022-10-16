@@ -198,7 +198,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onActorDeath(ActorDeath actor) {
-        if (config.notifyDeath() && Objects.equals(actor.getActor().getName(), Utils.getPlayerName())) {
+        if (config.notifyDeath() && client.getLocalPlayer() == actor.getActor()) {
             deathNotifier.handleNotify();
         }
     }
