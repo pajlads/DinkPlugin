@@ -39,7 +39,9 @@ import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
 @Slf4j
 @PluginDescriptor(
-    name = "Dink"
+    name = "Dink",
+    description = "A notifier for sending webhooks to Discord or other custom destinations",
+    tags = {"loot","logger","collection","pet","death","xp","level","notifications","discord","speedrun"}
 )
 public class DinkPlugin extends Plugin {
     @Inject
