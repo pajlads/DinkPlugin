@@ -80,6 +80,7 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void handleLevelUp(String skill, int level) {
+        if (plugin.isSpeedrunWorld()) return;
         if (plugin.config.notifyLevel() && checkLevelInterval(level) && currentLevels.get(skill) != null) {
             if (level == currentLevels.get(skill)) {
                 return;

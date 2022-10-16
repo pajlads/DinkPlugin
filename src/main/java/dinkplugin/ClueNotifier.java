@@ -17,6 +17,7 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     public void handleNotify(String numberCompleted, String clueType) {
+        if (plugin.isSpeedrunWorld()) return;
         messageBody = new NotificationBody();
         StringBuilder lootMessage = new StringBuilder();
         long totalPrice = 0;
