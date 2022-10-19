@@ -1,19 +1,17 @@
 package dinkplugin;
 
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Experience;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableMap;
-import java.util.TreeMap;
 
 @Slf4j
 public class LevelNotifier extends BaseNotifier {
 
-    private static final NavigableMap<Integer, Integer> LEVEL_BY_EXP_THRESHOLD;
     private final List<String> levelledSkills = new ArrayList<>();
     private final Map<String, Integer> currentLevels = new HashMap<>();
     private boolean sendMessage = false;
@@ -85,33 +83,13 @@ public class LevelNotifier extends BaseNotifier {
     public void handleLevelUp(String skill, int level, int xp) {
         if (plugin.isSpeedrunWorld()) return;
 
-        int virtualLevel = level < 99 ? level : getLevelForExperience(xp);
+        int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
         Integer previousLevel = currentLevels.put(skill, virtualLevel);
         if (plugin.config.notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
             if (virtualLevel > previousLevel) {
                 levelledSkills.add(skill);
                 sendMessage = true;
             }
-        }
-    }
-
-    private static Integer getLevelForExperience(int xp) {
-        return xp > 0 ? LEVEL_BY_EXP_THRESHOLD.floorEntry(xp).getValue() : 1;
-    }
-
-    static {
-        final int minLevel = 1, maxLevel = 126;
-
-        LEVEL_BY_EXP_THRESHOLD = new TreeMap<>();
-        LEVEL_BY_EXP_THRESHOLD.put(0, minLevel); // 0 xp = level 1
-
-        int prev = 0;
-        for (int level = minLevel + 1; level <= maxLevel; level++) {
-            // see https://oldschool.runescape.wiki/w/Experience#Formula
-            int x = prev + (int) Math.floor(level - 1 + 300 * Math.pow(2.0, (level - 1) / 7.0));
-            int xp = (int) Math.floor(x / 4.0);
-            LEVEL_BY_EXP_THRESHOLD.put(xp, level);
-            prev = x;
         }
     }
 }
