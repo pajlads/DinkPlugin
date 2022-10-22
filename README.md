@@ -41,6 +41,8 @@ contain some bits that will be replaced with in-game values.
 #### Loot:
 `%LOOT%` will be replaced with a list of the loot and value of said loot
 
+`%TOTAL_VALUE%` will be replaced with the total value of the looted items
+
 `%SOURCE%` will be replace with the source that dropped or gave the loot
 
 #### Slayer:
@@ -57,6 +59,8 @@ contain some bits that will be replaced with in-game values.
 `%CLUE%` will be replaced with the type of clue (beginner, easy, etc...)
 
 `%LOOT%` will be replaced with the loot that was obtained from the casket
+
+`%TOTAL_VALUE%` will be replaced with the total value of the items from the reward casket
 
 `%COUNT%` will be replaced by the number of times that you have completed that tier of clue scrolls
 

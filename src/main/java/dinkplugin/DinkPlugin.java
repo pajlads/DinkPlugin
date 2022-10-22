@@ -119,7 +119,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onStatChanged(StatChanged statChange) {
-        levelNotifier.handleLevelUp(statChange.getSkill().getName(), statChange.getLevel());
+        levelNotifier.handleLevelUp(statChange.getSkill().getName(), statChange.getLevel(), statChange.getXp());
     }
 
     @Subscribe

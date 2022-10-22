@@ -1,6 +1,7 @@
 package dinkplugin;
 
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Experience;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -79,15 +80,16 @@ public class LevelNotifier extends BaseNotifier {
         plugin.messageHandler.createMessage(plugin.config.levelSendImage(), body);
     }
 
-    public void handleLevelUp(String skill, int level) {
+    public void handleLevelUp(String skill, int level, int xp) {
         if (plugin.isIgnoredWorld()) return;
-        if (plugin.config.notifyLevel() && checkLevelInterval(level) && currentLevels.get(skill) != null) {
-            if (level == currentLevels.get(skill)) {
-                return;
+
+        int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
+        Integer previousLevel = currentLevels.put(skill, virtualLevel);
+        if (plugin.config.notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
+            if (virtualLevel > previousLevel) {
+                levelledSkills.add(skill);
+                sendMessage = true;
             }
-            levelledSkills.add(skill);
-            sendMessage = true;
         }
-        currentLevels.put(skill, level);
     }
 }

@@ -22,7 +22,7 @@ public class ClueNotifier extends BaseNotifier {
     public void handleNotify(String numberCompleted, String clueType) {
         if (plugin.isIgnoredWorld()) return;
         messageBody = new NotificationBody<>();
-       
+
         StringBuilder lootMessage = new StringBuilder();
         long totalPrice = 0;
         List<SerializedItemStack> itemStacks = new ArrayList<>();
@@ -48,6 +48,7 @@ public class ClueNotifier extends BaseNotifier {
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%CLUE%", clueType)
             .replaceAll("%COUNT%", numberCompleted)
+            .replaceAll("%TOTAL_VALUE%", QuantityFormatter.quantityToStackSize(totalPrice))
             .replaceAll("%LOOT%", lootMessage.toString());
         messageBody.setContent(notifyMessage);
         ClueNotificationData extra = new ClueNotificationData();
