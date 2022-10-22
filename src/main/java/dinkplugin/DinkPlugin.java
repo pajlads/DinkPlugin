@@ -295,9 +295,12 @@ public class DinkPlugin extends Plugin {
         }
     }
 
-    public boolean isIgnoredWorld() {
-        Set<WorldType> worldType = client.getWorldType().clone();
+    public static boolean _isIgnoredWorld(Set<WorldType> worldType) {
         worldType.retainAll(IGNORED_WORLDS); // O(1) for EnumSet
         return !worldType.isEmpty();
+    }
+
+    public boolean isIgnoredWorld() {
+        return _isIgnoredWorld(client.getWorldType().clone());
     }
 }
