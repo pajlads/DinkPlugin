@@ -29,6 +29,7 @@ import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -296,8 +297,7 @@ public class DinkPlugin extends Plugin {
     }
 
     public static boolean _isIgnoredWorld(Set<WorldType> worldType) {
-        worldType.retainAll(IGNORED_WORLDS); // O(1) for EnumSet
-        return !worldType.isEmpty();
+        return !Collections.disjoint(IGNORED_WORLDS, worldType);
     }
 
     public boolean isIgnoredWorld() {
