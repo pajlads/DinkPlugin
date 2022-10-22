@@ -1,10 +1,5 @@
 package dinkplugin;
 
-import com.google.common.collect.ImmutableList;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class QuestNotifier extends BaseNotifier {
 
     public QuestNotifier(DinkPlugin plugin) {
@@ -12,7 +7,7 @@ public class QuestNotifier extends BaseNotifier {
     }
 
     public void handleNotify(String questText) {
-        if (plugin.isSpeedrunWorld()) return;
+        if (plugin.isIgnoredWorld()) return;
         String notifyMessage = plugin.config.questNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%QUEST%", Utils.parseQuestWidget(questText));

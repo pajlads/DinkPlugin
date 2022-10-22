@@ -20,7 +20,7 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     public void handleNotify(String numberCompleted, String clueType) {
-        if (plugin.isSpeedrunWorld()) return;
+        if (plugin.isIgnoredWorld()) return;
         messageBody = new NotificationBody<>();
 
         StringBuilder lootMessage = new StringBuilder();

@@ -25,17 +25,17 @@ import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.Text;
 import net.runelite.http.api.loottracker.LootRecordType;
-import net.runelite.http.api.worlds.WorldResult;
 import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.Objects;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
-
 
 @Slf4j
 @PluginDescriptor(
@@ -75,6 +75,8 @@ public class DinkPlugin extends Plugin {
     public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     private static final Pattern PET_REGEX = Pattern.compile("You have a funny feeling like you.*");
 
+    private static final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
+
     private final boolean questCompleted = false;
     private boolean clueCompleted = false;
     private String clueCount = "";
@@ -82,7 +84,6 @@ public class DinkPlugin extends Plugin {
 
     @Inject
     private WorldService worldService;
-
 
     @Override
     protected void startUp() throws Exception {
@@ -295,14 +296,11 @@ public class DinkPlugin extends Plugin {
         }
     }
 
-    final String SPEED_RUN_WORLD_ACTIVITY = "Speedrunning World";
-    public boolean isSpeedrunWorld() {
-        WorldResult worldresult = worldService.getWorlds();
-        if (worldresult == null) {
-            log.warn("Failed to get worlds, assuming non-speedrun world");
-            return false;
-        }
-        net.runelite.http.api.worlds.World w = worldresult.findWorld(client.getWorld());
-        return w.getActivity().equals(SPEED_RUN_WORLD_ACTIVITY);
+    public static boolean _isIgnoredWorld(Set<WorldType> worldType) {
+        return !Collections.disjoint(IGNORED_WORLDS, worldType);
+    }
+
+    public boolean isIgnoredWorld() {
+        return _isIgnoredWorld(client.getWorldType().clone());
     }
 }

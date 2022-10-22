@@ -81,7 +81,7 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void handleLevelUp(String skill, int level, int xp) {
-        if (plugin.isSpeedrunWorld()) return;
+        if (plugin.isIgnoredWorld()) return;
 
         int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
         Integer previousLevel = currentLevels.put(skill, virtualLevel);
