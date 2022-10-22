@@ -41,7 +41,7 @@ contain some bits that will be replaced with in-game values.
 #### Loot:
 `%LOOT%` will be replaced with a list of the loot and value of said loot
 
-`%TOTAL_VALUE%` will be replaced with the total value of the loot items
+`%TOTAL_VALUE%` will be replaced with the total value of the looted items
 
 `%SOURCE%` will be replace with the source that dropped or gave the loot
 
