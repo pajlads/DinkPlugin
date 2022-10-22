@@ -90,9 +90,9 @@ class MatchersTest {
     @ParameterizedTest(name = "Pet message should trigger {0}")
     @ValueSource(
         strings = [
-            "You have a funny feeling like you're being followed",
-            "You have a funny feeling like you would have been followed",
-            "You feel something weird sneaking into your backpack",
+            "You have a funny feeling like you're being followed.",
+            "You have a funny feeling like you would have been followed...",
+            "You feel something weird sneaking into your backpack.",
         ]
     )
     fun `Pet regex finds match`(message: String) {
