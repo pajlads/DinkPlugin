@@ -1,4 +1,4 @@
-package dinkplugin
+package dinkplugin.notifiers
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -13,7 +13,7 @@ class MatchersTest {
     @ParameterizedTest(name = "Slayer task completion message should trigger {0}")
     @ArgumentsSource(SlayerTaskProvider::class)
     fun `Slayer task completion regex finds match`(message: String, task: String) {
-        val matcher = DinkPlugin.SLAYER_TASK_REGEX.matcher(message)
+        val matcher = SlayerNotifier.SLAYER_TASK_REGEX.matcher(message)
         assertTrue(matcher.find())
         assertEquals(task, matcher.group("task"))
     }
@@ -27,7 +27,7 @@ class MatchersTest {
         ]
     )
     fun `Slayer task completion regex does not match`(message: String) {
-        val matcher = DinkPlugin.SLAYER_TASK_REGEX.matcher(message)
+        val matcher = SlayerNotifier.SLAYER_TASK_REGEX.matcher(message)
         assertFalse(matcher.find())
     }
 
@@ -54,7 +54,7 @@ class MatchersTest {
     @ParameterizedTest(name = "Collection log message should trigger {0}")
     @ArgumentsSource(CollectionLogProvider::class)
     fun `Collection log regex finds match`(message: String, item: String) {
-        val matcher = DinkPlugin.COLLECTION_LOG_REGEX.matcher(message)
+        val matcher = CollectionNotifier.COLLECTION_LOG_REGEX.matcher(message)
         assertTrue(matcher.find())
         assertEquals(item, matcher.group("itemName"))
     }
@@ -66,7 +66,7 @@ class MatchersTest {
         ]
     )
     fun `Collection log regex does not match`(message: String) {
-        val matcher = DinkPlugin.COLLECTION_LOG_REGEX.matcher(message)
+        val matcher = CollectionNotifier.COLLECTION_LOG_REGEX.matcher(message)
         assertFalse(matcher.find())
     }
 
@@ -96,7 +96,7 @@ class MatchersTest {
         ]
     )
     fun `Pet regex finds match`(message: String) {
-        val matcher = DinkPlugin.PET_REGEX.matcher(message)
+        val matcher = PetNotifier.PET_REGEX.matcher(message)
         assertTrue(matcher.find())
     }
 
@@ -108,7 +108,7 @@ class MatchersTest {
         ]
     )
     fun `Pet regex does not match`(message: String) {
-        val matcher = DinkPlugin.PET_REGEX.matcher(message)
+        val matcher = PetNotifier.PET_REGEX.matcher(message)
         assertFalse(matcher.find())
     }
 

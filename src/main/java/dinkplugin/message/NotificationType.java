@@ -1,4 +1,4 @@
-package dinkplugin;
+package dinkplugin.message;
 
 public enum NotificationType {
     CLUE,

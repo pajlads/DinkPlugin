@@ -1,41 +1,41 @@
 package dinkplugin;
 
 import com.google.inject.Provides;
+import dinkplugin.message.DiscordMessageHandler;
+import dinkplugin.notifiers.ClueNotifier;
+import dinkplugin.notifiers.CollectionNotifier;
+import dinkplugin.notifiers.DeathNotifier;
+import dinkplugin.notifiers.LevelNotifier;
+import dinkplugin.notifiers.LootNotifier;
+import dinkplugin.notifiers.PetNotifier;
+import dinkplugin.notifiers.QuestNotifier;
+import dinkplugin.notifiers.SlayerNotifier;
+import dinkplugin.notifiers.SpeedrunNotifier;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.NPC;
-import net.runelite.api.*;
-import net.runelite.api.events.*;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.events.ActorDeath;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.StatChanged;
+import net.runelite.api.events.UsernameChanged;
+import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.NotificationFired;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.game.ItemStack;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.Text;
-import net.runelite.http.api.loottracker.LootRecordType;
 import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
 @Slf4j
 @PluginDescriptor(
@@ -45,19 +45,26 @@ import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 )
 public class DinkPlugin extends Plugin {
     @Inject
+    @Getter
     private Client client;
     @Inject
-    public OkHttpClient httpClient;
-
+    @Getter
+    private OkHttpClient httpClient;
     @Inject
-    public DrawManager drawManager;
+    @Getter
+    private DinkPluginConfig config;
     @Inject
-    public DinkPluginConfig config;
-
+    @Getter
+    private DrawManager drawManager;
     @Inject
-    public ItemManager itemManager;
+    @Getter
+    private ItemManager itemManager;
+    @Inject
+    @Getter
+    private WorldService worldService;
 
-    public final DiscordMessageHandler messageHandler = new DiscordMessageHandler(this);
+    @Getter
+    private final DiscordMessageHandler messageHandler = new DiscordMessageHandler(this);
     private final CollectionNotifier collectionNotifier = new CollectionNotifier(this);
     private final PetNotifier petNotifier = new PetNotifier(this);
     private final LevelNotifier levelNotifier = new LevelNotifier(this);
@@ -68,31 +75,14 @@ public class DinkPlugin extends Plugin {
     private final ClueNotifier clueNotifier = new ClueNotifier(this);
     private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
 
-    private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
-    public static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
-    private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
-
-    public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
-    public static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
-
-    private static final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
-
-    private final boolean questCompleted = false;
-    private boolean clueCompleted = false;
-    private String clueCount = "";
-    private String clueType = "";
-
-    @Inject
-    private WorldService worldService;
-
     @Override
-    protected void startUp() throws Exception {
-        Utils.client = client;
+    protected void startUp() {
+        Utils.setClient(client);
         log.info("Started up Dink");
     }
 
     @Override
-    protected void shutDown() throws Exception {
+    protected void shutDown() {
         log.info("Shutting down Dink");
     }
 
@@ -102,25 +92,18 @@ public class DinkPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onNotificationFired(NotificationFired notif) {
-
-    }
-
-    @Subscribe
     public void onUsernameChanged(UsernameChanged usernameChanged) {
         levelNotifier.reset();
     }
 
     @Subscribe
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
-        if (gameStateChanged.getGameState().equals(GameState.LOGIN_SCREEN)) {
-            levelNotifier.reset();
-        }
+        levelNotifier.onGameStateChanged(gameStateChanged);
     }
 
     @Subscribe
     public void onStatChanged(StatChanged statChange) {
-        levelNotifier.handleLevelUp(statChange.getSkill().getName(), statChange.getLevel(), statChange.getXp());
+        levelNotifier.onStatChanged(statChange);
     }
 
     @Subscribe
@@ -133,174 +116,42 @@ public class DinkPlugin extends Plugin {
         ChatMessageType msgType = message.getType();
         String chatMessage = Text.removeTags(message.getMessage());
 
-        if (msgType.equals(ChatMessageType.GAMEMESSAGE)) {
-            Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(chatMessage);
-            if (config.notifyCollectionLog() && collectionMatcher.find()) {
-                collectionNotifier.handleNotify(collectionMatcher.group("itemName"));
-                return;
-            }
-
-            if (config.notifyPet() && PET_REGEX.matcher(chatMessage).matches()) {
-                petNotifier.handleNotify();
-                return;
-            }
-
-            if (config.notifySlayer()
-                && (chatMessage.contains("Slayer master")
-                || chatMessage.contains("Slayer Master")
-                || chatMessage.contains("completed your task!")
-            )) {
-                Matcher taskMatcher = SLAYER_TASK_REGEX.matcher(chatMessage);
-                Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
-
-                if (taskMatcher.find()) {
-                    String slayerTask = taskMatcher.group("task");
-                    slayerNotifier.setSlayerTask(slayerTask);
-                    slayerNotifier.handleNotify();
-                }
-
-                if (pointsMatcher.find()) {
-                    String slayerPoints = pointsMatcher.group("points");
-                    String slayerTasksCompleted = pointsMatcher.group("taskCount");
-
-                    if (slayerPoints == null) {
-                        slayerPoints = pointsMatcher.group("points2");
-                    }
-
-                    // 3 different cases of seeing points, so in our worst case it's 0
-                    if (slayerPoints == null) {
-                        slayerPoints = "0";
-                    }
-                    slayerNotifier.setSlayerPoints(slayerPoints);
-                    slayerNotifier.setSlayerCompleted(slayerTasksCompleted);
-
-                    slayerNotifier.handleNotify();
-                }
-            }
-
-            if (config.notifyClue()) {
-                Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(chatMessage);
-                if (clueMatcher.find()) {
-                    String numberCompleted = clueMatcher.group("scrollCount");
-                    String scrollType = clueMatcher.group("scrollType");
-
-                    if (clueCompleted) {
-                        clueNotifier.handleNotify(numberCompleted, scrollType);
-                        clueCompleted = false;
-                    } else {
-                        clueType = scrollType;
-                        clueCount = numberCompleted;
-                        clueCompleted = true;
-                    }
-                }
-            }
+        if (msgType == ChatMessageType.GAMEMESSAGE) {
+            collectionNotifier.onChatMessage(chatMessage);
+            petNotifier.onChatMessage(chatMessage);
+            slayerNotifier.onChatMessage(chatMessage);
+            clueNotifier.onChatMessage(chatMessage);
         }
     }
 
     @Subscribe
     public void onActorDeath(ActorDeath actor) {
-        if (config.notifyDeath() && client.getLocalPlayer() == actor.getActor()) {
-            deathNotifier.handleNotify();
-        }
+        deathNotifier.onActorDeath(actor);
     }
 
     @Subscribe
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
-        if (!config.notifyLoot()) {
-            return;
-        }
-
-        NPC npc = npcLootReceived.getNpc();
-        Collection<ItemStack> items = npcLootReceived.getItems();
-
-        lootNotifier.handleNotify(items, npc.getName());
+        lootNotifier.onNpcLootReceived(npcLootReceived);
     }
 
     @Subscribe
     public void onPlayerLootReceived(PlayerLootReceived playerLootReceived) {
-        Collection<ItemStack> items = playerLootReceived.getItems();
-        lootNotifier.handleNotify(items, playerLootReceived.getPlayer().getName());
+        lootNotifier.onPlayerLootReceived(playerLootReceived);
     }
 
     @Subscribe
     public void onLootReceived(LootReceived lootReceived) {
-        if (!config.notifyLoot()) return;
-
-        // only consider non-NPC and non-PK loot
-        if (lootReceived.getType() == LootRecordType.EVENT || lootReceived.getType() == LootRecordType.PICKPOCKET) {
-            lootNotifier.handleNotify(lootReceived.getItems(), lootReceived.getName());
-        }
+        lootNotifier.onLootReceived(lootReceived);
     }
 
     @Subscribe
     public void onWidgetLoaded(WidgetLoaded event) {
-        int groupId = event.getGroupId();
-
-        if (groupId == QUEST_COMPLETED_GROUP_ID) {
-
-            if (config.notifyQuest()) {
-                Widget quest = client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
-
-                if (quest != null) {
-                    String questWidget = quest.getText();
-                    questNotifier.handleNotify(questWidget);
-                }
-            }
-        }
-
-        if (groupId == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) {
-            Widget clue = client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER);
-            if (clue != null) {
-                clueNotifier.getClueItems().clear();
-                Widget[] children = clue.getChildren();
-
-                if (children == null) {
-                    return;
-                }
-
-                for (Widget child : children) {
-                    if (child == null) {
-                        continue;
-                    }
-
-                    int quantity = child.getItemQuantity();
-                    int itemId = child.getItemId();
-
-                    if (itemId > -1 && quantity > 0) {
-                        clueNotifier.getClueItems().put(itemId, quantity);
-                    }
-                }
-
-                if (clueCompleted) {
-                    clueNotifier.handleNotify(clueCount, clueType);
-                    clueCompleted = false;
-                } else {
-                    clueCompleted = true;
-                }
-            }
-        }
-
-        final int SPEEDRUN_COMPLETED_GROUP_ID = 781;
-        final int SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID = 4;
-        final int SPEEDRUN_COMPLETED_DURATION_CHILD_ID = 10;
-        final int SPEEDRUN_COMPLETED_PB_CHILD_ID = 12;
-        if (config.notifySpeedrun() && groupId == SPEEDRUN_COMPLETED_GROUP_ID) {
-            Widget questName = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID);
-            Widget duration = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID);
-            Widget personalBest = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID);
-            if (questName == null || duration == null || personalBest == null) {
-                log.error("Found speedrun finished widget (group id {}) but it is missing something, questName={}, duration={}, pb={}", SPEEDRUN_COMPLETED_GROUP_ID, questName, duration, personalBest);
-            }
-//            log.info("quest name is {}, duration: {}, pb: {}", questName.getText(), duration.getText(), personalBest.getText());
-            this.speedrunNotifier.attemptNotify(Utils.parseQuestWidget(questName.getText()), duration.getText(), personalBest.getText());
-        }
-    }
-
-    public static boolean _isIgnoredWorld(Set<WorldType> worldType) {
-        return !Collections.disjoint(IGNORED_WORLDS, worldType);
+        questNotifier.onWidgetLoaded(event);
+        clueNotifier.onWidgetLoaded(event);
+        speedrunNotifier.onWidgetLoaded(event);
     }
 
     public boolean isIgnoredWorld() {
-        return _isIgnoredWorld(client.getWorldType().clone());
+        return Utils.isIgnoredWorld(client.getWorldType());
     }
 }
