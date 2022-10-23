@@ -1,4 +1,10 @@
-package dinkplugin;
+package dinkplugin.notifiers;
+
+import dinkplugin.DinkPlugin;
+import dinkplugin.message.NotificationBody;
+import dinkplugin.message.NotificationType;
+import dinkplugin.Utils;
+import dinkplugin.notifiers.data.SpeedrunNotificationData;
 
 import java.time.Duration;
 import java.util.regex.Matcher;

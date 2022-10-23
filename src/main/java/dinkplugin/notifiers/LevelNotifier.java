@@ -1,5 +1,10 @@
-package dinkplugin;
+package dinkplugin.notifiers;
 
+import dinkplugin.DinkPlugin;
+import dinkplugin.message.NotificationBody;
+import dinkplugin.message.NotificationType;
+import dinkplugin.Utils;
+import dinkplugin.notifiers.data.LevelNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 

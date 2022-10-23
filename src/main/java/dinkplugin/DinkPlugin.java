@@ -1,19 +1,27 @@
 package dinkplugin;
 
 import com.google.inject.Provides;
+import dinkplugin.message.DiscordMessageHandler;
+import dinkplugin.notifiers.ClueNotifier;
+import dinkplugin.notifiers.CollectionNotifier;
+import dinkplugin.notifiers.DeathNotifier;
+import dinkplugin.notifiers.LevelNotifier;
+import dinkplugin.notifiers.LootNotifier;
+import dinkplugin.notifiers.PetNotifier;
+import dinkplugin.notifiers.QuestNotifier;
+import dinkplugin.notifiers.SlayerNotifier;
+import dinkplugin.notifiers.SpeedrunNotifier;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
-import net.runelite.api.*;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.NotificationFired;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
@@ -29,9 +37,6 @@ import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,9 +80,6 @@ public class DinkPlugin extends Plugin {
     public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     public static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
 
-    private static final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
-
-    private final boolean questCompleted = false;
     private boolean clueCompleted = false;
     private String clueCount = "";
     private String clueType = "";
@@ -86,13 +88,13 @@ public class DinkPlugin extends Plugin {
     private WorldService worldService;
 
     @Override
-    protected void startUp() throws Exception {
-        Utils.client = client;
+    protected void startUp() {
+        Utils.setClient(client);
         log.info("Started up Dink");
     }
 
     @Override
-    protected void shutDown() throws Exception {
+    protected void shutDown() {
         log.info("Shutting down Dink");
     }
 
@@ -102,18 +104,13 @@ public class DinkPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onNotificationFired(NotificationFired notif) {
-
-    }
-
-    @Subscribe
     public void onUsernameChanged(UsernameChanged usernameChanged) {
         levelNotifier.reset();
     }
 
     @Subscribe
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
-        if (gameStateChanged.getGameState().equals(GameState.LOGIN_SCREEN)) {
+        if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN) {
             levelNotifier.reset();
         }
     }
@@ -133,7 +130,7 @@ public class DinkPlugin extends Plugin {
         ChatMessageType msgType = message.getType();
         String chatMessage = Text.removeTags(message.getMessage());
 
-        if (msgType.equals(ChatMessageType.GAMEMESSAGE)) {
+        if (msgType == ChatMessageType.GAMEMESSAGE) {
             Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(chatMessage);
             if (config.notifyCollectionLog() && collectionMatcher.find()) {
                 collectionNotifier.handleNotify(collectionMatcher.group("itemName"));
@@ -237,7 +234,6 @@ public class DinkPlugin extends Plugin {
         int groupId = event.getGroupId();
 
         if (groupId == QUEST_COMPLETED_GROUP_ID) {
-
             if (config.notifyQuest()) {
                 Widget quest = client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
 
@@ -290,17 +286,13 @@ public class DinkPlugin extends Plugin {
             Widget personalBest = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID);
             if (questName == null || duration == null || personalBest == null) {
                 log.error("Found speedrun finished widget (group id {}) but it is missing something, questName={}, duration={}, pb={}", SPEEDRUN_COMPLETED_GROUP_ID, questName, duration, personalBest);
+            } else {
+                this.speedrunNotifier.attemptNotify(Utils.parseQuestWidget(questName.getText()), duration.getText(), personalBest.getText());
             }
-//            log.info("quest name is {}, duration: {}, pb: {}", questName.getText(), duration.getText(), personalBest.getText());
-            this.speedrunNotifier.attemptNotify(Utils.parseQuestWidget(questName.getText()), duration.getText(), personalBest.getText());
         }
     }
 
-    public static boolean _isIgnoredWorld(Set<WorldType> worldType) {
-        return !Collections.disjoint(IGNORED_WORLDS, worldType);
-    }
-
     public boolean isIgnoredWorld() {
-        return _isIgnoredWorld(client.getWorldType().clone());
+        return Utils.isIgnoredWorld(client.getWorldType());
     }
 }

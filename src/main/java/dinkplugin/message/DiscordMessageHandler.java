@@ -1,6 +1,8 @@
-package dinkplugin;
+package dinkplugin.message;
 
 import com.google.common.base.Strings;
+import dinkplugin.DinkPlugin;
+import dinkplugin.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;

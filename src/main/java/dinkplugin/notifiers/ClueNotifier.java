@@ -1,5 +1,11 @@
-package dinkplugin;
+package dinkplugin.notifiers;
 
+import dinkplugin.DinkPlugin;
+import dinkplugin.message.NotificationBody;
+import dinkplugin.message.NotificationType;
+import dinkplugin.Utils;
+import dinkplugin.notifiers.data.ClueNotificationData;
+import dinkplugin.notifiers.data.SerializedItemStack;
 import lombok.Getter;
 import net.runelite.api.ItemComposition;
 import net.runelite.client.util.QuantityFormatter;

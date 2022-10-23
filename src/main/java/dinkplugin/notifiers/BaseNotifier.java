@@ -1,4 +1,7 @@
-package dinkplugin;
+package dinkplugin.notifiers;
+
+import dinkplugin.DinkPlugin;
+import dinkplugin.message.NotificationBody;
 
 import javax.inject.Inject;
 
