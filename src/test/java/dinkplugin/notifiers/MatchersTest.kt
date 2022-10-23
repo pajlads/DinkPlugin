@@ -1,6 +1,5 @@
 package dinkplugin.notifiers
 
-import dinkplugin.DinkPlugin
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
@@ -55,7 +54,7 @@ class MatchersTest {
     @ParameterizedTest(name = "Collection log message should trigger {0}")
     @ArgumentsSource(CollectionLogProvider::class)
     fun `Collection log regex finds match`(message: String, item: String) {
-        val matcher = DinkPlugin.COLLECTION_LOG_REGEX.matcher(message)
+        val matcher = CollectionNotifier.COLLECTION_LOG_REGEX.matcher(message)
         assertTrue(matcher.find())
         assertEquals(item, matcher.group("itemName"))
     }
@@ -67,7 +66,7 @@ class MatchersTest {
         ]
     )
     fun `Collection log regex does not match`(message: String) {
-        val matcher = DinkPlugin.COLLECTION_LOG_REGEX.matcher(message)
+        val matcher = CollectionNotifier.COLLECTION_LOG_REGEX.matcher(message)
         assertFalse(matcher.find())
     }
 

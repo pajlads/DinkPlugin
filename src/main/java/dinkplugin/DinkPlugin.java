@@ -32,8 +32,6 @@ import net.runelite.client.util.Text;
 import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 @Getter
@@ -66,8 +64,6 @@ public class DinkPlugin extends Plugin {
     private final QuestNotifier questNotifier = new QuestNotifier(this);
     private final ClueNotifier clueNotifier = new ClueNotifier(this);
     private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
-
-    public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
 
     @Inject
     private WorldService worldService;
@@ -116,12 +112,7 @@ public class DinkPlugin extends Plugin {
         String chatMessage = Text.removeTags(message.getMessage());
 
         if (msgType == ChatMessageType.GAMEMESSAGE) {
-            Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(chatMessage);
-            if (config.notifyCollectionLog() && collectionMatcher.find()) {
-                collectionNotifier.handleNotify(collectionMatcher.group("itemName"));
-                return;
-            }
-
+            collectionNotifier.onChatMessage(chatMessage);
             petNotifier.onChatMessage(chatMessage);
             slayerNotifier.onChatMessage(chatMessage);
             clueNotifier.onChatMessage(chatMessage);

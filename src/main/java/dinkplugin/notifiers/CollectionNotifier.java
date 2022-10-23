@@ -7,15 +7,27 @@ import dinkplugin.Utils;
 import dinkplugin.notifiers.data.CollectionNotificationData;
 
 import javax.inject.Inject;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CollectionNotifier extends BaseNotifier {
+    static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
 
     @Inject
     public CollectionNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 
-    public void handleNotify(String itemName) {
+    public void onChatMessage(String chatMessage) {
+        if (!config.notifyCollectionLog()) return;
+
+        Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(chatMessage);
+        if (collectionMatcher.find()) {
+            this.handleNotify(collectionMatcher.group("itemName"));
+        }
+    }
+
+    private void handleNotify(String itemName) {
         if (plugin.isIgnoredWorld()) return;
         String notifyMessage = config.collectionNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
