@@ -33,9 +33,10 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     private boolean checkLevelInterval(int level) {
-        return plugin.config.levelInterval() <= 1
+        int interval = config.levelInterval();
+        return interval <= 1
             || level == 99
-            || level % plugin.config.levelInterval() == 0;
+            || level % interval == 0;
     }
 
     public void onTick() {
@@ -70,7 +71,7 @@ public class LevelNotifier extends BaseNotifier {
 
         String skillString = skillMessage.toString();
         levelledSkills.clear();
-        String fullNotification = plugin.config.levelNotifyMessage()
+        String fullNotification = config.levelNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%SKILL%", skillString);
         NotificationBody<LevelNotificationData> body = new NotificationBody<>();
@@ -82,7 +83,7 @@ public class LevelNotifier extends BaseNotifier {
 
         body.setExtra(extra);
         body.setType(NotificationType.LEVEL);
-        plugin.messageHandler.createMessage(plugin.config.levelSendImage(), body);
+        messageHandler.createMessage(config.levelSendImage(), body);
     }
 
     public void handleLevelUp(String skill, int level, int xp) {
@@ -90,7 +91,7 @@ public class LevelNotifier extends BaseNotifier {
 
         int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
         Integer previousLevel = currentLevels.put(skill, virtualLevel);
-        if (plugin.config.notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
+        if (config.notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
             if (virtualLevel > previousLevel) {
                 levelledSkills.add(skill);
                 sendMessage = true;

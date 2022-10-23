@@ -28,23 +28,23 @@ public class LootNotifier extends BaseNotifier {
         if (plugin.isIgnoredWorld()) return;
         NotificationBody<LootNotificationData> messageBody = new NotificationBody<>();
         StringBuilder lootMessage = new StringBuilder();
-        int minValue = plugin.config.minLootValue();
+        int minValue = config.minLootValue();
         long totalStackValue = 0;
         List<SerializedItemStack> serializedItems = new ArrayList<>();
         for (ItemStack item : Utils.reduceItemStack(items)) {
             int itemId = item.getId();
             int quantity = item.getQuantity();
-            int price = plugin.itemManager.getItemPrice(itemId);
+            int price = plugin.getItemManager().getItemPrice(itemId);
             long totalPrice = (long) price * quantity;
 
-            ItemComposition itemComposition = plugin.itemManager.getItemComposition(itemId);
+            ItemComposition itemComposition = plugin.getItemManager().getItemComposition(itemId);
             if (totalPrice >= minValue) {
                 if (totalStackValue != 0) {
                     lootMessage.append("\n");
                 }
                 sendMessage = true;
                 lootMessage.append(String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice)));
-                if (plugin.config.lootIcons()) {
+                if (config.lootIcons()) {
                     messageBody.getEmbeds().add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
                 }
             }
@@ -56,7 +56,7 @@ public class LootNotifier extends BaseNotifier {
         if (sendMessage) {
             sendMessage = false;
             String lootString = lootMessage.toString();
-            String notifyMessage = plugin.config.lootNotifyMessage()
+            String notifyMessage = config.lootNotifyMessage()
                 .replaceAll("%USERNAME%", Utils.getPlayerName())
                 .replaceAll("%LOOT%", lootString)
                 .replaceAll("%TOTAL_VALUE%", QuantityFormatter.quantityToStackSize(totalStackValue))
@@ -67,7 +67,7 @@ public class LootNotifier extends BaseNotifier {
             extra.setSource(dropper);
             messageBody.setExtra(extra);
             messageBody.setType(NotificationType.LOOT);
-            plugin.messageHandler.createMessage(plugin.config.lootSendImage(), messageBody);
+            messageHandler.createMessage(config.lootSendImage(), messageBody);
         }
     }
 }

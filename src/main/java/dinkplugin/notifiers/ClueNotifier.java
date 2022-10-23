@@ -38,19 +38,19 @@ public class ClueNotifier extends BaseNotifier {
                 lootMessage.append("\n");
             }
             int quantity = clueItems.get(itemId);
-            int price = plugin.itemManager.getItemPrice(itemId);
+            int price = plugin.getItemManager().getItemPrice(itemId);
             totalPrice += (long) price * quantity;
             lootMessage.append(getItem(itemId, clueItems.get(itemId)));
 
-            ItemComposition itemComposition = plugin.itemManager.getItemComposition(itemId);
+            ItemComposition itemComposition = plugin.getItemManager().getItemComposition(itemId);
             itemStacks.add(new SerializedItemStack(itemId, quantity, price, itemComposition.getName()));
         }
 
-        if (totalPrice < plugin.config.clueMinValue()) {
+        if (totalPrice < config.clueMinValue()) {
             return;
         }
 
-        String notifyMessage = plugin.config.clueNotifyMessage()
+        String notifyMessage = config.clueNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%CLUE%", clueType)
             .replaceAll("%COUNT%", numberCompleted)
@@ -63,15 +63,15 @@ public class ClueNotifier extends BaseNotifier {
         extra.setItems(itemStacks);
         messageBody.setExtra(extra);
         messageBody.setType(NotificationType.CLUE);
-        plugin.messageHandler.createMessage(plugin.config.clueSendImage(), messageBody);
+        messageHandler.createMessage(config.clueSendImage(), messageBody);
     }
 
     public String getItem(int itemId, int quantity) {
-        int price = plugin.itemManager.getItemPrice(itemId);
+        int price = plugin.getItemManager().getItemPrice(itemId);
         long totalPrice = (long) price * quantity;
-        ItemComposition itemComposition = plugin.itemManager.getItemComposition(itemId);
+        ItemComposition itemComposition = plugin.getItemManager().getItemComposition(itemId);
 
-        if (plugin.config.clueShowItems()) {
+        if (config.clueShowItems()) {
             messageBody.getEmbeds().add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
         }
         return String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice));

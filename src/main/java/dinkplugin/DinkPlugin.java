@@ -11,6 +11,7 @@ import dinkplugin.notifiers.PetNotifier;
 import dinkplugin.notifiers.QuestNotifier;
 import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
@@ -43,6 +44,7 @@ import java.util.regex.Pattern;
 import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
 @Slf4j
+@Getter
 @PluginDescriptor(
     name = "Dink",
     description = "A notifier for sending webhooks to Discord or other custom destinations",
@@ -52,17 +54,17 @@ public class DinkPlugin extends Plugin {
     @Inject
     private Client client;
     @Inject
-    public OkHttpClient httpClient;
+    private OkHttpClient httpClient;
 
     @Inject
-    public DrawManager drawManager;
+    private DrawManager drawManager;
     @Inject
-    public DinkPluginConfig config;
+    private DinkPluginConfig config;
 
     @Inject
-    public ItemManager itemManager;
+    private ItemManager itemManager;
 
-    public final DiscordMessageHandler messageHandler = new DiscordMessageHandler(this);
+    private final DiscordMessageHandler messageHandler = new DiscordMessageHandler(this);
     private final CollectionNotifier collectionNotifier = new CollectionNotifier(this);
     private final PetNotifier petNotifier = new PetNotifier(this);
     private final LevelNotifier levelNotifier = new LevelNotifier(this);
@@ -74,11 +76,11 @@ public class DinkPlugin extends Plugin {
     private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
 
     private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
-    public static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
+    static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
     private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
 
-    public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
-    public static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
+    static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
+    static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
 
     private boolean clueCompleted = false;
     private String clueCount = "";

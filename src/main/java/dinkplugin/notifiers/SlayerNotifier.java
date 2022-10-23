@@ -30,7 +30,7 @@ public class SlayerNotifier extends BaseNotifier {
             return;
         }
 
-        String notifyMessage = plugin.config.slayerNotifyMessage()
+        String notifyMessage = config.slayerNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%TASK%", slayerTask)
             .replaceAll("%TASKCOUNT%", slayerCompleted)
@@ -43,7 +43,7 @@ public class SlayerNotifier extends BaseNotifier {
         body.setExtra(extra);
         body.setContent(notifyMessage);
         body.setType(NotificationType.SLAYER);
-        plugin.messageHandler.createMessage(plugin.config.slayerSendImage(), body);
+        messageHandler.createMessage(config.slayerSendImage(), body);
 
         slayerTask = "";
         slayerPoints = "";

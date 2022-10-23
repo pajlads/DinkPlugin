@@ -5,13 +5,21 @@ import dinkplugin.DinkPlugin;
 import dinkplugin.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
 
 import static net.runelite.http.api.RuneLiteAPI.GSON;
 
@@ -26,14 +34,14 @@ public class DiscordMessageHandler {
 
     public <T> void createMessage(boolean sendImage, @NonNull NotificationBody<T> mBody) {
         mBody.setPlayerName(Utils.getPlayerName());
-        String webhookUrl = plugin.config.discordWebhook();
+        String webhookUrl = plugin.getConfig().discordWebhook();
         if (Strings.isNullOrEmpty(webhookUrl)) {
             return;
         }
-        ArrayList<HttpUrl> urlList = new ArrayList<>();
+        List<HttpUrl> urlList = new ArrayList<>();
         String[] strList = webhookUrl.split("\n");
         for (String urlString : strList) {
-            if (Objects.equals(urlString, "")) {
+            if (urlString.isEmpty()) {
                 continue;
             }
             urlList.add(HttpUrl.parse(urlString));
@@ -44,7 +52,7 @@ public class DiscordMessageHandler {
             .addFormDataPart("payload_json", GSON.toJson(mBody));
 
         if (sendImage) {
-            plugin.drawManager.requestNextFrameListener(image -> {
+            plugin.getDrawManager().requestNextFrameListener(image -> {
                 BufferedImage bufferedImage = (BufferedImage) image;
                 byte[] imageBytes;
                 try {
@@ -73,7 +81,7 @@ public class DiscordMessageHandler {
         sendToMultiple(urlList, reqBodyBuilder);
     }
 
-    private void sendToMultiple(ArrayList<HttpUrl> urls, MultipartBody.Builder requestBody) {
+    private void sendToMultiple(List<HttpUrl> urls, MultipartBody.Builder requestBody) {
         for (HttpUrl url : urls) {
             sendMessage(url, requestBody);
         }
@@ -85,14 +93,14 @@ public class DiscordMessageHandler {
             .url(url)
             .post(body)
             .build();
-        plugin.httpClient.newCall(request).enqueue(new Callback() {
+        plugin.getHttpClient().newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 log.warn("There was an error sending the webhook message", e);
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
                 response.close();
             }
         });

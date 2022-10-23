@@ -17,11 +17,11 @@ public class DeathNotifier extends BaseNotifier {
     @Override
     public void handleNotify() {
         if (plugin.isIgnoredWorld()) return;
-        String notifyMessage = plugin.config.deathNotifyMessage()
+        String notifyMessage = config.deathNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName());
         NotificationBody<Object> b = new NotificationBody<>();
         b.setContent(notifyMessage);
         b.setType(NotificationType.DEATH);
-        plugin.messageHandler.createMessage(plugin.config.deathSendImage(), b);
+        messageHandler.createMessage(config.deathSendImage(), b);
     }
 }

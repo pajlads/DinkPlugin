@@ -14,7 +14,7 @@ public class QuestNotifier extends BaseNotifier {
 
     public void handleNotify(String questText) {
         if (plugin.isIgnoredWorld()) return;
-        String notifyMessage = plugin.config.questNotifyMessage()
+        String notifyMessage = config.questNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%QUEST%", Utils.parseQuestWidget(questText));
         NotificationBody<QuestNotificationData> body = new NotificationBody<>();
@@ -23,6 +23,6 @@ public class QuestNotifier extends BaseNotifier {
         extra.setQuestName(Utils.parseQuestWidget(questText));
         body.setExtra(extra);
         body.setType(NotificationType.QUEST);
-        plugin.messageHandler.createMessage(plugin.config.questSendImage(), body);
+        messageHandler.createMessage(config.questSendImage(), body);
     }
 }

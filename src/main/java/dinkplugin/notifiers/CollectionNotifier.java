@@ -17,7 +17,7 @@ public class CollectionNotifier extends BaseNotifier {
 
     public void handleNotify(String itemName) {
         if (plugin.isIgnoredWorld()) return;
-        String notifyMessage = plugin.config.collectionNotifyMessage()
+        String notifyMessage = config.collectionNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%ITEM%", itemName);
         NotificationBody<CollectionNotificationData> b = new NotificationBody<>();
@@ -26,6 +26,6 @@ public class CollectionNotifier extends BaseNotifier {
         extra.setItemName(itemName);
         b.setExtra(extra);
         b.setType(NotificationType.COLLECTION);
-        plugin.messageHandler.createMessage(plugin.config.collectionSendImage(), b);
+        messageHandler.createMessage(config.collectionSendImage(), b);
     }
 }

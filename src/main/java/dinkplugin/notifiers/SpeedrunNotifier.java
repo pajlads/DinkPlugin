@@ -19,13 +19,13 @@ public class SpeedrunNotifier extends BaseNotifier {
         Duration bestTime = this.parseTime(pb);
         Duration currentTime = this.parseTime(duration);
         boolean isPb = bestTime.compareTo(currentTime) >= 0;
-        if (!isPb && plugin.config.speedrunPBOnly()) {
+        if (!isPb && config.speedrunPBOnly()) {
             return;
         }
         // pb or notifying on non-pb; take the right string and format placeholders
-        String notifyMessage = plugin.config.speedrunMessage();
+        String notifyMessage = config.speedrunMessage();
         if (isPb) {
-            notifyMessage = plugin.config.speedrunPBMessage();
+            notifyMessage = config.speedrunPBMessage();
         }
 
         notifyMessage = notifyMessage
@@ -41,7 +41,7 @@ public class SpeedrunNotifier extends BaseNotifier {
         extra.setCurrentTime(currentTime.toString());
         body.setExtra(extra);
         body.setType(NotificationType.SPEEDRUN);
-        plugin.messageHandler.createMessage(plugin.config.speedrunSendImage(), body);
+        messageHandler.createMessage(config.speedrunSendImage(), body);
     }
 
     private static final Pattern TIME_PATTERN = Pattern.compile("(?<minutes>\\d+):(?<seconds>\\d{2})\\.(?<fractional>\\d{2})");
