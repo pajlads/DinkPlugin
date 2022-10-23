@@ -86,4 +86,30 @@ class MatchersTest {
                 "Lumberjack boots")
         )
     }
+
+    @ParameterizedTest(name = "Pet message should trigger {0}")
+    @ValueSource(
+        strings = [
+            "You have a funny feeling like you're being followed.",
+            "You have a funny feeling like you would have been followed...",
+            "You feel something weird sneaking into your backpack.",
+        ]
+    )
+    fun `Pet regex finds match`(message: String) {
+        val matcher = DinkPlugin.PET_REGEX.matcher(message)
+        assertTrue(matcher.find())
+    }
+
+    @ParameterizedTest(name = "Pet message should not trigger {0}")
+    @ValueSource(
+        strings = [
+            "Forsen: forsen",
+            "You feel like you forgot to turn the stove off",
+        ]
+    )
+    fun `Pet regex does not match`(message: String) {
+        val matcher = DinkPlugin.PET_REGEX.matcher(message)
+        assertFalse(matcher.find())
+    }
+
 }
