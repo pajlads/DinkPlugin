@@ -24,7 +24,7 @@ contain some words that will be replaced with in-game values.
 
 JSON:
 
-```json
+```json5
 {
   "content": "Text message as set by the user",
   "extra": {},
@@ -42,7 +42,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 
 JSON:
 
-```json
+```json5
 {
   "content": "%USERNAME% has added %ITEM% to their collection",
   "extra": {
@@ -58,16 +58,16 @@ JSON:
 
 JSON:
 
-```json
+```json5
 {
   "content": "%USERNAME% has levelled %SKILL%",
   "extra": {
     "levelledSkills": {
-      "//": "These are the skills that dinked",
+      // These are the skills that dinked
       "Skill name": 30
     },
     "allSkills": {
-      "//": "These are all the skills",
+      // These are all the skills
       "Skill name": 30,
       "Other skill": 1
     }
@@ -84,18 +84,18 @@ JSON:
 
 `%SOURCE%` will be replace with the source that dropped or gave the loot
 
-```json
+```json5
 {
   "content": "%USERNAME% has looted: \n\n%LOOT%\nFrom: %SOURCE%",
   "extra": {
     "items": [
       {
-        "//type": "SerializedItemStack",
+        // type of this object is SerializedItemStack
 
         "id": 1234,
         "quantity": 1,
         "priceEach": 42069,
-        "//priceEach": "GE price of the item",
+        // priceEach is the GE price of the item
         "name": "Some item"
       }
     ],
@@ -113,7 +113,7 @@ JSON:
 
 `%POINTS%` will be replaced with the number of points you obtained from the task
 
-```json
+```json5
 {
   "content": "%USERNAME% has completed a slayer task: %TASK%, getting %POINTS% points and making that %TASKCOUNT% tasks completed",
   "extra": {
@@ -129,7 +129,7 @@ JSON:
 
 `%QUEST%` will be replaced with the name of the quest completed
 
-```json
+```json5
 {
   "content": "%USERNAME% has completed a quest: %QUEST%",
   "extra": {
@@ -149,7 +149,7 @@ JSON:
 
 `%COUNT%` will be replaced by the number of times that you have completed that tier of clue scrolls
 
-```json
+```json5
 {
   "content": "%USERNAME% has completed a %CLUE% clue, they have completed %COUNT%.\nThey obtained:\n\n%LOOT%",
   "extra": {
@@ -157,12 +157,12 @@ JSON:
     "numberCompleted": 123,
     "items": [
       {
-        "//type": "SerializedItemStack",
+        // the type of this object SerializedItemStack
 
         "id": 1234,
         "quantity": 1,
         "priceEach": 42069,
-        "//priceEach": "GE price of the item",
+        // priceEach is the GE price of the item
         "name": "Some item"
       }
     ]
