@@ -19,7 +19,6 @@ import net.runelite.api.GameState;
 import net.runelite.api.NPC;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -75,16 +74,11 @@ public class DinkPlugin extends Plugin {
     private final ClueNotifier clueNotifier = new ClueNotifier(this);
     private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
 
-    private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
     static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
     private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
 
     static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
-
-    private boolean clueCompleted = false;
-    private String clueCount = "";
-    private String clueType = "";
 
     @Inject
     private WorldService worldService;
@@ -177,22 +171,7 @@ public class DinkPlugin extends Plugin {
                 }
             }
 
-            if (config.notifyClue()) {
-                Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(chatMessage);
-                if (clueMatcher.find()) {
-                    String numberCompleted = clueMatcher.group("scrollCount");
-                    String scrollType = clueMatcher.group("scrollType");
-
-                    if (clueCompleted) {
-                        clueNotifier.handleNotify(numberCompleted, scrollType);
-                        clueCompleted = false;
-                    } else {
-                        clueType = scrollType;
-                        clueCount = numberCompleted;
-                        clueCompleted = true;
-                    }
-                }
-            }
+            clueNotifier.onChatMessage(chatMessage);
         }
     }
 
@@ -246,37 +225,7 @@ public class DinkPlugin extends Plugin {
             }
         }
 
-        if (groupId == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) {
-            Widget clue = client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER);
-            if (clue != null) {
-                clueNotifier.getClueItems().clear();
-                Widget[] children = clue.getChildren();
-
-                if (children == null) {
-                    return;
-                }
-
-                for (Widget child : children) {
-                    if (child == null) {
-                        continue;
-                    }
-
-                    int quantity = child.getItemQuantity();
-                    int itemId = child.getItemId();
-
-                    if (itemId > -1 && quantity > 0) {
-                        clueNotifier.getClueItems().put(itemId, quantity);
-                    }
-                }
-
-                if (clueCompleted) {
-                    clueNotifier.handleNotify(clueCount, clueType);
-                    clueCompleted = false;
-                } else {
-                    clueCompleted = true;
-                }
-            }
-        }
+        clueNotifier.onWidgetLoaded(event);
 
         final int SPEEDRUN_COMPLETED_GROUP_ID = 781;
         final int SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID = 4;
