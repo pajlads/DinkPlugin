@@ -38,7 +38,6 @@ import okhttp3.OkHttpClient;
 import javax.inject.Inject;
 
 @Slf4j
-@Getter
 @PluginDescriptor(
     name = "Dink",
     description = "A notifier for sending webhooks to Discord or other custom destinations",
@@ -46,18 +45,25 @@ import javax.inject.Inject;
 )
 public class DinkPlugin extends Plugin {
     @Inject
+    @Getter
     private Client client;
     @Inject
+    @Getter
     private OkHttpClient httpClient;
     @Inject
+    @Getter
     private DinkPluginConfig config;
     @Inject
+    @Getter
     private DrawManager drawManager;
     @Inject
+    @Getter
     private ItemManager itemManager;
     @Inject
+    @Getter
     private WorldService worldService;
 
+    @Getter
     private final DiscordMessageHandler messageHandler = new DiscordMessageHandler(this);
     private final CollectionNotifier collectionNotifier = new CollectionNotifier(this);
     private final PetNotifier petNotifier = new PetNotifier(this);
