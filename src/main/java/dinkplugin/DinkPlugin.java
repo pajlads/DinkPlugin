@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.NPC;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -25,18 +24,15 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.game.ItemStack;
 import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.Text;
-import net.runelite.http.api.loottracker.LootRecordType;
 import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -144,30 +140,17 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
-        if (!config.notifyLoot()) {
-            return;
-        }
-
-        NPC npc = npcLootReceived.getNpc();
-        Collection<ItemStack> items = npcLootReceived.getItems();
-
-        lootNotifier.handleNotify(items, npc.getName());
+        lootNotifier.onNpcLootReceived(npcLootReceived);
     }
 
     @Subscribe
     public void onPlayerLootReceived(PlayerLootReceived playerLootReceived) {
-        Collection<ItemStack> items = playerLootReceived.getItems();
-        lootNotifier.handleNotify(items, playerLootReceived.getPlayer().getName());
+        lootNotifier.onPlayerLootReceived(playerLootReceived);
     }
 
     @Subscribe
     public void onLootReceived(LootReceived lootReceived) {
-        if (!config.notifyLoot()) return;
-
-        // only consider non-NPC and non-PK loot
-        if (lootReceived.getType() == LootRecordType.EVENT || lootReceived.getType() == LootRecordType.PICKPOCKET) {
-            lootNotifier.handleNotify(lootReceived.getItems(), lootReceived.getName());
-        }
+        lootNotifier.onLootReceived(lootReceived);
     }
 
     @Subscribe

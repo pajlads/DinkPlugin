@@ -7,25 +7,48 @@ import dinkplugin.Utils;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.ItemComposition;
+import net.runelite.client.events.NpcLootReceived;
+import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemStack;
+import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
+import net.runelite.http.api.loottracker.LootRecordType;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-
 public class LootNotifier extends BaseNotifier {
-    private boolean sendMessage = false;
 
     @Inject
     public LootNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 
-    public void handleNotify(Collection<ItemStack> items, String dropper) {
+    public void onNpcLootReceived(NpcLootReceived event) {
+        if (config.notifyLoot()) {
+            this.handleNotify(event.getItems(), event.getNpc().getName());
+        }
+    }
+
+    public void onPlayerLootReceived(PlayerLootReceived event) {
+        this.handleNotify(event.getItems(), event.getPlayer().getName());
+    }
+
+    public void onLootReceived(LootReceived lootReceived) {
+        if (!config.notifyLoot()) return;
+
+        // only consider non-NPC and non-PK loot
+        if (lootReceived.getType() == LootRecordType.EVENT || lootReceived.getType() == LootRecordType.PICKPOCKET) {
+            this.handleNotify(lootReceived.getItems(), lootReceived.getName());
+        }
+    }
+
+    private void handleNotify(Collection<ItemStack> items, String dropper) {
         if (plugin.isIgnoredWorld()) return;
+
+        boolean sendMessage = false;
         NotificationBody<LootNotificationData> messageBody = new NotificationBody<>();
         StringBuilder lootMessage = new StringBuilder();
         int minValue = config.minLootValue();
@@ -54,7 +77,6 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
-            sendMessage = false;
             String lootString = lootMessage.toString();
             String notifyMessage = config.lootNotifyMessage()
                 .replaceAll("%USERNAME%", Utils.getPlayerName())
