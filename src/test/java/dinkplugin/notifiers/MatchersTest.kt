@@ -1,5 +1,6 @@
-package dinkplugin
+package dinkplugin.notifiers
 
+import dinkplugin.DinkPlugin
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.params.ParameterizedTest
@@ -13,7 +14,7 @@ class MatchersTest {
     @ParameterizedTest(name = "Slayer task completion message should trigger {0}")
     @ArgumentsSource(SlayerTaskProvider::class)
     fun `Slayer task completion regex finds match`(message: String, task: String) {
-        val matcher = DinkPlugin.SLAYER_TASK_REGEX.matcher(message)
+        val matcher = SlayerNotifier.SLAYER_TASK_REGEX.matcher(message)
         assertTrue(matcher.find())
         assertEquals(task, matcher.group("task"))
     }
@@ -27,7 +28,7 @@ class MatchersTest {
         ]
     )
     fun `Slayer task completion regex does not match`(message: String) {
-        val matcher = DinkPlugin.SLAYER_TASK_REGEX.matcher(message)
+        val matcher = SlayerNotifier.SLAYER_TASK_REGEX.matcher(message)
         assertFalse(matcher.find())
     }
 

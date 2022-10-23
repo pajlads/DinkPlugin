@@ -74,11 +74,8 @@ public class DinkPlugin extends Plugin {
     private final ClueNotifier clueNotifier = new ClueNotifier(this);
     private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
 
-    static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
-    private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
-
-    static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
-    static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
+    public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
+    public static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
 
     @Inject
     private WorldService worldService;
@@ -138,39 +135,7 @@ public class DinkPlugin extends Plugin {
                 return;
             }
 
-            if (config.notifySlayer()
-                && (chatMessage.contains("Slayer master")
-                || chatMessage.contains("Slayer Master")
-                || chatMessage.contains("completed your task!")
-            )) {
-                Matcher taskMatcher = SLAYER_TASK_REGEX.matcher(chatMessage);
-                Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
-
-                if (taskMatcher.find()) {
-                    String slayerTask = taskMatcher.group("task");
-                    slayerNotifier.setSlayerTask(slayerTask);
-                    slayerNotifier.handleNotify();
-                }
-
-                if (pointsMatcher.find()) {
-                    String slayerPoints = pointsMatcher.group("points");
-                    String slayerTasksCompleted = pointsMatcher.group("taskCount");
-
-                    if (slayerPoints == null) {
-                        slayerPoints = pointsMatcher.group("points2");
-                    }
-
-                    // 3 different cases of seeing points, so in our worst case it's 0
-                    if (slayerPoints == null) {
-                        slayerPoints = "0";
-                    }
-                    slayerNotifier.setSlayerPoints(slayerPoints);
-                    slayerNotifier.setSlayerCompleted(slayerTasksCompleted);
-
-                    slayerNotifier.handleNotify();
-                }
-            }
-
+            slayerNotifier.onChatMessage(chatMessage);
             clueNotifier.onChatMessage(chatMessage);
         }
     }
