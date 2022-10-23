@@ -17,7 +17,6 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.*;
-import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.NpcLootReceived;
@@ -143,25 +142,9 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onWidgetLoaded(WidgetLoaded event) {
-        int groupId = event.getGroupId();
-
         questNotifier.onWidgetLoaded(event);
         clueNotifier.onWidgetLoaded(event);
-
-        final int SPEEDRUN_COMPLETED_GROUP_ID = 781;
-        final int SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID = 4;
-        final int SPEEDRUN_COMPLETED_DURATION_CHILD_ID = 10;
-        final int SPEEDRUN_COMPLETED_PB_CHILD_ID = 12;
-        if (config.notifySpeedrun() && groupId == SPEEDRUN_COMPLETED_GROUP_ID) {
-            Widget questName = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID);
-            Widget duration = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID);
-            Widget personalBest = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID);
-            if (questName == null || duration == null || personalBest == null) {
-                log.error("Found speedrun finished widget (group id {}) but it is missing something, questName={}, duration={}, pb={}", SPEEDRUN_COMPLETED_GROUP_ID, questName, duration, personalBest);
-            } else {
-                this.speedrunNotifier.attemptNotify(Utils.parseQuestWidget(questName.getText()), duration.getText(), personalBest.getText());
-            }
-        }
+        speedrunNotifier.onWidgetLoaded(event);
     }
 
     public boolean isIgnoredWorld() {

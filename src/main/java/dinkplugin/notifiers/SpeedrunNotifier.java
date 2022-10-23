@@ -5,17 +5,41 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
 import dinkplugin.notifiers.data.SpeedrunNotificationData;
+import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Client;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.Widget;
 
 import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class SpeedrunNotifier extends BaseNotifier {
+    private static final int SPEEDRUN_COMPLETED_GROUP_ID = 781;
+    private static final int SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID = 4;
+    private static final int SPEEDRUN_COMPLETED_DURATION_CHILD_ID = 10;
+    private static final int SPEEDRUN_COMPLETED_PB_CHILD_ID = 12;
+
     public SpeedrunNotifier(DinkPlugin plugin) {
         super(plugin);
     }
 
-    public void attemptNotify(String questName, String duration, String pb) {
+    public void onWidgetLoaded(WidgetLoaded event) {
+        if (event.getGroupId() == SPEEDRUN_COMPLETED_GROUP_ID && config.notifySpeedrun()) {
+            Client client = plugin.getClient();
+            Widget questName = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID);
+            Widget duration = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID);
+            Widget personalBest = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID);
+            if (questName != null && duration != null && personalBest != null) {
+                this.attemptNotify(Utils.parseQuestWidget(questName.getText()), duration.getText(), personalBest.getText());
+            } else {
+                log.error("Found speedrun finished widget (group id {}) but it is missing something, questName={}, duration={}, pb={}", SPEEDRUN_COMPLETED_GROUP_ID, questName, duration, personalBest);
+            }
+        }
+    }
+
+    private void attemptNotify(String questName, String duration, String pb) {
         Duration bestTime = this.parseTime(pb);
         Duration currentTime = this.parseTime(duration);
         boolean isPb = bestTime.compareTo(currentTime) >= 0;
