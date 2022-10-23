@@ -6,8 +6,10 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
 
 import javax.inject.Inject;
+import java.util.regex.Pattern;
 
 public class PetNotifier extends BaseNotifier {
+    static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
 
     @Inject
     public PetNotifier(DinkPlugin plugin) {
@@ -22,5 +24,11 @@ public class PetNotifier extends BaseNotifier {
         body.setContent(notifyMessage);
         body.setType(NotificationType.PET);
         messageHandler.createMessage(config.petSendImage(), body);
+    }
+
+    public void onChatMessage(String chatMessage) {
+        if (config.notifyPet() && PET_REGEX.matcher(chatMessage).matches()) {
+            this.handleNotify();
+        }
     }
 }

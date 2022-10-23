@@ -75,7 +75,6 @@ public class DinkPlugin extends Plugin {
     private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
 
     public static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
-    public static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
 
     @Inject
     private WorldService worldService;
@@ -130,11 +129,7 @@ public class DinkPlugin extends Plugin {
                 return;
             }
 
-            if (config.notifyPet() && PET_REGEX.matcher(chatMessage).matches()) {
-                petNotifier.handleNotify();
-                return;
-            }
-
+            petNotifier.onChatMessage(chatMessage);
             slayerNotifier.onChatMessage(chatMessage);
             clueNotifier.onChatMessage(chatMessage);
         }

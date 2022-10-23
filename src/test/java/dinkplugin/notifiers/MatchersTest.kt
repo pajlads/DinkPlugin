@@ -97,7 +97,7 @@ class MatchersTest {
         ]
     )
     fun `Pet regex finds match`(message: String) {
-        val matcher = DinkPlugin.PET_REGEX.matcher(message)
+        val matcher = PetNotifier.PET_REGEX.matcher(message)
         assertTrue(matcher.find())
     }
 
@@ -109,7 +109,7 @@ class MatchersTest {
         ]
     )
     fun `Pet regex does not match`(message: String) {
-        val matcher = DinkPlugin.PET_REGEX.matcher(message)
+        val matcher = PetNotifier.PET_REGEX.matcher(message)
         assertFalse(matcher.find())
     }
 
