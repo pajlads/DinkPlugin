@@ -15,8 +15,13 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.events.*;
+import net.runelite.api.events.ActorDeath;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.StatChanged;
+import net.runelite.api.events.UsernameChanged;
+import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.NpcLootReceived;
@@ -44,14 +49,14 @@ public class DinkPlugin extends Plugin {
     private Client client;
     @Inject
     private OkHttpClient httpClient;
-
+    @Inject
+    private DinkPluginConfig config;
     @Inject
     private DrawManager drawManager;
     @Inject
-    private DinkPluginConfig config;
-
-    @Inject
     private ItemManager itemManager;
+    @Inject
+    private WorldService worldService;
 
     private final DiscordMessageHandler messageHandler = new DiscordMessageHandler(this);
     private final CollectionNotifier collectionNotifier = new CollectionNotifier(this);
@@ -63,9 +68,6 @@ public class DinkPlugin extends Plugin {
     private final QuestNotifier questNotifier = new QuestNotifier(this);
     private final ClueNotifier clueNotifier = new ClueNotifier(this);
     private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
-
-    @Inject
-    private WorldService worldService;
 
     @Override
     protected void startUp() {
@@ -90,14 +92,12 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
-        if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN) {
-            levelNotifier.reset();
-        }
+        levelNotifier.onGameStateChanged(gameStateChanged);
     }
 
     @Subscribe
     public void onStatChanged(StatChanged statChange) {
-        levelNotifier.handleLevelUp(statChange.getSkill().getName(), statChange.getLevel(), statChange.getXp());
+        levelNotifier.onStatChanged(statChange);
     }
 
     @Subscribe
@@ -120,9 +120,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onActorDeath(ActorDeath actor) {
-        if (config.notifyDeath() && client.getLocalPlayer() == actor.getActor()) {
-            deathNotifier.handleNotify();
-        }
+        deathNotifier.onActorDeath(actor);
     }
 
     @Subscribe

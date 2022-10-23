@@ -4,6 +4,7 @@ import dinkplugin.DinkPlugin;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
+import net.runelite.api.events.ActorDeath;
 
 import javax.inject.Inject;
 
@@ -23,5 +24,11 @@ public class DeathNotifier extends BaseNotifier {
         b.setContent(notifyMessage);
         b.setType(NotificationType.DEATH);
         messageHandler.createMessage(config.deathSendImage(), b);
+    }
+
+    public void onActorDeath(ActorDeath actor) {
+        if (config.notifyDeath() && plugin.getClient().getLocalPlayer() == actor.getActor()) {
+            this.handleNotify();
+        }
     }
 }

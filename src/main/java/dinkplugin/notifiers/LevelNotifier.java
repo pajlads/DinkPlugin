@@ -7,6 +7,9 @@ import dinkplugin.Utils;
 import dinkplugin.notifiers.data.LevelNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
+import net.runelite.api.GameState;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.StatChanged;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -52,7 +55,17 @@ public class LevelNotifier extends BaseNotifier {
         }
     }
 
-    public void attemptNotify() {
+    public void onStatChanged(StatChanged statChange) {
+        this.handleLevelUp(statChange.getSkill().getName(), statChange.getLevel(), statChange.getXp());
+    }
+
+    public void onGameStateChanged(GameStateChanged gameStateChanged) {
+        if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN) {
+            this.reset();
+        }
+    }
+
+    private void attemptNotify() {
         sendMessage = false;
         StringBuilder skillMessage = new StringBuilder();
         int index = 0;
