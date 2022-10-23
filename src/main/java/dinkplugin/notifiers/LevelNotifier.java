@@ -1,6 +1,15 @@
-package dinkplugin;
+package dinkplugin.notifiers;
 
+import dinkplugin.DinkPlugin;
+import dinkplugin.message.NotificationBody;
+import dinkplugin.message.NotificationType;
+import dinkplugin.Utils;
+import dinkplugin.notifiers.data.LevelNotificationData;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Experience;
+import net.runelite.api.GameState;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.StatChanged;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -27,9 +36,10 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     private boolean checkLevelInterval(int level) {
-        return plugin.config.levelInterval() <= 1
+        int interval = plugin.getConfig().levelInterval();
+        return interval <= 1
             || level == 99
-            || level % plugin.config.levelInterval() == 0;
+            || level % interval == 0;
     }
 
     public void onTick() {
@@ -45,7 +55,17 @@ public class LevelNotifier extends BaseNotifier {
         }
     }
 
-    public void attemptNotify() {
+    public void onStatChanged(StatChanged statChange) {
+        this.handleLevelUp(statChange.getSkill().getName(), statChange.getLevel(), statChange.getXp());
+    }
+
+    public void onGameStateChanged(GameStateChanged gameStateChanged) {
+        if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN) {
+            this.reset();
+        }
+    }
+
+    private void attemptNotify() {
         sendMessage = false;
         StringBuilder skillMessage = new StringBuilder();
         int index = 0;
@@ -64,7 +84,7 @@ public class LevelNotifier extends BaseNotifier {
 
         String skillString = skillMessage.toString();
         levelledSkills.clear();
-        String fullNotification = plugin.config.levelNotifyMessage()
+        String fullNotification = plugin.getConfig().levelNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%SKILL%", skillString);
         NotificationBody<LevelNotificationData> body = new NotificationBody<>();
@@ -76,18 +96,19 @@ public class LevelNotifier extends BaseNotifier {
 
         body.setExtra(extra);
         body.setType(NotificationType.LEVEL);
-        plugin.messageHandler.createMessage(plugin.config.levelSendImage(), body);
+        messageHandler.createMessage(plugin.getConfig().levelSendImage(), body);
     }
 
-    public void handleLevelUp(String skill, int level) {
-        if (plugin.isSpeedrunWorld()) return;
-        if (plugin.config.notifyLevel() && checkLevelInterval(level) && currentLevels.get(skill) != null) {
-            if (level == currentLevels.get(skill)) {
-                return;
+    public void handleLevelUp(String skill, int level, int xp) {
+        if (plugin.isIgnoredWorld()) return;
+
+        int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
+        Integer previousLevel = currentLevels.put(skill, virtualLevel);
+        if (plugin.getConfig().notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
+            if (virtualLevel > previousLevel) {
+                levelledSkills.add(skill);
+                sendMessage = true;
             }
-            levelledSkills.add(skill);
-            sendMessage = true;
         }
-        currentLevels.put(skill, level);
     }
 }

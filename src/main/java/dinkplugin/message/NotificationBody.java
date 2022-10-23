@@ -1,6 +1,7 @@
-package dinkplugin;
+package dinkplugin.message;
 
 import lombok.Data;
+import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +15,13 @@ public class NotificationBody<T> {
     private String content;
     private List<Embed> embeds = new ArrayList<>();
 
-    @Data
-    static class Embed {
-        final UrlEmbed image;
+    @Value
+    public static class Embed {
+        UrlEmbed image;
     }
 
-    @Data
-    static class UrlEmbed {
-        final String url;
+    @Value
+    public static class UrlEmbed {
+        String url;
     }
 }

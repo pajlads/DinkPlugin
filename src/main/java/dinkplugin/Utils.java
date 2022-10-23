@@ -1,7 +1,9 @@
 package dinkplugin;
 
 import com.google.common.collect.ImmutableList;
+import lombok.Setter;
 import net.runelite.api.Client;
+import net.runelite.api.WorldType;
 import net.runelite.client.game.ItemStack;
 
 import javax.imageio.ImageIO;
@@ -10,12 +12,23 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-    public static Client client;
+
+    private static final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
+
+    @Setter
+    private static Client client;
+
+    public static boolean isIgnoredWorld(Set<WorldType> worldType) {
+        return !Collections.disjoint(IGNORED_WORLDS, worldType);
+    }
 
     public static String getPlayerName() {
         return client.getLocalPlayer().getName();

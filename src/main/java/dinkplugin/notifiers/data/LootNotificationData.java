@@ -1,4 +1,4 @@
-package dinkplugin;
+package dinkplugin.notifiers.data;
 
 import lombok.Data;
 
