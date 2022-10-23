@@ -18,7 +18,6 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.NpcLootReceived;
@@ -35,8 +34,6 @@ import okhttp3.OkHttpClient;
 import javax.inject.Inject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
 @Slf4j
 @Getter
@@ -157,17 +154,7 @@ public class DinkPlugin extends Plugin {
     public void onWidgetLoaded(WidgetLoaded event) {
         int groupId = event.getGroupId();
 
-        if (groupId == QUEST_COMPLETED_GROUP_ID) {
-            if (config.notifyQuest()) {
-                Widget quest = client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
-
-                if (quest != null) {
-                    String questWidget = quest.getText();
-                    questNotifier.handleNotify(questWidget);
-                }
-            }
-        }
-
+        questNotifier.onWidgetLoaded(event);
         clueNotifier.onWidgetLoaded(event);
 
         final int SPEEDRUN_COMPLETED_GROUP_ID = 781;
