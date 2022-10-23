@@ -18,16 +18,16 @@ public class PetNotifier extends BaseNotifier {
 
     @Override
     public void handleNotify() {
-        String notifyMessage = config.petNotifyMessage()
+        String notifyMessage = plugin.getConfig().petNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName());
         NotificationBody<Object> body = new NotificationBody<>();
         body.setContent(notifyMessage);
         body.setType(NotificationType.PET);
-        messageHandler.createMessage(config.petSendImage(), body);
+        messageHandler.createMessage(plugin.getConfig().petSendImage(), body);
     }
 
     public void onChatMessage(String chatMessage) {
-        if (config.notifyPet() && PET_REGEX.matcher(chatMessage).matches()) {
+        if (plugin.getConfig().notifyPet() && PET_REGEX.matcher(chatMessage).matches()) {
             this.handleNotify();
         }
     }

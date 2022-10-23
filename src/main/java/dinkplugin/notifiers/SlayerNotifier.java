@@ -31,7 +31,7 @@ public class SlayerNotifier extends BaseNotifier {
             return;
         }
 
-        String notifyMessage = config.slayerNotifyMessage()
+        String notifyMessage = plugin.getConfig().slayerNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%TASK%", slayerTask)
             .replaceAll("%TASKCOUNT%", slayerCompleted)
@@ -44,7 +44,7 @@ public class SlayerNotifier extends BaseNotifier {
         body.setExtra(extra);
         body.setContent(notifyMessage);
         body.setType(NotificationType.SLAYER);
-        messageHandler.createMessage(config.slayerSendImage(), body);
+        messageHandler.createMessage(plugin.getConfig().slayerSendImage(), body);
 
         slayerTask = "";
         slayerPoints = "";
@@ -53,7 +53,7 @@ public class SlayerNotifier extends BaseNotifier {
 
     public void onChatMessage(String chatMessage) {
 
-        if (config.notifySlayer()
+        if (plugin.getConfig().notifySlayer()
             && (chatMessage.contains("Slayer master")
             || chatMessage.contains("Slayer Master")
             || chatMessage.contains("completed your task!")

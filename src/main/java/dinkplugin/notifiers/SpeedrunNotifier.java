@@ -26,7 +26,7 @@ public class SpeedrunNotifier extends BaseNotifier {
     }
 
     public void onWidgetLoaded(WidgetLoaded event) {
-        if (event.getGroupId() == SPEEDRUN_COMPLETED_GROUP_ID && config.notifySpeedrun()) {
+        if (event.getGroupId() == SPEEDRUN_COMPLETED_GROUP_ID && plugin.getConfig().notifySpeedrun()) {
             Client client = plugin.getClient();
             Widget questName = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID);
             Widget duration = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID);
@@ -43,13 +43,13 @@ public class SpeedrunNotifier extends BaseNotifier {
         Duration bestTime = this.parseTime(pb);
         Duration currentTime = this.parseTime(duration);
         boolean isPb = bestTime.compareTo(currentTime) >= 0;
-        if (!isPb && config.speedrunPBOnly()) {
+        if (!isPb && plugin.getConfig().speedrunPBOnly()) {
             return;
         }
         // pb or notifying on non-pb; take the right string and format placeholders
-        String notifyMessage = config.speedrunMessage();
+        String notifyMessage = plugin.getConfig().speedrunMessage();
         if (isPb) {
-            notifyMessage = config.speedrunPBMessage();
+            notifyMessage = plugin.getConfig().speedrunPBMessage();
         }
 
         notifyMessage = notifyMessage
@@ -65,7 +65,7 @@ public class SpeedrunNotifier extends BaseNotifier {
         extra.setCurrentTime(currentTime.toString());
         body.setExtra(extra);
         body.setType(NotificationType.SPEEDRUN);
-        messageHandler.createMessage(config.speedrunSendImage(), body);
+        messageHandler.createMessage(plugin.getConfig().speedrunSendImage(), body);
     }
 
     private static final Pattern TIME_PATTERN = Pattern.compile("(?<minutes>\\d+):(?<seconds>\\d{2})\\.(?<fractional>\\d{2})");

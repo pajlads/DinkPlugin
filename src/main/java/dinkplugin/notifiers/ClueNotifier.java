@@ -35,7 +35,7 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     public void onChatMessage(String chatMessage) {
-        if (config.notifyClue()) {
+        if (plugin.getConfig().notifyClue()) {
             Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(chatMessage);
             if (clueMatcher.find()) {
                 String numberCompleted = clueMatcher.group("scrollCount");
@@ -108,11 +108,11 @@ public class ClueNotifier extends BaseNotifier {
             itemStacks.add(new SerializedItemStack(itemId, quantity, price, itemComposition.getName()));
         }
 
-        if (totalPrice < config.clueMinValue()) {
+        if (totalPrice < plugin.getConfig().clueMinValue()) {
             return;
         }
 
-        String notifyMessage = config.clueNotifyMessage()
+        String notifyMessage = plugin.getConfig().clueNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%CLUE%", clueType)
             .replaceAll("%COUNT%", numberCompleted)
@@ -125,7 +125,7 @@ public class ClueNotifier extends BaseNotifier {
         extra.setItems(itemStacks);
         messageBody.setExtra(extra);
         messageBody.setType(NotificationType.CLUE);
-        messageHandler.createMessage(config.clueSendImage(), messageBody);
+        messageHandler.createMessage(plugin.getConfig().clueSendImage(), messageBody);
     }
 
     private String getItem(int itemId, int quantity, NotificationBody<ClueNotificationData> messageBody) {
@@ -133,7 +133,7 @@ public class ClueNotifier extends BaseNotifier {
         long totalPrice = (long) price * quantity;
         ItemComposition itemComposition = plugin.getItemManager().getItemComposition(itemId);
 
-        if (config.clueShowItems()) {
+        if (plugin.getConfig().clueShowItems()) {
             messageBody.getEmbeds().add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
         }
         return String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice));

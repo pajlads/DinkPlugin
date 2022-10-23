@@ -18,7 +18,7 @@ public class QuestNotifier extends BaseNotifier {
     }
 
     public void onWidgetLoaded(WidgetLoaded event) {
-        if (event.getGroupId() == QUEST_COMPLETED_GROUP_ID && config.notifyQuest()) {
+        if (event.getGroupId() == QUEST_COMPLETED_GROUP_ID && plugin.getConfig().notifyQuest()) {
             Widget quest = plugin.getClient().getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
             if (quest != null) {
                 String questWidget = quest.getText();
@@ -29,7 +29,7 @@ public class QuestNotifier extends BaseNotifier {
 
     private void handleNotify(String questText) {
         if (plugin.isIgnoredWorld()) return;
-        String notifyMessage = config.questNotifyMessage()
+        String notifyMessage = plugin.getConfig().questNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%QUEST%", Utils.parseQuestWidget(questText));
         NotificationBody<QuestNotificationData> body = new NotificationBody<>();
@@ -38,6 +38,6 @@ public class QuestNotifier extends BaseNotifier {
         extra.setQuestName(Utils.parseQuestWidget(questText));
         body.setExtra(extra);
         body.setType(NotificationType.QUEST);
-        messageHandler.createMessage(config.questSendImage(), body);
+        messageHandler.createMessage(plugin.getConfig().questSendImage(), body);
     }
 }

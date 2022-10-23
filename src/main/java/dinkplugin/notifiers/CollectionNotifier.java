@@ -19,7 +19,7 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     public void onChatMessage(String chatMessage) {
-        if (!config.notifyCollectionLog()) return;
+        if (!plugin.getConfig().notifyCollectionLog()) return;
 
         Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(chatMessage);
         if (collectionMatcher.find()) {
@@ -29,7 +29,7 @@ public class CollectionNotifier extends BaseNotifier {
 
     private void handleNotify(String itemName) {
         if (plugin.isIgnoredWorld()) return;
-        String notifyMessage = config.collectionNotifyMessage()
+        String notifyMessage = plugin.getConfig().collectionNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%ITEM%", itemName);
         NotificationBody<CollectionNotificationData> b = new NotificationBody<>();
@@ -38,6 +38,6 @@ public class CollectionNotifier extends BaseNotifier {
         extra.setItemName(itemName);
         b.setExtra(extra);
         b.setType(NotificationType.COLLECTION);
-        messageHandler.createMessage(config.collectionSendImage(), b);
+        messageHandler.createMessage(plugin.getConfig().collectionSendImage(), b);
     }
 }

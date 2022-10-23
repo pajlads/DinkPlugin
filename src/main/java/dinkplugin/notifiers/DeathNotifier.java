@@ -18,16 +18,16 @@ public class DeathNotifier extends BaseNotifier {
     @Override
     public void handleNotify() {
         if (plugin.isIgnoredWorld()) return;
-        String notifyMessage = config.deathNotifyMessage()
+        String notifyMessage = plugin.getConfig().deathNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName());
         NotificationBody<Object> b = new NotificationBody<>();
         b.setContent(notifyMessage);
         b.setType(NotificationType.DEATH);
-        messageHandler.createMessage(config.deathSendImage(), b);
+        messageHandler.createMessage(plugin.getConfig().deathSendImage(), b);
     }
 
     public void onActorDeath(ActorDeath actor) {
-        if (config.notifyDeath() && plugin.getClient().getLocalPlayer() == actor.getActor()) {
+        if (plugin.getConfig().notifyDeath() && plugin.getClient().getLocalPlayer() == actor.getActor()) {
             this.handleNotify();
         }
     }
