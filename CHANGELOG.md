@@ -22,4 +22,3 @@
 - Dev: Create an .editorconfig (#13)
 - Dev: Simplify and add tests for `COLLECTION_LOG_REGEX` (#12)
 - Dev: Ensure slayer task match is accurate (#11)
-
