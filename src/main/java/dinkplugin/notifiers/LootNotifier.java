@@ -34,15 +34,14 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void onNpcLootReceived(NpcLootReceived event) {
-        if (isEnabled()) {
+        if (isEnabled())
             this.handleNotify(event.getItems(), event.getNpc().getName());
-        }
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
-        if (super.isEnabled()) {
+        // intentional super call until PK gets its own toggle
+        if (super.isEnabled())
             this.handleNotify(event.getItems(), event.getPlayer().getName());
-        }
     }
 
     public void onLootReceived(LootReceived lootReceived) {
@@ -55,31 +54,30 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Collection<ItemStack> items, String dropper) {
-        boolean sendMessage = false;
-        NotificationBody<LootNotificationData> messageBody = new NotificationBody<>();
+        final int minValue = plugin.getConfig().minLootValue();
+        final boolean icons = plugin.getConfig().lootIcons();
+
+        Collection<ItemStack> reduced = Utils.reduceItemStack(items);
+        List<SerializedItemStack> serializedItems = new ArrayList<>(reduced.size());
+        List<NotificationBody.Embed> embeds = new ArrayList<>(icons ? reduced.size() : 0);
+
         StringBuilder lootMessage = new StringBuilder();
-        int minValue = plugin.getConfig().minLootValue();
         long totalStackValue = 0;
-        List<SerializedItemStack> serializedItems = new ArrayList<>();
-        for (ItemStack item : Utils.reduceItemStack(items)) {
+        boolean sendMessage = false;
+
+        for (ItemStack item : reduced) {
             int itemId = item.getId();
             int quantity = item.getQuantity();
             int price = plugin.getItemManager().getItemPrice(itemId);
             long totalPrice = (long) price * quantity;
-
             ItemComposition itemComposition = plugin.getItemManager().getItemComposition(itemId);
             if (totalPrice >= minValue) {
-                if (totalStackValue != 0) {
-                    lootMessage.append("\n");
-                }
                 sendMessage = true;
+                if (lootMessage.length() > 0) lootMessage.append("\n");
                 lootMessage.append(String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice)));
-                if (plugin.getConfig().lootIcons()) {
-                    messageBody.getEmbeds().add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
-                }
+                if (icons) embeds.add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
             }
-            serializedItems.add(new SerializedItemStack(item.getId(), item.getQuantity(), price, itemComposition.getName()));
-
+            serializedItems.add(new SerializedItemStack(itemId, quantity, price, itemComposition.getName()));
             totalStackValue += totalPrice;
         }
 
@@ -89,10 +87,12 @@ public class LootNotifier extends BaseNotifier {
                 new String[] { "%USERNAME%", "%LOOT%", "%TOTAL_VALUE%", "%SOURCE%" },
                 new String[] { Utils.getPlayerName(plugin.getClient()), lootMessage.toString(), QuantityFormatter.quantityToStackSize(totalStackValue), dropper }
             );
-            messageBody.setContent(notifyMessage);
-            messageBody.setExtra(new LootNotificationData(serializedItems, dropper));
-            messageBody.setType(NotificationType.LOOT);
-            createMessage(DinkPluginConfig::lootSendImage, messageBody);
+            createMessage(DinkPluginConfig::lootSendImage, NotificationBody.builder()
+                .content(notifyMessage)
+                .embeds(embeds)
+                .extra(new LootNotificationData(serializedItems, dropper))
+                .type(NotificationType.LOOT)
+                .build());
         }
     }
 }

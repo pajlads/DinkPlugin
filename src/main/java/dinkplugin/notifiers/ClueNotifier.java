@@ -88,7 +88,7 @@ public class ClueNotifier extends BaseNotifier {
         StringBuilder lootMessage = new StringBuilder();
         AtomicLong totalPrice = new AtomicLong();
         List<SerializedItemStack> itemStacks = new ArrayList<>(clueItems.size());
-        List<NotificationBody.Embed> embeds = new ArrayList<>(clueItems.size() * (plugin.getConfig().clueShowItems() ? 1 : 0));
+        List<NotificationBody.Embed> embeds = new ArrayList<>(plugin.getConfig().clueShowItems() ? clueItems.size() : 0);
 
         clueItems.forEach((itemId, quantity) -> {
             if (lootMessage.length() > 0) lootMessage.append('\n');
