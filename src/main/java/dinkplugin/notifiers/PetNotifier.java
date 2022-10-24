@@ -30,7 +30,7 @@ public class PetNotifier extends BaseNotifier {
 
     private void handleNotify() {
         String notifyMessage = plugin.getConfig().petNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName());
+            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()));
 
         createMessage(DinkPluginConfig::petSendImage, NotificationBody.builder()
             .content(notifyMessage)

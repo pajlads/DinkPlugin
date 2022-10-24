@@ -33,7 +33,9 @@ public class DiscordMessageHandler {
     }
 
     public <T> void createMessage(boolean sendImage, @NonNull NotificationBody<T> mBody) {
-        mBody.setPlayerName(Utils.getPlayerName());
+        if (mBody.getPlayerName() == null)
+            mBody.setPlayerName(Utils.getPlayerName(plugin.getClient()));
+
         String webhookUrl = plugin.getConfig().discordWebhook();
         if (Strings.isNullOrEmpty(webhookUrl)) {
             return;

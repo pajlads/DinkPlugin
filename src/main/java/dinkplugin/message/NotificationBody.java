@@ -1,6 +1,5 @@
 package dinkplugin.message;
 
-import dinkplugin.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,8 +18,7 @@ public class NotificationBody<T> {
     private NotificationType type;
     private T extra;
     private String content;
-    @Builder.Default
-    private String playerName = Utils.getPlayerName();
+    private String playerName;
     @Singular
     private final List<Embed> embeds = new LinkedList<>();
 

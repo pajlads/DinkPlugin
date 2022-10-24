@@ -36,7 +36,7 @@ public class QuestNotifier extends BaseNotifier {
     private void handleNotify(String questText) {
         String parsed = Utils.parseQuestWidget(questText);
         String notifyMessage = plugin.getConfig().questNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
             .replaceAll("%QUEST%", parsed);
 
         createMessage(DinkPluginConfig::questSendImage, NotificationBody.builder()

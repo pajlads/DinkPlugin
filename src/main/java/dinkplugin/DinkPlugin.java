@@ -77,7 +77,6 @@ public class DinkPlugin extends Plugin {
 
     @Override
     protected void startUp() {
-        Utils.setClient(client);
         log.info("Started up Dink");
     }
 

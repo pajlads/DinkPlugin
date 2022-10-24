@@ -85,7 +85,7 @@ public class LootNotifier extends BaseNotifier {
         if (sendMessage) {
             String lootString = lootMessage.toString();
             String notifyMessage = plugin.getConfig().lootNotifyMessage()
-                .replaceAll("%USERNAME%", Utils.getPlayerName())
+                .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
                 .replaceAll("%LOOT%", lootString)
                 .replaceAll("%TOTAL_VALUE%", QuantityFormatter.quantityToStackSize(totalStackValue))
                 .replaceAll("%SOURCE%", dropper);

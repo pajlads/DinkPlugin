@@ -57,7 +57,7 @@ public class SpeedrunNotifier extends BaseNotifier {
         // pb or notifying on non-pb; take the right string and format placeholders
         String pattern = isPb ? plugin.getConfig().speedrunPBMessage() : plugin.getConfig().speedrunMessage();
         String notifyMessage = pattern
-            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
             .replaceAll("%QUEST%", questName)
             .replaceAll("%TIME%", duration)
             .replaceAll("%BEST%", pb);

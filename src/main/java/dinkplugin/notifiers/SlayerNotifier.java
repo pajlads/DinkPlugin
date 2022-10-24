@@ -72,7 +72,7 @@ public class SlayerNotifier extends BaseNotifier {
         }
 
         String notifyMessage = plugin.getConfig().slayerNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
             .replaceAll("%TASK%", slayerTask)
             .replaceAll("%TASKCOUNT%", slayerCompleted)
             .replaceAll("%POINTS%", slayerPoints);

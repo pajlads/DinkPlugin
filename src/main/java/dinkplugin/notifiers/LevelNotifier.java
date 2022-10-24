@@ -92,7 +92,7 @@ public class LevelNotifier extends BaseNotifier {
         String skillString = skillMessage.toString();
         levelledSkills.clear();
         String fullNotification = plugin.getConfig().levelNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
             .replaceAll("%SKILL%", skillString);
 
         createMessage(DinkPluginConfig::levelSendImage, NotificationBody.builder()

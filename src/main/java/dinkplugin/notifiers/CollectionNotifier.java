@@ -35,7 +35,7 @@ public class CollectionNotifier extends BaseNotifier {
 
     private void handleNotify(String itemName) {
         String notifyMessage = plugin.getConfig().collectionNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
             .replaceAll("%ITEM%", itemName);
 
         createMessage(DinkPluginConfig::collectionSendImage, NotificationBody.builder()

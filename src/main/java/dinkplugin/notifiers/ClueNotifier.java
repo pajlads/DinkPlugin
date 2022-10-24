@@ -116,7 +116,7 @@ public class ClueNotifier extends BaseNotifier {
         }
 
         String notifyMessage = plugin.getConfig().clueNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName())
+            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
             .replaceAll("%CLUE%", clueType)
             .replaceAll("%COUNT%", numberCompleted)
             .replaceAll("%TOTAL_VALUE%", QuantityFormatter.quantityToStackSize(totalPrice))

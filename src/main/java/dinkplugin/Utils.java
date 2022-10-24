@@ -1,7 +1,6 @@
 package dinkplugin;
 
 import com.google.common.collect.ImmutableList;
-import lombok.Setter;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
 import net.runelite.client.game.ItemStack;
@@ -23,14 +22,11 @@ public class Utils {
 
     private static final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
 
-    @Setter
-    private static Client client;
-
     public static boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);
     }
 
-    public static String getPlayerName() {
+    public static String getPlayerName(Client client) {
         return client.getLocalPlayer().getName();
     }
 
