@@ -2,7 +2,6 @@
 build
 .idea/
 .project
-.run
 .settings/
 .classpath
 nbactions.xml

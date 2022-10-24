@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Dink" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="BUNDLED" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="MAIN_CLASS_NAME" value="dinkplugin.DinkTest" />
+    <module name="dinkplugin.test" />
+    <option name="PROGRAM_PARAMETERS" value="--debug --developer-mode --illegal-access=warn" />
+    <option name="VM_PARAMETERS" value="-ea" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
