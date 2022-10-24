@@ -114,8 +114,6 @@ public class ClueNotifier extends BaseNotifier {
                 .type(NotificationType.CLUE)
                 .embeds(embeds)
                 .build());
-
-
         }
 
         this.reset();
