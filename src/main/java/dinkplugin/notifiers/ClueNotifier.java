@@ -102,20 +102,21 @@ public class ClueNotifier extends BaseNotifier {
             lootMessage.append(getItemMessage(stack, embeds));
         });
 
-        if (totalPrice.get() < plugin.getConfig().clueMinValue())
-            return;
+        if (totalPrice.get() >= plugin.getConfig().clueMinValue()) {
+            String notifyMessage = StringUtils.replaceEach(
+                plugin.getConfig().clueNotifyMessage(),
+                new String[] { "%USERNAME%", "%CLUE%", "%COUNT%", "%TOTAL_VALUE%", "%LOOT%" },
+                new String[] { Utils.getPlayerName(plugin.getClient()), clueType, clueCount, QuantityFormatter.quantityToStackSize(totalPrice.get()), lootMessage.toString() }
+            );
+            createMessage(DinkPluginConfig::clueSendImage, NotificationBody.builder()
+                .content(notifyMessage)
+                .extra(new ClueNotificationData(clueType, Integer.parseInt(clueCount), itemStacks))
+                .type(NotificationType.CLUE)
+                .embeds(embeds)
+                .build());
 
-        String notifyMessage = StringUtils.replaceEach(
-            plugin.getConfig().clueNotifyMessage(),
-            new String[] { "%USERNAME%", "%CLUE%", "%COUNT%", "%TOTAL_VALUE%", "%LOOT%" },
-            new String[] { Utils.getPlayerName(plugin.getClient()), clueType, clueCount, QuantityFormatter.quantityToStackSize(totalPrice.get()), lootMessage.toString() }
-        );
-        createMessage(DinkPluginConfig::clueSendImage, NotificationBody.builder()
-            .content(notifyMessage)
-            .extra(new ClueNotificationData(clueType, Integer.parseInt(clueCount), itemStacks))
-            .type(NotificationType.CLUE)
-            .embeds(embeds)
-            .build());
+
+        }
 
         this.reset();
     }
