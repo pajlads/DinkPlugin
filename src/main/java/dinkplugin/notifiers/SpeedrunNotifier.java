@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 
 @Slf4j
 public class SpeedrunNotifier extends BaseNotifier {
+    private static final Pattern TIME_PATTERN = Pattern.compile("(?<minutes>\\d+):(?<seconds>\\d{2})\\.(?<fractional>\\d{2})");
     private static final int SPEEDRUN_COMPLETED_GROUP_ID = 781;
     private static final int SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID = 4;
     private static final int SPEEDRUN_COMPLETED_DURATION_CHILD_ID = 10;
@@ -67,8 +68,6 @@ public class SpeedrunNotifier extends BaseNotifier {
             .type(NotificationType.SPEEDRUN)
             .build());
     }
-
-    private static final Pattern TIME_PATTERN = Pattern.compile("(?<minutes>\\d+):(?<seconds>\\d{2})\\.(?<fractional>\\d{2})");
 
     private static Duration parseTime(String in) {
         Matcher m = TIME_PATTERN.matcher(in);

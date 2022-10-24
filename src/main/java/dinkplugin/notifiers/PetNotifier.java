@@ -22,6 +22,12 @@ public class PetNotifier extends BaseNotifier {
         return plugin.getConfig().notifyPet() && super.isEnabled();
     }
 
+    public void onChatMessage(String chatMessage) {
+        if (isEnabled() && PET_REGEX.matcher(chatMessage).matches()) {
+            this.handleNotify();
+        }
+    }
+
     private void handleNotify() {
         String notifyMessage = plugin.getConfig().petNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName());
@@ -30,11 +36,5 @@ public class PetNotifier extends BaseNotifier {
             .content(notifyMessage)
             .type(NotificationType.PET)
             .build());
-    }
-
-    public void onChatMessage(String chatMessage) {
-        if (isEnabled() && PET_REGEX.matcher(chatMessage).matches()) {
-            this.handleNotify();
-        }
     }
 }

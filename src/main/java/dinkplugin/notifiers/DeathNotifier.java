@@ -21,6 +21,12 @@ public class DeathNotifier extends BaseNotifier {
         return plugin.getConfig().notifyDeath() && super.isEnabled();
     }
 
+    public void onActorDeath(ActorDeath actor) {
+        if (isEnabled() && plugin.getClient().getLocalPlayer() == actor.getActor()) {
+            this.handleNotify();
+        }
+    }
+
     private void handleNotify() {
         String notifyMessage = plugin.getConfig().deathNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName());
@@ -29,11 +35,5 @@ public class DeathNotifier extends BaseNotifier {
             .content(notifyMessage)
             .type(NotificationType.DEATH)
             .build());
-    }
-
-    public void onActorDeath(ActorDeath actor) {
-        if (isEnabled() && plugin.getClient().getLocalPlayer() == actor.getActor()) {
-            this.handleNotify();
-        }
     }
 }

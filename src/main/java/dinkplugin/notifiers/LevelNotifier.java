@@ -36,13 +36,6 @@ public class LevelNotifier extends BaseNotifier {
         levelledSkills.clear();
     }
 
-    private boolean checkLevelInterval(int level) {
-        int interval = plugin.getConfig().levelInterval();
-        return interval <= 1
-            || level == 99
-            || level % interval == 0;
-    }
-
     public void onTick() {
         if (!sendMessage) {
             return;
@@ -63,6 +56,19 @@ public class LevelNotifier extends BaseNotifier {
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
         if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN) {
             this.reset();
+        }
+    }
+
+    public void handleLevelUp(String skill, int level, int xp) {
+        if (!isEnabled()) return;
+
+        int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
+        Integer previousLevel = currentLevels.put(skill, virtualLevel);
+        if (plugin.getConfig().notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
+            if (virtualLevel > previousLevel) {
+                levelledSkills.add(skill);
+                sendMessage = true;
+            }
         }
     }
 
@@ -96,16 +102,10 @@ public class LevelNotifier extends BaseNotifier {
             .build());
     }
 
-    public void handleLevelUp(String skill, int level, int xp) {
-        if (!isEnabled()) return;
-
-        int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
-        Integer previousLevel = currentLevels.put(skill, virtualLevel);
-        if (plugin.getConfig().notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
-            if (virtualLevel > previousLevel) {
-                levelledSkills.add(skill);
-                sendMessage = true;
-            }
-        }
+    private boolean checkLevelInterval(int level) {
+        int interval = plugin.getConfig().levelInterval();
+        return interval <= 1
+            || level == 99
+            || level % interval == 0;
     }
 }
