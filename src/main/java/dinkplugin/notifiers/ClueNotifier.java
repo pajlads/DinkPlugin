@@ -13,6 +13,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.util.QuantityFormatter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,12 +116,11 @@ public class ClueNotifier extends BaseNotifier {
             return;
         }
 
-        String notifyMessage = plugin.getConfig().clueNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
-            .replaceAll("%CLUE%", clueType)
-            .replaceAll("%COUNT%", numberCompleted)
-            .replaceAll("%TOTAL_VALUE%", QuantityFormatter.quantityToStackSize(totalPrice))
-            .replaceAll("%LOOT%", lootMessage.toString());
+        String notifyMessage = StringUtils.replaceEach(
+            plugin.getConfig().clueNotifyMessage(),
+            new String[] { "%USERNAME%", "%CLUE%", "%COUNT%", "%TOTAL_VALUE%", "%LOOT%" },
+            new String[] { Utils.getPlayerName(plugin.getClient()), clueType, numberCompleted, QuantityFormatter.quantityToStackSize(totalPrice), lootMessage.toString() }
+        );
         messageBody.setContent(notifyMessage);
         messageBody.setExtra(new ClueNotificationData(clueType, Integer.parseInt(numberCompleted), itemStacks));
         messageBody.setType(NotificationType.CLUE);

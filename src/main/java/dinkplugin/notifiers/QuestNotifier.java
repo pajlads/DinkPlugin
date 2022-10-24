@@ -9,6 +9,7 @@ import dinkplugin.notifiers.data.QuestNotificationData;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import org.apache.commons.lang3.StringUtils;
 
 import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
@@ -35,9 +36,11 @@ public class QuestNotifier extends BaseNotifier {
 
     private void handleNotify(String questText) {
         String parsed = Utils.parseQuestWidget(questText);
-        String notifyMessage = plugin.getConfig().questNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
-            .replaceAll("%QUEST%", parsed);
+        String notifyMessage = StringUtils.replaceEach(
+            plugin.getConfig().questNotifyMessage(),
+            new String[] { "%USERNAME%", "%QUEST%" },
+            new String[] { Utils.getPlayerName(plugin.getClient()), parsed }
+        );
 
         createMessage(DinkPluginConfig::questSendImage, NotificationBody.builder()
             .content(notifyMessage)

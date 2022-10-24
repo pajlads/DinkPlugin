@@ -29,7 +29,7 @@ public class DeathNotifier extends BaseNotifier {
 
     private void handleNotify() {
         String notifyMessage = plugin.getConfig().deathNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()));
+            .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()));
 
         createMessage(DinkPluginConfig::deathSendImage, NotificationBody.builder()
             .content(notifyMessage)

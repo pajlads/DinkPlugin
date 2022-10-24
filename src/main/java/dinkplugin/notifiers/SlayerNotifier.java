@@ -6,6 +6,7 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
 import dinkplugin.notifiers.data.SlayerNotificationData;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.regex.Matcher;
@@ -13,9 +14,7 @@ import java.util.regex.Pattern;
 
 public class SlayerNotifier extends BaseNotifier {
     public static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
-    private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving " +
-        "you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\(" +
-        "(?<points2>[\\d,]+)\\))?");
+    private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
 
     private String slayerTask = "";
     private String slayerPoints = "";
@@ -71,11 +70,11 @@ public class SlayerNotifier extends BaseNotifier {
             return;
         }
 
-        String notifyMessage = plugin.getConfig().slayerNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
-            .replaceAll("%TASK%", slayerTask)
-            .replaceAll("%TASKCOUNT%", slayerCompleted)
-            .replaceAll("%POINTS%", slayerPoints);
+        String notifyMessage = StringUtils.replaceEach(
+            plugin.getConfig().slayerNotifyMessage(),
+            new String[] { "%USERNAME%", "%TASK%", "%TASKCOUNT%", "%POINTS%" },
+            new String[] { Utils.getPlayerName(plugin.getClient()), slayerTask, slayerCompleted, slayerPoints }
+        );
 
         createMessage(DinkPluginConfig::slayerSendImage, NotificationBody.builder()
             .content(notifyMessage)

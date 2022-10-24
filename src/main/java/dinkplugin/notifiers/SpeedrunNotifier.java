@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Duration;
 import java.util.regex.Matcher;
@@ -55,12 +56,11 @@ public class SpeedrunNotifier extends BaseNotifier {
         }
 
         // pb or notifying on non-pb; take the right string and format placeholders
-        String pattern = isPb ? plugin.getConfig().speedrunPBMessage() : plugin.getConfig().speedrunMessage();
-        String notifyMessage = pattern
-            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
-            .replaceAll("%QUEST%", questName)
-            .replaceAll("%TIME%", duration)
-            .replaceAll("%BEST%", pb);
+        String notifyMessage = StringUtils.replaceEach(
+            isPb ? plugin.getConfig().speedrunPBMessage() : plugin.getConfig().speedrunMessage(),
+            new String[] { "%USERNAME%", "%QUEST%", "%TIME%", "%BEST%" },
+            new String[] { Utils.getPlayerName(plugin.getClient()), questName, duration, pb }
+        );
 
         createMessage(DinkPluginConfig::speedrunSendImage, NotificationBody.builder()
             .content(notifyMessage)

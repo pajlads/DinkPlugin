@@ -11,6 +11,7 @@ import net.runelite.api.Experience;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -89,11 +90,12 @@ public class LevelNotifier extends BaseNotifier {
             index++;
         }
 
-        String skillString = skillMessage.toString();
         levelledSkills.clear();
-        String fullNotification = plugin.getConfig().levelNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
-            .replaceAll("%SKILL%", skillString);
+        String fullNotification = StringUtils.replaceEach(
+            plugin.getConfig().levelNotifyMessage(),
+            new String[] { "%USERNAME%", "%SKILL%" },
+            new String[] { Utils.getPlayerName(plugin.getClient()), skillMessage.toString() }
+        );
 
         createMessage(DinkPluginConfig::levelSendImage, NotificationBody.builder()
             .content(fullNotification)

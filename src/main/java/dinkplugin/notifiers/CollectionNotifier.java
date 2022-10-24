@@ -6,6 +6,7 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
 import dinkplugin.notifiers.data.CollectionNotificationData;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.regex.Matcher;
@@ -34,9 +35,11 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     private void handleNotify(String itemName) {
-        String notifyMessage = plugin.getConfig().collectionNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
-            .replaceAll("%ITEM%", itemName);
+        String notifyMessage = StringUtils.replaceEach(
+            plugin.getConfig().collectionNotifyMessage(),
+            new String[] { "%USERNAME%", "%ITEM%" },
+            new String[] { Utils.getPlayerName(plugin.getClient()), itemName }
+        );
 
         createMessage(DinkPluginConfig::collectionSendImage, NotificationBody.builder()
             .content(notifyMessage)

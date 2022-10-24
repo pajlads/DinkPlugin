@@ -14,6 +14,7 @@ import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -83,12 +84,11 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
-            String lootString = lootMessage.toString();
-            String notifyMessage = plugin.getConfig().lootNotifyMessage()
-                .replaceAll("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
-                .replaceAll("%LOOT%", lootString)
-                .replaceAll("%TOTAL_VALUE%", QuantityFormatter.quantityToStackSize(totalStackValue))
-                .replaceAll("%SOURCE%", dropper);
+            String notifyMessage = StringUtils.replaceEach(
+                plugin.getConfig().lootNotifyMessage(),
+                new String[] { "%USERNAME%", "%LOOT%", "%TOTAL_VALUE%", "%SOURCE%" },
+                new String[] { Utils.getPlayerName(plugin.getClient()), lootMessage.toString(), QuantityFormatter.quantityToStackSize(totalStackValue), dropper }
+            );
             messageBody.setContent(notifyMessage);
             messageBody.setExtra(new LootNotificationData(serializedItems, dropper));
             messageBody.setType(NotificationType.LOOT);
