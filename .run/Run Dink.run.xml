@@ -4,8 +4,8 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="dinkplugin.DinkTest" />
     <module name="dinkplugin.test" />
-    <option name="PROGRAM_PARAMETERS" value="--debug --developer-mode --illegal-access=warn" />
-    <option name="VM_PARAMETERS" value="-ea" />
+    <option name="PROGRAM_PARAMETERS" value="--debug --developer-mode" />
+    <option name="VM_PARAMETERS" value="-ea --illegal-access=warn" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
