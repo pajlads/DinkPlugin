@@ -16,9 +16,11 @@ import net.runelite.client.util.QuantityFormatter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,15 +45,12 @@ public class ClueNotifier extends BaseNotifier {
         if (isEnabled()) {
             Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(chatMessage);
             if (clueMatcher.find()) {
-                String numberCompleted = clueMatcher.group("scrollCount");
-                String scrollType = clueMatcher.group("scrollType");
+                clueCount = clueMatcher.group("scrollCount");
+                clueType = clueMatcher.group("scrollType");
 
                 if (clueCompleted) {
-                    this.handleNotify(numberCompleted, scrollType);
-                    clueCompleted = false;
+                    this.handleNotify();
                 } else {
-                    clueType = scrollType;
-                    clueCount = numberCompleted;
                     clueCompleted = true;
                 }
             }
@@ -64,27 +63,20 @@ public class ClueNotifier extends BaseNotifier {
             if (clue != null) {
                 clueItems.clear();
                 Widget[] children = clue.getChildren();
-
-                if (children == null) {
-                    return;
-                }
+                if (children == null) return;
 
                 for (Widget child : children) {
-                    if (child == null) {
-                        continue;
-                    }
+                    if (child == null) continue;
 
                     int quantity = child.getItemQuantity();
                     int itemId = child.getItemId();
-
                     if (itemId > -1 && quantity > 0) {
-                        clueItems.put(itemId, quantity);
+                        clueItems.merge(itemId, quantity, Integer::sum);
                     }
                 }
 
                 if (clueCompleted) {
-                    this.handleNotify(clueCount, clueType);
-                    clueCompleted = false;
+                    this.handleNotify();
                 } else {
                     clueCompleted = true;
                 }
@@ -92,49 +84,52 @@ public class ClueNotifier extends BaseNotifier {
         }
     }
 
-    private void handleNotify(String numberCompleted, String clueType) {
-        NotificationBody<ClueNotificationData> messageBody = new NotificationBody<>();
-
+    private void handleNotify() {
         StringBuilder lootMessage = new StringBuilder();
-        long totalPrice = 0;
-        List<SerializedItemStack> itemStacks = new ArrayList<>();
+        AtomicLong totalPrice = new AtomicLong();
+        List<SerializedItemStack> itemStacks = new ArrayList<>(clueItems.size());
+        List<NotificationBody.Embed> embeds = new ArrayList<>(clueItems.size() * (plugin.getConfig().clueShowItems() ? 1 : 0));
 
-        for (Integer itemId : clueItems.keySet()) {
-            if (lootMessage.length() > 0) {
-                lootMessage.append("\n");
-            }
-            int quantity = clueItems.get(itemId);
+        clueItems.forEach((itemId, quantity) -> {
+            if (lootMessage.length() > 0) lootMessage.append('\n');
+
             int price = plugin.getItemManager().getItemPrice(itemId);
-            totalPrice += (long) price * quantity;
-            lootMessage.append(getItem(itemId, clueItems.get(itemId), messageBody));
-
             ItemComposition itemComposition = plugin.getItemManager().getItemComposition(itemId);
-            itemStacks.add(new SerializedItemStack(itemId, quantity, price, itemComposition.getName()));
-        }
+            SerializedItemStack stack = new SerializedItemStack(itemId, quantity, price, itemComposition.getName());
 
-        if (totalPrice < plugin.getConfig().clueMinValue()) {
+            totalPrice.addAndGet(stack.getTotalPrice());
+            itemStacks.add(stack);
+            lootMessage.append(getItemMessage(stack, embeds));
+        });
+
+        if (totalPrice.get() < plugin.getConfig().clueMinValue())
             return;
-        }
 
         String notifyMessage = StringUtils.replaceEach(
             plugin.getConfig().clueNotifyMessage(),
             new String[] { "%USERNAME%", "%CLUE%", "%COUNT%", "%TOTAL_VALUE%", "%LOOT%" },
-            new String[] { Utils.getPlayerName(plugin.getClient()), clueType, numberCompleted, QuantityFormatter.quantityToStackSize(totalPrice), lootMessage.toString() }
+            new String[] { Utils.getPlayerName(plugin.getClient()), clueType, clueCount, QuantityFormatter.quantityToStackSize(totalPrice.get()), lootMessage.toString() }
         );
-        messageBody.setContent(notifyMessage);
-        messageBody.setExtra(new ClueNotificationData(clueType, Integer.parseInt(numberCompleted), itemStacks));
-        messageBody.setType(NotificationType.CLUE);
-        createMessage(DinkPluginConfig::clueSendImage, messageBody);
+        createMessage(DinkPluginConfig::clueSendImage, NotificationBody.builder()
+            .content(notifyMessage)
+            .extra(new ClueNotificationData(clueType, Integer.parseInt(clueCount), itemStacks))
+            .type(NotificationType.CLUE)
+            .embeds(embeds)
+            .build());
+
+        this.reset();
     }
 
-    private String getItem(int itemId, int quantity, NotificationBody<ClueNotificationData> messageBody) {
-        int price = plugin.getItemManager().getItemPrice(itemId);
-        long totalPrice = (long) price * quantity;
-        ItemComposition itemComposition = plugin.getItemManager().getItemComposition(itemId);
+    private String getItemMessage(SerializedItemStack item, Collection<NotificationBody.Embed> embeds) {
+        if (plugin.getConfig().clueShowItems())
+            embeds.add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(Utils.getItemImageUrl(item.getId()))));
+        return String.format("%s x %s (%s)", item.getQuantity(), item.getName(), QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
+    }
 
-        if (plugin.getConfig().clueShowItems()) {
-            messageBody.getEmbeds().add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
-        }
-        return String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice));
+    private void reset() {
+        this.clueCompleted = false;
+        this.clueCount = "";
+        this.clueType = "";
+        this.clueItems.clear();
     }
 }

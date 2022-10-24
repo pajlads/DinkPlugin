@@ -28,8 +28,7 @@ public class QuestNotifier extends BaseNotifier {
         if (event.getGroupId() == QUEST_COMPLETED_GROUP_ID && isEnabled()) {
             Widget quest = plugin.getClient().getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
             if (quest != null) {
-                String questWidget = quest.getText();
-                this.handleNotify(questWidget);
+                this.handleNotify(quest.getText());
             }
         }
     }

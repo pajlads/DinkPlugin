@@ -20,7 +20,7 @@ public class NotificationBody<T> {
     private String content;
     private String playerName;
     @Singular
-    private final List<Embed> embeds = new LinkedList<>();
+    private List<Embed> embeds = new LinkedList<>();
 
     @Value
     public static class Embed {
