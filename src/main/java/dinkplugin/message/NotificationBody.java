@@ -23,15 +23,11 @@ public class NotificationBody<T> {
     private final List<Embed> embeds = new LinkedList<>();
 
     @Value
-    @Builder
-    @AllArgsConstructor
     public static class Embed {
         UrlEmbed image;
     }
 
     @Value
-    @Builder
-    @AllArgsConstructor
     public static class UrlEmbed {
         String url;
     }
