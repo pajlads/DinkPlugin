@@ -420,6 +420,7 @@ public interface DinkPluginConfig extends Config {
     default boolean speedrunSendImage() {
         return true;
     }
+
     @ConfigItem(
         keyName = "speedrunPBOnly",
         name = "Notify on Personal Best only",
@@ -441,6 +442,7 @@ public interface DinkPluginConfig extends Config {
     default String speedrunPBMessage() {
         return "%USERNAME% has just beat their personal best in a speedrun of %QUEST% with a time of %TIME%";
     }
+
     @ConfigItem(
         keyName = "speedrunMessage",
         name = "Notification message",
