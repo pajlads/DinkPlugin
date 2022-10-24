@@ -15,6 +15,7 @@
 - Bugfix: Fix levelup notifications always firing (#18)
 - Bugfix: Match non-latin slayer tasks (#9)
 - Bugfix: Fix %POINTS% outputting total points instead of points recieved (#5)
+- Dev: Simplify notifiers (#39)
 - Dev: Move logic from plugin to notifier (#36)
 - Dev: General code cleanup (#26)
 - Dev: Migrate gradle from groovy to kotlin (#21)
