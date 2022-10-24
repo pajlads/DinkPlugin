@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -17,18 +18,23 @@ public class PetNotifier extends BaseNotifier {
     }
 
     @Override
-    public void handleNotify() {
-        String notifyMessage = plugin.getConfig().petNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName());
-        NotificationBody<Object> body = new NotificationBody<>();
-        body.setContent(notifyMessage);
-        body.setType(NotificationType.PET);
-        messageHandler.createMessage(plugin.getConfig().petSendImage(), body);
+    public boolean isEnabled() {
+        return plugin.getConfig().notifyPet() && super.isEnabled();
     }
 
     public void onChatMessage(String chatMessage) {
-        if (plugin.getConfig().notifyPet() && PET_REGEX.matcher(chatMessage).matches()) {
+        if (isEnabled() && PET_REGEX.matcher(chatMessage).matches()) {
             this.handleNotify();
         }
+    }
+
+    private void handleNotify() {
+        String notifyMessage = plugin.getConfig().petNotifyMessage()
+            .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()));
+
+        createMessage(DinkPluginConfig::petSendImage, NotificationBody.builder()
+            .content(notifyMessage)
+            .type(NotificationType.PET)
+            .build());
     }
 }

@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -10,6 +11,7 @@ import net.runelite.api.Experience;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -35,13 +37,6 @@ public class LevelNotifier extends BaseNotifier {
         levelledSkills.clear();
     }
 
-    private boolean checkLevelInterval(int level) {
-        int interval = plugin.getConfig().levelInterval();
-        return interval <= 1
-            || level == 99
-            || level % interval == 0;
-    }
-
     public void onTick() {
         if (!sendMessage) {
             return;
@@ -65,6 +60,19 @@ public class LevelNotifier extends BaseNotifier {
         }
     }
 
+    public void handleLevelUp(String skill, int level, int xp) {
+        if (!isEnabled()) return;
+
+        int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
+        Integer previousLevel = currentLevels.put(skill, virtualLevel);
+        if (plugin.getConfig().notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
+            if (virtualLevel > previousLevel) {
+                levelledSkills.add(skill);
+                sendMessage = true;
+            }
+        }
+    }
+
     private void attemptNotify() {
         sendMessage = false;
         StringBuilder skillMessage = new StringBuilder();
@@ -82,33 +90,24 @@ public class LevelNotifier extends BaseNotifier {
             index++;
         }
 
-        String skillString = skillMessage.toString();
         levelledSkills.clear();
-        String fullNotification = plugin.getConfig().levelNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName())
-            .replaceAll("%SKILL%", skillString);
-        NotificationBody<LevelNotificationData> body = new NotificationBody<>();
-        body.setContent(fullNotification);
+        String fullNotification = StringUtils.replaceEach(
+            plugin.getConfig().levelNotifyMessage(),
+            new String[] { "%USERNAME%", "%SKILL%" },
+            new String[] { Utils.getPlayerName(plugin.getClient()), skillMessage.toString() }
+        );
 
-        LevelNotificationData extra = new LevelNotificationData();
-        extra.setAllSkills(currentLevels);
-        extra.setLevelledSkills(lSkills);
-
-        body.setExtra(extra);
-        body.setType(NotificationType.LEVEL);
-        messageHandler.createMessage(plugin.getConfig().levelSendImage(), body);
+        createMessage(DinkPluginConfig::levelSendImage, NotificationBody.builder()
+            .content(fullNotification)
+            .extra(new LevelNotificationData(lSkills, currentLevels))
+            .type(NotificationType.LEVEL)
+            .build());
     }
 
-    public void handleLevelUp(String skill, int level, int xp) {
-        if (plugin.isIgnoredWorld()) return;
-
-        int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
-        Integer previousLevel = currentLevels.put(skill, virtualLevel);
-        if (plugin.getConfig().notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
-            if (virtualLevel > previousLevel) {
-                levelledSkills.add(skill);
-                sendMessage = true;
-            }
-        }
+    private boolean checkLevelInterval(int level) {
+        int interval = plugin.getConfig().levelInterval();
+        return interval <= 1
+            || level == 99
+            || level % interval == 0;
     }
 }

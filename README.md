@@ -173,4 +173,4 @@ JSON:
 
 ## Credits
 
-This plugin uses code from [Universal Discord Notifier](https://github.com/MidgetJake/UniversalDiscordNotifer).
+This plugin uses code from [Universal Discord Notifier](https://github.com/MidgetJake/UniversalDiscordNotifier).

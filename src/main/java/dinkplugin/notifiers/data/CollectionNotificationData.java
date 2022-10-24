@@ -1,8 +1,8 @@
 package dinkplugin.notifiers.data;
 
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 public class CollectionNotificationData {
-    private String itemName;
+    String itemName;
 }

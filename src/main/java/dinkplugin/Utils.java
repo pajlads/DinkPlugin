@@ -1,7 +1,6 @@
 package dinkplugin;
 
 import com.google.common.collect.ImmutableList;
-import lombok.Setter;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
 import net.runelite.client.game.ItemStack;
@@ -10,12 +9,13 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.BinaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,14 +23,13 @@ public class Utils {
 
     private static final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
 
-    @Setter
-    private static Client client;
+    private static final BinaryOperator<ItemStack> SUM_ITEM_QUANTITIES = (a, b) -> new ItemStack(a.getId(), a.getQuantity() + b.getQuantity(), a.getLocation());
 
     public static boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);
     }
 
-    public static String getPlayerName() {
+    public static String getPlayerName(Client client) {
         return client.getLocalPlayer().getName();
     }
 
@@ -41,26 +40,9 @@ public class Utils {
     }
 
     public static Collection<ItemStack> reduceItemStack(Collection<ItemStack> items) {
-        final List<ItemStack> list = new ArrayList<>();
-
-        for (final ItemStack item : items) {
-            int quantity = 0;
-            for (final ItemStack i : list) {
-                if (i.getId() == item.getId()) {
-                    quantity = i.getQuantity();
-                    list.remove(i);
-                    break;
-                }
-            }
-
-            if (quantity > 0) {
-                list.add(new ItemStack(item.getId(), item.getQuantity() + quantity, item.getLocation()));
-            } else {
-                list.add(item);
-            }
-        }
-
-        return list;
+        final Map<Integer, ItemStack> itemById = new HashMap<>();
+        items.forEach(item -> itemById.merge(item.getId(), item, SUM_ITEM_QUANTITIES));
+        return itemById.values();
     }
 
     public static String getItemImageUrl(int itemId) {

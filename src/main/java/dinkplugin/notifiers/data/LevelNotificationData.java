@@ -1,12 +1,11 @@
 package dinkplugin.notifiers.data;
 
-import lombok.Data;
+import lombok.Value;
 
-import java.util.HashMap;
 import java.util.Map;
 
-@Data
+@Value
 public class LevelNotificationData {
-    private Map<String, Integer> levelledSkills = new HashMap<>();
-    private Map<String, Integer> allSkills = new HashMap<>();
+    Map<String, Integer> levelledSkills;
+    Map<String, Integer> allSkills;
 }

@@ -1,10 +1,12 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
 import dinkplugin.notifiers.data.SlayerNotificationData;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.regex.Matcher;
@@ -24,48 +26,24 @@ public class SlayerNotifier extends BaseNotifier {
     }
 
     @Override
-    public void handleNotify() {
-        if (plugin.isIgnoredWorld()) return;
-        // Little jank, but it's a bit cleaner than having bools and checking in the main plugin class
-        if (slayerPoints.isEmpty() || slayerTask.isEmpty() || slayerCompleted.isEmpty()) {
-            return;
-        }
-
-        String notifyMessage = plugin.getConfig().slayerNotifyMessage()
-            .replaceAll("%USERNAME%", Utils.getPlayerName())
-            .replaceAll("%TASK%", slayerTask)
-            .replaceAll("%TASKCOUNT%", slayerCompleted)
-            .replaceAll("%POINTS%", slayerPoints);
-        NotificationBody<SlayerNotificationData> body = new NotificationBody<>();
-        SlayerNotificationData extra = new SlayerNotificationData();
-        extra.setSlayerPoints(slayerPoints);
-        extra.setSlayerCompleted(slayerCompleted);
-        extra.setSlayerTask(slayerTask);
-        body.setExtra(extra);
-        body.setContent(notifyMessage);
-        body.setType(NotificationType.SLAYER);
-        messageHandler.createMessage(plugin.getConfig().slayerSendImage(), body);
-
-        slayerTask = "";
-        slayerPoints = "";
-        slayerCompleted = "";
+    public boolean isEnabled() {
+        return plugin.getConfig().notifySlayer() && super.isEnabled();
     }
 
     public void onChatMessage(String chatMessage) {
-
-        if (plugin.getConfig().notifySlayer()
+        if (isEnabled()
             && (chatMessage.contains("Slayer master")
             || chatMessage.contains("Slayer Master")
             || chatMessage.contains("completed your task!")
         )) {
             Matcher taskMatcher = SLAYER_TASK_REGEX.matcher(chatMessage);
-            Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
-
             if (taskMatcher.find()) {
                 this.slayerTask = taskMatcher.group("task");
                 this.handleNotify();
+                return;
             }
 
+            Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
             if (pointsMatcher.find()) {
                 String slayerPoints = pointsMatcher.group("points");
                 String slayerTasksCompleted = pointsMatcher.group("taskCount");
@@ -84,5 +62,28 @@ public class SlayerNotifier extends BaseNotifier {
                 this.handleNotify();
             }
         }
+    }
+
+    private void handleNotify() {
+        // Little jank, but it's a bit cleaner than having bools and checking in the main plugin class
+        if (slayerPoints.isEmpty() || slayerTask.isEmpty() || slayerCompleted.isEmpty()) {
+            return;
+        }
+
+        String notifyMessage = StringUtils.replaceEach(
+            plugin.getConfig().slayerNotifyMessage(),
+            new String[] { "%USERNAME%", "%TASK%", "%TASKCOUNT%", "%POINTS%" },
+            new String[] { Utils.getPlayerName(plugin.getClient()), slayerTask, slayerCompleted, slayerPoints }
+        );
+
+        createMessage(DinkPluginConfig::slayerSendImage, NotificationBody.builder()
+            .content(notifyMessage)
+            .extra(new SlayerNotificationData(slayerTask, slayerCompleted, slayerPoints))
+            .type(NotificationType.SLAYER)
+            .build());
+
+        slayerTask = "";
+        slayerPoints = "";
+        slayerCompleted = "";
     }
 }

@@ -12,4 +12,8 @@ public class SerializedItemStack {
     private int quantity;
     private int priceEach;
     private String name;
+
+    public long getTotalPrice() {
+        return (long) priceEach * quantity;
+    }
 }
