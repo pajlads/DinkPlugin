@@ -1,26 +1,39 @@
 package dinkplugin.message;
 
+import dinkplugin.Utils;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Singular;
 import lombok.Value;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NotificationBody<T> {
     private NotificationType type;
     private T extra;
-    private String playerName;
-
     private String content;
-    private List<Embed> embeds = new ArrayList<>();
+    @Builder.Default
+    private String playerName = Utils.getPlayerName();
+    @Singular
+    private final List<Embed> embeds = new LinkedList<>();
 
     @Value
+    @Builder
+    @AllArgsConstructor
     public static class Embed {
         UrlEmbed image;
     }
 
     @Value
+    @Builder
+    @AllArgsConstructor
     public static class UrlEmbed {
         String url;
     }

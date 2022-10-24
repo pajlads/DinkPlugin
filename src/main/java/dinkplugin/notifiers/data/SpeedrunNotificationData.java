@@ -1,11 +1,17 @@
 package dinkplugin.notifiers.data;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Value;
 
-@Data
+@Value
 @EqualsAndHashCode(callSuper = true)
 public class SpeedrunNotificationData extends QuestNotificationData {
-    private String personalBest;
-    private String currentTime;
+    String personalBest;
+    String currentTime;
+
+    public SpeedrunNotificationData(String questName, String personalBest, String currentTime) {
+        super(questName);
+        this.personalBest = personalBest;
+        this.currentTime = currentTime;
+    }
 }

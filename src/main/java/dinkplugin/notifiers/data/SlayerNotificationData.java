@@ -1,10 +1,10 @@
 package dinkplugin.notifiers.data;
 
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 public class SlayerNotificationData {
-    private String slayerTask;
-    private String slayerCompleted;
-    private String slayerPoints;
+    String slayerTask;
+    String slayerCompleted;
+    String slayerPoints;
 }

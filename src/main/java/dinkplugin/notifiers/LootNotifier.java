@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -26,18 +27,25 @@ public class LootNotifier extends BaseNotifier {
         super(plugin);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return plugin.getConfig().notifyLoot() && super.isEnabled();
+    }
+
     public void onNpcLootReceived(NpcLootReceived event) {
-        if (plugin.getConfig().notifyLoot()) {
+        if (isEnabled()) {
             this.handleNotify(event.getItems(), event.getNpc().getName());
         }
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
-        this.handleNotify(event.getItems(), event.getPlayer().getName());
+        if (super.isEnabled()) {
+            this.handleNotify(event.getItems(), event.getPlayer().getName());
+        }
     }
 
     public void onLootReceived(LootReceived lootReceived) {
-        if (!plugin.getConfig().notifyLoot()) return;
+        if (!isEnabled()) return;
 
         // only consider non-NPC and non-PK loot
         if (lootReceived.getType() == LootRecordType.EVENT || lootReceived.getType() == LootRecordType.PICKPOCKET) {
@@ -46,8 +54,6 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Collection<ItemStack> items, String dropper) {
-        if (plugin.isIgnoredWorld()) return;
-
         boolean sendMessage = false;
         NotificationBody<LootNotificationData> messageBody = new NotificationBody<>();
         StringBuilder lootMessage = new StringBuilder();
@@ -84,12 +90,9 @@ public class LootNotifier extends BaseNotifier {
                 .replaceAll("%TOTAL_VALUE%", QuantityFormatter.quantityToStackSize(totalStackValue))
                 .replaceAll("%SOURCE%", dropper);
             messageBody.setContent(notifyMessage);
-            LootNotificationData extra = new LootNotificationData();
-            extra.setItems(serializedItems);
-            extra.setSource(dropper);
-            messageBody.setExtra(extra);
+            messageBody.setExtra(new LootNotificationData(serializedItems, dropper));
             messageBody.setType(NotificationType.LOOT);
-            messageHandler.createMessage(plugin.getConfig().lootSendImage(), messageBody);
+            createMessage(DinkPluginConfig::lootSendImage, messageBody);
         }
     }
 }

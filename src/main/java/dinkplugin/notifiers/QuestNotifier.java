@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -17,8 +18,13 @@ public class QuestNotifier extends BaseNotifier {
         super(plugin);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return plugin.getConfig().notifyQuest() && super.isEnabled();
+    }
+
     public void onWidgetLoaded(WidgetLoaded event) {
-        if (event.getGroupId() == QUEST_COMPLETED_GROUP_ID && plugin.getConfig().notifyQuest()) {
+        if (event.getGroupId() == QUEST_COMPLETED_GROUP_ID && isEnabled()) {
             Widget quest = plugin.getClient().getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
             if (quest != null) {
                 String questWidget = quest.getText();
@@ -28,16 +34,15 @@ public class QuestNotifier extends BaseNotifier {
     }
 
     private void handleNotify(String questText) {
-        if (plugin.isIgnoredWorld()) return;
+        String parsed = Utils.parseQuestWidget(questText);
         String notifyMessage = plugin.getConfig().questNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
-            .replaceAll("%QUEST%", Utils.parseQuestWidget(questText));
-        NotificationBody<QuestNotificationData> body = new NotificationBody<>();
-        body.setContent(notifyMessage);
-        QuestNotificationData extra = new QuestNotificationData();
-        extra.setQuestName(Utils.parseQuestWidget(questText));
-        body.setExtra(extra);
-        body.setType(NotificationType.QUEST);
-        messageHandler.createMessage(plugin.getConfig().questSendImage(), body);
+            .replaceAll("%QUEST%", parsed);
+
+        createMessage(DinkPluginConfig::questSendImage, NotificationBody.builder()
+            .content(notifyMessage)
+            .extra(new QuestNotificationData(parsed))
+            .type(NotificationType.QUEST)
+            .build());
     }
 }

@@ -1,12 +1,11 @@
 package dinkplugin.notifiers.data;
 
-import lombok.Data;
+import lombok.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Value
 public class LootNotificationData {
-    private List<SerializedItemStack> items = new ArrayList<>();
-    private String source;
+    List<SerializedItemStack> items;
+    String source;
 }

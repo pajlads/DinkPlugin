@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -24,8 +25,11 @@ public class SlayerNotifier extends BaseNotifier {
     }
 
     @Override
-    public void handleNotify() {
-        if (plugin.isIgnoredWorld()) return;
+    public boolean isEnabled() {
+        return plugin.getConfig().notifySlayer() && super.isEnabled();
+    }
+
+    private void handleNotify() {
         // Little jank, but it's a bit cleaner than having bools and checking in the main plugin class
         if (slayerPoints.isEmpty() || slayerTask.isEmpty() || slayerCompleted.isEmpty()) {
             return;
@@ -36,15 +40,12 @@ public class SlayerNotifier extends BaseNotifier {
             .replaceAll("%TASK%", slayerTask)
             .replaceAll("%TASKCOUNT%", slayerCompleted)
             .replaceAll("%POINTS%", slayerPoints);
-        NotificationBody<SlayerNotificationData> body = new NotificationBody<>();
-        SlayerNotificationData extra = new SlayerNotificationData();
-        extra.setSlayerPoints(slayerPoints);
-        extra.setSlayerCompleted(slayerCompleted);
-        extra.setSlayerTask(slayerTask);
-        body.setExtra(extra);
-        body.setContent(notifyMessage);
-        body.setType(NotificationType.SLAYER);
-        messageHandler.createMessage(plugin.getConfig().slayerSendImage(), body);
+
+        createMessage(DinkPluginConfig::slayerSendImage, NotificationBody.builder()
+            .content(notifyMessage)
+            .extra(new SlayerNotificationData(slayerTask, slayerCompleted, slayerPoints))
+            .type(NotificationType.SLAYER)
+            .build());
 
         slayerTask = "";
         slayerPoints = "";
@@ -52,20 +53,19 @@ public class SlayerNotifier extends BaseNotifier {
     }
 
     public void onChatMessage(String chatMessage) {
-
-        if (plugin.getConfig().notifySlayer()
+        if (isEnabled()
             && (chatMessage.contains("Slayer master")
             || chatMessage.contains("Slayer Master")
             || chatMessage.contains("completed your task!")
         )) {
             Matcher taskMatcher = SLAYER_TASK_REGEX.matcher(chatMessage);
-            Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
-
             if (taskMatcher.find()) {
                 this.slayerTask = taskMatcher.group("task");
                 this.handleNotify();
+                return;
             }
 
+            Matcher pointsMatcher = SLAYER_COMPLETE_REGEX.matcher(chatMessage);
             if (pointsMatcher.find()) {
                 String slayerPoints = pointsMatcher.group("points");
                 String slayerTasksCompleted = pointsMatcher.group("taskCount");

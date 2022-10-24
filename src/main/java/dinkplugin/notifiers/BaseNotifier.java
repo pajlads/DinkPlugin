@@ -1,24 +1,26 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
-import dinkplugin.message.DiscordMessageHandler;
+import dinkplugin.DinkPluginConfig;
+import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 
 import javax.inject.Inject;
+import java.util.function.Function;
 
-public class BaseNotifier {
+public abstract class BaseNotifier {
     protected final DinkPlugin plugin;
-    protected final DiscordMessageHandler messageHandler;
 
     @Inject
-    public BaseNotifier(DinkPlugin plugin) {
+    BaseNotifier(DinkPlugin plugin) {
         this.plugin = plugin;
-        this.messageHandler = plugin.getMessageHandler();
     }
 
-    public void handleNotify() {
-        NotificationBody<Object> b = new NotificationBody<>();
-        b.setContent("This is a base notification");
-        messageHandler.createMessage(false, b);
+    public boolean isEnabled() {
+        return !Utils.isIgnoredWorld(plugin.getClient().getWorldType());
+    }
+
+    protected final void createMessage(Function<DinkPluginConfig, Boolean> sendImage, NotificationBody<?> body) {
+        plugin.getMessageHandler().createMessage(sendImage.apply(plugin.getConfig()), body);
     }
 }

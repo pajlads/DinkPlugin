@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -87,20 +88,16 @@ public class LevelNotifier extends BaseNotifier {
         String fullNotification = plugin.getConfig().levelNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%SKILL%", skillString);
-        NotificationBody<LevelNotificationData> body = new NotificationBody<>();
-        body.setContent(fullNotification);
 
-        LevelNotificationData extra = new LevelNotificationData();
-        extra.setAllSkills(currentLevels);
-        extra.setLevelledSkills(lSkills);
-
-        body.setExtra(extra);
-        body.setType(NotificationType.LEVEL);
-        messageHandler.createMessage(plugin.getConfig().levelSendImage(), body);
+        createMessage(DinkPluginConfig::levelSendImage, NotificationBody.builder()
+            .content(fullNotification)
+            .extra(new LevelNotificationData(lSkills, currentLevels))
+            .type(NotificationType.LEVEL)
+            .build());
     }
 
     public void handleLevelUp(String skill, int level, int xp) {
-        if (plugin.isIgnoredWorld()) return;
+        if (!isEnabled()) return;
 
         int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
         Integer previousLevel = currentLevels.put(skill, virtualLevel);

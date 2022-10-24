@@ -150,8 +150,4 @@ public class DinkPlugin extends Plugin {
         clueNotifier.onWidgetLoaded(event);
         speedrunNotifier.onWidgetLoaded(event);
     }
-
-    public boolean isIgnoredWorld() {
-        return Utils.isIgnoredWorld(client.getWorldType());
-    }
 }

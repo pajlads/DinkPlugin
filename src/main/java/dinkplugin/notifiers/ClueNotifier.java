@@ -1,12 +1,12 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
 import dinkplugin.notifiers.data.ClueNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
-import lombok.Getter;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
 public class ClueNotifier extends BaseNotifier {
     private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
 
-    @Getter
     private final Map<Integer, Integer> clueItems = new HashMap<>();
     private boolean clueCompleted = false;
     private String clueCount = "";
@@ -34,8 +33,13 @@ public class ClueNotifier extends BaseNotifier {
         super(plugin);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return plugin.getConfig().notifyClue() && super.isEnabled();
+    }
+
     public void onChatMessage(String chatMessage) {
-        if (plugin.getConfig().notifyClue()) {
+        if (isEnabled()) {
             Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(chatMessage);
             if (clueMatcher.find()) {
                 String numberCompleted = clueMatcher.group("scrollCount");
@@ -54,7 +58,7 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     public void onWidgetLoaded(WidgetLoaded event) {
-        if (event.getGroupId() == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID) {
+        if (event.getGroupId() == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID && isEnabled()) {
             Widget clue = plugin.getClient().getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER);
             if (clue != null) {
                 clueItems.clear();
@@ -88,7 +92,6 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     private void handleNotify(String numberCompleted, String clueType) {
-        if (plugin.isIgnoredWorld()) return;
         NotificationBody<ClueNotificationData> messageBody = new NotificationBody<>();
 
         StringBuilder lootMessage = new StringBuilder();
@@ -119,13 +122,9 @@ public class ClueNotifier extends BaseNotifier {
             .replaceAll("%TOTAL_VALUE%", QuantityFormatter.quantityToStackSize(totalPrice))
             .replaceAll("%LOOT%", lootMessage.toString());
         messageBody.setContent(notifyMessage);
-        ClueNotificationData extra = new ClueNotificationData();
-        extra.setClueType(clueType);
-        extra.setNumberCompleted(Integer.parseInt(numberCompleted));
-        extra.setItems(itemStacks);
-        messageBody.setExtra(extra);
+        messageBody.setExtra(new ClueNotificationData(clueType, Integer.parseInt(numberCompleted), itemStacks));
         messageBody.setType(NotificationType.CLUE);
-        messageHandler.createMessage(plugin.getConfig().clueSendImage(), messageBody);
+        createMessage(DinkPluginConfig::clueSendImage, messageBody);
     }
 
     private String getItem(int itemId, int quantity, NotificationBody<ClueNotificationData> messageBody) {

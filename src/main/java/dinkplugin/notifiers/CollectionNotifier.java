@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -18,8 +19,13 @@ public class CollectionNotifier extends BaseNotifier {
         super(plugin);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return plugin.getConfig().notifyCollectionLog() && super.isEnabled();
+    }
+
     public void onChatMessage(String chatMessage) {
-        if (!plugin.getConfig().notifyCollectionLog()) return;
+        if (!isEnabled()) return;
 
         Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(chatMessage);
         if (collectionMatcher.find()) {
@@ -28,16 +34,14 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     private void handleNotify(String itemName) {
-        if (plugin.isIgnoredWorld()) return;
         String notifyMessage = plugin.getConfig().collectionNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%ITEM%", itemName);
-        NotificationBody<CollectionNotificationData> b = new NotificationBody<>();
-        b.setContent(notifyMessage);
-        CollectionNotificationData extra = new CollectionNotificationData();
-        extra.setItemName(itemName);
-        b.setExtra(extra);
-        b.setType(NotificationType.COLLECTION);
-        messageHandler.createMessage(plugin.getConfig().collectionSendImage(), b);
+
+        createMessage(DinkPluginConfig::collectionSendImage, NotificationBody.builder()
+            .content(notifyMessage)
+            .extra(new CollectionNotificationData(itemName))
+            .type(NotificationType.COLLECTION)
+            .build());
     }
 }

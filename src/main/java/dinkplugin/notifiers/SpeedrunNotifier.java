@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -25,8 +26,13 @@ public class SpeedrunNotifier extends BaseNotifier {
         super(plugin);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return plugin.getConfig().notifySpeedrun(); // intentionally doesn't call super
+    }
+
     public void onWidgetLoaded(WidgetLoaded event) {
-        if (event.getGroupId() == SPEEDRUN_COMPLETED_GROUP_ID && plugin.getConfig().notifySpeedrun()) {
+        if (event.getGroupId() == SPEEDRUN_COMPLETED_GROUP_ID && isEnabled()) {
             Client client = plugin.getClient();
             Widget questName = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID);
             Widget duration = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID);
@@ -40,37 +46,31 @@ public class SpeedrunNotifier extends BaseNotifier {
     }
 
     private void attemptNotify(String questName, String duration, String pb) {
-        Duration bestTime = this.parseTime(pb);
-        Duration currentTime = this.parseTime(duration);
+        Duration bestTime = parseTime(pb);
+        Duration currentTime = parseTime(duration);
         boolean isPb = bestTime.compareTo(currentTime) >= 0;
         if (!isPb && plugin.getConfig().speedrunPBOnly()) {
             return;
         }
-        // pb or notifying on non-pb; take the right string and format placeholders
-        String notifyMessage = plugin.getConfig().speedrunMessage();
-        if (isPb) {
-            notifyMessage = plugin.getConfig().speedrunPBMessage();
-        }
 
-        notifyMessage = notifyMessage
+        // pb or notifying on non-pb; take the right string and format placeholders
+        String pattern = isPb ? plugin.getConfig().speedrunPBMessage() : plugin.getConfig().speedrunMessage();
+        String notifyMessage = pattern
             .replaceAll("%USERNAME%", Utils.getPlayerName())
             .replaceAll("%QUEST%", questName)
             .replaceAll("%TIME%", duration)
             .replaceAll("%BEST%", pb);
-        NotificationBody<SpeedrunNotificationData> body = new NotificationBody<>();
-        body.setContent(notifyMessage);
-        SpeedrunNotificationData extra = new SpeedrunNotificationData();
-        extra.setQuestName(questName);
-        extra.setPersonalBest(bestTime.toString());
-        extra.setCurrentTime(currentTime.toString());
-        body.setExtra(extra);
-        body.setType(NotificationType.SPEEDRUN);
-        messageHandler.createMessage(plugin.getConfig().speedrunSendImage(), body);
+
+        createMessage(DinkPluginConfig::speedrunSendImage, NotificationBody.builder()
+            .content(notifyMessage)
+            .extra(new SpeedrunNotificationData(questName, bestTime.toString(), currentTime.toString()))
+            .type(NotificationType.SPEEDRUN)
+            .build());
     }
 
     private static final Pattern TIME_PATTERN = Pattern.compile("(?<minutes>\\d+):(?<seconds>\\d{2})\\.(?<fractional>\\d{2})");
 
-    public Duration parseTime(String in) {
+    private static Duration parseTime(String in) {
         Matcher m = TIME_PATTERN.matcher(in);
         if (!m.find()) return Duration.ofMillis(0);
         int minutes = Integer.parseInt(m.group("minutes"));

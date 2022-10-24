@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -16,18 +17,22 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     @Override
-    public void handleNotify() {
-        if (plugin.isIgnoredWorld()) return;
+    public boolean isEnabled() {
+        return plugin.getConfig().notifyDeath() && super.isEnabled();
+    }
+
+    private void handleNotify() {
         String notifyMessage = plugin.getConfig().deathNotifyMessage()
             .replaceAll("%USERNAME%", Utils.getPlayerName());
-        NotificationBody<Object> b = new NotificationBody<>();
-        b.setContent(notifyMessage);
-        b.setType(NotificationType.DEATH);
-        messageHandler.createMessage(plugin.getConfig().deathSendImage(), b);
+
+        createMessage(DinkPluginConfig::collectionSendImage, NotificationBody.builder()
+            .content(notifyMessage)
+            .type(NotificationType.DEATH)
+            .build());
     }
 
     public void onActorDeath(ActorDeath actor) {
-        if (plugin.getConfig().notifyDeath() && plugin.getClient().getLocalPlayer() == actor.getActor()) {
+        if (isEnabled() && plugin.getClient().getLocalPlayer() == actor.getActor()) {
             this.handleNotify();
         }
     }
