@@ -27,7 +27,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
-import net.runelite.client.game.WorldService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
@@ -41,7 +40,7 @@ import javax.inject.Inject;
 @PluginDescriptor(
     name = "Dink",
     description = "A notifier for sending webhooks to Discord or other custom destinations",
-    tags = {"loot","logger","collection","pet","death","xp","level","notifications","discord","speedrun"}
+    tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun" }
 )
 public class DinkPlugin extends Plugin {
     @Inject
@@ -59,9 +58,6 @@ public class DinkPlugin extends Plugin {
     @Inject
     @Getter
     private ItemManager itemManager;
-    @Inject
-    @Getter
-    private WorldService worldService;
 
     @Getter
     private final DiscordMessageHandler messageHandler = new DiscordMessageHandler(this);
