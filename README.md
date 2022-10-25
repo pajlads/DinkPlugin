@@ -1,7 +1,7 @@
 # Dink
 
 This is a fork of Universal Discord Notifier. It doesn't strictly stick to the Discord webhook format, it has a bunch of
-added a bunch of metadata that allows the webhook server to analyze messages or even generate its own.
+added metadata that allows the webhook server to analyze messages or even generate its own.
 
 ## Other Setup
 
