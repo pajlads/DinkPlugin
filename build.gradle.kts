@@ -20,7 +20,8 @@ lombok {
 }
 
 dependencies {
-    implementation(group = "com.google.guava", name = "guava", version = "31.1-jre") // runelite has outdated version with CVEs
+    // runelite has outdated version with CVEs
+    implementation(group = "com.google.guava", name = "guava", version = "31.1-jre")
 
     val runeLiteVersion = "1.9.1"
     compileOnly(group = "net.runelite", name = "client", version = runeLiteVersion)
