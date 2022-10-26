@@ -33,6 +33,8 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.9.0"))
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter")
+
+    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib")
 }
 
 group = "dinkplugin"
@@ -42,14 +44,6 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
-}
-
-configurations.compileClasspath {
-    exclude(group = "org.jetbrains.kotlin")
-}
-
-configurations.runtimeClasspath {
-    exclude(group = "org.jetbrains.kotlin")
 }
 
 tasks.withType<Test> {
