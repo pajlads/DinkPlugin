@@ -1,6 +1,14 @@
 # Unreleased
 
-# 1.0.0
+## 1.0.2
+
+- Dev: Adapt build for plugin-hub requirements. (#45, #46, #47)
+
+## 1.0.1
+
+- Dev: Fix gradle build file constraints.
+
+## 1.0.0
 
 - Major: Add speedrun notifications (#23)
 - Minor: Add total value pattern for loot and clue scrolls (#33)
