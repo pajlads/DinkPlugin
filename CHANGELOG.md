@@ -1,5 +1,8 @@
 # Unreleased
 
+- Dev: Update RuneLite API from to v1.9.3. (#49)
+- Dev: Fix `@Singular` warning caused by downgrading lombok. (#49)
+
 ## 1.0.2
 
 - Dev: Adapt build for plugin-hub requirements. (#45, #46, #47)
