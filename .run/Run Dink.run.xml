@@ -1,8 +1,5 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run Dink" type="Application" factoryName="Application">
-    <envs>
-      <env name="DINK_DEBUG" value="true" />
-    </envs>
     <option name="MAIN_CLASS_NAME" value="dinkplugin.DinkTest" />
     <module name="dinkplugin.test" />
     <option name="PROGRAM_PARAMETERS" value="--debug --developer-mode" />
