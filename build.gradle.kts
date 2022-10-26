@@ -1,10 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
+val dinkDebug: Boolean = "true" == System.getenv("DINK_DEBUG")
+
 plugins {
     java
-    id("org.jetbrains.kotlin.jvm") version "1.7.20" apply false
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("io.freefair.lombok") version "6.5.1"
+    if ("true" == System.getenv("DINK_DEBUG")) {
+        id("org.jetbrains.kotlin.jvm") version "1.7.20" apply false
+    }
 }
 
 repositories {
@@ -15,11 +18,14 @@ repositories {
     mavenCentral()
 }
 
-lombok {
-    version.set("1.18.24")
-}
-
 dependencies {
+    // manual lombok since using the plugin requires extra work for runelite plugin hub
+    val lombokVersion = "1.18.24"
+    compileOnly(group = "org.projectlombok", name = "lombok", version = lombokVersion)
+    annotationProcessor(group = "org.projectlombok", name = "lombok", version = lombokVersion)
+    testCompileOnly(group = "org.projectlombok", name = "lombok", version = lombokVersion)
+    testAnnotationProcessor(group = "org.projectlombok", name = "lombok", version = lombokVersion)
+
     // runelite has outdated version with CVEs
     implementation(group = "com.google.guava", name = "guava", version = "31.1-jre")
 
@@ -31,10 +37,11 @@ dependencies {
     testImplementation(group = "net.runelite", name = "client", version = runeLiteVersion)
     testImplementation(group = "net.runelite", name = "jshell", version = runeLiteVersion)
 
-    testImplementation(platform("org.junit:junit-bom:5.9.0"))
-    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter")
-
-    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib")
+    if (dinkDebug) {
+        testImplementation(platform("org.junit:junit-bom:5.9.0"))
+        testImplementation(group = "org.junit.jupiter", name = "junit-jupiter")
+        testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib")
+    }
 }
 
 group = "dinkplugin"
@@ -47,11 +54,15 @@ tasks.withType<JavaCompile> {
 }
 
 tasks.withType<Test> {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
+    if (dinkDebug) apply(plugin = "org.jetbrains.kotlin.jvm")
 }
 
 tasks.test {
-    useJUnitPlatform()
+    if (dinkDebug) {
+        useJUnitPlatform()
+    } else {
+        enabled = false
+    }
 }
 
 tasks.named<ShadowJar>("shadowJar") {
