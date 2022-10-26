@@ -1,13 +1,5 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
-val dinkDebug: Boolean = "true" == System.getenv("DINK_DEBUG")
-
 plugins {
     java
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-    if ("true" == System.getenv("DINK_DEBUG")) {
-        id("org.jetbrains.kotlin.jvm") version "1.7.20" apply false
-    }
 }
 
 repositories {
@@ -26,9 +18,6 @@ dependencies {
     testCompileOnly(group = "org.projectlombok", name = "lombok", version = lombokVersion)
     testAnnotationProcessor(group = "org.projectlombok", name = "lombok", version = lombokVersion)
 
-    // runelite has outdated version with CVEs
-    implementation(group = "com.google.guava", name = "guava", version = "31.1-jre")
-
     // avoid excluding jetbrains annotations
     compileOnly(group = "org.jetbrains", name = "annotations", version = "23.0.0")
 
@@ -37,11 +26,10 @@ dependencies {
     testImplementation(group = "net.runelite", name = "client", version = runeLiteVersion)
     testImplementation(group = "net.runelite", name = "jshell", version = runeLiteVersion)
 
-    if (dinkDebug) {
-        testImplementation(platform("org.junit:junit-bom:5.9.0"))
-        testImplementation(group = "org.junit.jupiter", name = "junit-jupiter")
-        testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib")
-    }
+    val junitVersion = "5.5.2" // max version before junit-bom was added to pom files, due to runelite requirements
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junitVersion)
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = junitVersion)
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
 }
 
 group = "dinkplugin"
@@ -53,22 +41,30 @@ tasks.withType<JavaCompile> {
     targetCompatibility = "1.8"
 }
 
-tasks.withType<Test> {
-    if (dinkDebug) apply(plugin = "org.jetbrains.kotlin.jvm")
-}
-
 tasks.test {
-    if (dinkDebug) {
-        useJUnitPlatform()
-    } else {
-        enabled = false
-    }
+    useJUnitPlatform()
 }
 
-tasks.named<ShadowJar>("shadowJar") {
-    from(sourceSets.test.get().output)
-    configurations += project.configurations.testRuntimeClasspath.get()
+tasks.register(name = "shadowJar", type = Jar::class) {
+    dependsOn(configurations.testRuntimeClasspath)
     manifest {
         attributes(mapOf("Main-Class" to "dinkplugin.DinkTest"))
     }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(sourceSets.main.get().output)
+    from(sourceSets.test.get().output)
+    from({
+        configurations.testRuntimeClasspath.get().map {
+            if (it.isDirectory) it else zipTree(it)
+        }
+    })
+    exclude("META-INF/INDEX.LIST")
+    exclude("META-INF/*.SF")
+    exclude("META-INF/*.DSA")
+    exclude("META-INF/*.RSA")
+    exclude("**/module-info.class")
+
+    archiveClassifier.set("shadow")
+    archiveFileName.set(rootProject.name + "-" + project.version + "-all.jar")
 }
