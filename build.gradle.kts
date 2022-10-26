@@ -11,22 +11,22 @@ repositories {
 }
 
 dependencies {
-    // manual lombok since using the plugin requires extra work for runelite plugin hub
+    // old version and annotation processor approach due to runelite plugin hub verification restrictions
     val lombokVersion = "1.18.20"
     compileOnly(group = "org.projectlombok", name = "lombok", version = lombokVersion)
     annotationProcessor(group = "org.projectlombok", name = "lombok", version = lombokVersion)
     testCompileOnly(group = "org.projectlombok", name = "lombok", version = lombokVersion)
     testAnnotationProcessor(group = "org.projectlombok", name = "lombok", version = lombokVersion)
 
-    // avoid excluding jetbrains annotations
+    // this version of annotations is verified by runelite
     compileOnly(group = "org.jetbrains", name = "annotations", version = "23.0.0")
 
-    val runeLiteVersion = "1.9.1"
+    val runeLiteVersion = "1.9.3"
     compileOnly(group = "net.runelite", name = "client", version = runeLiteVersion)
     testImplementation(group = "net.runelite", name = "client", version = runeLiteVersion)
     testImplementation(group = "net.runelite", name = "jshell", version = runeLiteVersion)
 
-    val junitVersion = "5.5.2" // max version before junit-bom was added to pom files, due to runelite requirements
+    val junitVersion = "5.5.2" // max version before junit-bom was added to pom files, due to runelite restrictions
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junitVersion)
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = junitVersion)
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
