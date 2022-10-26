@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     // manual lombok since using the plugin requires extra work for runelite plugin hub
-    val lombokVersion = "1.18.24"
+    val lombokVersion = "1.18.20"
     compileOnly(group = "org.projectlombok", name = "lombok", version = lombokVersion)
     annotationProcessor(group = "org.projectlombok", name = "lombok", version = lombokVersion)
     testCompileOnly(group = "org.projectlombok", name = "lombok", version = lombokVersion)
