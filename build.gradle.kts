@@ -23,6 +23,9 @@ dependencies {
     // runelite has outdated version with CVEs
     implementation(group = "com.google.guava", name = "guava", version = "31.1-jre")
 
+    // avoid excluding jetbrains annotations
+    compileOnly(group = "org.jetbrains", name = "annotations", version = "23.0.0")
+
     val runeLiteVersion = "1.9.1"
     compileOnly(group = "net.runelite", name = "client", version = runeLiteVersion)
     testImplementation(group = "net.runelite", name = "client", version = runeLiteVersion)
@@ -39,6 +42,14 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
+}
+
+configurations.compileClasspath {
+    exclude(group = "org.jetbrains.kotlin")
+}
+
+configurations.runtimeClasspath {
+    exclude(group = "org.jetbrains.kotlin")
 }
 
 tasks.withType<Test> {
