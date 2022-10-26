@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Singular;
 import lombok.Value;
 
 import java.util.LinkedList;
@@ -19,7 +18,7 @@ public class NotificationBody<T> {
     private T extra;
     private String content;
     private String playerName;
-    @Singular
+    @Builder.Default
     private List<Embed> embeds = new LinkedList<>();
 
     @Value
