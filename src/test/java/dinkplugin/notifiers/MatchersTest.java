@@ -146,8 +146,27 @@ class MatchersTest {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
+                // standard kill count string
                 Arguments.of("Your King Black Dragon kill count is: 581.", Pair.of("King Black Dragon", 581)),
-                Arguments.of("Your Cerberus kill count is: 3273.", Pair.of("Cerberus", 3273))
+                Arguments.of("Your Cerberus kill count is: 3273.", Pair.of("Cerberus", 3273)),
+                Arguments.of("Your K'ril Tsutsaroth kill count is: 481", Pair.of("K'ril Tsutsaroth", 481)),
+                Arguments.of("Your TzTok-Jad kill count is: 46", Pair.of("TzTok-Jad", 46)),
+
+                // skilling special case
+                Arguments.of("Your subdued Wintertodt count is: 359", Pair.of("Wintertodt", 359)),
+
+                // minigame special cases
+                Arguments.of("Your Barrows chest count is: 268", Pair.of("Barrows", 268)),
+                Arguments.of("Your Gauntlet completion count is: 8", Pair.of("Crystalline Hunllef", 8)),
+                Arguments.of("Your Corrupted Gauntlet completion count is: 109", Pair.of("Corrupted Hunllef", 109)),
+
+                // raid special cases
+                Arguments.of("Your completed Theatre of Blood count is: 951", Pair.of("Theatre of Blood", 951)),
+                Arguments.of("Your completed Theatre of Blood: Hard Mode count is: 2", Pair.of("Theatre of Blood: Hard Mode", 2)),
+                Arguments.of("Your completed Chambers of Xeric count is: 138", Pair.of("Chambers of Xeric", 138)),
+                Arguments.of("Your completed Chambers of Xeric Challenge Mode count is: 138", Pair.of("Chambers of Xeric Challenge Mode", 138)),
+                Arguments.of("Your completed Tombs of Amascut count is: 101", Pair.of("Tombs of Amascut", 101)),
+                Arguments.of("Your completed Tombs of Amascut: Expert Mode count is: 3", Pair.of("Tombs of Amascut: Expert Mode", 3))
             );
         }
     }

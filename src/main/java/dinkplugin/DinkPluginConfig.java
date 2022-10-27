@@ -502,7 +502,7 @@ public interface DinkPluginConfig extends Config {
         section = killCountSection
     )
     default String killCountMessage() {
-        return "%USERNAME% has defeated %BOSS% with a kill count of %COUNT%";
+        return "%USERNAME% has defeated %BOSS% with a completion count of %COUNT%";
     }
 
 }
