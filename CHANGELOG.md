@@ -1,5 +1,6 @@
 # Unreleased
 
+- Major: Add boss kill count notifications. (#50)
 - Dev: Update RuneLite API from v1.9.1 to v1.9.3. (#49)
 - Dev: Fix `@Singular` warning caused by downgrading lombok. (#49)
 
