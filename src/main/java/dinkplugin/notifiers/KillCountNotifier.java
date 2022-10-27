@@ -5,6 +5,7 @@ import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.notifiers.data.BossNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -32,10 +33,10 @@ public class KillCountNotifier extends BaseNotifier {
 
     public void onGameMessage(String message) {
         if (isEnabled())
-            parse(message).ifPresent(pair -> handleKill(pair.getLeft(), pair.getRight()));
+            parse(message).ifPresent(pair -> handleKill(pair.getLeft(), pair.getRight(), message));
     }
 
-    private void handleKill(String boss, int killCount) {
+    private void handleKill(String boss, int killCount, String rawMessage) {
         if (!checkKillInterval(killCount)) return;
 
         String player = Utils.getPlayerName(plugin.getClient());
@@ -47,6 +48,7 @@ public class KillCountNotifier extends BaseNotifier {
 
         createMessage(DinkPluginConfig::killCountSendImage, NotificationBody.builder()
             .content(content)
+            .extra(new BossNotificationData(boss, killCount, rawMessage))
             .playerName(player)
             .type(NotificationType.KILL_COUNT)
             .build());
