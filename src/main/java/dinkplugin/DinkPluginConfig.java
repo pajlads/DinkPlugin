@@ -484,10 +484,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "killCountInitial",
+        name = "Initial Boss Kill",
+        description = "Notify on the first ever kill of any boss",
+        position = 39,
+        section = killCountSection
+    )
+    default boolean killCountNotifyInitial() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "killCountInterval",
         name = "Kill Count Interval",
         description = "Interval between when a notification should be sent",
-        position = 39,
+        position = 40,
         section = killCountSection
     )
     default int killCountInterval() {
@@ -498,7 +509,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "killCountMessage",
         name = "Notification Message",
         description = "The message to be sent to the webhook. Use %USERNAME% to insert your username, %BOSS% to insert the NPC name, %COUNT% to insert the kill count",
-        position = 40,
+        position = 41,
         section = killCountSection
     )
     default String killCountMessage() {

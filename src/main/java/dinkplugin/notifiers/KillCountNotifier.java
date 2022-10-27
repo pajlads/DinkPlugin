@@ -53,7 +53,9 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private boolean checkKillInterval(int killCount) {
-        if (killCount == 1) return true; // always notify on first boss kill
+        if (killCount == 1 && plugin.getConfig().killCountNotifyInitial())
+            return true;
+
         int interval = plugin.getConfig().killCountInterval();
         return interval <= 1 || killCount % interval == 0;
     }
