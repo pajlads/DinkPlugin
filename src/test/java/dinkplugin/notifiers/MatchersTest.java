@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -122,6 +123,33 @@ class MatchersTest {
     void PetRegexDoesNotMatch(String message) {
         Matcher matcher = PetNotifier.PET_REGEX.matcher(message);
         assertFalse(matcher.find());
+    }
+
+    @ParameterizedTest(name = "Kill count message should trigger on: {0}")
+    @ArgumentsSource(KillCountProvider.class)
+    void killCountRegexFindsMatch(String message, Pair<String, Integer> expected) {
+        assertEquals(expected, KillCountNotifier.parse(message).orElse(null));
+    }
+
+    @ParameterizedTest(name = "Kill count message should not trigger on: {0}")
+    @ValueSource(
+        strings = {
+            "Forsen: forsen",
+            "Your heriboar harvest count is: 69."
+        }
+    )
+    void killCountRegexDoesNotMatch(String message) {
+        assertFalse(KillCountNotifier.parse(message).isPresent());
+    }
+
+    private static class KillCountProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
+            return Stream.of(
+                Arguments.of("Your King Black Dragon kill count is: 581.", Pair.of("King Black Dragon", 581)),
+                Arguments.of("Your Cerberus kill count is: 3273.", Pair.of("Cerberus", 3273))
+            );
+        }
     }
 
 }
