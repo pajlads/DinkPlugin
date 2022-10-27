@@ -484,25 +484,25 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "killCountInterval",
+        name = "Kill Count Interval",
+        description = "Interval between when a notification should be sent",
+        position = 39,
+        section = killCountSection
+    )
+    default int killCountInterval() {
+        return 50;
+    }
+
+    @ConfigItem(
         keyName = "killCountMessage",
         name = "Notification Message",
         description = "The message to be sent to the webhook. Use %USERNAME% to insert your username, %BOSS% to insert the NPC name, %COUNT% to insert the kill count",
-        position = 39,
+        position = 40,
         section = killCountSection
     )
     default String killCountMessage() {
         return "%USERNAME% has defeated %BOSS% with a kill count of %COUNT%";
-    }
-
-    @ConfigItem(
-        keyName = "killCountInterval",
-        name = "Kill Count Interval",
-        description = "Interval between when a notification should be sent",
-        position = 40,
-        section = killCountSection
-    )
-    default int killCountInterval() {
-        return 10;
     }
 
 }
