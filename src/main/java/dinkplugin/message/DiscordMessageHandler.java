@@ -65,11 +65,17 @@ public class DiscordMessageHandler {
                     );
                 } catch (IOException e) {
                     log.warn("There was an error creating bytes from captured image", e);
+                } finally {
+                    sendToMultiple(urlList, reqBodyBuilder);
                 }
             });
+        } else {
+            sendToMultiple(urlList, reqBodyBuilder);
         }
+    }
 
-        urlList.forEach(url -> sendMessage(url, reqBodyBuilder));
+    private void sendToMultiple(Collection<HttpUrl> urls, MultipartBody.Builder reqBodyBuilder) {
+        urls.forEach(url -> sendMessage(url, reqBodyBuilder));
     }
 
     private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody) {
