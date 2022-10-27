@@ -9,5 +9,6 @@ public enum NotificationType {
     PET,
     QUEST,
     SLAYER,
-    SPEEDRUN
+    SPEEDRUN,
+    KILL_COUNT
 }

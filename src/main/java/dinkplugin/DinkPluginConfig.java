@@ -70,6 +70,13 @@ public interface DinkPluginConfig extends Config {
     )
     String speedrunSection = "Speedruns";
 
+    @ConfigSection(
+        name = "Kill Count",
+        description = "Settings for notifying when you kill a boss",
+        position = 36
+    )
+    String killCountSection = "Kill Count";
+
     @ConfigItem(
         keyName = "discordWebhook",
         name = "Discord Webhook",
@@ -453,4 +460,49 @@ public interface DinkPluginConfig extends Config {
     default String speedrunMessage() {
         return "%USERNAME% has just finished a speedrun of %QUEST% with a time of %TIME% (their PB is %BEST%)";
     }
+
+    @ConfigItem(
+        keyName = "killCountEnabled",
+        name = "Enable Kill Count",
+        description = "Enable notifications for boss kill count milestones",
+        position = 37,
+        section = killCountSection
+    )
+    default boolean notifyKillCount() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "killCountSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 38,
+        section = killCountSection
+    )
+    default boolean killCountSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "killCountMessage",
+        name = "Notification Message",
+        description = "The message to be sent to the webhook. Use %USERNAME% to insert your username, %BOSS% to insert the NPC name, %COUNT% to insert the kill count",
+        position = 39,
+        section = killCountSection
+    )
+    default String killCountMessage() {
+        return "%USERNAME% has defeated %BOSS% with a kill count of %COUNT%";
+    }
+
+    @ConfigItem(
+        keyName = "killCountInterval",
+        name = "Kill Count Interval",
+        description = "Interval between when a notification should be sent",
+        position = 40,
+        section = killCountSection
+    )
+    default int killCountInterval() {
+        return 10;
+    }
+
 }
