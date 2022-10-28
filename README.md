@@ -6,7 +6,7 @@ added metadata that allows the webhook server to analyze messages or even genera
 ## Other Setup
 
 As the collection notification uses the chat message to determine when a collection log item has been added, these
-messages need to be enable in game. You can find this option
+messages need to be enabled in game. You can find this option
 in `Settings > All Settings > Chat > Collection log - New addition notification`
 
 ![img.png](img.png)
@@ -168,6 +168,24 @@ JSON:
     ]
   },
   "type": "CLUE"
+}
+```
+
+#### Kill Count:
+
+`%BOSS%` will be replaced with the boss name (be it the NPC, raid, etc.)
+
+`%COUNT%` will be replaced with the kill count (or, generically: completion count)
+
+```json5
+{
+  "content": "%USERNAME% has defeated %BOSS% with a completion count of %COUNT%",
+  "extra": {
+    "boss": "King Black Dragon",
+    "count": 69,
+    "gameMessage": "Your King Black Dragon kill count is: 69."
+  },
+  "type": "KILL_COUNT"
 }
 ```
 
