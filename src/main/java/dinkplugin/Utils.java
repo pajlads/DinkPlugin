@@ -49,6 +49,9 @@ public class Utils {
         return "https://static.runelite.net/cache/item/icon/" + itemId + ".png";
     }
 
+    public static String getNpcImageUrl(int npcId) {
+        return String.format("https://chisel.weirdgloop.org/static/img/osrs-npc/%d_128.png", npcId);
+    }
 
     // Credit to: https://github.com/oliverpatrick/Enhanced-Discord-Notifications/blob/master/src/main/java/com/enhanceddiscordnotifications/EnhancedDiscordNotificationsPlugin.java
     // This method existed and seemed fairly solid.

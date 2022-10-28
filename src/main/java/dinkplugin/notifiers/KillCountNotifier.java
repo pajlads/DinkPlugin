@@ -1,17 +1,20 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.NPC;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +42,7 @@ public class KillCountNotifier extends BaseNotifier {
     private void handleKill(String boss, int killCount, String rawMessage) {
         if (!checkKillInterval(killCount)) return;
 
+        // Assemble content
         String player = Utils.getPlayerName(plugin.getClient());
         String content = StringUtils.replaceEach(
             plugin.getConfig().killCountMessage(),
@@ -46,12 +50,30 @@ public class KillCountNotifier extends BaseNotifier {
             new String[] { player, boss, String.valueOf(killCount) }
         );
 
-        createMessage(DinkPluginConfig::killCountSendImage, NotificationBody.builder()
-            .content(content)
-            .extra(new BossNotificationData(boss, killCount, rawMessage))
-            .playerName(player)
-            .type(NotificationType.KILL_COUNT)
-            .build());
+        // Prepare body
+        NotificationBody.NotificationBodyBuilder<BossNotificationData> body =
+            NotificationBody.<BossNotificationData>builder()
+                .content(content)
+                .extra(new BossNotificationData(boss, killCount, rawMessage))
+                .playerName(player)
+                .type(NotificationType.KILL_COUNT);
+
+        // Add embed if not screenshotting
+        boolean screenshot = plugin.getConfig().killCountSendImage();
+        if (!screenshot)
+            Arrays.stream(plugin.getClient().getCachedNPCs())
+                .filter(Objects::nonNull)
+                .filter(npc -> boss.equalsIgnoreCase(npc.getName()))
+                .findAny()
+                .map(NPC::getId)
+                .map(Utils::getNpcImageUrl)
+                .map(NotificationBody.UrlEmbed::new)
+                .map(NotificationBody.Embed::new)
+                .map(Collections::singletonList)
+                .ifPresent(body::embeds);
+
+        // Call webhook
+        createMessage(c -> screenshot, body.build());
     }
 
     private boolean checkKillInterval(int killCount) {
