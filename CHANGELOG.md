@@ -2,6 +2,8 @@
 
 - Major: Add boss kill count notifications. (#50)
 - Bugfix: Ensure send image configs are adhered to. (#51)
+- Dev: camelCase test methods. (#52)
+- Dev: Remove leftover `gradle.properties` file. (#52)
 - Dev: Update RuneLite API from v1.9.1 to v1.9.3. (#49)
 - Dev: Fix `@Singular` warning caused by downgrading lombok. (#49)
 
