@@ -480,7 +480,7 @@ public interface DinkPluginConfig extends Config {
         section = killCountSection
     )
     default boolean killCountSendImage() {
-        return true;
+        return false;
     }
 
     @ConfigItem(
