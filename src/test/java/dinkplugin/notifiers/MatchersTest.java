@@ -18,13 +18,13 @@ class MatchersTest {
 
     @ParameterizedTest(name = "Slayer task completion message should trigger {0}")
     @ArgumentsSource(SlayerTaskProvider.class)
-    void SlayerTaskCompletionRegexFindsMatch(String message, String task) {
+    void slayerTaskCompletionRegexFindsMatch(String message, String task) {
         Matcher matcher = SlayerNotifier.SLAYER_TASK_REGEX.matcher(message);
         assertTrue(matcher.find());
         assertEquals(task, matcher.group("task"));
     }
 
-    @ParameterizedTest(name = "Slayer task completion message should trigger {0}")
+    @ParameterizedTest(name = "Slayer task completion message should not trigger {0}")
     @ValueSource(
         strings = {
             "Forsen: forsen",
@@ -32,7 +32,7 @@ class MatchersTest {
             "You've completed 234 tasks and received 15 points, giving you a total of 801; return to a Slayer master."
         }
     )
-    void SlayerTaskCompletionRegexDoesNotMatch(String message) {
+    void slayerTaskCompletionRegexDoesNotMatch(String message) {
         Matcher matcher = SlayerNotifier.SLAYER_TASK_REGEX.matcher(message);
         assertFalse(matcher.find());
     }
@@ -74,7 +74,7 @@ class MatchersTest {
             "Forsen: forsen" // todo: add more bad examples
         }
     )
-    void CollectionLogRegexDoesNotMatch(String message) {
+    void collectionLogRegexDoesNotMatch(String message) {
         Matcher matcher = CollectionNotifier.COLLECTION_LOG_REGEX.matcher(message);
         assertFalse(matcher.find());
     }
@@ -107,7 +107,7 @@ class MatchersTest {
             "You feel something weird sneaking into your backpack."
         }
     )
-    void PetRegexFindsMatch(String message) {
+    void petRegexFindsMatch(String message) {
         Matcher matcher = PetNotifier.PET_REGEX.matcher(message);
         assertTrue(matcher.find());
     }
@@ -119,7 +119,7 @@ class MatchersTest {
             "You feel like you forgot to turn the stove off"
         }
     )
-    void PetRegexDoesNotMatch(String message) {
+    void petRegexDoesNotMatch(String message) {
         Matcher matcher = PetNotifier.PET_REGEX.matcher(message);
         assertFalse(matcher.find());
     }
