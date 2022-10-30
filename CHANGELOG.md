@@ -1,6 +1,9 @@
 # Unreleased
 
 - Major: Add boss kill count notifications. (#50)
+
+## 1.0.3
+
 - Bugfix: Ensure send image configs are adhered to. (#51)
 - Dev: camelCase test methods. (#52)
 - Dev: Remove leftover `gradle.properties` file. (#52)
