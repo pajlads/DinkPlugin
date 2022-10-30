@@ -1,3 +1,9 @@
-When making a release, ensure you update the version in build.gradle.kts, a tag is created, and a release has been made.
+# Making a release
 
-TODO: Better docs for how to test & build
+1. Update the changelog - Make a new section for all previously unreleased changes
+1. Update the version in `build.gradle.kts`
+1. Make a tag on the main branch commit
+1. Make a GitHub release
+1. Optionally update the plugin in the [RuneLite plugin hub](https://github.com/runelite/plugin-hub)
+
+TODO: Add proper test steps
