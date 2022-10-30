@@ -161,10 +161,12 @@ class MatchersTest {
                 Arguments.of("Your Corrupted Gauntlet completion count is: 109", Pair.of("Corrupted Hunllef", 109)),
 
                 // raid special cases
+                Arguments.of("Your completed Theatre of Blood: Entry Mode count is: 1", Pair.of("Theatre of Blood: Entry Mode", 1)),
                 Arguments.of("Your completed Theatre of Blood count is: 951", Pair.of("Theatre of Blood", 951)),
                 Arguments.of("Your completed Theatre of Blood: Hard Mode count is: 2", Pair.of("Theatre of Blood: Hard Mode", 2)),
                 Arguments.of("Your completed Chambers of Xeric count is: 138", Pair.of("Chambers of Xeric", 138)),
                 Arguments.of("Your completed Chambers of Xeric Challenge Mode count is: 138", Pair.of("Chambers of Xeric Challenge Mode", 138)),
+                Arguments.of("Your completed Tombs of Amascut: Entry Mode count is: 7", Pair.of("Tombs of Amascut: Entry Mode", 7)),
                 Arguments.of("Your completed Tombs of Amascut count is: 101", Pair.of("Tombs of Amascut", 101)),
                 Arguments.of("Your completed Tombs of Amascut: Expert Mode count is: 3", Pair.of("Tombs of Amascut: Expert Mode", 3))
             );
