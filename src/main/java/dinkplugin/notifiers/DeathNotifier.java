@@ -41,6 +41,7 @@ public class DeathNotifier extends BaseNotifier {
         for (Player other : plugin.getClient().getPlayers()) {
             if (other.getInteracting() == localPlayer) {
                 pker = other;
+                break;
             }
         }
         ItemContainer inventory = plugin.getClient().getItemContainer(InventoryID.INVENTORY);
