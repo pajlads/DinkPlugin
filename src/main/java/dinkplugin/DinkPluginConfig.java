@@ -310,7 +310,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "slayerEnabled",
         name = "Enable Slayer",
         description = "Enable notifications for when you complete a slayer task",
-        position = 22,
+        position = 21,
         section = slayerSection
     )
     default boolean notifySlayer() {
@@ -321,7 +321,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "slayerSendImage",
         name = "Send Image",
         description = "Send image with the notification",
-        position = 23,
+        position = 22,
         section = slayerSection
     )
     default boolean slayerSendImage() {
@@ -332,7 +332,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "slayerNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %TASK% to insert your task, %POINTS% to show how many points you obtained and %TASKCOUNT% to show how many tasks you have completed.",
-        position = 24,
+        position = 23,
         section = slayerSection
     )
     default String slayerNotifyMessage() {
@@ -343,7 +343,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "questEnabled",
         name = "Enable Quest",
         description = "Enable notifications for when you complete a quest",
-        position = 26,
+        position = 24,
         section = questSection
     )
     default boolean notifyQuest() {
@@ -354,7 +354,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "questSendImage",
         name = "Send Image",
         description = "Send image with the notification",
-        position = 27,
+        position = 25,
         section = questSection
     )
     default boolean questSendImage() {
@@ -365,7 +365,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "questNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %QUEST% to insert the quest that you completed",
-        position = 28,
+        position = 26,
         section = questSection
     )
     default String questNotifyMessage() {
