@@ -40,7 +40,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 
 `%VALUELOST%` will be replaced with the price of the items you lost. If you died in PvP, `%PKER%` will be replaced with the name of your killer.
 
-**Note**: If *Distinguish PvP deaths* is disabled, all deaths will be treated as non-PvP.
+**Note**: If *Distinguish PvP deaths* is disabled, the message content will be the non-PvP version.
 
 JSON for non-PvP death:
 ```json5
