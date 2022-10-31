@@ -270,7 +270,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "deathNotifMessage",
         name = "Notification Message",
-        description = "The message to be sent through the webhook. Use %USERNAME% to insert your username",
+        description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %VALUELOST% to insert the GE value of the stuff you lost",
         position = 18,
         section = deathSection
     )
@@ -279,10 +279,31 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "deathNotifPvpEnabled",
+        name = "Distinguish PvP deaths",
+        description = "Should the plugin use a different message for dying in PvP?",
+        position = 19,
+        section = deathSection
+    )
+    default boolean deathNotifPvpEnabled() {
+        return true;
+    }
+    @ConfigItem(
+        keyName = "deathNotifPvpMessage",
+        name = "PvP notification message",
+        description = "Should the plugin use a different message for dying in PvP? Use %PKER% to insert the killer, %USERNAME% to insert your username, %VALUELOST% to insert the GE value of the stuff you lost",
+        position = 20,
+        section = deathSection
+    )
+    default String deathNotifPvpMessage() {
+        return "%USERNAME% has just been PKed by %PKER% for %VALUELOST% gp...";
+    }
+
+    @ConfigItem(
         keyName = "slayerEnabled",
         name = "Enable Slayer",
         description = "Enable notifications for when you complete a slayer task",
-        position = 19,
+        position = 22,
         section = slayerSection
     )
     default boolean notifySlayer() {
@@ -293,7 +314,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "slayerSendImage",
         name = "Send Image",
         description = "Send image with the notification",
-        position = 20,
+        position = 23,
         section = slayerSection
     )
     default boolean slayerSendImage() {
@@ -304,7 +325,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "slayerNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %TASK% to insert your task, %POINTS% to show how many points you obtained and %TASKCOUNT% to show how many tasks you have completed.",
-        position = 21,
+        position = 24,
         section = slayerSection
     )
     default String slayerNotifyMessage() {
@@ -315,7 +336,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "questEnabled",
         name = "Enable Quest",
         description = "Enable notifications for when you complete a quest",
-        position = 22,
+        position = 26,
         section = questSection
     )
     default boolean notifyQuest() {
@@ -326,7 +347,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "questSendImage",
         name = "Send Image",
         description = "Send image with the notification",
-        position = 23,
+        position = 27,
         section = questSection
     )
     default boolean questSendImage() {
@@ -337,7 +358,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "questNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %QUEST% to insert the quest that you completed",
-        position = 24,
+        position = 28,
         section = questSection
     )
     default String questNotifyMessage() {
@@ -348,7 +369,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "clueEnabled",
         name = "Enable Clue Scrolls",
         description = "Enable notifications for when you complete a clue scroll",
-        position = 25,
+        position = 27,
         section = clueSection
     )
     default boolean notifyClue() {
@@ -359,7 +380,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "clueSendImage",
         name = "Send Image",
         description = "Send image with the notification",
-        position = 26,
+        position = 28,
         section = clueSection
     )
     default boolean clueSendImage() {
@@ -370,7 +391,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "clueShowItems",
         name = "Show Item Icons",
         description = "Show item icons gained from the clue",
-        position = 27,
+        position = 29,
         section = clueSection
     )
     default boolean clueShowItems() {
@@ -381,7 +402,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "clueMinValue",
         name = "Min Value",
         description = "The minimum value of the items to be shown",
-        position = 28,
+        position = 30,
         section = clueSection
     )
     default int clueMinValue() {
@@ -392,7 +413,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "clueNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %CLUE% to insert the clue type, %LOOT% to show the loot obtained and %COUNT% to insert how many of those clue types you have completed",
-        position = 29,
+        position = 31,
         section = clueSection
     )
     default String clueNotifyMessage() {
@@ -403,7 +424,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "speedrunEnabled",
         name = "Enable speedruns",
         description = "Enable notifications for when you complete a speedrun",
-        position = 31,
+        position = 32,
         section = speedrunSection
     )
     default boolean notifySpeedrun() {
@@ -414,7 +435,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "speedrunSendImage",
         name = "Send Image",
         description = "Send image with the notification",
-        position = 32,
+        position = 33,
         section = speedrunSection
     )
     default boolean speedrunSendImage() {
@@ -425,7 +446,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "speedrunPBOnly",
         name = "Notify on Personal Best only",
         description = "Enable notifications only for your best runs",
-        position = 33,
+        position = 34,
         section = speedrunSection
     )
     default boolean speedrunPBOnly() {
@@ -436,7 +457,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "speedrunPBMessage",
         name = "PB message",
         description = "%USERNAME% to insert your username, %QUEST% to insert the quest name, %TIME% to insert your new time",
-        position = 34,
+        position = 35,
         section = speedrunSection
     )
     default String speedrunPBMessage() {
@@ -447,7 +468,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "speedrunMessage",
         name = "Notification message",
         description = "%USERNAME% to insert your username, %QUEST% to insert the quest name, %TIME% to insert your new time, %BEST% to insert your PB",
-        position = 35,
+        position = 36,
         section = speedrunSection
     )
     default String speedrunMessage() {

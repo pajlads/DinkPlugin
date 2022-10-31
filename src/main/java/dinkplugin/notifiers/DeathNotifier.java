@@ -34,13 +34,11 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private void handleNotify() {
-        boolean isPvpDeth = false;
         Player localPlayer = plugin.getClient().getLocalPlayer();
-        Actor diedTo = null;
+        Actor pker = null;
         for (Player other : plugin.getClient().getPlayers()) {
             if (other.getInteracting() == localPlayer) {
-                isPvpDeth = true;
-                diedTo = other;
+                pker = other;
             }
         }
         ItemContainer stuff = plugin.getClient().getItemContainer(InventoryID.INVENTORY);
@@ -62,13 +60,17 @@ public class DeathNotifier extends BaseNotifier {
         }
         Integer losePrice = itemsByPrice.stream().skip(keepCount).map(Pair::getRight).reduce(Integer::sum).orElse(0);
 
-        String notifyMessage = plugin.getConfig().deathNotifyMessage()
-            .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()));
-        if (isPvpDeth) {
-            notifyMessage += " in pvp to " + diedTo.getName() + " and lost " + losePrice + "gp lol";
+        String template = plugin.getConfig().deathNotifyMessage();
+        if (pker != null && plugin.getConfig().deathNotifPvpEnabled()) {
+            template = plugin.getConfig().deathNotifPvpMessage();
         }
-
-
+        String notifyMessage = template
+            .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
+            .replace("%VALUELOST%", losePrice.toString());
+        if (pker != null && plugin.getConfig().deathNotifPvpEnabled()) {
+            notifyMessage = notifyMessage
+                .replace("%PKER%", pker.getName());
+        }
 
         createMessage(DinkPluginConfig::deathSendImage, NotificationBody.builder()
             .content(notifyMessage)
