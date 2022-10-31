@@ -4,7 +4,7 @@ import lombok.Value;
 
 @Value
 public class DeathNotificationData {
-    Integer valueLost;
+    Long valueLost;
     boolean isPvp;
     String pker;
 }

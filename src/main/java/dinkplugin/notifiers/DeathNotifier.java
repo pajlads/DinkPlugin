@@ -48,9 +48,9 @@ public class DeathNotifier extends BaseNotifier {
 
         assert inventory != null;
         assert equipment != null;
-        List<Pair<Item, Integer>> itemsByPrice = Stream.concat(Arrays.stream(inventory.getItems()), Arrays.stream(equipment.getItems()))
-            .map(item -> Pair.of(item, plugin.getItemManager().getItemPrice(item.getId()) * item.getQuantity()))
-            .sorted((item1, item2) -> item2.getRight() - item1.getRight())
+        List<Pair<Item, Long>> itemsByPrice = Stream.concat(Arrays.stream(inventory.getItems()), Arrays.stream(equipment.getItems()))
+            .map(item -> Pair.of(item, (long) (plugin.getItemManager().getItemPrice(item.getId())) * (long) (item.getQuantity())))
+            .sorted((item1, item2) -> Math.toIntExact(item2.getRight() - item1.getRight()))
             .collect(Collectors.toList());
 
         int keepCount = 3;
@@ -60,7 +60,7 @@ public class DeathNotifier extends BaseNotifier {
         if (plugin.getClient().isPrayerActive(Prayer.PROTECT_ITEM)) {
             keepCount += 1;
         }
-        Integer losePrice = itemsByPrice.stream().skip(keepCount).map(Pair::getRight).reduce(Integer::sum).orElse(0);
+        Long losePrice = itemsByPrice.stream().skip(keepCount).map(Pair::getRight).reduce(Long::sum).orElse(0L);
 
         String template = plugin.getConfig().deathNotifyMessage();
         if (pker != null && plugin.getConfig().deathNotifPvpEnabled()) {
