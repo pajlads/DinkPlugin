@@ -41,12 +41,12 @@ public class DeathNotifier extends BaseNotifier {
                 pker = other;
             }
         }
-        ItemContainer stuff = plugin.getClient().getItemContainer(InventoryID.INVENTORY);
+        ItemContainer inventory = plugin.getClient().getItemContainer(InventoryID.INVENTORY);
         ItemContainer equipment = plugin.getClient().getItemContainer(InventoryID.EQUIPMENT);
 
-        assert stuff != null;
+        assert inventory != null;
         assert equipment != null;
-        List<Pair<Item, Integer>> itemsByPrice = Stream.concat(Arrays.stream(stuff.getItems()), Arrays.stream(equipment.getItems()))
+        List<Pair<Item, Integer>> itemsByPrice = Stream.concat(Arrays.stream(inventory.getItems()), Arrays.stream(equipment.getItems()))
             .map(item -> Pair.of(item, plugin.getItemManager().getItemPrice(item.getId()) * item.getQuantity()))
             .sorted((item1, item2) -> item2.getRight() - item1.getRight())
             .collect(Collectors.toList());
