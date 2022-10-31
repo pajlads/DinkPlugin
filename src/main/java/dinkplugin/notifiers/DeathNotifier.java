@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -69,8 +70,9 @@ public class DeathNotifier extends BaseNotifier {
             .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
             .replace("%VALUELOST%", losePrice.toString());
         if (pker != null && plugin.getConfig().deathNotifPvpEnabled()) {
+            // player name hopefully isn't null
             notifyMessage = notifyMessage
-                .replace("%PKER%", pker.getName());
+                .replace("%PKER%", Objects.requireNonNull(pker.getName()));
         }
 
         createMessage(DinkPluginConfig::deathSendImage, NotificationBody.builder()
