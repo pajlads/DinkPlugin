@@ -5,6 +5,7 @@ import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.notifiers.data.DeathNotificationData;
 import net.runelite.api.*;
 import net.runelite.api.events.ActorDeath;
 import org.apache.commons.lang3.tuple.Pair;
@@ -74,6 +75,7 @@ public class DeathNotifier extends BaseNotifier {
 
         createMessage(DinkPluginConfig::deathSendImage, NotificationBody.builder()
             .content(notifyMessage)
+            .extra(new DeathNotificationData(losePrice, pker != null, pker != null ? pker.getName() : null))
             .type(NotificationType.DEATH)
             .build());
     }
