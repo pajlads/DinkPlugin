@@ -298,7 +298,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "deathNotifPvpMessage",
         name = "PvP notification message",
-        description = "Should the plugin use a different message for dying in PvP? Use %PKER% to insert the killer, %USERNAME% to insert your username, %VALUELOST% to insert the GE value of the stuff you lost",
+        description = "The message to be sent through the webhook. Use %PKER% to insert the killer, %USERNAME% to insert your username, %VALUELOST% to insert the GE value of the stuff you lost",
         position = 20,
         section = deathSection
     )
