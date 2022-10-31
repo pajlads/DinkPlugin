@@ -121,7 +121,37 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onActorDeath(ActorDeath actor) {
+//        Actor interactingWith = actor.getActor().getInteracting();
+        String interactingWithName = "";
+//        Actor diedTo = null;
+        for (Player other : this.getClient().getPlayers()) {
+            if (other.getInteracting() == actor.getActor()) {
+//                diedTo = other;
+                interactingWithName = other.getName();
+            }
+        }
+        log.info("something died: {} by {}", actor.getActor().getName(), interactingWithName);
         deathNotifier.onActorDeath(actor);
+    }
+
+    @Subscribe
+    public void onHitsplatApplied(HitsplatApplied splat) {
+        Actor interactingWith = splat.getActor().getInteracting();
+        String interactingWithName = "[nothing?]";
+        if (interactingWith != null) {
+            interactingWithName = interactingWith.getName();
+        }
+//        log.info("hitsplat applied: {} on {}, interacting with {}", splat.getHitsplat(), splat.getActor().getName(), interactingWithName);
+        StringBuilder cts = new StringBuilder();
+        for(ItemContainer ic : this.getClient().getItemContainers()) {
+            StringBuilder items = new StringBuilder();
+            for(Item item : ic.getItems() ) {
+                items.append(item.getId()).append("x").append(item.getQuantity()).append(", ");
+            }
+            cts.append(items).append("; ");
+        }
+
+//        log.info("test: {}", cts.toString());
     }
 
     @Subscribe
