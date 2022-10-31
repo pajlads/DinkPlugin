@@ -60,7 +60,11 @@ public class DeathNotifier extends BaseNotifier {
         if (plugin.getClient().isPrayerActive(Prayer.PROTECT_ITEM)) {
             keepCount += 1;
         }
-        Long losePrice = itemsByPrice.stream().skip(keepCount).map(Pair::getRight).reduce(Long::sum).orElse(0L);
+        Long losePrice = itemsByPrice.stream()
+            .skip(keepCount)
+            .map(Pair::getRight)
+            .reduce(Long::sum)
+            .orElse(0L);
 
         String template = plugin.getConfig().deathNotifyMessage();
         if (pker != null && plugin.getConfig().deathNotifPvpEnabled()) {
