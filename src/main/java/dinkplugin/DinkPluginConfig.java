@@ -45,35 +45,35 @@ public interface DinkPluginConfig extends Config {
     @ConfigSection(
         name = "Slayer",
         description = "Settings for notifying when you complete a slayer task",
-        position = 19
+        position = 21
     )
     String slayerSection = "Slayer";
 
     @ConfigSection(
         name = "Quests",
         description = "Settings for notifying when you complete a quest",
-        position = 22
+        position = 24
     )
     String questSection = "Quests";
 
     @ConfigSection(
         name = "Clue Scrolls",
         description = "Settings for notifying when you complete a clue scroll",
-        position = 25
+        position = 27
     )
     String clueSection = "Clue Scrolls";
 
     @ConfigSection(
         name = "Speedruns",
         description = "Settings for notifying when you finish a speedrun",
-        position = 30
+        position = 32
     )
     String speedrunSection = "Speedruns";
 
     @ConfigSection(
         name = "Kill Count",
         description = "Settings for notifying when you kill a boss",
-        position = 36
+        position = 37
     )
     String killCountSection = "Kill Count";
 
