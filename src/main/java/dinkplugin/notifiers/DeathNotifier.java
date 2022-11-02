@@ -2,12 +2,20 @@ package dinkplugin.notifiers;
 
 import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
+import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
-import dinkplugin.Utils;
+import dinkplugin.notifiers.data.DeathNotificationData;
+import net.runelite.api.*;
 import net.runelite.api.events.ActorDeath;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DeathNotifier extends BaseNotifier {
 
@@ -28,11 +36,53 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private void handleNotify() {
-        String notifyMessage = plugin.getConfig().deathNotifyMessage()
-            .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()));
+        Player localPlayer = plugin.getClient().getLocalPlayer();
+        Actor pker = null;
+        for (Player other : plugin.getClient().getPlayers()) {
+            if (other.getInteracting() == localPlayer) {
+                pker = other;
+                break;
+            }
+        }
+        ItemContainer inventory = plugin.getClient().getItemContainer(InventoryID.INVENTORY);
+        ItemContainer equipment = plugin.getClient().getItemContainer(InventoryID.EQUIPMENT);
+
+        assert inventory != null;
+        assert equipment != null;
+        List<Pair<Item, Long>> itemsByPrice = Stream.concat(Arrays.stream(inventory.getItems()), Arrays.stream(equipment.getItems()))
+            .map(item -> Pair.of(item, (long) (plugin.getItemManager().getItemPrice(item.getId())) * (long) (item.getQuantity())))
+            .sorted((item1, item2) -> Math.toIntExact(item2.getRight() - item1.getRight()))
+            .collect(Collectors.toList());
+
+        int keepCount = 3;
+        if (localPlayer.getSkullIcon() != null) {
+            keepCount = 0;
+        }
+        if (plugin.getClient().isPrayerActive(Prayer.PROTECT_ITEM)) {
+            keepCount += 1;
+        }
+        Long losePrice = itemsByPrice.stream()
+            .skip(keepCount)
+            .map(Pair::getRight)
+            .reduce(Long::sum)
+            .orElse(0L);
+
+        String template = plugin.getConfig().deathNotifyMessage();
+        if (pker != null && plugin.getConfig().deathNotifPvpEnabled()) {
+            template = plugin.getConfig().deathNotifPvpMessage();
+        }
+        String notifyMessage = template
+            .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
+            .replace("%VALUELOST%", losePrice.toString());
+        if (pker != null && plugin.getConfig().deathNotifPvpEnabled()) {
+            // player name hopefully isn't null
+            notifyMessage = notifyMessage
+                .replace("%PKER%", Objects.requireNonNull(pker.getName()));
+        }
 
         createMessage(DinkPluginConfig::deathSendImage, NotificationBody.builder()
             .content(notifyMessage)
+            .extra(new DeathNotificationData(losePrice, pker != null, pker != null ? pker.getName() : null))
             .type(NotificationType.DEATH)
             .build());
     }

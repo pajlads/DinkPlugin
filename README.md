@@ -36,6 +36,38 @@ JSON:
 
 The examples below omit `embeds` and `playerName` keys because they are always the same.
 
+#### Death:
+
+`%VALUELOST%` will be replaced with the price of the items you lost. If you died in PvP, `%PKER%` will be replaced with the name of your killer.
+
+**Note**: If *Distinguish PvP deaths* is disabled, the message content will be the non-PvP version.
+
+JSON for non-PvP death:
+```json5
+{
+  "content": "%USERNAME% has died...",
+  "extra": {
+    "valueLost": 123456,
+    "isPvp": false,
+    "pker": ""
+  },
+  "type": "DEATH"
+}
+```
+
+JSON for PvP scenarios:
+```json5
+{
+  "content": "%USERNAME% has just been PKed by %PKER% for %VALUELOST% gp...",
+  "extra": {
+    "valueLost": 123456,
+    "isPvp": true,
+    "pker": "%PKER%"
+  },
+  "type": "DEATH"
+}
+```
+
 #### Collection:
 
 `%ITEM%` will be replaced with the item that was dropped for the collection log.
