@@ -6,18 +6,27 @@ import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
-import net.runelite.api.*;
+import net.runelite.api.Actor;
+import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
+import net.runelite.api.Player;
+import net.runelite.api.Prayer;
 import net.runelite.api.events.ActorDeath;
+import net.runelite.api.events.InteractingChanged;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Inject;
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DeathNotifier extends BaseNotifier {
+
+    private WeakReference<Actor> lastTarget = new WeakReference<>(null);
 
     @Inject
     public DeathNotifier(DinkPlugin plugin) {
@@ -33,57 +42,83 @@ public class DeathNotifier extends BaseNotifier {
         if (isEnabled() && plugin.getClient().getLocalPlayer() == actor.getActor()) {
             this.handleNotify();
         }
+        lastTarget = new WeakReference<>(null);
+    }
+
+    public void onInteraction(InteractingChanged event) {
+        if (event.getSource() == plugin.getClient().getLocalPlayer()) {
+            lastTarget = new WeakReference<>(event.getTarget());
+        }
     }
 
     private void handleNotify() {
         Player localPlayer = plugin.getClient().getLocalPlayer();
-        Actor pker = null;
-        for (Player other : plugin.getClient().getPlayers()) {
-            if (other.getInteracting() == localPlayer) {
-                pker = other;
-                break;
-            }
-        }
-        ItemContainer inventory = plugin.getClient().getItemContainer(InventoryID.INVENTORY);
-        ItemContainer equipment = plugin.getClient().getItemContainer(InventoryID.EQUIPMENT);
+        Actor pker = identifyPker();
 
-        assert inventory != null;
-        assert equipment != null;
-        List<Pair<Item, Long>> itemsByPrice = Stream.concat(Arrays.stream(inventory.getItems()), Arrays.stream(equipment.getItems()))
-            .map(item -> Pair.of(item, (long) (plugin.getItemManager().getItemPrice(item.getId())) * (long) (item.getQuantity())))
-            .sorted((item1, item2) -> Math.toIntExact(item2.getRight() - item1.getRight()))
-            .collect(Collectors.toList());
-
-        int keepCount = 3;
-        if (localPlayer.getSkullIcon() != null) {
-            keepCount = 0;
-        }
-        if (plugin.getClient().isPrayerActive(Prayer.PROTECT_ITEM)) {
-            keepCount += 1;
-        }
-        Long losePrice = itemsByPrice.stream()
+        List<Pair<Item, Long>> itemsByPrice = getPricedItems();
+        int keepCount = (localPlayer.getSkullIcon() == null ? 3 : 0) +
+            (plugin.getClient().isPrayerActive(Prayer.PROTECT_ITEM) ? 1 : 0);
+        long losePrice = itemsByPrice.stream()
             .skip(keepCount)
             .map(Pair::getRight)
             .reduce(Long::sum)
             .orElse(0L);
 
-        String template = plugin.getConfig().deathNotifyMessage();
-        if (pker != null && plugin.getConfig().deathNotifPvpEnabled()) {
-            template = plugin.getConfig().deathNotifPvpMessage();
-        }
+        String template = pker != null && plugin.getConfig().deathNotifPvpEnabled()
+            ? plugin.getConfig().deathNotifPvpMessage()
+            : plugin.getConfig().deathNotifyMessage();
         String notifyMessage = template
             .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
-            .replace("%VALUELOST%", losePrice.toString());
+            .replace("%VALUELOST%", String.valueOf(losePrice));
         if (pker != null && plugin.getConfig().deathNotifPvpEnabled()) {
-            // player name hopefully isn't null
-            notifyMessage = notifyMessage
-                .replace("%PKER%", Objects.requireNonNull(pker.getName()));
+            notifyMessage = notifyMessage.replace("%PKER%", String.valueOf(pker.getName()));
         }
+
+        List<NotificationBody.Embed> lostItemEmbeds = itemsByPrice.stream()
+            .skip(keepCount)
+            .limit(3)
+            .map(Pair::getLeft)
+            .mapToInt(Item::getId)
+            .mapToObj(Utils::getItemImageUrl)
+            .map(NotificationBody.UrlEmbed::new)
+            .map(NotificationBody.Embed::new)
+            .collect(Collectors.toList());
 
         createMessage(DinkPluginConfig::deathSendImage, NotificationBody.builder()
             .content(notifyMessage)
             .extra(new DeathNotificationData(losePrice, pker != null, pker != null ? pker.getName() : null))
+            .embeds(lostItemEmbeds)
             .type(NotificationType.DEATH)
             .build());
     }
+
+    private Player identifyPker() {
+        Player localPlayer = plugin.getClient().getLocalPlayer();
+
+        Actor lastTarget = this.lastTarget.get();
+        if (lastTarget != null && !lastTarget.isDead() && lastTarget.getInteracting() == localPlayer) {
+            if (lastTarget instanceof Player)
+                return (Player) lastTarget;
+            else
+                return null; // we likely died to this NPC rather than a player
+        }
+
+        for (Player other : plugin.getClient().getPlayers()) {
+            if (other.getInteracting() == localPlayer) {
+                return other;
+            }
+        }
+        return null;
+    }
+
+    private List<Pair<Item, Long>> getPricedItems() {
+        ItemContainer inventory = plugin.getClient().getItemContainer(InventoryID.INVENTORY);
+        ItemContainer equipment = plugin.getClient().getItemContainer(InventoryID.EQUIPMENT);
+        if (inventory == null || equipment == null) return Collections.emptyList();
+        return Stream.concat(Arrays.stream(inventory.getItems()), Arrays.stream(equipment.getItems()))
+            .map(item -> Pair.of(item, (long) (plugin.getItemManager().getItemPrice(item.getId())) * (long) (item.getQuantity())))
+            .sorted((item1, item2) -> Math.toIntExact(item2.getRight() - item1.getRight()))
+            .collect(Collectors.toList());
+    }
+
 }
