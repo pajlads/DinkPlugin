@@ -129,7 +129,7 @@ public class DinkPlugin extends Plugin {
     }
 
     @Subscribe
-    public void onInteractionChange(InteractingChanged event) {
+    public void onInteractingChanged(InteractingChanged event) {
         deathNotifier.onInteraction(event);
     }
 
