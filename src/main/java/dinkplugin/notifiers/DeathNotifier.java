@@ -56,21 +56,31 @@ public class DeathNotifier extends BaseNotifier {
         Actor pker = identifyPker();
 
         List<Pair<Item, Long>> itemsByPrice = getPricedItems();
-        int keepCount = (localPlayer.getSkullIcon() == null ? 3 : 0) +
-            (plugin.getClient().isPrayerActive(Prayer.PROTECT_ITEM) ? 1 : 0);
+
+        int keepCount;
+        if (localPlayer.getSkullIcon() == null)
+            keepCount = 3;
+        else
+            keepCount = 0;
+        if (plugin.getClient().isPrayerActive(Prayer.PROTECT_ITEM))
+            keepCount++;
+
         long losePrice = itemsByPrice.stream()
             .skip(keepCount)
             .map(Pair::getRight)
             .reduce(Long::sum)
             .orElse(0L);
 
-        String template = pker != null && plugin.getConfig().deathNotifPvpEnabled()
-            ? plugin.getConfig().deathNotifPvpMessage()
-            : plugin.getConfig().deathNotifyMessage();
+        boolean pvpNotif = pker != null && plugin.getConfig().deathNotifPvpEnabled();
+        String template;
+        if (pvpNotif)
+            template = plugin.getConfig().deathNotifPvpMessage();
+        else
+            template = plugin.getConfig().deathNotifyMessage();
         String notifyMessage = template
             .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
             .replace("%VALUELOST%", String.valueOf(losePrice));
-        if (pker != null && plugin.getConfig().deathNotifPvpEnabled()) {
+        if (pvpNotif) {
             notifyMessage = notifyMessage.replace("%PKER%", String.valueOf(pker.getName()));
         }
 
