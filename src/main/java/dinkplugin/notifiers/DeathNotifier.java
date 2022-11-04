@@ -26,6 +26,16 @@ import java.util.stream.Stream;
 
 public class DeathNotifier extends BaseNotifier {
 
+    /**
+     * Tracks the last {@link Actor} our local player interacted with,
+     * for the purposes of attributing deaths to particular {@link Player}'s.
+     * <p>
+     * Note: this is wrapped in a weak reference to allow garbage collection,
+     * for example if the {@link Actor} despawns.
+     * As a result, the underlying reference can be null.
+     *
+     * @see #identifyPker()
+     */
     private WeakReference<Actor> lastTarget = new WeakReference<>(null);
 
     @Inject
