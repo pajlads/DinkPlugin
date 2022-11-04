@@ -1,6 +1,6 @@
 # Unreleased
 
-- Major: Add additional information for PvP deaths. (#55)
+- Major: Add additional information for PvP deaths. (#55, #58)
 - Major: Add boss kill count notifications. (#50)
 
 ## 1.0.3
