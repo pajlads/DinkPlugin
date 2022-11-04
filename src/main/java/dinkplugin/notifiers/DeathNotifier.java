@@ -96,9 +96,10 @@ public class DeathNotifier extends BaseNotifier {
 
         List<NotificationBody.Embed> lostItemEmbeds = itemsByPrice.stream()
             .skip(keepCount)
-            .limit(3)
             .map(Pair::getLeft)
             .mapToInt(Item::getId)
+            .distinct()
+            .limit(3)
             .mapToObj(Utils::getItemImageUrl)
             .map(NotificationBody.UrlEmbed::new)
             .map(NotificationBody.Embed::new)
