@@ -56,7 +56,7 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     public void onInteraction(InteractingChanged event) {
-        if (event.getSource() == plugin.getClient().getLocalPlayer()) {
+        if (event.getSource() == plugin.getClient().getLocalPlayer() && event.getTarget() != null && event.getTarget().getCombatLevel() > 0) {
             lastTarget = new WeakReference<>(event.getTarget());
         }
     }
