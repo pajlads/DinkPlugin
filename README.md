@@ -229,7 +229,7 @@ JSON:
 
 ```json5
 {
-  "content": "%USERNAME% has completed a combat task of %TIER% difficulty: %TASK%",
+  "content": "%USERNAME% has completed %TIER% combat task: %TASK%",
   "extra": {
     "tier": "GRANDMASTER",
     "task": "Peach Conjurer"

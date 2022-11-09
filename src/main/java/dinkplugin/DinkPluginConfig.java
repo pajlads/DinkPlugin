@@ -598,7 +598,7 @@ public interface DinkPluginConfig extends Config {
         section = combatTaskSection
     )
     default String combatTaskMessage() {
-        return "%USERNAME% has completed a combat task of %TIER% difficulty: %TASK%";
+        return "%USERNAME% has completed %TIER% combat task: %TASK%";
     }
 
 }
