@@ -70,6 +70,10 @@ public class SlayerNotifier extends BaseNotifier {
             return;
         }
 
+        int threshold = plugin.getConfig().slayerPointThreshold();
+        if (threshold > 0 && Integer.parseInt(slayerPoints) < threshold)
+            return;
+
         String notifyMessage = StringUtils.replaceEach(
             plugin.getConfig().slayerNotifyMessage(),
             new String[] { "%USERNAME%", "%TASK%", "%TASKCOUNT%", "%POINTS%" },
