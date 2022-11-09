@@ -30,7 +30,8 @@ class CombatTaskNotifierTest {
             "Your heriboar harvest count is: 69.",
             "Your King Black Dragon kill count is: 581.",
             "You have completed your task! You killed 31 TzKal-Zuk. You gained 75 xp.",
-            "Congratulations, you just advanced a Strength level."
+            "Congratulations, you just advanced a Strength level.",
+            "Congratulations, you've completed a gachi combat task: Swordfight with the homies."
         }
     )
     void shouldNotParse(String message) {
