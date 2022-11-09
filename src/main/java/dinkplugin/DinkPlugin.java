@@ -4,6 +4,7 @@ import com.google.inject.Provides;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.notifiers.ClueNotifier;
 import dinkplugin.notifiers.CollectionNotifier;
+import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.DeathNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.LevelNotifier;
@@ -72,6 +73,7 @@ public class DinkPlugin extends Plugin {
     private final ClueNotifier clueNotifier = new ClueNotifier(this);
     private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
     private final KillCountNotifier killCountNotifier = new KillCountNotifier(this);
+    private final CombatTaskNotifier combatTaskNotifier = new CombatTaskNotifier(this);
 
     @Override
     protected void startUp() {
@@ -119,6 +121,7 @@ public class DinkPlugin extends Plugin {
             slayerNotifier.onChatMessage(chatMessage);
             clueNotifier.onChatMessage(chatMessage);
             killCountNotifier.onGameMessage(chatMessage);
+            combatTaskNotifier.onGameMessage(chatMessage);
         }
     }
 
