@@ -70,17 +70,20 @@ public class SlayerNotifier extends BaseNotifier {
             return;
         }
 
-        String notifyMessage = StringUtils.replaceEach(
-            plugin.getConfig().slayerNotifyMessage(),
-            new String[] { "%USERNAME%", "%TASK%", "%TASKCOUNT%", "%POINTS%" },
-            new String[] { Utils.getPlayerName(plugin.getClient()), slayerTask, slayerCompleted, slayerPoints }
-        );
+        int threshold = plugin.getConfig().slayerPointThreshold();
+        if (threshold <= 0 || Integer.parseInt(slayerPoints) >= threshold) {
+            String notifyMessage = StringUtils.replaceEach(
+                plugin.getConfig().slayerNotifyMessage(),
+                new String[] { "%USERNAME%", "%TASK%", "%TASKCOUNT%", "%POINTS%" },
+                new String[] { Utils.getPlayerName(plugin.getClient()), slayerTask, slayerCompleted, slayerPoints }
+            );
 
-        createMessage(DinkPluginConfig::slayerSendImage, NotificationBody.builder()
-            .content(notifyMessage)
-            .extra(new SlayerNotificationData(slayerTask, slayerCompleted, slayerPoints))
-            .type(NotificationType.SLAYER)
-            .build());
+            createMessage(DinkPluginConfig::slayerSendImage, NotificationBody.builder()
+                .content(notifyMessage)
+                .extra(new SlayerNotificationData(slayerTask, slayerCompleted, slayerPoints))
+                .type(NotificationType.SLAYER)
+                .build());
+        }
 
         slayerTask = "";
         slayerPoints = "";
