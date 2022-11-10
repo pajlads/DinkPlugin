@@ -2,17 +2,22 @@ package dinkplugin;
 
 import com.google.common.collect.ImmutableList;
 import net.runelite.api.Client;
+import net.runelite.api.Item;
 import net.runelite.api.WorldType;
 import net.runelite.client.game.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BinaryOperator;
@@ -23,7 +28,8 @@ public class Utils {
 
     private static final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
 
-    private static final BinaryOperator<ItemStack> SUM_ITEM_QUANTITIES = (a, b) -> new ItemStack(a.getId(), a.getQuantity() + b.getQuantity(), a.getLocation());
+    private static final BinaryOperator<Item> SUM_ITEM_QUANTITIES = (a, b) -> new Item(a.getId(), a.getQuantity() + b.getQuantity());
+    private static final BinaryOperator<ItemStack> SUM_ITEM_STACK_QUANTITIES = (a, b) -> new ItemStack(a.getId(), a.getQuantity() + b.getQuantity(), a.getLocation());
 
     public static boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);
@@ -39,9 +45,23 @@ public class Utils {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public static Collection<ItemStack> reduceItemStack(Collection<ItemStack> items) {
-        final Map<Integer, ItemStack> itemById = new HashMap<>();
+    public static <T> List<T> concat(@NotNull T[] array1, @NotNull T[] array2) {
+        final List<T> list = new ArrayList<>(array1.length + array2.length);
+        list.addAll(Arrays.asList(array1));
+        list.addAll(Arrays.asList(array2));
+        return list;
+    }
+
+    public static Map<Integer, Item> reduceItems(@NotNull Iterable<Item> items) {
+        final Map<Integer, Item> itemById = new HashMap<>();
         items.forEach(item -> itemById.merge(item.getId(), item, SUM_ITEM_QUANTITIES));
+        return itemById;
+    }
+
+    @NotNull
+    public static Collection<ItemStack> reduceItemStack(@NotNull Iterable<ItemStack> items) {
+        final Map<Integer, ItemStack> itemById = new HashMap<>();
+        items.forEach(item -> itemById.merge(item.getId(), item, SUM_ITEM_STACK_QUANTITIES));
         return itemById.values();
     }
 

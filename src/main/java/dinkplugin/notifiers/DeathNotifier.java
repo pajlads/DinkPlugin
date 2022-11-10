@@ -6,23 +6,29 @@ import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
+import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.Actor;
+import net.runelite.api.Client;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
+import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
+import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Inject;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DeathNotifier extends BaseNotifier {
 
@@ -65,7 +71,8 @@ public class DeathNotifier extends BaseNotifier {
         Player localPlayer = plugin.getClient().getLocalPlayer();
         Actor pker = identifyPker();
 
-        List<Pair<Item, Long>> itemsByPrice = getPricedItems();
+        Collection<Item> items = getItems(plugin.getClient());
+        List<Pair<Item, Long>> itemsByPrice = getPricedItems(plugin.getItemManager(), items);
 
         int keepCount;
         if (localPlayer.getSkullIcon() == null)
@@ -94,20 +101,44 @@ public class DeathNotifier extends BaseNotifier {
             notifyMessage = notifyMessage.replace("%PKER%", String.valueOf(pker.getName()));
         }
 
-        List<NotificationBody.Embed> lostItemEmbeds = itemsByPrice.stream()
+        int[] topLostItemIds = itemsByPrice.stream()
             .skip(keepCount)
             .map(Pair::getLeft)
             .mapToInt(Item::getId)
             .distinct()
             .limit(3)
+            .toArray();
+
+        Map<Integer, Item> reducedLostItems = reduceLostItems(itemsByPrice, keepCount);
+        List<SerializedItemStack> topLostStacks = Arrays.stream(topLostItemIds)
+            .mapToObj(reducedLostItems::get)
+            .filter(Objects::nonNull)
+            .map(item -> stackFromItem(plugin.getItemManager(), item))
+            .collect(Collectors.toList());
+
+        List<NotificationBody.Embed> lostItemEmbeds = Arrays.stream(topLostItemIds)
             .mapToObj(Utils::getItemImageUrl)
             .map(NotificationBody.UrlEmbed::new)
             .map(NotificationBody.Embed::new)
             .collect(Collectors.toList());
 
+        List<SerializedItemStack> keptStacks = itemsByPrice.stream()
+            .limit(keepCount)
+            .map(Pair::getLeft)
+            .map(item -> stackFromItem(plugin.getItemManager(), item))
+            .collect(Collectors.toList());
+
+        DeathNotificationData extra = new DeathNotificationData(
+            losePrice,
+            pker != null,
+            pker != null ? pker.getName() : null,
+            keptStacks,
+            topLostStacks
+        );
+
         createMessage(DinkPluginConfig::deathSendImage, NotificationBody.builder()
             .content(notifyMessage)
-            .extra(new DeathNotificationData(losePrice, pker != null, pker != null ? pker.getName() : null))
+            .extra(extra)
             .embeds(lostItemEmbeds)
             .type(NotificationType.DEATH)
             .build());
@@ -132,14 +163,34 @@ public class DeathNotifier extends BaseNotifier {
         return null;
     }
 
-    private List<Pair<Item, Long>> getPricedItems() {
-        ItemContainer inventory = plugin.getClient().getItemContainer(InventoryID.INVENTORY);
-        ItemContainer equipment = plugin.getClient().getItemContainer(InventoryID.EQUIPMENT);
+    private static Collection<Item> getItems(Client client) {
+        ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
+        ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
         if (inventory == null || equipment == null) return Collections.emptyList();
-        return Stream.concat(Arrays.stream(inventory.getItems()), Arrays.stream(equipment.getItems()))
-            .map(item -> Pair.of(item, (long) (plugin.getItemManager().getItemPrice(item.getId())) * (long) (item.getQuantity())))
-            .sorted((item1, item2) -> Math.toIntExact(item2.getRight() - item1.getRight()))
+        return Utils.concat(inventory.getItems(), equipment.getItems());
+    }
+
+    private static List<Pair<Item, Long>> getPricedItems(ItemManager itemManager, Collection<Item> items) {
+        return items.stream()
+            .map(item -> Pair.of(item, (long) (itemManager.getItemPrice(item.getId())) * (long) (item.getQuantity())))
+            .sorted((a, b) -> Math.toIntExact(b.getRight() - a.getRight()))
             .collect(Collectors.toList());
+    }
+
+    private static Map<Integer, Item> reduceLostItems(List<Pair<Item, Long>> itemsByPrice, int keepCount) {
+        List<Item> lostItems = itemsByPrice.stream()
+            .skip(keepCount)
+            .map(Pair::getLeft)
+            .collect(Collectors.toList());
+        return Utils.reduceItems(lostItems);
+    }
+
+    private static SerializedItemStack stackFromItem(ItemManager itemManager, Item item) {
+        int id = item.getId();
+        int quantity = item.getQuantity();
+        int price = itemManager.getItemPrice(id);
+        ItemComposition composition = itemManager.getItemComposition(id);
+        return new SerializedItemStack(id, quantity, price, composition.getName());
     }
 
 }
