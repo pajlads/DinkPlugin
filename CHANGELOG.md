@@ -3,6 +3,7 @@
 - Major: Add additional information for PvP deaths. (#55)
 - Major: Add boss kill count notifications. (#50)
 - Minor: Add config to ignore slayer tasks with low point values. (#61)
+- Dev: Bump `runeliteVersion` to always use `latest.release` (#64)
 
 ## 1.0.3
 
