@@ -68,19 +68,12 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private void handleNotify() {
-        Player localPlayer = plugin.getClient().getLocalPlayer();
         Actor pker = identifyPker();
 
         Collection<Item> items = getItems(plugin.getClient());
         List<Pair<Item, Long>> itemsByPrice = getPricedItems(plugin.getItemManager(), items);
 
-        int keepCount;
-        if (localPlayer.getSkullIcon() == null)
-            keepCount = 3;
-        else
-            keepCount = 0;
-        if (plugin.getClient().isPrayerActive(Prayer.PROTECT_ITEM))
-            keepCount++;
+        int keepCount = getKeepCount();
 
         long losePrice = itemsByPrice.stream()
             .skip(keepCount)
@@ -88,18 +81,7 @@ public class DeathNotifier extends BaseNotifier {
             .reduce(Long::sum)
             .orElse(0L);
 
-        boolean pvpNotif = pker != null && plugin.getConfig().deathNotifPvpEnabled();
-        String template;
-        if (pvpNotif)
-            template = plugin.getConfig().deathNotifPvpMessage();
-        else
-            template = plugin.getConfig().deathNotifyMessage();
-        String notifyMessage = template
-            .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
-            .replace("%VALUELOST%", String.valueOf(losePrice));
-        if (pvpNotif) {
-            notifyMessage = notifyMessage.replace("%PKER%", String.valueOf(pker.getName()));
-        }
+        String notifyMessage = buildMessage(pker, losePrice);
 
         int[] topLostItemIds = itemsByPrice.stream()
             .skip(keepCount)
@@ -109,24 +91,9 @@ public class DeathNotifier extends BaseNotifier {
             .limit(3)
             .toArray();
 
-        Map<Integer, Item> reducedLostItems = reduceLostItems(itemsByPrice, keepCount);
-        List<SerializedItemStack> topLostStacks = Arrays.stream(topLostItemIds)
-            .mapToObj(reducedLostItems::get)
-            .filter(Objects::nonNull)
-            .map(item -> stackFromItem(plugin.getItemManager(), item))
-            .collect(Collectors.toList());
-
-        List<NotificationBody.Embed> lostItemEmbeds = Arrays.stream(topLostItemIds)
-            .mapToObj(Utils::getItemImageUrl)
-            .map(NotificationBody.UrlEmbed::new)
-            .map(NotificationBody.Embed::new)
-            .collect(Collectors.toList());
-
-        List<SerializedItemStack> keptStacks = itemsByPrice.stream()
-            .limit(keepCount)
-            .map(Pair::getLeft)
-            .map(item -> stackFromItem(plugin.getItemManager(), item))
-            .collect(Collectors.toList());
+        List<SerializedItemStack> topLostStacks = getTopLostStacks(plugin.getItemManager(), itemsByPrice, keepCount, topLostItemIds);
+        List<NotificationBody.Embed> lostItemEmbeds = Utils.buildEmbeds(topLostItemIds);
+        List<SerializedItemStack> keptStacks = getKeptStacks(plugin.getItemManager(), itemsByPrice, keepCount);
 
         DeathNotificationData extra = new DeathNotificationData(
             losePrice,
@@ -142,6 +109,34 @@ public class DeathNotifier extends BaseNotifier {
             .embeds(lostItemEmbeds)
             .type(NotificationType.DEATH)
             .build());
+    }
+
+    private String buildMessage(Actor pker, long losePrice) {
+        DinkPluginConfig config = plugin.getConfig();
+        boolean pvp = pker != null && config.deathNotifPvpEnabled();
+        String template;
+        if (pvp)
+            template = config.deathNotifPvpMessage();
+        else
+            template = config.deathNotifyMessage();
+        String notifyMessage = template
+            .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
+            .replace("%VALUELOST%", String.valueOf(losePrice));
+        if (pvp) {
+            notifyMessage = notifyMessage.replace("%PKER%", String.valueOf(pker.getName()));
+        }
+        return notifyMessage;
+    }
+
+    private int getKeepCount() {
+        int keepCount;
+        if (plugin.getClient().getLocalPlayer().getSkullIcon() == null)
+            keepCount = 3;
+        else
+            keepCount = 0;
+        if (plugin.getClient().isPrayerActive(Prayer.PROTECT_ITEM))
+            keepCount++;
+        return keepCount;
     }
 
     private Player identifyPker() {
@@ -183,6 +178,23 @@ public class DeathNotifier extends BaseNotifier {
             .map(Pair::getLeft)
             .collect(Collectors.toList());
         return Utils.reduceItems(lostItems);
+    }
+
+    private static List<SerializedItemStack> getTopLostStacks(ItemManager itemManager, List<Pair<Item, Long>> itemsByPrice, int keepCount, int[] topLostItemIds) {
+        Map<Integer, Item> reducedLostItems = reduceLostItems(itemsByPrice, keepCount);
+        return Arrays.stream(topLostItemIds)
+            .mapToObj(reducedLostItems::get)
+            .filter(Objects::nonNull)
+            .map(item -> stackFromItem(itemManager, item))
+            .collect(Collectors.toList());
+    }
+
+    private static List<SerializedItemStack> getKeptStacks(ItemManager itemManager, List<Pair<Item, Long>> itemsByPrice, int keepCount) {
+        return itemsByPrice.stream()
+            .limit(keepCount)
+            .map(Pair::getLeft)
+            .map(item -> stackFromItem(itemManager, item))
+            .collect(Collectors.toList());
     }
 
     private static SerializedItemStack stackFromItem(ItemManager itemManager, Item item) {

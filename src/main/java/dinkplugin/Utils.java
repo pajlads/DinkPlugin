@@ -1,6 +1,7 @@
 package dinkplugin;
 
 import com.google.common.collect.ImmutableList;
+import dinkplugin.message.NotificationBody;
 import net.runelite.api.Client;
 import net.runelite.api.Item;
 import net.runelite.api.WorldType;
@@ -23,6 +24,7 @@ import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -71,6 +73,14 @@ public class Utils {
 
     public static String getNpcImageUrl(int npcId) {
         return String.format("https://chisel.weirdgloop.org/static/img/osrs-npc/%d_128.png", npcId);
+    }
+
+    public static List<NotificationBody.Embed> buildEmbeds(int[] itemIds) {
+        return Arrays.stream(itemIds)
+            .mapToObj(Utils::getItemImageUrl)
+            .map(NotificationBody.UrlEmbed::new)
+            .map(NotificationBody.Embed::new)
+            .collect(Collectors.toList());
     }
 
     // Credit to: https://github.com/oliverpatrick/Enhanced-Discord-Notifications/blob/master/src/main/java/com/enhanceddiscordnotifications/EnhancedDiscordNotificationsPlugin.java
