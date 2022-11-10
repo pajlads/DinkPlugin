@@ -8,11 +8,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.Actor;
-import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
-import net.runelite.api.ItemComposition;
-import net.runelite.api.ItemContainer;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.events.ActorDeath;
@@ -24,7 +20,6 @@ import javax.inject.Inject;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -73,7 +68,7 @@ public class DeathNotifier extends BaseNotifier {
     private void handleNotify() {
         Actor pker = identifyPker();
 
-        Collection<Item> items = getItems(plugin.getClient());
+        Collection<Item> items = Utils.getItems(plugin.getClient());
         List<Pair<Item, Long>> itemsByPrice = getPricedItems(plugin.getItemManager(), items);
 
         int keepCount = getKeepCount();
@@ -161,13 +156,6 @@ public class DeathNotifier extends BaseNotifier {
         return null;
     }
 
-    private static Collection<Item> getItems(Client client) {
-        ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
-        ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
-        if (inventory == null || equipment == null) return Collections.emptyList();
-        return Utils.concat(inventory.getItems(), equipment.getItems());
-    }
-
     private static List<Pair<Item, Long>> getPricedItems(ItemManager itemManager, Collection<Item> items) {
         return items.stream()
             .map(item -> Pair.of(item, (long) (itemManager.getItemPrice(item.getId())) * (long) (item.getQuantity())))
@@ -188,7 +176,7 @@ public class DeathNotifier extends BaseNotifier {
         return Arrays.stream(topLostItemIds)
             .mapToObj(reducedLostItems::get)
             .filter(Objects::nonNull)
-            .map(item -> stackFromItem(itemManager, item))
+            .map(item -> Utils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
     }
 
@@ -196,16 +184,8 @@ public class DeathNotifier extends BaseNotifier {
         return itemsByPrice.stream()
             .limit(keepCount)
             .map(Pair::getLeft)
-            .map(item -> stackFromItem(itemManager, item))
+            .map(item -> Utils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
-    }
-
-    private static SerializedItemStack stackFromItem(ItemManager itemManager, Item item) {
-        int id = item.getId();
-        int quantity = item.getQuantity();
-        int price = itemManager.getItemPrice(id);
-        ItemComposition composition = itemManager.getItemComposition(id);
-        return new SerializedItemStack(id, quantity, price, composition.getName());
     }
 
 }

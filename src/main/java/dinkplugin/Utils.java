@@ -2,9 +2,14 @@ package dinkplugin;
 
 import com.google.common.collect.ImmutableList;
 import dinkplugin.message.NotificationBody;
+import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.Client;
+import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
+import net.runelite.api.ItemComposition;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.WorldType;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,6 +59,15 @@ public class Utils {
         return list;
     }
 
+    public static Collection<Item> getItems(Client client) {
+        ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
+        ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
+        return Utils.concat(
+            inventory != null ? inventory.getItems() : new Item[0],
+            equipment != null ? equipment.getItems() : new Item[0]
+        );
+    }
+
     public static Map<Integer, Item> reduceItems(@NotNull Iterable<Item> items) {
         final Map<Integer, Item> itemById = new HashMap<>();
         items.forEach(item -> itemById.merge(item.getId(), item, SUM_ITEM_QUANTITIES));
@@ -65,6 +79,14 @@ public class Utils {
         final Map<Integer, ItemStack> itemById = new HashMap<>();
         items.forEach(item -> itemById.merge(item.getId(), item, SUM_ITEM_STACK_QUANTITIES));
         return itemById.values();
+    }
+
+    public static SerializedItemStack stackFromItem(ItemManager itemManager, Item item) {
+        int id = item.getId();
+        int quantity = item.getQuantity();
+        int price = itemManager.getItemPrice(id);
+        ItemComposition composition = itemManager.getItemComposition(id);
+        return new SerializedItemStack(id, quantity, price, composition.getName());
     }
 
     public static String getItemImageUrl(int itemId) {
