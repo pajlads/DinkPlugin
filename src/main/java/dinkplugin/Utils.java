@@ -17,7 +17,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,11 +24,13 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.BinaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Utils {
 
@@ -52,20 +53,15 @@ public class Utils {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public static <T> List<T> concat(@NotNull T[] array1, @NotNull T[] array2) {
-        final List<T> list = new ArrayList<>(array1.length + array2.length);
-        list.addAll(Arrays.asList(array1));
-        list.addAll(Arrays.asList(array2));
-        return list;
-    }
-
     public static Collection<Item> getItems(Client client) {
-        ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
-        ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
-        return Utils.concat(
-            inventory != null ? inventory.getItems() : new Item[0],
-            equipment != null ? equipment.getItems() : new Item[0]
-        );
+        return Stream.of(InventoryID.INVENTORY, InventoryID.EQUIPMENT)
+            .map(client::getItemContainer)
+            .filter(Objects::nonNull)
+            .map(ItemContainer::getItems)
+            .flatMap(Arrays::stream)
+            .filter(Objects::nonNull)
+            .filter(item -> item.getId() >= 0) // -1 implies empty slot
+            .collect(Collectors.toList());
     }
 
     public static Map<Integer, Item> reduceItems(@NotNull Iterable<Item> items) {
