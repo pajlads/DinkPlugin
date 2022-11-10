@@ -55,10 +55,13 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     public void onActorDeath(ActorDeath actor) {
-        if (isEnabled() && plugin.getClient().getLocalPlayer() == actor.getActor()) {
-            this.handleNotify();
-        }
-        lastTarget = new WeakReference<>(null);
+        boolean self = plugin.getClient().getLocalPlayer() == actor.getActor();
+
+        if (self && isEnabled())
+            handleNotify();
+
+        if (self || actor.getActor() == lastTarget.get())
+            lastTarget = new WeakReference<>(null);
     }
 
     public void onInteraction(InteractingChanged event) {
@@ -91,8 +94,8 @@ public class DeathNotifier extends BaseNotifier {
             .limit(3)
             .toArray();
 
-        List<SerializedItemStack> topLostStacks = getTopLostStacks(plugin.getItemManager(), itemsByPrice, keepCount, topLostItemIds);
         List<NotificationBody.Embed> lostItemEmbeds = Utils.buildEmbeds(topLostItemIds);
+        List<SerializedItemStack> topLostStacks = getTopLostStacks(plugin.getItemManager(), itemsByPrice, keepCount, topLostItemIds);
         List<SerializedItemStack> keptStacks = getKeptStacks(plugin.getItemManager(), itemsByPrice, keepCount);
 
         DeathNotificationData extra = new DeathNotificationData(
