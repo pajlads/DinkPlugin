@@ -47,9 +47,17 @@ JSON for non-PvP death:
 {
   "content": "%USERNAME% has died...",
   "extra": {
-    "valueLost": 123456,
+    "valueLost": 300,
     "isPvp": false,
-    "pker": ""
+    "keptItems": [],
+    "lostItems": [
+      {
+        "id": 314,
+        "quantity": 100,
+        "priceEach": 3,
+        "name": "Feather"
+      }
+    ]
   },
   "type": "DEATH"
 }
@@ -60,9 +68,18 @@ JSON for PvP scenarios:
 {
   "content": "%USERNAME% has just been PKed by %PKER% for %VALUELOST% gp...",
   "extra": {
-    "valueLost": 123456,
+    "valueLost": 300,
     "isPvp": true,
-    "pker": "%PKER%"
+    "pker": "%PKER%",
+    "keptItems": [],
+    "lostItems": [
+      {
+        "id": 314,
+        "quantity": 100,
+        "priceEach": 3,
+        "name": "Feather"
+      }
+    ]
   },
   "type": "DEATH"
 }
