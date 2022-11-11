@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -64,17 +65,19 @@ public class Utils {
             .collect(Collectors.toList());
     }
 
+    public static <K, V> Map<K, V> reduce(@NotNull Iterable<V> items, Function<V, K> deriveKey, BinaryOperator<V> aggregate) {
+        final Map<K, V> map = new HashMap<>();
+        items.forEach(v -> map.merge(deriveKey.apply(v), v, aggregate));
+        return map;
+    }
+
     public static Map<Integer, Item> reduceItems(@NotNull Iterable<Item> items) {
-        final Map<Integer, Item> itemById = new HashMap<>();
-        items.forEach(item -> itemById.merge(item.getId(), item, SUM_ITEM_QUANTITIES));
-        return itemById;
+        return reduce(items, Item::getId, SUM_ITEM_QUANTITIES);
     }
 
     @NotNull
     public static Collection<ItemStack> reduceItemStack(@NotNull Iterable<ItemStack> items) {
-        final Map<Integer, ItemStack> itemById = new HashMap<>();
-        items.forEach(item -> itemById.merge(item.getId(), item, SUM_ITEM_STACK_QUANTITIES));
-        return itemById.values();
+        return reduce(items, ItemStack::getId, SUM_ITEM_STACK_QUANTITIES).values();
     }
 
     public static SerializedItemStack stackFromItem(ItemManager itemManager, Item item) {
