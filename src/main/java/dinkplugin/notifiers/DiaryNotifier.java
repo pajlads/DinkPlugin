@@ -72,6 +72,11 @@ public class DiaryNotifier extends BaseNotifier {
         } else if (value > previous) {
             diaryCompletionById.put(id, value);
 
+            if (value < 2 && (id == 3578 || id == 3599 || id == 3611)) {
+                // Karamja special case: 0 = not started, 1 = started, 2 = completed tasks
+                return;
+            }
+
             if (checkDifficulty(diary))
                 handle(diary);
         }
