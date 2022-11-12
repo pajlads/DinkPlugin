@@ -621,14 +621,36 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "diarySendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 48,
+        section = diarySection
+    )
+    default boolean diarySendImage() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "diaryMinDifficulty",
         name = "Min Difficulty",
         description = "Minimum achievement diary difficulty to warrant a notification",
-        position = 48,
+        position = 49,
         section = diarySection
     )
     default AchievementDiaries.Difficulty minDiaryDifficulty() {
         return AchievementDiaries.Difficulty.EASY;
+    }
+
+    @ConfigItem(
+        keyName = "diaryMessage",
+        name = "Notification Message",
+        description = "The message to be sent to the webhook. Use %USERNAME% to insert your username, %DIFFICULTY% to insert the diary difficulty, %AREA% to insert the diary area, %TOTAL% to insert the total diaries completed",
+        position = 50,
+        section = diarySection
+    )
+    default String diaryNotifyMessage() {
+        return "%USERNAME% has completed the %DIFFICULTY% %AREA% Achievement Diary, for a total of %TOTAL% diaries completed";
     }
 
 }
