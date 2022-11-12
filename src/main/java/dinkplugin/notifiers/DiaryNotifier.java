@@ -36,7 +36,7 @@ public class DiaryNotifier extends BaseNotifier {
     }
 
     public void onGameState(GameStateChanged event) {
-        if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING)
+        if (event.getGameState() == GameState.LOGIN_SCREEN)
             this.reset();
     }
 
@@ -60,7 +60,8 @@ public class DiaryNotifier extends BaseNotifier {
         if (!isEnabled()) return;
 
         int value = event.getValue();
-        Integer previous = diaryCompletionById.put(id, value);
+        Integer previous = diaryCompletionById.get(id);
+        diaryCompletionById.merge(id, value, Integer::max);
         if (previous != null && value > previous && checkDifficulty(diary)) {
             this.handle(diary);
         }
