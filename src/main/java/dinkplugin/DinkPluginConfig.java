@@ -85,6 +85,13 @@ public interface DinkPluginConfig extends Config {
     )
     String combatTaskSection = "Combat Tasks";
 
+    @ConfigSection(
+        name = "Achievement Diary",
+        description = "Settings for notifying when you complete an Achievement Diary",
+        position = 47
+    )
+    String diarySection = "Achievement Diary";
+
     @ConfigItem(
         keyName = "discordWebhook",
         name = "Discord Webhook",
@@ -599,6 +606,17 @@ public interface DinkPluginConfig extends Config {
     )
     default String combatTaskMessage() {
         return "%USERNAME% has completed %TIER% combat task: %TASK%";
+    }
+
+    @ConfigItem(
+        keyName = "diaryEnabled",
+        name = "Enable Diary",
+        description = "Enable notifications for achievement diary completions",
+        position = 47,
+        section = diarySection
+    )
+    default boolean notifyAchievementDiary() {
+        return false;
     }
 
 }

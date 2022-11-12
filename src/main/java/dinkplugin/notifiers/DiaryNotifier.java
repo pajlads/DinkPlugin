@@ -22,18 +22,23 @@ public class DiaryNotifier extends BaseNotifier {
         super(plugin);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return plugin.getConfig().notifyAchievementDiary() && super.isEnabled();
+    }
+
     public void reset() {
         this.diaryCompletionById.clear();
     }
 
     public void onGameState(GameStateChanged event) {
-        if (event.getGameState() == GameState.LOGIN_SCREEN)
+        if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING)
             this.reset();
     }
 
     public void onTick() {
         // init diary completions
-        if (diaryCompletionById.isEmpty()) {
+        if (diaryCompletionById.isEmpty() && isEnabled()) {
             Client client = plugin.getClient();
             for (Integer id : DIARIES.keySet()) {
                 int value = client.getVarbitValue(id);
@@ -48,6 +53,7 @@ public class DiaryNotifier extends BaseNotifier {
         int id = event.getVarbitId();
         AchievementDiaries.Diary diary = DIARIES.get(id);
         if (diary == null) return;
+        if (!isEnabled()) return;
 
         int value = event.getValue();
         Integer previous = diaryCompletionById.put(id, value);
