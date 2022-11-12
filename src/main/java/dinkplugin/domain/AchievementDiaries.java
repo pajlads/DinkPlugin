@@ -40,7 +40,14 @@ public enum AchievementDiaries {
         EASY,
         MEDIUM,
         HARD,
-        ELITE
+        ELITE;
+
+        private final String displayName = this.name().charAt(0) + this.name().substring(1).toLowerCase();
+
+        @Override
+        public String toString() {
+            return this.displayName;
+        }
     }
 
     @Value

@@ -57,12 +57,16 @@ public class DiaryNotifier extends BaseNotifier {
 
         int value = event.getValue();
         Integer previous = diaryCompletionById.put(id, value);
-        if (previous != null && value > previous) {
+        if (previous != null && value > previous && checkDifficulty(diary)) {
             this.handle(diary);
         }
     }
 
     private void handle(AchievementDiaries.Diary diary) {
         log.debug("Diary completion detected: {}", diary);
+    }
+
+    private boolean checkDifficulty(AchievementDiaries.Diary diary) {
+        return diary.getDifficulty().ordinal() >= plugin.getConfig().minDiaryDifficulty().ordinal();
     }
 }

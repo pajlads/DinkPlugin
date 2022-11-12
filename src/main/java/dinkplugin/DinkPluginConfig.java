@@ -1,5 +1,6 @@
 package dinkplugin;
 
+import dinkplugin.domain.AchievementDiaries;
 import dinkplugin.domain.CombatAchievementTier;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -617,6 +618,17 @@ public interface DinkPluginConfig extends Config {
     )
     default boolean notifyAchievementDiary() {
         return false;
+    }
+
+    @ConfigItem(
+        keyName = "diaryMinDifficulty",
+        name = "Min Difficulty",
+        description = "Minimum achievement diary difficulty to warrant a notification",
+        position = 48,
+        section = diarySection
+    )
+    default AchievementDiaries.Difficulty minDiaryDifficulty() {
+        return AchievementDiaries.Difficulty.EASY;
     }
 
 }
