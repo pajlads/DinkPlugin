@@ -62,23 +62,7 @@ public enum AchievementDiaries {
 
                 String area = parts[1];
                 area = area.charAt(0) + area.substring(1).toLowerCase();
-
-                if ("Western".equals(area)) {
-                    area = "Western Provinces";
-                }
-
-                // correction for karamja task completion special case
-                // instead of yielding 1 or 0 values, they yield 2 or 1.
-                // so we use karamja reward id's instead, which yield 1 or 0
-                // however, the elite difficulty does not face this problem
-                if ("Karamja".equals(area)) {
-                    if (difficulty == Difficulty.EASY)
-                        id = 3577;
-                    else if (difficulty == Difficulty.MEDIUM)
-                        id = 3598;
-                    else if (difficulty == Difficulty.HARD)
-                        id = 3610;
-                }
+                if ("Western".equals(area)) area = "Western Provinces";
 
                 return new Diary(id, area, difficulty);
             } catch (Exception e) {
