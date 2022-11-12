@@ -20,6 +20,7 @@ import java.util.Map;
 public class DiaryNotifier extends BaseNotifier {
     private static final Map<Integer, AchievementDiaries.Diary> DIARIES = AchievementDiaries.INSTANCE.getDiaries();
     private final Map<Integer, Integer> diaryCompletionById = new HashMap<>();
+    private int initDelayTicks = 0;
 
     @Inject
     public DiaryNotifier(DinkPlugin plugin) {
@@ -33,6 +34,7 @@ public class DiaryNotifier extends BaseNotifier {
 
     public void reset() {
         this.diaryCompletionById.clear();
+        this.initDelayTicks = 0;
     }
 
     public void onGameState(GameStateChanged event) {
@@ -41,15 +43,14 @@ public class DiaryNotifier extends BaseNotifier {
     }
 
     public void onTick() {
-        // init diary completions
-        if (diaryCompletionById.isEmpty() && isEnabled()) {
-            Client client = plugin.getClient();
-            for (Integer id : DIARIES.keySet()) {
-                int value = client.getVarbitValue(id);
-                if (value >= 0) {
-                    diaryCompletionById.put(id, value);
-                }
-            }
+        if (initDelayTicks > 0) {
+            initDelayTicks--;
+
+            if (initDelayTicks <= 0)
+                this.initCompleted();
+        } else if (diaryCompletionById.isEmpty() && isEnabled()) {
+            // mark diary completions to be initialized later
+            this.initDelayTicks = 8;
         }
     }
 
@@ -104,5 +105,15 @@ public class DiaryNotifier extends BaseNotifier {
         }
 
         return n;
+    }
+
+    private void initCompleted() {
+        Client client = plugin.getClient();
+        for (Integer id : DIARIES.keySet()) {
+            int value = client.getVarbitValue(id);
+            if (value >= 0) {
+                diaryCompletionById.put(id, value);
+            }
+        }
     }
 }
