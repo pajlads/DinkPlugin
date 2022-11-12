@@ -57,12 +57,11 @@ public class DiaryNotifier extends BaseNotifier {
         int id = event.getVarbitId();
         AchievementDiaries.Diary diary = DIARIES.get(id);
         if (diary == null) return;
-        if (!isEnabled()) return;
+        if (diaryCompletionById.isEmpty()) return;
+        if (!super.isEnabled()) return;
 
         int value = event.getValue();
-        Integer previous = diaryCompletionById.get(id);
-        diaryCompletionById.merge(id, value, Integer::max);
-        if (previous != null && value > previous && checkDifficulty(diary)) {
+        if (diaryCompletionById.replace(id, value - 1, value) && checkDifficulty(diary)) {
             this.handle(diary);
         }
     }
@@ -85,7 +84,8 @@ public class DiaryNotifier extends BaseNotifier {
     }
 
     private boolean checkDifficulty(AchievementDiaries.Diary diary) {
-        return diary.getDifficulty().ordinal() >= plugin.getConfig().minDiaryDifficulty().ordinal();
+        DinkPluginConfig config = plugin.getConfig();
+        return config.notifyAchievementDiary() && diary.getDifficulty().ordinal() >= config.minDiaryDifficulty().ordinal();
     }
 
     private int getTotalCompleted() {
