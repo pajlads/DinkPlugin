@@ -1,5 +1,6 @@
 # Unreleased
 
+- Major: Add achievement diary notifications. (#67)
 - Major: Add combat achievement notifications. (#63)
 - Major: Add additional information for PvP deaths. (#55)
 - Major: Add boss kill count notifications. (#50)
