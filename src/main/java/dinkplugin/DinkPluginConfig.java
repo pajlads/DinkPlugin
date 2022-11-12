@@ -1,5 +1,6 @@
 package dinkplugin;
 
+import dinkplugin.domain.CombatAchievementTier;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -76,6 +77,13 @@ public interface DinkPluginConfig extends Config {
         position = 37
     )
     String killCountSection = "Kill Count";
+
+    @ConfigSection(
+        name = "Combat Tasks",
+        description = "Settings for notifying when you complete a combat achievement",
+        position = 43
+    )
+    String combatTaskSection = "Combat Tasks";
 
     @ConfigItem(
         keyName = "discordWebhook",
@@ -547,6 +555,50 @@ public interface DinkPluginConfig extends Config {
     )
     default String killCountMessage() {
         return "%USERNAME% has defeated %BOSS% with a completion count of %COUNT%";
+    }
+
+    @ConfigItem(
+        keyName = "combatTaskEnabled",
+        name = "Enable Combat Tasks",
+        description = "Enable notifications for combat achievements",
+        position = 43,
+        section = combatTaskSection
+    )
+    default boolean notifyCombatTask() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "combatTaskSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 44,
+        section = combatTaskSection
+    )
+    default boolean combatTaskSendImage() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "combatTaskMinTier",
+        name = "Min Tier",
+        description = "Minimum combat achievement tier to warrant a notification",
+        position = 45,
+        section = combatTaskSection
+    )
+    default CombatAchievementTier minCombatAchievementTier() {
+        return CombatAchievementTier.EASY;
+    }
+
+    @ConfigItem(
+        keyName = "combatTaskMessage",
+        name = "Notification Message",
+        description = "The message to be sent to the webhook. Use %USERNAME% to insert your username, %TIER% to insert the task tier, %TASK% to insert the task name",
+        position = 46,
+        section = combatTaskSection
+    )
+    default String combatTaskMessage() {
+        return "%USERNAME% has completed %TIER% combat task: %TASK%";
     }
 
 }

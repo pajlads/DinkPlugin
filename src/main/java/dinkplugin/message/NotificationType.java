@@ -10,5 +10,6 @@ public enum NotificationType {
     QUEST,
     SLAYER,
     SPEEDRUN,
-    KILL_COUNT
+    KILL_COUNT,
+    COMBAT_ACHIEVEMENT
 }

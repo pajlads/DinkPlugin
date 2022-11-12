@@ -238,6 +238,23 @@ JSON:
 }
 ```
 
+#### Combat Achievements:
+
+`%TIER%` will be replaced with the combat achievement tier (e.g., Easy, Hard, Grandmaster)
+
+`%TASK` will be replaced with the name of the combat task (e.g., Peach Conjurer)
+
+```json5
+{
+  "content": "%USERNAME% has completed %TIER% combat task: %TASK%",
+  "extra": {
+    "tier": "GRANDMASTER",
+    "task": "Peach Conjurer"
+  },
+  "type": "COMBAT_ACHIEVEMENT"
+}
+```
+
 ## Credits
 
 This plugin uses code from [Universal Discord Notifier](https://github.com/MidgetJake/UniversalDiscordNotifier).
