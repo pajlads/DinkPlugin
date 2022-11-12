@@ -66,8 +66,14 @@ public class DiaryNotifier extends BaseNotifier {
         if (!super.isEnabled()) return;
 
         int value = event.getValue();
-        if (value > 0 && diaryCompletionById.replace(id, value - 1, value) && checkDifficulty(diary)) {
-            this.handle(diary);
+        Integer previous = diaryCompletionById.get(id);
+        if (previous == null || value < previous) {
+            reset();
+        } else if (value > previous) {
+            diaryCompletionById.put(id, value);
+
+            if (checkDifficulty(diary))
+                handle(diary);
         }
     }
 
