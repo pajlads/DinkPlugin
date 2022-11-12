@@ -38,11 +38,14 @@ public class DiaryNotifier extends BaseNotifier {
     }
 
     public void onGameState(GameStateChanged event) {
-        if (event.getGameState() == GameState.LOGIN_SCREEN)
+        if (event.getGameState() != GameState.LOGGED_IN)
             this.reset();
     }
 
     public void onTick() {
+        if (plugin.getClient().getGameState() != GameState.LOGGED_IN)
+            return;
+
         if (initDelayTicks > 0) {
             initDelayTicks--;
 
@@ -108,6 +111,7 @@ public class DiaryNotifier extends BaseNotifier {
     }
 
     private void initCompleted() {
+        if (!super.isEnabled()) return;
         Client client = plugin.getClient();
         for (Integer id : DIARIES.keySet()) {
             int value = client.getVarbitValue(id);
