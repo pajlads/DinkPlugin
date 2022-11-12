@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Varbits;
+import net.runelite.api.annotations.Varbit;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +34,7 @@ public enum AchievementDiaries {
             .filter(field -> field.getName().startsWith("DIARY_"))
             .map(Diary::from)
             .filter(Objects::nonNull)
-            .collect(Collectors.toMap(Diary::getVarbitId, Function.identity()));
+            .collect(Collectors.toMap(Diary::getId, Function.identity()));
     }
 
     public enum Difficulty {
@@ -52,7 +53,8 @@ public enum AchievementDiaries {
 
     @Value
     public static class Diary {
-        int varbitId;
+        @Varbit
+        int id;
         String area;
         Difficulty difficulty;
 

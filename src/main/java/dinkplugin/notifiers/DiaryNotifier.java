@@ -59,13 +59,14 @@ public class DiaryNotifier extends BaseNotifier {
 
     public void onVarbitChanged(VarbitChanged event) {
         int id = event.getVarbitId();
+        if (id < 0) return;
         AchievementDiaries.Diary diary = DIARIES.get(id);
         if (diary == null) return;
         if (diaryCompletionById.isEmpty()) return;
         if (!super.isEnabled()) return;
 
         int value = event.getValue();
-        if (diaryCompletionById.replace(id, value - 1, value) && checkDifficulty(diary)) {
+        if (value > 0 && diaryCompletionById.replace(id, value - 1, value) && checkDifficulty(diary)) {
             this.handle(diary);
         }
     }
