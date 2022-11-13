@@ -244,7 +244,7 @@ JSON:
 
 `%DIFFICULTY%` will be replaced with the level of the achievement diary (e.g., Elite)
 
-`%TOTAL%` will be replaced with the total number of achievement diaries completed across locations and difficulties
+`%TOTAL%` will be replaced with the total number of achievement diaries completed across all locations and difficulties
 
 ```json5
 {
