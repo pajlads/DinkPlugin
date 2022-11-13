@@ -31,7 +31,7 @@ public class ClueNotifier extends BaseNotifier {
     private boolean clueCompleted = false;
     private String clueCount = "";
     private String clueType = "";
-    private int badTicks = 0;
+    private int badTicks = 0; // used to prevent notifs from using stale data
 
     public ClueNotifier(DinkPlugin plugin) {
         super(plugin);
@@ -86,9 +86,11 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     public void onTick() {
+        // Track how many ticks occur where we only have partial clue data
         if (clueCount == null != clueItems.isEmpty()) // XOR
             badTicks++;
 
+        // Clear data if over 8 ticks pass with only partial parsing
         if (badTicks > 8)
             reset();
     }

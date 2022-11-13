@@ -20,7 +20,7 @@ public class SlayerNotifier extends BaseNotifier {
     private String slayerPoints = "";
     private String slayerCompleted = "";
 
-    private int badTicks = 0;
+    private int badTicks = 0; // used to prevent notifs from using stale data
 
     @Inject
     public SlayerNotifier(DinkPlugin plugin) {
@@ -67,9 +67,11 @@ public class SlayerNotifier extends BaseNotifier {
     }
 
     public void onTick() {
+        // Track how many ticks occur where we only have partial slayer data
         if (slayerTask.isEmpty() != slayerPoints.isEmpty())
             badTicks++;
 
+        // Clear data if over 8 ticks pass with only partial parsing
         if (badTicks > 8)
             reset();
     }
