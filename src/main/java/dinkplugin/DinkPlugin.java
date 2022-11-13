@@ -108,6 +108,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick event) {
         clueNotifier.onTick();
+        slayerNotifier.onTick();
         levelNotifier.onTick();
     }
 

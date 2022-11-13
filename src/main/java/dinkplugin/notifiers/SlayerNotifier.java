@@ -20,6 +20,8 @@ public class SlayerNotifier extends BaseNotifier {
     private String slayerPoints = "";
     private String slayerCompleted = "";
 
+    private int badTicks = 0;
+
     @Inject
     public SlayerNotifier(DinkPlugin plugin) {
         super(plugin);
@@ -64,6 +66,14 @@ public class SlayerNotifier extends BaseNotifier {
         }
     }
 
+    public void onTick() {
+        if (slayerTask.isEmpty() != slayerPoints.isEmpty())
+            badTicks++;
+
+        if (badTicks > 8)
+            reset();
+    }
+
     private void handleNotify() {
         // Little jank, but it's a bit cleaner than having bools and checking in the main plugin class
         if (slayerPoints.isEmpty() || slayerTask.isEmpty() || slayerCompleted.isEmpty()) {
@@ -85,8 +95,13 @@ public class SlayerNotifier extends BaseNotifier {
                 .build());
         }
 
+        this.reset();
+    }
+
+    private void reset() {
         slayerTask = "";
         slayerPoints = "";
         slayerCompleted = "";
+        badTicks = 0;
     }
 }
