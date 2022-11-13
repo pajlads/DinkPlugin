@@ -31,6 +31,7 @@ public class ClueNotifier extends BaseNotifier {
     private boolean clueCompleted = false;
     private String clueCount = "";
     private String clueType = "";
+    private int badTicks = 0;
 
     public ClueNotifier(DinkPlugin plugin) {
         super(plugin);
@@ -84,6 +85,14 @@ public class ClueNotifier extends BaseNotifier {
         }
     }
 
+    public void onTick() {
+        if (clueCount == null != clueItems.isEmpty()) // XOR
+            badTicks++;
+
+        if (badTicks > 8)
+            reset();
+    }
+
     private void handleNotify() {
         StringBuilder lootMessage = new StringBuilder();
         AtomicLong totalPrice = new AtomicLong();
@@ -130,5 +139,6 @@ public class ClueNotifier extends BaseNotifier {
         this.clueCount = "";
         this.clueType = "";
         this.clueItems.clear();
+        this.badTicks = 0;
     }
 }
