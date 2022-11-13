@@ -87,7 +87,7 @@ public class ClueNotifier extends BaseNotifier {
 
     public void onTick() {
         // Track how many ticks occur where we only have partial clue data
-        if (clueCount == null != clueItems.isEmpty()) // XOR
+        if (clueCount.isEmpty() != clueItems.isEmpty()) // XOR
             badTicks++;
 
         // Clear data if over 8 ticks pass with only partial parsing
