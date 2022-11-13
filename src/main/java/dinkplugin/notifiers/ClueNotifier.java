@@ -26,9 +26,6 @@ import java.util.regex.Pattern;
 
 public class ClueNotifier extends BaseNotifier {
     private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
-
-    private final Map<Integer, Integer> clueItems = new HashMap<>();
-    private boolean clueCompleted = false;
     private String clueCount = "";
     private String clueType = "";
     private int badTicks = 0; // used to prevent notifs from using stale data
@@ -46,14 +43,9 @@ public class ClueNotifier extends BaseNotifier {
         if (isEnabled()) {
             Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(chatMessage);
             if (clueMatcher.find()) {
-                clueCount = clueMatcher.group("scrollCount");
-                clueType = clueMatcher.group("scrollType");
-
-                if (clueCompleted) {
-                    this.handleNotify();
-                } else {
-                    clueCompleted = true;
-                }
+                // game message always occurs before widget load; save this data
+                this.clueCount = clueMatcher.group("scrollCount");
+                this.clueType = clueMatcher.group("scrollType");
             }
         }
     }
@@ -61,11 +53,11 @@ public class ClueNotifier extends BaseNotifier {
     public void onWidgetLoaded(WidgetLoaded event) {
         if (event.getGroupId() == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID && isEnabled()) {
             Widget clue = plugin.getClient().getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER);
-            if (clue != null) {
-                clueItems.clear();
+            if (clue != null && !clueType.isEmpty()) {
                 Widget[] children = clue.getChildren();
                 if (children == null) return;
 
+                Map<Integer, Integer> clueItems = new HashMap<>();
                 for (Widget child : children) {
                     if (child == null) continue;
 
@@ -76,26 +68,22 @@ public class ClueNotifier extends BaseNotifier {
                     }
                 }
 
-                if (clueCompleted) {
-                    this.handleNotify();
-                } else {
-                    clueCompleted = true;
-                }
+                this.handleNotify(clueItems);
             }
         }
     }
 
     public void onTick() {
         // Track how many ticks occur where we only have partial clue data
-        if (clueCount.isEmpty() != clueItems.isEmpty()) // XOR
+        if (!clueType.isEmpty())
             badTicks++;
 
-        // Clear data if over 8 ticks pass with only partial parsing
-        if (badTicks > 8)
+        // Clear data if 2 ticks pass with only partial parsing (both events should occur within same tick)
+        if (badTicks > 1)
             reset();
     }
 
-    private void handleNotify() {
+    private void handleNotify(Map<Integer, Integer> clueItems) {
         StringBuilder lootMessage = new StringBuilder();
         AtomicLong totalPrice = new AtomicLong();
         List<SerializedItemStack> itemStacks = new ArrayList<>(clueItems.size());
@@ -137,10 +125,8 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     private void reset() {
-        this.clueCompleted = false;
         this.clueCount = "";
         this.clueType = "";
-        this.clueItems.clear();
         this.badTicks = 0;
     }
 }
