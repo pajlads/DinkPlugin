@@ -3,8 +3,8 @@
 - Major: Add combat achievement notifications. (#63)
 - Major: Add additional information for PvP deaths. (#55)
 - Major: Add boss kill count notifications. (#50)
-- Minor: Add config to ignore slayer tasks with low point values. (#61)
 - Minor: Add note about Collection Log requiring in-game setting (#70)
+- Minor: Add config to ignore slayer tasks with low point values. (#61)
 - Dev: Add plugin-hub icon. (#65)
 
 ## 1.0.3
