@@ -11,6 +11,7 @@ import net.runelite.api.Actor;
 import net.runelite.api.Item;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.client.game.ItemManager;
@@ -138,6 +139,14 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private Player identifyPker() {
+        // cannot be pk'd in safe zone
+        if (Utils.isSafeZone(plugin.getClient()))
+            return null;
+
+        // must be in wildness or pvp world to be pk'd
+        if (plugin.getClient().getVarbitValue(Varbits.IN_WILDERNESS) <= 0 && !Utils.isPvpWorld(plugin.getClient().getWorldType()))
+            return null;
+
         Player localPlayer = plugin.getClient().getLocalPlayer();
 
         Actor lastTarget = this.lastTarget.get();

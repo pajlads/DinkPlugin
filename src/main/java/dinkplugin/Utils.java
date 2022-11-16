@@ -9,6 +9,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.WorldType;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +43,14 @@ public class Utils {
 
     public static boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);
+    }
+
+    public static boolean isPvpWorld(Set<WorldType> worldType) {
+        return worldType.contains(WorldType.PVP) || worldType.contains(WorldType.DEADMAN);
+    }
+
+    public static boolean isSafeZone(Client client) {
+        return client.getWidget(WidgetInfo.PVP_WORLD_SAFE_ZONE) != null;
     }
 
     public static String getPlayerName(Client client) {
