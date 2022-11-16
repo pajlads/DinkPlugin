@@ -9,6 +9,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.WorldType;
+import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
@@ -50,7 +51,8 @@ public class Utils {
     }
 
     public static boolean isSafeZone(Client client) {
-        return client.getWidget(WidgetInfo.PVP_WORLD_SAFE_ZONE) != null;
+        Widget widget = client.getWidget(WidgetInfo.PVP_WORLD_SAFE_ZONE);
+        return widget != null && !widget.isSelfHidden();
     }
 
     public static String getPlayerName(Client client) {
