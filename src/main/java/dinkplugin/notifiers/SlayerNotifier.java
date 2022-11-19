@@ -17,8 +17,7 @@ public class SlayerNotifier extends BaseNotifier {
     private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
 
     private String slayerTask = "";
-    private String slayerPoints = "";
-    private String slayerCompleted = "";
+    private int badTicks = 0; // used to prevent notifs from using stale data
 
     @Inject
     public SlayerNotifier(DinkPlugin plugin) {
@@ -39,7 +38,6 @@ public class SlayerNotifier extends BaseNotifier {
             Matcher taskMatcher = SLAYER_TASK_REGEX.matcher(chatMessage);
             if (taskMatcher.find()) {
                 this.slayerTask = taskMatcher.group("task");
-                this.handleNotify();
                 return;
             }
 
@@ -56,16 +54,23 @@ public class SlayerNotifier extends BaseNotifier {
                 if (slayerPoints == null) {
                     slayerPoints = "0";
                 }
-                this.slayerPoints = slayerPoints;
-                this.slayerCompleted = slayerTasksCompleted;
 
-                this.handleNotify();
+                this.handleNotify(slayerPoints, slayerTasksCompleted);
             }
         }
     }
 
-    private void handleNotify() {
-        // Little jank, but it's a bit cleaner than having bools and checking in the main plugin class
+    public void onTick() {
+        // Track how many ticks occur where we only have partial slayer data
+        if (!slayerTask.isEmpty())
+            badTicks++;
+
+        // Clear data if 2 ticks pass with only partial parsing
+        if (badTicks > 1)
+            reset();
+    }
+
+    private void handleNotify(String slayerPoints, String slayerCompleted) {
         if (slayerPoints.isEmpty() || slayerTask.isEmpty() || slayerCompleted.isEmpty()) {
             return;
         }
@@ -85,8 +90,11 @@ public class SlayerNotifier extends BaseNotifier {
                 .build());
         }
 
+        this.reset();
+    }
+
+    private void reset() {
         slayerTask = "";
-        slayerPoints = "";
-        slayerCompleted = "";
+        badTicks = 0;
     }
 }
