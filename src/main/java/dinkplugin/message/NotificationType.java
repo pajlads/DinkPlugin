@@ -11,5 +11,6 @@ public enum NotificationType {
     SLAYER,
     SPEEDRUN,
     KILL_COUNT,
-    COMBAT_ACHIEVEMENT
+    COMBAT_ACHIEVEMENT,
+    ACHIEVEMENT_DIARY
 }
