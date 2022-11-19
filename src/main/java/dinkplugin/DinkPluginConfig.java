@@ -106,7 +106,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "collectionLogEnabled",
         name = "Enable collection log",
-        description = "Enable notifications for collection log",
+        description = "Enable notifications for collection log.<br/>" +
+            "Requires 'Chat > Collection log - New addition notification' setting to be enabled",
         position = 1,
         section = collectionSection
     )
