@@ -4,7 +4,9 @@ import com.google.inject.Provides;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.notifiers.ClueNotifier;
 import dinkplugin.notifiers.CollectionNotifier;
+import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.DeathNotifier;
+import dinkplugin.notifiers.DiaryNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.LevelNotifier;
 import dinkplugin.notifiers.LootNotifier;
@@ -22,6 +24,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.UsernameChanged;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -72,6 +75,8 @@ public class DinkPlugin extends Plugin {
     private final ClueNotifier clueNotifier = new ClueNotifier(this);
     private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
     private final KillCountNotifier killCountNotifier = new KillCountNotifier(this);
+    private final CombatTaskNotifier combatTaskNotifier = new CombatTaskNotifier(this);
+    private final DiaryNotifier diaryNotifier = new DiaryNotifier(this);
 
     @Override
     protected void startUp() {
@@ -96,6 +101,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
         levelNotifier.onGameStateChanged(gameStateChanged);
+        diaryNotifier.onGameState(gameStateChanged);
     }
 
     @Subscribe
@@ -106,6 +112,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick event) {
         levelNotifier.onTick();
+        diaryNotifier.onTick();
     }
 
     @Subscribe
@@ -119,6 +126,7 @@ public class DinkPlugin extends Plugin {
             slayerNotifier.onChatMessage(chatMessage);
             clueNotifier.onChatMessage(chatMessage);
             killCountNotifier.onGameMessage(chatMessage);
+            combatTaskNotifier.onGameMessage(chatMessage);
         }
     }
 
@@ -140,6 +148,11 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onLootReceived(LootReceived lootReceived) {
         lootNotifier.onLootReceived(lootReceived);
+    }
+
+    @Subscribe
+    public void onVarbitChanged(VarbitChanged event) {
+        diaryNotifier.onVarbitChanged(event);
     }
 
     @Subscribe

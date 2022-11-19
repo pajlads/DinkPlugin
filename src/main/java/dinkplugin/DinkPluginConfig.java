@@ -1,5 +1,7 @@
 package dinkplugin;
 
+import dinkplugin.domain.AchievementDiaries;
+import dinkplugin.domain.CombatAchievementTier;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -77,6 +79,20 @@ public interface DinkPluginConfig extends Config {
     )
     String killCountSection = "Kill Count";
 
+    @ConfigSection(
+        name = "Combat Tasks",
+        description = "Settings for notifying when you complete a combat achievement",
+        position = 43
+    )
+    String combatTaskSection = "Combat Tasks";
+
+    @ConfigSection(
+        name = "Achievement Diary",
+        description = "Settings for notifying when you complete an Achievement Diary",
+        position = 47
+    )
+    String diarySection = "Achievement Diary";
+
     @ConfigItem(
         keyName = "discordWebhook",
         name = "Discord Webhook",
@@ -90,7 +106,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "collectionLogEnabled",
         name = "Enable collection log",
-        description = "Enable notifications for collection log",
+        description = "Enable notifications for collection log.<br/>" +
+            "Requires 'Chat > Collection log - New addition notification' setting to be enabled",
         position = 1,
         section = collectionSection
     )
@@ -547,6 +564,94 @@ public interface DinkPluginConfig extends Config {
     )
     default String killCountMessage() {
         return "%USERNAME% has defeated %BOSS% with a completion count of %COUNT%";
+    }
+
+    @ConfigItem(
+        keyName = "combatTaskEnabled",
+        name = "Enable Combat Tasks",
+        description = "Enable notifications for combat achievements",
+        position = 43,
+        section = combatTaskSection
+    )
+    default boolean notifyCombatTask() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "combatTaskSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 44,
+        section = combatTaskSection
+    )
+    default boolean combatTaskSendImage() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "combatTaskMinTier",
+        name = "Min Tier",
+        description = "Minimum combat achievement tier to warrant a notification",
+        position = 45,
+        section = combatTaskSection
+    )
+    default CombatAchievementTier minCombatAchievementTier() {
+        return CombatAchievementTier.EASY;
+    }
+
+    @ConfigItem(
+        keyName = "combatTaskMessage",
+        name = "Notification Message",
+        description = "The message to be sent to the webhook. Use %USERNAME% to insert your username, %TIER% to insert the task tier, %TASK% to insert the task name",
+        position = 46,
+        section = combatTaskSection
+    )
+    default String combatTaskMessage() {
+        return "%USERNAME% has completed %TIER% combat task: %TASK%";
+    }
+
+    @ConfigItem(
+        keyName = "diaryEnabled",
+        name = "Enable Diary",
+        description = "Enable notifications for achievement diary completions",
+        position = 47,
+        section = diarySection
+    )
+    default boolean notifyAchievementDiary() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "diarySendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 48,
+        section = diarySection
+    )
+    default boolean diarySendImage() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "diaryMinDifficulty",
+        name = "Min Difficulty",
+        description = "Minimum achievement diary difficulty to warrant a notification",
+        position = 49,
+        section = diarySection
+    )
+    default AchievementDiaries.Difficulty minDiaryDifficulty() {
+        return AchievementDiaries.Difficulty.EASY;
+    }
+
+    @ConfigItem(
+        keyName = "diaryMessage",
+        name = "Notification Message",
+        description = "The message to be sent to the webhook. Use %USERNAME% to insert your username, %DIFFICULTY% to insert the diary difficulty, %AREA% to insert the diary area, %TOTAL% to insert the total diaries completed",
+        position = 50,
+        section = diarySection
+    )
+    default String diaryNotifyMessage() {
+        return "%USERNAME% has completed the %DIFFICULTY% %AREA% Achievement Diary, for a total of %TOTAL% diaries completed";
     }
 
 }

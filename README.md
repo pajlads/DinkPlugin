@@ -221,6 +221,43 @@ JSON:
 }
 ```
 
+#### Combat Achievements:
+
+`%TIER%` will be replaced with the combat achievement tier (e.g., Easy, Hard, Grandmaster)
+
+`%TASK` will be replaced with the name of the combat task (e.g., Peach Conjurer)
+
+```json5
+{
+  "content": "%USERNAME% has completed %TIER% combat task: %TASK%",
+  "extra": {
+    "tier": "GRANDMASTER",
+    "task": "Peach Conjurer"
+  },
+  "type": "COMBAT_ACHIEVEMENT"
+}
+```
+
+#### Achievement Diary:
+
+`%AREA%` will be replaced with the geographic area of the achievement diary tasks (e.g., Varrock)
+
+`%DIFFICULTY%` will be replaced with the level of the achievement diary (e.g., Elite)
+
+`%TOTAL%` will be replaced with the total number of achievement diaries completed across all locations and difficulties
+
+```json5
+{
+  "content": "%USERNAME% has completed the %DIFFICULTY% %AREA% Achievement Diary, for a total of %TOTAL% diaries completed",
+  "extra": {
+    "area": "Varrock",
+    "difficulty": "ELITE",
+    "total": 36
+  },
+  "type": "ACHIEVEMENT_DIARY"
+}
+```
+
 ## Credits
 
 This plugin uses code from [Universal Discord Notifier](https://github.com/MidgetJake/UniversalDiscordNotifier).
