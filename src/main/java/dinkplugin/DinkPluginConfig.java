@@ -1,5 +1,6 @@
 package dinkplugin;
 
+import dinkplugin.domain.AchievementDiaries;
 import dinkplugin.domain.CombatAchievementTier;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -84,6 +85,13 @@ public interface DinkPluginConfig extends Config {
         position = 43
     )
     String combatTaskSection = "Combat Tasks";
+
+    @ConfigSection(
+        name = "Achievement Diary",
+        description = "Settings for notifying when you complete an Achievement Diary",
+        position = 47
+    )
+    String diarySection = "Achievement Diary";
 
     @ConfigItem(
         keyName = "discordWebhook",
@@ -600,6 +608,50 @@ public interface DinkPluginConfig extends Config {
     )
     default String combatTaskMessage() {
         return "%USERNAME% has completed %TIER% combat task: %TASK%";
+    }
+
+    @ConfigItem(
+        keyName = "diaryEnabled",
+        name = "Enable Diary",
+        description = "Enable notifications for achievement diary completions",
+        position = 47,
+        section = diarySection
+    )
+    default boolean notifyAchievementDiary() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "diarySendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 48,
+        section = diarySection
+    )
+    default boolean diarySendImage() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "diaryMinDifficulty",
+        name = "Min Difficulty",
+        description = "Minimum achievement diary difficulty to warrant a notification",
+        position = 49,
+        section = diarySection
+    )
+    default AchievementDiaries.Difficulty minDiaryDifficulty() {
+        return AchievementDiaries.Difficulty.EASY;
+    }
+
+    @ConfigItem(
+        keyName = "diaryMessage",
+        name = "Notification Message",
+        description = "The message to be sent to the webhook. Use %USERNAME% to insert your username, %DIFFICULTY% to insert the diary difficulty, %AREA% to insert the diary area, %TOTAL% to insert the total diaries completed",
+        position = 50,
+        section = diarySection
+    )
+    default String diaryNotifyMessage() {
+        return "%USERNAME% has completed the %DIFFICULTY% %AREA% Achievement Diary, for a total of %TOTAL% diaries completed";
     }
 
 }
