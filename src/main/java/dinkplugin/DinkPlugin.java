@@ -22,6 +22,7 @@ import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
@@ -135,6 +136,11 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onActorDeath(ActorDeath actor) {
         deathNotifier.onActorDeath(actor);
+    }
+
+    @Subscribe
+    public void onInteractingChanged(InteractingChanged event) {
+        deathNotifier.onInteraction(event);
     }
 
     @Subscribe
