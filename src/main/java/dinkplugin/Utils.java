@@ -1,6 +1,7 @@
 package dinkplugin;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.Client;
@@ -8,6 +9,7 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
+import net.runelite.api.ItemID;
 import net.runelite.api.WorldType;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.widgets.Widget;
@@ -25,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,7 +42,7 @@ public class Utils {
 
     private static final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
 
-    private static final Set<Integer> POH_REGIONS = new HashSet<>(Arrays.asList(7257, 7513, 7514, 7769, 7770, 8025, 8026));
+    private static final Set<Integer> POH_REGIONS = ImmutableSet.of(7257, 7513, 7514, 7769, 7770, 8025, 8026);
 
     private static final BinaryOperator<Item> SUM_ITEM_QUANTITIES = (a, b) -> new Item(a.getId(), a.getQuantity() + b.getQuantity());
     private static final BinaryOperator<ItemStack> SUM_ITEM_STACK_QUANTITIES = (a, b) -> new ItemStack(a.getId(), a.getQuantity() + b.getQuantity(), a.getLocation());
@@ -52,6 +53,20 @@ public class Utils {
     private static final int CASTLE_WARS_CATAPULT_X_AXIS_OFFSET = 156;
     @Varbit
     private static final int CASTLE_WARS_CATAPULT_Y_AXIS_OFFSET = 157;
+
+    private static final Set<Integer> NEVER_KEPT_ITEMS = ImmutableSet.of(
+        ItemID.CLUE_BOX, ItemID.CHRONICLE, ItemID.LOOTING_BAG,
+        ItemID.AMULET_OF_THE_DAMNED, ItemID.AMULET_OF_THE_DAMNED_FULL,
+        ItemID.BRACELET_OF_ETHEREUM, ItemID.BRACELET_OF_ETHEREUM_UNCHARGED,
+        ItemID.AVAS_ACCUMULATOR, ItemID.AVAS_ATTRACTOR, ItemID.MAGIC_SECATEURS,
+        ItemID.SILLY_JESTER_HAT, ItemID.SILLY_JESTER_TOP, ItemID.SILLY_JESTER_TIGHTS, ItemID.SILLY_JESTER_BOOTS,
+        ItemID.LUNAR_HELM, ItemID.LUNAR_TORSO, ItemID.LUNAR_LEGS, ItemID.LUNAR_GLOVES, ItemID.LUNAR_BOOTS,
+        ItemID.LUNAR_CAPE, ItemID.LUNAR_AMULET, ItemID.LUNAR_RING, ItemID.LUNAR_STAFF
+    );
+
+    public static boolean isItemNeverKeptOnDeath(int itemId) {
+        return NEVER_KEPT_ITEMS.contains(itemId);
+    }
 
     public static boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);

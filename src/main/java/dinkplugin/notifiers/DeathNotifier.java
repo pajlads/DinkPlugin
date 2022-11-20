@@ -9,6 +9,7 @@ import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.Actor;
 import net.runelite.api.Item;
+import net.runelite.api.ItemID;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.Varbits;
@@ -22,6 +23,7 @@ import javax.inject.Inject;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -77,6 +79,7 @@ public class DeathNotifier extends BaseNotifier {
 
         long losePrice = itemsByPrice.stream()
             .skip(keepCount)
+            .filter(pair -> pair.getLeft().getId() != ItemID.OLD_SCHOOL_BOND && pair.getLeft().getId() != ItemID.OLD_SCHOOL_BOND_UNTRADEABLE)
             .map(Pair::getRight)
             .reduce(Long::sum)
             .orElse(0L);
@@ -87,6 +90,7 @@ public class DeathNotifier extends BaseNotifier {
             .skip(keepCount)
             .map(Pair::getLeft)
             .mapToInt(Item::getId)
+            .filter(id -> id != ItemID.OLD_SCHOOL_BOND && id != ItemID.OLD_SCHOOL_BOND_UNTRADEABLE)
             .distinct()
             .limit(3)
             .toArray();
@@ -194,11 +198,23 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private static List<SerializedItemStack> getKeptStacks(ItemManager itemManager, List<Pair<Item, Long>> itemsByPrice, int keepCount) {
-        return itemsByPrice.stream()
-            .limit(keepCount)
+        List<SerializedItemStack> kept = new LinkedList<>();
+
+        itemsByPrice.stream()
             .map(Pair::getLeft)
+            .filter(item -> !Utils.isItemNeverKeptOnDeath(item.getId()))
+            .filter(item -> item.getId() != ItemID.OLD_SCHOOL_BOND && item.getId() != ItemID.OLD_SCHOOL_BOND_UNTRADEABLE)
+            .limit(keepCount)
             .map(item -> Utils.stackFromItem(itemManager, item))
-            .collect(Collectors.toList());
+            .forEach(kept::add);
+
+        itemsByPrice.stream()
+            .map(Pair::getLeft)
+            .filter(item -> item.getId() == ItemID.OLD_SCHOOL_BOND || item.getId() == ItemID.OLD_SCHOOL_BOND_UNTRADEABLE)
+            .map(item -> Utils.stackFromItem(itemManager, item))
+            .forEach(kept::add);
+
+        return kept;
     }
 
 }
