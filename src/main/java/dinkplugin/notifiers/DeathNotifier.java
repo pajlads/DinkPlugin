@@ -175,7 +175,7 @@ public class DeathNotifier extends BaseNotifier {
 
     private static List<Pair<Item, Long>> getPricedItems(ItemManager itemManager, Collection<Item> items) {
         return items.stream()
-            .map(item -> Pair.of(item, (long) (itemManager.getItemPrice(item.getId())) * (long) (item.getQuantity())))
+            .map(item -> Pair.of(item, Utils.getPrice(itemManager, item.getId()) * item.getQuantity()))
             .sorted((a, b) -> Math.toIntExact(b.getRight() - a.getRight()))
             .collect(Collectors.toList());
     }

@@ -55,7 +55,7 @@ public class Utils {
     private static final int CASTLE_WARS_CATAPULT_Y_AXIS_OFFSET = 157;
 
     private static final Set<Integer> NEVER_KEPT_ITEMS = ImmutableSet.of(
-        ItemID.CLUE_BOX, ItemID.CHRONICLE, ItemID.LOOTING_BAG,
+        ItemID.CLUE_BOX, ItemID.LOOTING_BAG,
         ItemID.AMULET_OF_THE_DAMNED, ItemID.AMULET_OF_THE_DAMNED_FULL,
         ItemID.BRACELET_OF_ETHEREUM, ItemID.BRACELET_OF_ETHEREUM_UNCHARGED,
         ItemID.AVAS_ACCUMULATOR, ItemID.AVAS_ATTRACTOR, ItemID.MAGIC_SECATEURS,
@@ -65,7 +65,14 @@ public class Utils {
     );
 
     public static boolean isItemNeverKeptOnDeath(int itemId) {
+        // https://oldschool.runescape.wiki/w/Items_Kept_on_Death#Items_that_are_never_kept
+        // https://oldschoolrunescape.fandom.com/wiki/Items_Kept_on_Death#Items_that_are_never_kept
         return NEVER_KEPT_ITEMS.contains(itemId);
+    }
+
+    public static long getPrice(ItemManager itemManager, int itemId) {
+        int price = itemManager.getItemPrice(itemId);
+        return price > 0 ? price : itemManager.getItemComposition(itemId).getPrice();
     }
 
     public static boolean isIgnoredWorld(Set<WorldType> worldType) {
