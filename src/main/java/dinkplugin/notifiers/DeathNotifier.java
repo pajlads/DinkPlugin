@@ -14,6 +14,7 @@ import net.runelite.api.Prayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
+import net.runelite.api.vars.AccountType;
 import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -128,6 +129,9 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private int getKeepCount() {
+        if (plugin.getClient().getAccountType() == AccountType.ULTIMATE_IRONMAN)
+            return 0;
+
         int keepCount;
         if (plugin.getClient().getLocalPlayer().getSkullIcon() == null)
             keepCount = 3;
