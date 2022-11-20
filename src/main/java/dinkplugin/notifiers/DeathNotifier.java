@@ -48,7 +48,7 @@ public class DeathNotifier extends BaseNotifier {
 
     @Override
     public boolean isEnabled() {
-        return plugin.getConfig().notifyDeath() && super.isEnabled();
+        return plugin.getConfig().notifyDeath() && super.isEnabled() && !Utils.isSafeArea(plugin.getClient());
     }
 
     public void onActorDeath(ActorDeath actor) {
@@ -144,7 +144,7 @@ public class DeathNotifier extends BaseNotifier {
 
     private Player identifyPker() {
         // cannot be pk'd in safe zone
-        if (Utils.isSafeZone(plugin.getClient()))
+        if (Utils.isPvpSafeZone(plugin.getClient()))
             return null;
 
         // must be in wildness or pvp world to be pk'd

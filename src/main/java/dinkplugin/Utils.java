@@ -9,6 +9,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.WorldType;
+import net.runelite.api.annotations.Varbit;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,8 +41,17 @@ public class Utils {
 
     private static final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
 
+    private static final Set<Integer> POH_REGIONS = new HashSet<>(Arrays.asList(7257, 7513, 7514, 7769, 7770, 8025, 8026));
+
     private static final BinaryOperator<Item> SUM_ITEM_QUANTITIES = (a, b) -> new Item(a.getId(), a.getQuantity() + b.getQuantity());
     private static final BinaryOperator<ItemStack> SUM_ITEM_STACK_QUANTITIES = (a, b) -> new ItemStack(a.getId(), a.getQuantity() + b.getQuantity(), a.getLocation());
+
+    @Varbit
+    private static final int CASTLE_WARS_COUNTDOWN = 380;
+    @Varbit
+    private static final int CASTLE_WARS_CATAPULT_X_AXIS_OFFSET = 156;
+    @Varbit
+    private static final int CASTLE_WARS_CATAPULT_Y_AXIS_OFFSET = 157;
 
     public static boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);
@@ -50,9 +61,26 @@ public class Utils {
         return worldType.contains(WorldType.PVP) || worldType.contains(WorldType.DEADMAN);
     }
 
-    public static boolean isSafeZone(Client client) {
+    public static boolean isPvpSafeZone(Client client) {
         Widget widget = client.getWidget(WidgetInfo.PVP_WORLD_SAFE_ZONE);
         return widget != null && !widget.isSelfHidden();
+    }
+
+    public static boolean isCastleWars(Client client) {
+        return client.getVarbitValue(CASTLE_WARS_COUNTDOWN) > 0 || client.getVarbitValue(CASTLE_WARS_CATAPULT_X_AXIS_OFFSET) > 0 || client.getVarbitValue(CASTLE_WARS_CATAPULT_Y_AXIS_OFFSET) > 0;
+    }
+
+    public static boolean isPestControl(Client client) {
+        Widget widget = client.getWidget(WidgetInfo.PEST_CONTROL_BLUE_SHIELD);
+        return widget != null;
+    }
+
+    public static boolean isPlayerOwnedHouse(Client client) {
+        return POH_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
+    }
+
+    public static boolean isSafeArea(Client client) {
+        return isCastleWars(client) || isPestControl(client) || isPlayerOwnedHouse(client);
     }
 
     public static String getPlayerName(Client client) {
