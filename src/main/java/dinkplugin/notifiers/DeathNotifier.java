@@ -18,6 +18,7 @@ import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.vars.AccountType;
 import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import java.lang.ref.WeakReference;
@@ -182,7 +183,8 @@ public class DeathNotifier extends BaseNotifier {
             .collect(Collectors.toList());
     }
 
-    private static <K extends Pair<Item, Long>> Pair<List<K>, List<K>> splitItemsByKept(List<K> itemsByPrice, int keepCount) {
+    @VisibleForTesting
+    static <K extends Pair<Item, Long>> Pair<List<K>, List<K>> splitItemsByKept(List<K> itemsByPrice, int keepCount) {
         final List<K> keep = new ArrayList<>(keepCount);
         final List<K> lost = new ArrayList<>(Math.max(itemsByPrice.size() - keepCount, 0));
 
