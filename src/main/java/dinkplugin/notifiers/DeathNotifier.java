@@ -21,9 +21,9 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Inject;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -76,28 +76,30 @@ public class DeathNotifier extends BaseNotifier {
         List<Pair<Item, Long>> itemsByPrice = getPricedItems(plugin.getItemManager(), items);
 
         int keepCount = getKeepCount();
+        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(itemsByPrice, keepCount);
+        List<Pair<Item, Long>> keptItems = split.getLeft();
+        List<Pair<Item, Long>> lostItems = split.getRight();
 
-        long losePrice = itemsByPrice.stream()
-            .skip(keepCount)
-            .filter(pair -> pair.getLeft().getId() != ItemID.OLD_SCHOOL_BOND && pair.getLeft().getId() != ItemID.OLD_SCHOOL_BOND_UNTRADEABLE)
+        long losePrice = lostItems.stream()
             .map(Pair::getRight)
             .reduce(Long::sum)
             .orElse(0L);
 
         String notifyMessage = buildMessage(pker, losePrice);
 
-        int[] topLostItemIds = itemsByPrice.stream()
-            .skip(keepCount)
+        int[] topLostItemIds = lostItems.stream()
             .map(Pair::getLeft)
             .mapToInt(Item::getId)
-            .filter(id -> id != ItemID.OLD_SCHOOL_BOND && id != ItemID.OLD_SCHOOL_BOND_UNTRADEABLE)
             .distinct()
             .limit(3)
             .toArray();
 
         List<NotificationBody.Embed> lostItemEmbeds = Utils.buildEmbeds(topLostItemIds);
-        List<SerializedItemStack> topLostStacks = getTopLostStacks(plugin.getItemManager(), itemsByPrice, keepCount, topLostItemIds);
-        List<SerializedItemStack> keptStacks = getKeptStacks(plugin.getItemManager(), itemsByPrice, keepCount);
+        List<SerializedItemStack> topLostStacks = getTopLostStacks(plugin.getItemManager(), lostItems, topLostItemIds);
+        List<SerializedItemStack> keptStacks = keptItems.stream()
+            .map(Pair::getKey)
+            .map(item -> Utils.stackFromItem(plugin.getItemManager(), item))
+            .collect(Collectors.toList());
 
         DeathNotificationData extra = new DeathNotificationData(
             losePrice,
@@ -180,41 +182,38 @@ public class DeathNotifier extends BaseNotifier {
             .collect(Collectors.toList());
     }
 
-    private static Map<Integer, Item> reduceLostItems(List<Pair<Item, Long>> itemsByPrice, int keepCount) {
-        List<Item> lostItems = itemsByPrice.stream()
-            .skip(keepCount)
-            .map(Pair::getLeft)
-            .collect(Collectors.toList());
-        return Utils.reduceItems(lostItems);
+    private static <K extends Pair<Item, Long>> Pair<List<K>, List<K>> splitItemsByKept(List<K> itemsByPrice, int keepCount) {
+        final List<K> keep = new ArrayList<>(keepCount);
+        final List<K> lost = new ArrayList<>(Math.max(itemsByPrice.size() - keepCount, 0));
+
+        int kept = 0;
+        for (K item : itemsByPrice) {
+            int id = item.getKey().getId();
+
+            if (id == ItemID.OLD_SCHOOL_BOND || id == ItemID.OLD_SCHOOL_BOND_UNTRADEABLE) {
+                // deliberately do not increment kept
+                keep.add(item);
+                continue;
+            }
+
+            if (kept < keepCount && !Utils.isItemNeverKeptOnDeath(id)) {
+                keep.add(item);
+                kept++;
+            } else {
+                lost.add(item);
+            }
+        }
+
+        return Pair.of(keep, lost);
     }
 
-    private static List<SerializedItemStack> getTopLostStacks(ItemManager itemManager, List<Pair<Item, Long>> itemsByPrice, int keepCount, int[] topLostItemIds) {
-        Map<Integer, Item> reducedLostItems = reduceLostItems(itemsByPrice, keepCount);
+    private static List<SerializedItemStack> getTopLostStacks(ItemManager itemManager, List<Pair<Item, Long>> lostItems, int[] topLostItemIds) {
+        Map<Integer, Item> reducedLostItems = Utils.reduceItems(lostItems.stream().map(Pair::getLeft).collect(Collectors.toList()));
         return Arrays.stream(topLostItemIds)
             .mapToObj(reducedLostItems::get)
             .filter(Objects::nonNull)
             .map(item -> Utils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
-    }
-
-    private static List<SerializedItemStack> getKeptStacks(ItemManager itemManager, List<Pair<Item, Long>> itemsByPrice, int keepCount) {
-        List<SerializedItemStack> kept = new LinkedList<>();
-
-        itemsByPrice.stream()
-            .map(Pair::getLeft)
-            .filter(item -> !Utils.isItemNeverKeptOnDeath(item.getId()))
-            .filter(item -> item.getId() != ItemID.OLD_SCHOOL_BOND && item.getId() != ItemID.OLD_SCHOOL_BOND_UNTRADEABLE)
-            .limit(keepCount)
-            .map(item -> Utils.stackFromItem(itemManager, item))
-            .forEach(kept::add);
-
-        itemsByPrice.stream()
-            .map(Pair::getLeft)
-            .filter(item -> item.getId() == ItemID.OLD_SCHOOL_BOND || item.getId() == ItemID.OLD_SCHOOL_BOND_UNTRADEABLE)
-            .map(item -> Utils.stackFromItem(itemManager, item))
-            .forEach(kept::add);
-
-        return kept;
     }
 
 }
