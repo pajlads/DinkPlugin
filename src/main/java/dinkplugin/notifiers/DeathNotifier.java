@@ -18,6 +18,8 @@ import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.vars.AccountType;
 import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
@@ -135,6 +137,9 @@ public class DeathNotifier extends BaseNotifier {
         return notifyMessage;
     }
 
+    /**
+     * @return the number of items the player would keep on an unsafe death
+     */
     private int getKeepCount() {
         if (plugin.getClient().getAccountType() == AccountType.ULTIMATE_IRONMAN)
             return 0;
@@ -149,6 +154,10 @@ public class DeathNotifier extends BaseNotifier {
         return keepCount;
     }
 
+    /**
+     * @return the inferred {@link Player} who killed us, or null if not pk'd
+     */
+    @Nullable
     private Player identifyPker() {
         // cannot be pk'd in safe zone
         if (Utils.isPvpSafeZone(plugin.getClient()))
@@ -176,6 +185,12 @@ public class DeathNotifier extends BaseNotifier {
         return null;
     }
 
+    /**
+     * @param itemManager {@link ItemManager}
+     * @param items       the items whose prices should be queried
+     * @return pairs of the passed items to their price, sorted by most expensive first
+     */
+    @NotNull
     private static List<Pair<Item, Long>> getPricedItems(ItemManager itemManager, Collection<Item> items) {
         return items.stream()
             .map(item -> Pair.of(item, Utils.getPrice(itemManager, item.getId()) * item.getQuantity()))
@@ -183,6 +198,16 @@ public class DeathNotifier extends BaseNotifier {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Takes the complete list of items in the player's inventory and assigns them to separate lists,
+     * depending on whether they would be kept or lost upon an unsafe death.
+     *
+     * @param itemsByPrice inventory items transformed by {@link #getPricedItems(ItemManager, Collection)}
+     * @param keepCount    the number of items kept on death
+     * @param <K>          the type of each entry; item paired with its unit price
+     * @return the kept items on death (left) and lost items on death (right), in stable order, in separate lists
+     */
+    @NotNull
     @VisibleForTesting
     static <K extends Pair<Item, Long>> Pair<List<K>, List<K>> splitItemsByKept(List<K> itemsByPrice, int keepCount) {
         final List<K> keep = new ArrayList<>(keepCount);
@@ -209,6 +234,16 @@ public class DeathNotifier extends BaseNotifier {
         return Pair.of(keep, lost);
     }
 
+    /**
+     * Converts the top lost item id array to the associated item stacks,
+     * while reflecting the cumulative item quantity across inventory slots.
+     *
+     * @param itemManager    {@link ItemManager}
+     * @param lostItems      the items that would be lost on death
+     * @param topLostItemIds a distinct set of the most valuable item id's that are being lost
+     * @return the reduced {@link SerializedItemStack}'s associated with topLostItemIds
+     */
+    @NotNull
     private static List<SerializedItemStack> getTopLostStacks(ItemManager itemManager, List<Pair<Item, Long>> lostItems, int[] topLostItemIds) {
         Map<Integer, Item> reducedLostItems = Utils.reduceItems(lostItems.stream().map(Pair::getLeft).collect(Collectors.toList()));
         return Arrays.stream(topLostItemIds)
