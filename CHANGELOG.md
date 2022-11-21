@@ -1,4 +1,6 @@
-# Unreleased
+## Unreleased
+
+## 1.1.0
 
 - Major: Add achievement diary notifications. (#67)
 - Major: Add combat achievement notifications. (#63)
