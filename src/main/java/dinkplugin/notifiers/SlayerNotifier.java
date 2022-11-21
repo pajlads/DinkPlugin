@@ -6,6 +6,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
 import dinkplugin.notifiers.data.SlayerNotificationData;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Singleton;
 import java.util.regex.Matcher;
@@ -13,7 +14,8 @@ import java.util.regex.Pattern;
 
 @Singleton
 public class SlayerNotifier extends BaseNotifier {
-    public static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
+    @VisibleForTesting
+    static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
     private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
 
     private String slayerTask = "";

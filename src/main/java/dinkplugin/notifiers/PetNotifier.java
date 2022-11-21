@@ -4,10 +4,12 @@ import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.regex.Pattern;
 
 public class PetNotifier extends BaseNotifier {
+    @VisibleForTesting
     static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
 
     @Override

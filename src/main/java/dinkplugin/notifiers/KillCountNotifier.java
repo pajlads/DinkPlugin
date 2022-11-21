@@ -9,6 +9,7 @@ import net.runelite.api.NPC;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,6 +78,7 @@ public class KillCountNotifier extends BaseNotifier {
         return interval <= 1 || killCount % interval == 0;
     }
 
+    @VisibleForTesting
     static Optional<Pair<String, Integer>> parse(String message) {
         Matcher primary = PRIMARY_REGEX.matcher(message);
         Matcher secondary; // lazy init

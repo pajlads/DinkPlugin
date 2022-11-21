@@ -6,11 +6,13 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
 import dinkplugin.notifiers.data.CollectionNotificationData;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CollectionNotifier extends BaseNotifier {
+    @VisibleForTesting
     static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
 
     @Override
