@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -13,24 +12,20 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@Singleton
 public class LevelNotifier extends BaseNotifier {
 
     private final List<String> levelledSkills = new ArrayList<>();
     private final Map<String, Integer> currentLevels = new HashMap<>();
     private boolean sendMessage = false;
     private int ticksWaited = 0;
-
-    @Inject
-    public LevelNotifier(DinkPlugin plugin) {
-        super(plugin);
-    }
 
     public void reset() {
         currentLevels.clear();
@@ -65,7 +60,7 @@ public class LevelNotifier extends BaseNotifier {
 
         int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
         Integer previousLevel = currentLevels.put(skill, virtualLevel);
-        if (plugin.getConfig().notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
+        if (config.notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
             if (virtualLevel > previousLevel) {
                 levelledSkills.add(skill);
                 sendMessage = true;
@@ -92,9 +87,9 @@ public class LevelNotifier extends BaseNotifier {
 
         levelledSkills.clear();
         String fullNotification = StringUtils.replaceEach(
-            plugin.getConfig().levelNotifyMessage(),
+            config.levelNotifyMessage(),
             new String[] { "%USERNAME%", "%SKILL%" },
-            new String[] { Utils.getPlayerName(plugin.getClient()), skillMessage.toString() }
+            new String[] { Utils.getPlayerName(client), skillMessage.toString() }
         );
 
         createMessage(DinkPluginConfig::levelSendImage, NotificationBody.builder()
@@ -105,7 +100,7 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     private boolean checkLevelInterval(int level) {
-        int interval = plugin.getConfig().levelInterval();
+        int interval = config.levelInterval();
         return interval <= 1
             || level == 99
             || level % interval == 0;

@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -12,9 +11,12 @@ import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.util.QuantityFormatter;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,19 +26,19 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Singleton
 public class ClueNotifier extends BaseNotifier {
     private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
     private String clueCount = "";
     private String clueType = "";
     private int badTicks = 0; // used to prevent notifs from using stale data
 
-    public ClueNotifier(DinkPlugin plugin) {
-        super(plugin);
-    }
+    @Inject
+    private ItemManager itemManager;
 
     @Override
     public boolean isEnabled() {
-        return plugin.getConfig().notifyClue() && super.isEnabled();
+        return config.notifyClue() && super.isEnabled();
     }
 
     public void onChatMessage(String chatMessage) {
@@ -52,7 +54,7 @@ public class ClueNotifier extends BaseNotifier {
 
     public void onWidgetLoaded(WidgetLoaded event) {
         if (event.getGroupId() == WidgetID.CLUE_SCROLL_REWARD_GROUP_ID && isEnabled()) {
-            Widget clue = plugin.getClient().getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER);
+            Widget clue = client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER);
             if (clue != null && !clueType.isEmpty()) {
                 Widget[] children = clue.getChildren();
                 if (children == null) return;
@@ -87,13 +89,13 @@ public class ClueNotifier extends BaseNotifier {
         StringBuilder lootMessage = new StringBuilder();
         AtomicLong totalPrice = new AtomicLong();
         List<SerializedItemStack> itemStacks = new ArrayList<>(clueItems.size());
-        List<NotificationBody.Embed> embeds = new ArrayList<>(plugin.getConfig().clueShowItems() ? clueItems.size() : 0);
+        List<NotificationBody.Embed> embeds = new ArrayList<>(config.clueShowItems() ? clueItems.size() : 0);
 
         clueItems.forEach((itemId, quantity) -> {
             if (lootMessage.length() > 0) lootMessage.append('\n');
 
-            int price = plugin.getItemManager().getItemPrice(itemId);
-            ItemComposition itemComposition = plugin.getItemManager().getItemComposition(itemId);
+            int price = itemManager.getItemPrice(itemId);
+            ItemComposition itemComposition = itemManager.getItemComposition(itemId);
             SerializedItemStack stack = new SerializedItemStack(itemId, quantity, price, itemComposition.getName());
 
             totalPrice.addAndGet(stack.getTotalPrice());
@@ -101,11 +103,11 @@ public class ClueNotifier extends BaseNotifier {
             lootMessage.append(getItemMessage(stack, embeds));
         });
 
-        if (totalPrice.get() >= plugin.getConfig().clueMinValue()) {
+        if (totalPrice.get() >= config.clueMinValue()) {
             String notifyMessage = StringUtils.replaceEach(
-                plugin.getConfig().clueNotifyMessage(),
+                config.clueNotifyMessage(),
                 new String[] { "%USERNAME%", "%CLUE%", "%COUNT%", "%TOTAL_VALUE%", "%LOOT%" },
-                new String[] { Utils.getPlayerName(plugin.getClient()), clueType, clueCount, QuantityFormatter.quantityToStackSize(totalPrice.get()), lootMessage.toString() }
+                new String[] { Utils.getPlayerName(client), clueType, clueCount, QuantityFormatter.quantityToStackSize(totalPrice.get()), lootMessage.toString() }
             );
             createMessage(DinkPluginConfig::clueSendImage, NotificationBody.builder()
                 .content(notifyMessage)
@@ -119,7 +121,7 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     private String getItemMessage(SerializedItemStack item, Collection<NotificationBody.Embed> embeds) {
-        if (plugin.getConfig().clueShowItems())
+        if (config.clueShowItems())
             embeds.add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(Utils.getItemImageUrl(item.getId()))));
         return String.format("%s x %s (%s)", item.getQuantity(), item.getName(), QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
     }

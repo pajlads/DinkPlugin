@@ -1,35 +1,29 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import dinkplugin.domain.AchievementDiaries;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DiaryNotificationData;
-import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 
+@Singleton
 public class DiaryNotifier extends BaseNotifier {
     private static final Map<Integer, AchievementDiaries.Diary> DIARIES = AchievementDiaries.INSTANCE.getDiaries();
     private final Map<Integer, Integer> diaryCompletionById = new HashMap<>();
     private int initDelayTicks = 0;
 
-    @Inject
-    public DiaryNotifier(DinkPlugin plugin) {
-        super(plugin);
-    }
-
     @Override
     public boolean isEnabled() {
-        return plugin.getConfig().notifyAchievementDiary() && super.isEnabled();
+        return config.notifyAchievementDiary() && super.isEnabled();
     }
 
     public void reset() {
@@ -43,7 +37,7 @@ public class DiaryNotifier extends BaseNotifier {
     }
 
     public void onTick() {
-        if (plugin.getClient().getGameState() != GameState.LOGGED_IN)
+        if (client.getGameState() != GameState.LOGGED_IN)
             return;
 
         if (initDelayTicks > 0) {
@@ -84,9 +78,9 @@ public class DiaryNotifier extends BaseNotifier {
 
     private void handle(AchievementDiaries.Diary diary) {
         int total = getTotalCompleted();
-        String player = Utils.getPlayerName(plugin.getClient());
+        String player = Utils.getPlayerName(client);
         String message = StringUtils.replaceEach(
-            plugin.getConfig().diaryNotifyMessage(),
+            config.diaryNotifyMessage(),
             new String[] { "%USERNAME%", "%DIFFICULTY%", "%AREA%", "%TOTAL%" },
             new String[] { player, diary.getDifficulty().toString(), diary.getArea(), String.valueOf(total) }
         );
@@ -100,7 +94,6 @@ public class DiaryNotifier extends BaseNotifier {
     }
 
     private boolean checkDifficulty(AchievementDiaries.Diary diary) {
-        DinkPluginConfig config = plugin.getConfig();
         return config.notifyAchievementDiary() && diary.getDifficulty().ordinal() >= config.minDiaryDifficulty().ordinal();
     }
 
@@ -124,7 +117,6 @@ public class DiaryNotifier extends BaseNotifier {
 
     private void initCompleted() {
         if (!super.isEnabled()) return;
-        Client client = plugin.getClient();
         for (Integer id : DIARIES.keySet()) {
             int value = client.getVarbitValue(id);
             if (value >= 0) {

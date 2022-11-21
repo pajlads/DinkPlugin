@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -15,18 +14,14 @@ import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
 public class QuestNotifier extends BaseNotifier {
 
-    public QuestNotifier(DinkPlugin plugin) {
-        super(plugin);
-    }
-
     @Override
     public boolean isEnabled() {
-        return plugin.getConfig().notifyQuest() && super.isEnabled();
+        return config.notifyQuest() && super.isEnabled();
     }
 
     public void onWidgetLoaded(WidgetLoaded event) {
         if (event.getGroupId() == QUEST_COMPLETED_GROUP_ID && isEnabled()) {
-            Widget quest = plugin.getClient().getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
+            Widget quest = client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
             if (quest != null) {
                 this.handleNotify(quest.getText());
             }
@@ -36,9 +31,9 @@ public class QuestNotifier extends BaseNotifier {
     private void handleNotify(String questText) {
         String parsed = Utils.parseQuestWidget(questText);
         String notifyMessage = StringUtils.replaceEach(
-            plugin.getConfig().questNotifyMessage(),
+            config.questNotifyMessage(),
             new String[] { "%USERNAME%", "%QUEST%" },
-            new String[] { Utils.getPlayerName(plugin.getClient()), parsed }
+            new String[] { Utils.getPlayerName(client), parsed }
         );
 
         createMessage(DinkPluginConfig::questSendImage, NotificationBody.builder()
