@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -10,6 +9,7 @@ import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.ItemComposition;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
@@ -24,13 +24,11 @@ import java.util.List;
 public class LootNotifier extends BaseNotifier {
 
     @Inject
-    public LootNotifier(DinkPlugin plugin) {
-        super(plugin);
-    }
+    private ItemManager itemManager;
 
     @Override
     public boolean isEnabled() {
-        return plugin.getConfig().notifyLoot() && super.isEnabled();
+        return config.notifyLoot() && super.isEnabled();
     }
 
     public void onNpcLootReceived(NpcLootReceived event) {
@@ -54,8 +52,8 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Collection<ItemStack> items, String dropper) {
-        final int minValue = plugin.getConfig().minLootValue();
-        final boolean icons = plugin.getConfig().lootIcons();
+        final int minValue = config.minLootValue();
+        final boolean icons = config.lootIcons();
 
         Collection<ItemStack> reduced = Utils.reduceItemStack(items);
         List<SerializedItemStack> serializedItems = new ArrayList<>(reduced.size());
@@ -68,9 +66,9 @@ public class LootNotifier extends BaseNotifier {
         for (ItemStack item : reduced) {
             int itemId = item.getId();
             int quantity = item.getQuantity();
-            int price = plugin.getItemManager().getItemPrice(itemId);
+            int price = itemManager.getItemPrice(itemId);
             long totalPrice = (long) price * quantity;
-            ItemComposition itemComposition = plugin.getItemManager().getItemComposition(itemId);
+            ItemComposition itemComposition = itemManager.getItemComposition(itemId);
             if (totalPrice >= minValue) {
                 sendMessage = true;
                 if (lootMessage.length() > 0) lootMessage.append("\n");
@@ -83,9 +81,9 @@ public class LootNotifier extends BaseNotifier {
 
         if (sendMessage) {
             String notifyMessage = StringUtils.replaceEach(
-                plugin.getConfig().lootNotifyMessage(),
+                config.lootNotifyMessage(),
                 new String[] { "%USERNAME%", "%LOOT%", "%TOTAL_VALUE%", "%SOURCE%" },
-                new String[] { Utils.getPlayerName(plugin.getClient()), lootMessage.toString(), QuantityFormatter.quantityToStackSize(totalStackValue), dropper }
+                new String[] { Utils.getPlayerName(client), lootMessage.toString(), QuantityFormatter.quantityToStackSize(totalStackValue), dropper }
             );
             createMessage(DinkPluginConfig::lootSendImage, NotificationBody.builder()
                 .content(notifyMessage)

@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Utilize more dependency injection. (#73)
+
 ## 1.1.0
 
 - Major: Add achievement diary notifications. (#67)

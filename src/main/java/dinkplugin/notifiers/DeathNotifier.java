@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
@@ -23,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Singleton
 public class DeathNotifier extends BaseNotifier {
+
+    @Inject
+    private ItemManager itemManager;
 
     /**
      * Tracks the last {@link Actor} our local player interacted with,
@@ -46,18 +50,13 @@ public class DeathNotifier extends BaseNotifier {
      */
     private WeakReference<Actor> lastTarget = new WeakReference<>(null);
 
-    @Inject
-    public DeathNotifier(DinkPlugin plugin) {
-        super(plugin);
-    }
-
     @Override
     public boolean isEnabled() {
-        return plugin.getConfig().notifyDeath() && super.isEnabled() && !Utils.isSafeArea(plugin.getClient());
+        return config.notifyDeath() && super.isEnabled() && !Utils.isSafeArea(client);
     }
 
     public void onActorDeath(ActorDeath actor) {
-        boolean self = plugin.getClient().getLocalPlayer() == actor.getActor();
+        boolean self = client.getLocalPlayer() == actor.getActor();
 
         if (self && isEnabled())
             handleNotify();
@@ -67,7 +66,7 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     public void onInteraction(InteractingChanged event) {
-        if (event.getSource() == plugin.getClient().getLocalPlayer() && event.getTarget() != null && event.getTarget().getCombatLevel() > 0) {
+        if (event.getSource() == client.getLocalPlayer() && event.getTarget() != null && event.getTarget().getCombatLevel() > 0) {
             lastTarget = new WeakReference<>(event.getTarget());
         }
     }
@@ -75,8 +74,8 @@ public class DeathNotifier extends BaseNotifier {
     private void handleNotify() {
         Actor pker = identifyPker();
 
-        Collection<Item> items = Utils.getItems(plugin.getClient());
-        List<Pair<Item, Long>> itemsByPrice = getPricedItems(plugin.getItemManager(), items);
+        Collection<Item> items = Utils.getItems(client);
+        List<Pair<Item, Long>> itemsByPrice = getPricedItems(itemManager, items);
 
         int keepCount = getKeepCount();
         Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(itemsByPrice, keepCount);
@@ -98,10 +97,10 @@ public class DeathNotifier extends BaseNotifier {
             .toArray();
 
         List<NotificationBody.Embed> lostItemEmbeds = Utils.buildEmbeds(topLostItemIds);
-        List<SerializedItemStack> topLostStacks = getTopLostStacks(plugin.getItemManager(), lostItems, topLostItemIds);
+        List<SerializedItemStack> topLostStacks = getTopLostStacks(itemManager, lostItems, topLostItemIds);
         List<SerializedItemStack> keptStacks = keptItems.stream()
             .map(Pair::getKey)
-            .map(item -> Utils.stackFromItem(plugin.getItemManager(), item))
+            .map(item -> Utils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
 
         DeathNotificationData extra = new DeathNotificationData(
@@ -121,7 +120,6 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private String buildMessage(Actor pker, long losePrice) {
-        DinkPluginConfig config = plugin.getConfig();
         boolean pvp = pker != null && config.deathNotifPvpEnabled();
         String template;
         if (pvp)
@@ -129,7 +127,7 @@ public class DeathNotifier extends BaseNotifier {
         else
             template = config.deathNotifyMessage();
         String notifyMessage = template
-            .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()))
+            .replace("%USERNAME%", Utils.getPlayerName(client))
             .replace("%VALUELOST%", String.valueOf(losePrice));
         if (pvp) {
             notifyMessage = notifyMessage.replace("%PKER%", String.valueOf(pker.getName()));
@@ -141,15 +139,15 @@ public class DeathNotifier extends BaseNotifier {
      * @return the number of items the player would keep on an unsafe death
      */
     private int getKeepCount() {
-        if (plugin.getClient().getAccountType() == AccountType.ULTIMATE_IRONMAN)
+        if (client.getAccountType() == AccountType.ULTIMATE_IRONMAN)
             return 0;
 
         int keepCount;
-        if (plugin.getClient().getLocalPlayer().getSkullIcon() == null)
+        if (client.getLocalPlayer().getSkullIcon() == null)
             keepCount = 3;
         else
             keepCount = 0;
-        if (plugin.getClient().isPrayerActive(Prayer.PROTECT_ITEM))
+        if (client.isPrayerActive(Prayer.PROTECT_ITEM))
             keepCount++;
         return keepCount;
     }
@@ -160,14 +158,14 @@ public class DeathNotifier extends BaseNotifier {
     @Nullable
     private Player identifyPker() {
         // cannot be pk'd in safe zone
-        if (Utils.isPvpSafeZone(plugin.getClient()))
+        if (Utils.isPvpSafeZone(client))
             return null;
 
         // must be in wildness or pvp world to be pk'd
-        if (plugin.getClient().getVarbitValue(Varbits.IN_WILDERNESS) <= 0 && !Utils.isPvpWorld(plugin.getClient().getWorldType()))
+        if (client.getVarbitValue(Varbits.IN_WILDERNESS) <= 0 && !Utils.isPvpWorld(client.getWorldType()))
             return null;
 
-        Player localPlayer = plugin.getClient().getLocalPlayer();
+        Player localPlayer = client.getLocalPlayer();
 
         Actor lastTarget = this.lastTarget.get();
         if (lastTarget != null && !lastTarget.isDead() && lastTarget.getInteracting() == localPlayer) {
@@ -177,7 +175,7 @@ public class DeathNotifier extends BaseNotifier {
                 return null; // we likely died to this NPC rather than a player
         }
 
-        for (Player other : plugin.getClient().getPlayers()) {
+        for (Player other : client.getPlayers()) {
             if (other.getInteracting() == localPlayer) {
                 return other;
             }

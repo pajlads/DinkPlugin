@@ -1,7 +1,6 @@
 package dinkplugin;
 
 import com.google.inject.Provides;
-import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.notifiers.ClueNotifier;
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
@@ -14,10 +13,8 @@ import dinkplugin.notifiers.PetNotifier;
 import dinkplugin.notifiers.QuestNotifier;
 import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
@@ -31,13 +28,10 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
-import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
-import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.Text;
-import okhttp3.OkHttpClient;
 
 import javax.inject.Inject;
 
@@ -48,36 +42,19 @@ import javax.inject.Inject;
     tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun" }
 )
 public class DinkPlugin extends Plugin {
-    @Inject
-    @Getter
-    private Client client;
-    @Inject
-    @Getter
-    private OkHttpClient httpClient;
-    @Inject
-    @Getter
-    private DinkPluginConfig config;
-    @Inject
-    @Getter
-    private DrawManager drawManager;
-    @Inject
-    @Getter
-    private ItemManager itemManager;
 
-    @Getter
-    private final DiscordMessageHandler messageHandler = new DiscordMessageHandler(this);
-    private final CollectionNotifier collectionNotifier = new CollectionNotifier(this);
-    private final PetNotifier petNotifier = new PetNotifier(this);
-    private final LevelNotifier levelNotifier = new LevelNotifier(this);
-    private final LootNotifier lootNotifier = new LootNotifier(this);
-    private final DeathNotifier deathNotifier = new DeathNotifier(this);
-    private final SlayerNotifier slayerNotifier = new SlayerNotifier(this);
-    private final QuestNotifier questNotifier = new QuestNotifier(this);
-    private final ClueNotifier clueNotifier = new ClueNotifier(this);
-    private final SpeedrunNotifier speedrunNotifier = new SpeedrunNotifier(this);
-    private final KillCountNotifier killCountNotifier = new KillCountNotifier(this);
-    private final CombatTaskNotifier combatTaskNotifier = new CombatTaskNotifier(this);
-    private final DiaryNotifier diaryNotifier = new DiaryNotifier(this);
+    private @Inject CollectionNotifier collectionNotifier;
+    private @Inject PetNotifier petNotifier;
+    private @Inject LevelNotifier levelNotifier;
+    private @Inject LootNotifier lootNotifier;
+    private @Inject DeathNotifier deathNotifier;
+    private @Inject SlayerNotifier slayerNotifier;
+    private @Inject QuestNotifier questNotifier;
+    private @Inject ClueNotifier clueNotifier;
+    private @Inject SpeedrunNotifier speedrunNotifier;
+    private @Inject KillCountNotifier killCountNotifier;
+    private @Inject CombatTaskNotifier combatTaskNotifier;
+    private @Inject DiaryNotifier diaryNotifier;
 
     @Override
     protected void startUp() {

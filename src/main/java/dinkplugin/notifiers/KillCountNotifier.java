@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPlugin;
 import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -10,8 +9,8 @@ import net.runelite.api.NPC;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
@@ -24,14 +23,9 @@ public class KillCountNotifier extends BaseNotifier {
     private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion)\\s?count is: (?<value>\\d+)\\b");
     private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>\\d+)\\b");
 
-    @Inject
-    public KillCountNotifier(DinkPlugin plugin) {
-        super(plugin);
-    }
-
     @Override
     public boolean isEnabled() {
-        return plugin.getConfig().notifyKillCount() && super.isEnabled();
+        return config.notifyKillCount() && super.isEnabled();
     }
 
     public void onGameMessage(String message) {
@@ -43,9 +37,9 @@ public class KillCountNotifier extends BaseNotifier {
         if (!checkKillInterval(killCount)) return;
 
         // Assemble content
-        String player = Utils.getPlayerName(plugin.getClient());
+        String player = Utils.getPlayerName(client);
         String content = StringUtils.replaceEach(
-            plugin.getConfig().killCountMessage(),
+            config.killCountMessage(),
             new String[] { "%USERNAME%", "%BOSS%", "%COUNT%" },
             new String[] { player, boss, String.valueOf(killCount) }
         );
@@ -59,9 +53,9 @@ public class KillCountNotifier extends BaseNotifier {
                 .type(NotificationType.KILL_COUNT);
 
         // Add embed if not screenshotting
-        boolean screenshot = plugin.getConfig().killCountSendImage();
+        boolean screenshot = config.killCountSendImage();
         if (!screenshot)
-            Arrays.stream(plugin.getClient().getCachedNPCs())
+            Arrays.stream(client.getCachedNPCs())
                 .filter(Objects::nonNull)
                 .filter(npc -> boss.equalsIgnoreCase(npc.getName()))
                 .findAny()
@@ -77,13 +71,14 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private boolean checkKillInterval(int killCount) {
-        if (killCount == 1 && plugin.getConfig().killCountNotifyInitial())
+        if (killCount == 1 && config.killCountNotifyInitial())
             return true;
 
-        int interval = plugin.getConfig().killCountInterval();
+        int interval = config.killCountInterval();
         return interval <= 1 || killCount % interval == 0;
     }
 
+    @VisibleForTesting
     static Optional<Pair<String, Integer>> parse(String message) {
         Matcher primary = PRIMARY_REGEX.matcher(message);
         Matcher secondary; // lazy init

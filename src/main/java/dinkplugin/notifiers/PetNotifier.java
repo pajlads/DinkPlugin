@@ -1,25 +1,20 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
+import org.jetbrains.annotations.VisibleForTesting;
 
-import javax.inject.Inject;
 import java.util.regex.Pattern;
 
 public class PetNotifier extends BaseNotifier {
+    @VisibleForTesting
     static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
-
-    @Inject
-    public PetNotifier(DinkPlugin plugin) {
-        super(plugin);
-    }
 
     @Override
     public boolean isEnabled() {
-        return plugin.getConfig().notifyPet() && super.isEnabled();
+        return config.notifyPet() && super.isEnabled();
     }
 
     public void onChatMessage(String chatMessage) {
@@ -29,8 +24,8 @@ public class PetNotifier extends BaseNotifier {
     }
 
     private void handleNotify() {
-        String notifyMessage = plugin.getConfig().petNotifyMessage()
-            .replace("%USERNAME%", Utils.getPlayerName(plugin.getClient()));
+        String notifyMessage = config.petNotifyMessage()
+            .replace("%USERNAME%", Utils.getPlayerName(client));
 
         createMessage(DinkPluginConfig::petSendImage, NotificationBody.builder()
             .content(notifyMessage)

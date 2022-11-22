@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import dinkplugin.domain.CombatAchievementTier;
@@ -18,13 +17,9 @@ import java.util.regex.Pattern;
 public class CombatTaskNotifier extends BaseNotifier {
     private static final Pattern ACHIEVEMENT_PATTERN = Pattern.compile("Congratulations, you've completed an? (?<tier>\\w+) combat task: (?<task>.+)\\.");
 
-    public CombatTaskNotifier(DinkPlugin plugin) {
-        super(plugin);
-    }
-
     @Override
     public boolean isEnabled() {
-        return plugin.getConfig().notifyCombatTask() && super.isEnabled();
+        return config.notifyCombatTask() && super.isEnabled();
     }
 
     public void onGameMessage(String message) {
@@ -33,12 +28,12 @@ public class CombatTaskNotifier extends BaseNotifier {
     }
 
     private void handle(CombatAchievementTier tier, String task) {
-        if (tier.ordinal() < plugin.getConfig().minCombatAchievementTier().ordinal())
+        if (tier.ordinal() < config.minCombatAchievementTier().ordinal())
             return;
 
-        String player = Utils.getPlayerName(plugin.getClient());
+        String player = Utils.getPlayerName(client);
         String message = StringUtils.replaceEach(
-            plugin.getConfig().combatTaskMessage(),
+            config.combatTaskMessage(),
             new String[] { "%USERNAME%", "%TIER%", "%TASK%" },
             new String[] { player, tier.toString(), task }
         );
