@@ -1,23 +1,13 @@
 package dinkplugin.notifiers;
 
-import com.google.inject.testing.fieldbinder.Bind;
-import dinkplugin.DinkPluginConfig;
-import dinkplugin.MockedTestBase;
-import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.QuestNotificationData;
-import net.runelite.api.Client;
-import net.runelite.api.Player;
-import net.runelite.api.WorldType;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-
-import java.util.EnumSet;
 
 import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 import static net.runelite.api.widgets.WidgetInfo.QUEST_COMPLETED_NAME_TEXT;
@@ -28,22 +18,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class QuestNotifierTest extends MockedTestBase {
-
-    @Bind
-    @Mock
-    DinkPluginConfig config;
-
-    @Bind
-    @Mock
-    Client client;
-
-    @Mock
-    Player localPlayer;
-
-    @Bind
-    @Mock
-    DiscordMessageHandler messageHandler;
+class QuestNotifierTest extends MockedNotifierTest {
 
     @InjectMocks
     QuestNotifier notifier;
@@ -52,11 +27,6 @@ class QuestNotifierTest extends MockedTestBase {
     @BeforeEach
     protected void setUp() {
         super.setUp();
-
-        // init client mocks
-        when(client.getWorldType()).thenReturn(EnumSet.noneOf(WorldType.class));
-        when(client.getLocalPlayer()).thenReturn(localPlayer);
-        when(localPlayer.getName()).thenReturn("dank");
 
         // init config mocks
         when(config.notifyQuest()).thenReturn(true);
@@ -78,7 +48,7 @@ class QuestNotifierTest extends MockedTestBase {
         verify(messageHandler).createMessage(
             false,
             NotificationBody.builder()
-                .content("dank has completed: Dragon Slayer")
+                .content(PLAYER_NAME + " has completed: Dragon Slayer")
                 .extra(new QuestNotificationData("Dragon Slayer"))
                 .type(NotificationType.QUEST)
                 .build()
