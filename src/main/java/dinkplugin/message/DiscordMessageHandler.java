@@ -3,6 +3,7 @@ package dinkplugin.message;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.ui.DrawManager;
@@ -30,19 +31,12 @@ import static net.runelite.http.api.RuneLiteAPI.GSON;
 
 @Slf4j
 @Singleton
+@RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class DiscordMessageHandler {
-
-    @Inject
-    private DinkPluginConfig config;
-
-    @Inject
-    private Client client;
-
-    @Inject
-    private DrawManager drawManager;
-
-    @Inject
-    private OkHttpClient httpClient;
+    private final DinkPluginConfig config;
+    private final Client client;
+    private final DrawManager drawManager;
+    private final OkHttpClient httpClient;
 
     public <T> void createMessage(boolean sendImage, @NonNull NotificationBody<T> mBody) {
         String webhookUrl = config.discordWebhook();
