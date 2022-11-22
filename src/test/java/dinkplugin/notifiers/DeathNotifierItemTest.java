@@ -14,7 +14,7 @@ import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DeathNotifierTest {
+class DeathNotifierItemTest {
     private static final Pair<Item, Long> BOND, EGG, GRAIN, POT, SALMON, TUNA, BAG, CLUE, JESTER, TROPHY, AVA;
 
     @Test

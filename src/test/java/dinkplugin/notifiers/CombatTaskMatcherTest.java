@@ -15,7 +15,7 @@ import static dinkplugin.domain.CombatAchievementTier.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class CombatTaskNotifierTest {
+class CombatTaskMatcherTest {
 
     @ParameterizedTest(name = "Combat Achievement regex should match: {0}")
     @ArgumentsSource(AchievementProvider.class)
