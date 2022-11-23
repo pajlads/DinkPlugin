@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
+import java.time.Duration;
+
 import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_DURATION_CHILD_ID;
 import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_GROUP_ID;
 import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_PB_CHILD_ID;
@@ -41,7 +43,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         // init common widget mocks
         Widget quest = mock(Widget.class);
         when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID)).thenReturn(quest);
-        when(quest.getText()).thenReturn(QUEST_NAME);
+        when(quest.getText()).thenReturn("You have completed " + QUEST_NAME + "!");
 
         Widget pb = mock(Widget.class);
         when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID)).thenReturn(pb);
@@ -65,7 +67,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .content(String.format("%s has beat their PB of %s with a time of %s", PLAYER_NAME, QUEST_NAME, latest))
-                .extra(new SpeedrunNotificationData(QUEST_NAME, "1:30.25", latest))
+                .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString()))
                 .type(NotificationType.SPEEDRUN)
                 .build()
         );
