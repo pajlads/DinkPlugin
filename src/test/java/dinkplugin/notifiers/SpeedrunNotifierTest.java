@@ -1,0 +1,96 @@
+package dinkplugin.notifiers;
+
+import dinkplugin.message.NotificationBody;
+import dinkplugin.message.NotificationType;
+import dinkplugin.notifiers.data.SpeedrunNotificationData;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.Widget;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+
+import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_DURATION_CHILD_ID;
+import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_GROUP_ID;
+import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_PB_CHILD_ID;
+import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+class SpeedrunNotifierTest extends MockedNotifierTest {
+
+    private static final String QUEST_NAME = "Cook's Assistant";
+
+    @InjectMocks
+    SpeedrunNotifier notifier;
+
+    @Override
+    @BeforeEach
+    protected void setUp() {
+        super.setUp();
+
+        // init config mocks
+        when(config.notifySpeedrun()).thenReturn(true);
+        when(config.speedrunPBOnly()).thenReturn(true);
+        when(config.speedrunSendImage()).thenReturn(false);
+        when(config.speedrunPBMessage()).thenReturn("%USERNAME% has beat their PB of %QUEST% with a time of %TIME%");
+
+        // init common widget mocks
+        Widget quest = mock(Widget.class);
+        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID)).thenReturn(quest);
+        when(quest.getText()).thenReturn(QUEST_NAME);
+
+        Widget pb = mock(Widget.class);
+        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID)).thenReturn(pb);
+        when(pb.getText()).thenReturn("1:30.25");
+    }
+
+    @Test
+    void testNotify() {
+        String latest = "1:15.30";
+
+        // mock widget
+        Widget time = mock(Widget.class);
+        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(time.getText()).thenReturn(latest);
+
+        // fire fake event
+        notifier.onWidgetLoaded(event());
+
+        // check notification message
+        verify(messageHandler).createMessage(
+            false,
+            NotificationBody.builder()
+                .content(String.format("%s has beat their PB of %s with a time of %s", PLAYER_NAME, QUEST_NAME, latest))
+                .extra(new SpeedrunNotificationData(QUEST_NAME, "1:30.25", latest))
+                .type(NotificationType.SPEEDRUN)
+                .build()
+        );
+    }
+
+    @Test
+    void testIgnore() {
+        String latest = "1:45.30";
+
+        // mock widget
+        Widget time = mock(Widget.class);
+        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(time.getText()).thenReturn(latest);
+
+        // fire fake event
+        notifier.onWidgetLoaded(event());
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
+    private WidgetLoaded event() {
+        WidgetLoaded event = new WidgetLoaded();
+        event.setGroupId(SPEEDRUN_COMPLETED_GROUP_ID);
+        return event;
+    }
+
+}
