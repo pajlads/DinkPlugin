@@ -112,7 +112,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         verify(messageHandler).createMessage(
             false,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has levelled Agility to 5, Attack to 100 and Hunter to 5")
+                .content(PLAYER_NAME + " has levelled Agility to 5, Attack to 100, and Hunter to 5")
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5), ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5)))
                 .type(NotificationType.LEVEL)
                 .build()

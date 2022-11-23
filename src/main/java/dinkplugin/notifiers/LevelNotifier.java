@@ -76,10 +76,12 @@ public class LevelNotifier extends BaseNotifier {
 
         for (String skill : levelledSkills) {
             if (index > 0) {
+                if (levelledSkills.size() > 2) {
+                    skillMessage.append(',');
+                }
+                skillMessage.append(' ');
                 if (index + 1 == levelledSkills.size()) {
-                    skillMessage.append(" and ");
-                } else {
-                    skillMessage.append(", ");
+                    skillMessage.append("and ");
                 }
             }
             skillMessage.append(String.format("%s to %s", skill, currentLevels.get(skill)));
