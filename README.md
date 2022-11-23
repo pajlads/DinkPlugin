@@ -242,7 +242,7 @@ JSON:
 
 `%TIER%` will be replaced with the combat achievement tier (e.g., Easy, Hard, Grandmaster)
 
-`%TASK` will be replaced with the name of the combat task (e.g., Peach Conjurer)
+`%TASK%` will be replaced with the name of the combat task (e.g., Peach Conjurer)
 
 ```json5
 {

@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -134,7 +134,7 @@ public class Utils {
     }
 
     public static <K, V> Map<K, V> reduce(@NotNull Iterable<V> items, Function<V, K> deriveKey, BinaryOperator<V> aggregate) {
-        final Map<K, V> map = new HashMap<>();
+        final Map<K, V> map = new LinkedHashMap<>();
         items.forEach(v -> map.merge(deriveKey.apply(v), v, aggregate));
         return map;
     }

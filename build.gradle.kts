@@ -30,6 +30,12 @@ dependencies {
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junitVersion)
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = junitVersion)
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
+
+    // mocking and test injection used by runelite client
+    testImplementation(group = "org.mockito", name = "mockito-core", version = "4.9.0") // runelite uses 3.1.0
+    testImplementation(group = "com.google.inject.extensions", name = "guice-testlib", version = "4.1.0") {
+        exclude(group = "com.google.inject", module = "guice") // already provided by runelite client
+    }
 }
 
 group = "dinkplugin"

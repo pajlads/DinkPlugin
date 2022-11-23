@@ -1,84 +1,75 @@
 package dinkplugin.notifiers;
 
-import net.runelite.api.Item;
-import net.runelite.api.ItemID;
-import org.apache.commons.lang3.tuple.Pair;
+import dinkplugin.message.NotificationBody;
+import dinkplugin.message.NotificationType;
+import dinkplugin.notifiers.data.DeathNotificationData;
+import net.runelite.api.Player;
+import net.runelite.api.Varbits;
+import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.ActorDeath;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 
-import java.util.List;
-import java.util.function.Function;
+import java.util.Collections;
 
-import static dinkplugin.notifiers.DeathNotifier.splitItemsByKept;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-class DeathNotifierTest {
-    private static final Pair<Item, Long> BOND, EGG, GRAIN, POT, SALMON, TUNA, BAG, CLUE, JESTER, TROPHY, AVA;
+class DeathNotifierTest extends MockedNotifierTest {
 
-    @Test
-    void testSplit() {
-        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(asList(EGG, GRAIN, POT, SALMON, TUNA), 3);
-        assertEquals(asList(EGG, GRAIN, POT), split.getLeft());
-        assertEquals(asList(SALMON, TUNA), split.getRight());
+    @InjectMocks
+    DeathNotifier notifier;
+
+    @Override
+    @BeforeEach
+    protected void setUp() {
+        super.setUp();
+
+        // init config mocks
+        when(config.notifyDeath()).thenReturn(true);
+        when(config.deathNotifPvpEnabled()).thenReturn(true);
+        when(config.deathSendImage()).thenReturn(false);
+        when(config.deathNotifyMessage()).thenReturn("%USERNAME% has died, losing %VALUELOST% gp");
+        when(config.deathNotifPvpMessage()).thenReturn("%USERNAME% has just been PKed by %PKER% for %VALUELOST% gp...");
+
+        // init client mocks
+        when(client.getVarbitValue(Varbits.IN_WILDERNESS)).thenReturn(1);
+        when(client.getPlayers()).thenReturn(Collections.emptyList());
+        WorldPoint location = new WorldPoint(0, 0, 0);
+        when(localPlayer.getWorldLocation()).thenReturn(location);
     }
 
     @Test
-    void testSplitProtected() {
-        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(asList(EGG, GRAIN, POT, SALMON, TUNA), 4);
-        assertEquals(asList(EGG, GRAIN, POT, SALMON), split.getLeft());
-        assertEquals(singletonList(TUNA), split.getRight());
+    void testNotifyEmpty() {
+        // fire event
+        notifier.onActorDeath(new ActorDeath(localPlayer));
+
+        // verify notification
+        verify(messageHandler).createMessage(
+            false,
+            NotificationBody.builder()
+                .content(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
+                .extra(new DeathNotificationData(0L, false, null, Collections.emptyList(), Collections.emptyList()))
+                .type(NotificationType.DEATH)
+                .build()
+        );
     }
 
     @Test
-    void testSplitBond() {
-        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(asList(BOND, BOND, BOND, BOND, BOND, EGG), 3);
-        assertEquals(asList(BOND, BOND, BOND, BOND, BOND, EGG), split.getLeft());
-        assertTrue(split.getRight().isEmpty());
+    void testIgnore() {
+        // prepare mock
+        Player other = mock(Player.class);
+
+        // fire event
+        notifier.onActorDeath(new ActorDeath(other));
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
-    @Test
-    void testSplitSkulled() {
-        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(asList(BOND, GRAIN), 0);
-        assertEquals(singletonList(BOND), split.getLeft());
-        assertEquals(singletonList(GRAIN), split.getRight());
-    }
-
-    @Test
-    void testSplitSkulledProtect() {
-        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(asList(BOND, GRAIN, EGG), 1);
-        assertEquals(asList(BOND, GRAIN), split.getLeft());
-        assertEquals(singletonList(EGG), split.getRight());
-    }
-
-    @Test
-    void testSplitSkulledProtectOrdered() {
-        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(asList(BOND, EGG, GRAIN), 1);
-        assertEquals(asList(BOND, EGG), split.getLeft());
-        assertEquals(singletonList(GRAIN), split.getRight());
-    }
-
-    @Test
-    void testSplitNeverKept() {
-        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(asList(BAG, EGG, CLUE, BOND, JESTER, TROPHY, GRAIN, AVA, POT, TUNA), 3);
-        assertEquals(asList(EGG, BOND, GRAIN, POT), split.getLeft());
-        assertEquals(asList(BAG, CLUE, JESTER, TROPHY, AVA, TUNA), split.getRight());
-    }
-
-    static {
-        Function<Integer, Pair<Item, Long>> item = id -> Pair.of(new Item(id, 1), 0L);
-
-        BOND = item.apply(ItemID.OLD_SCHOOL_BOND);
-        EGG = item.apply(ItemID.EGG);
-        GRAIN = item.apply(ItemID.GRAIN);
-        POT = item.apply(ItemID.POT);
-        SALMON = item.apply(ItemID.SALMON);
-        TUNA = item.apply(ItemID.TUNA);
-        BAG = item.apply(ItemID.LOOTING_BAG);
-        CLUE = item.apply(ItemID.CLUE_BOX);
-        JESTER = item.apply(ItemID.SILLY_JESTER_HAT);
-        TROPHY = item.apply(ItemID.TRAILBLAZER_DRAGON_TROPHY);
-        AVA = item.apply(ItemID.AVAS_ACCUMULATOR);
-    }
 }

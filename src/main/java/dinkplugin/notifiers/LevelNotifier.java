@@ -55,7 +55,7 @@ public class LevelNotifier extends BaseNotifier {
         }
     }
 
-    public void handleLevelUp(String skill, int level, int xp) {
+    private void handleLevelUp(String skill, int level, int xp) {
         if (!isEnabled()) return;
 
         int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
@@ -75,10 +75,14 @@ public class LevelNotifier extends BaseNotifier {
         Map<String, Integer> lSkills = new HashMap<>();
 
         for (String skill : levelledSkills) {
-            if (index == levelledSkills.size()) {
-                skillMessage.append(" and ");
-            } else if (index > 0) {
-                skillMessage.append(", ");
+            if (index > 0) {
+                if (levelledSkills.size() > 2) {
+                    skillMessage.append(',');
+                }
+                skillMessage.append(' ');
+                if (index + 1 == levelledSkills.size()) {
+                    skillMessage.append("and ");
+                }
             }
             skillMessage.append(String.format("%s to %s", skill, currentLevels.get(skill)));
             lSkills.put(skill, currentLevels.get(skill));
