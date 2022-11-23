@@ -39,7 +39,6 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
         // init client mocks
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
-
     }
 
     @Test
