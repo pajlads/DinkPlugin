@@ -135,6 +135,12 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
     @Test
     void testIgnoreDifficulty() {
+        // initially 0 diary completions
+        when(client.getVarbitValue(anyInt())).thenReturn(0);
+
+        // perform enough ticks to trigger diary initialization
+        IntStream.range(0, 16).forEach(i -> notifier.onTick());
+
         // trigger varbit event
         int id = Varbits.DIARY_FALADOR_EASY;
         notifier.onVarbitChanged(event(id, 1));
