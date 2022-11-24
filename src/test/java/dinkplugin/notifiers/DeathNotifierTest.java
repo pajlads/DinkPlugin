@@ -139,7 +139,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         Player other = mock(Player.class);
         when(other.getName()).thenReturn(pker);
         when(other.getInteracting()).thenReturn(localPlayer);
-        when(client.getPlayers()).thenReturn(Collections.singletonList(other));
+        when(client.getPlayers()).thenReturn(Arrays.asList(mock(Player.class), mock(Player.class), other, mock(Player.class)));
 
         // fire event
         notifier.onActorDeath(new ActorDeath(localPlayer));
