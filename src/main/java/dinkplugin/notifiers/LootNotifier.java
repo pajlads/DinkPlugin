@@ -37,8 +37,8 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
-        // intentional super call until PK gets its own toggle
-        if (super.isEnabled())
+        // TODO: player loot should be a configurable toggle
+        if (isEnabled())
             this.handleNotify(event.getItems(), event.getPlayer().getName());
     }
 
