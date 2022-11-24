@@ -5,7 +5,6 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.ClueNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
-import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemID;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
@@ -51,15 +50,8 @@ class ClueNotifierTest extends MockedNotifierTest {
         when(config.clueNotifyMessage()).thenReturn("%USERNAME% has completed a %CLUE% clue, for a total of %COUNT%. They obtained: %LOOT%");
 
         // init item mocks
-        when(itemManager.getItemPrice(ItemID.RUBY)).thenReturn(RUBY_PRICE);
-        ItemComposition ruby = mock(ItemComposition.class);
-        when(ruby.getName()).thenReturn("Ruby");
-        when(itemManager.getItemComposition(ItemID.RUBY)).thenReturn(ruby);
-
-        when(itemManager.getItemPrice(ItemID.TUNA)).thenReturn(TUNA_PRICE);
-        ItemComposition tuna = mock(ItemComposition.class);
-        when(tuna.getName()).thenReturn("Tuna");
-        when(itemManager.getItemComposition(ItemID.TUNA)).thenReturn(tuna);
+        mockItem(itemManager, ItemID.RUBY, RUBY_PRICE, "Ruby");
+        mockItem(itemManager, ItemID.TUNA, TUNA_PRICE, "Tuna");
     }
 
     @Test

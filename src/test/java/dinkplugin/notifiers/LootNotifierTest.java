@@ -5,7 +5,6 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
-import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
@@ -58,20 +57,9 @@ class LootNotifierTest extends MockedNotifierTest {
         when(config.lootNotifyMessage()).thenReturn("%USERNAME% has looted: %LOOT% from %SOURCE% for %TOTAL_VALUE% gp");
 
         // init item mocks
-        when(itemManager.getItemPrice(ItemID.RUBY)).thenReturn(RUBY_PRICE);
-        ItemComposition ruby = mock(ItemComposition.class);
-        when(ruby.getName()).thenReturn("Ruby");
-        when(itemManager.getItemComposition(ItemID.RUBY)).thenReturn(ruby);
-
-        when(itemManager.getItemPrice(ItemID.OPAL)).thenReturn(OPAL_PRICE);
-        ItemComposition opal = mock(ItemComposition.class);
-        when(opal.getName()).thenReturn("Opal");
-        when(itemManager.getItemComposition(ItemID.OPAL)).thenReturn(opal);
-
-        when(itemManager.getItemPrice(ItemID.TUNA)).thenReturn(TUNA_PRICE);
-        ItemComposition tuna = mock(ItemComposition.class);
-        when(tuna.getName()).thenReturn("Tuna");
-        when(itemManager.getItemComposition(ItemID.TUNA)).thenReturn(tuna);
+        mockItem(itemManager, ItemID.RUBY, RUBY_PRICE, "Ruby");
+        mockItem(itemManager, ItemID.OPAL, OPAL_PRICE, "Opal");
+        mockItem(itemManager, ItemID.TUNA, TUNA_PRICE, "Tuna");
     }
 
     @Test
