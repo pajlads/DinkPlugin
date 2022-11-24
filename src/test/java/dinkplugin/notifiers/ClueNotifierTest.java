@@ -119,4 +119,32 @@ class ClueNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifyClue()).thenReturn(false);
+
+        // fire chat event
+        notifier.onChatMessage("You have completed 1312 medium Treasure Trails.");
+
+        // mock widgets
+        Widget widget = mock(Widget.class);
+        when(client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
+
+        Widget child = mock(Widget.class);
+        when(child.getItemQuantity()).thenReturn(1);
+        when(child.getItemId()).thenReturn(ItemID.RUBY);
+
+        Widget[] children = { child };
+        when(widget.getChildren()).thenReturn(children);
+
+        // fire widget event
+        WidgetLoaded event = new WidgetLoaded();
+        event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
+        notifier.onWidgetLoaded(event);
+
+        // ensure no notification was fired
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
 }

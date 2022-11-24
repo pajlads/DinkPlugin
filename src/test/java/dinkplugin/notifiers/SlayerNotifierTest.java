@@ -57,4 +57,17 @@ class SlayerNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifySlayer()).thenReturn(false);
+
+        // fire chat messages
+        notifier.onChatMessage("You have completed your task! You killed 1 TzTok-Jad. You gained 69,420 xp.");
+        notifier.onChatMessage("You've completed 100 tasks and received 10 points, giving you a total of 200; return to a Slayer master.");
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
 }

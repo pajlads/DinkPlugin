@@ -72,4 +72,16 @@ class DeathNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifyDeath()).thenReturn(false);
+
+        // fire event
+        notifier.onActorDeath(new ActorDeath(localPlayer));
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
 }

@@ -240,4 +240,17 @@ class LootNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifyLoot()).thenReturn(false);
+
+        // fire event
+        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), RUBY_PRICE);
+        notifier.onLootReceived(event);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
 }
