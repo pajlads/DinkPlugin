@@ -16,6 +16,7 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -49,7 +50,8 @@ public class Utils {
     private static final BinaryOperator<ItemStack> SUM_ITEM_STACK_QUANTITIES = (a, b) -> new ItemStack(a.getId(), a.getQuantity() + b.getQuantity(), a.getLocation());
 
     @Varbit
-    private static final int CASTLE_WARS_COUNTDOWN = 380;
+    @VisibleForTesting
+    public static final int CASTLE_WARS_COUNTDOWN = 380;
     @Varbit
     private static final int CASTLE_WARS_CATAPULT_X_AXIS_OFFSET = 156;
     @Varbit
