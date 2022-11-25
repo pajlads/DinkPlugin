@@ -39,7 +39,7 @@ public class DiscordMessageHandler {
     private final OkHttpClient httpClient;
 
     public <T> void createMessage(boolean sendImage, @NonNull NotificationBody<T> mBody) {
-        String webhookUrl = config.discordWebhook();
+        String webhookUrl = config.primaryWebhook();
         if (StringUtils.isBlank(webhookUrl)) return;
 
         Collection<HttpUrl> urlList = Arrays.stream(StringUtils.split(webhookUrl, '\n'))

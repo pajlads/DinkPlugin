@@ -103,13 +103,13 @@ public interface DinkPluginConfig extends Config {
     String diarySection = "Achievement Diary";
 
     @ConfigItem(
-        keyName = "discordWebhook",
+        keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URL",
         description = "The default webhook URL to send notifications to, if no override is specified",
         position = -20,
         section = webhookSection
     )
-    default String discordWebhook() {
+    default String primaryWebhook() {
         return "";
     }
 
