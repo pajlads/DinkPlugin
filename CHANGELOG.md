@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Dev: Add mockito test suite for notifiers. (#74)
+- Dev: Add mockito test suite for notifiers. (#74, #75)
 - Dev: Utilize more dependency injection. (#73)
 
 ## 1.1.0

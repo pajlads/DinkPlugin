@@ -5,7 +5,6 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.ClueNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
-import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemID;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
@@ -51,15 +50,8 @@ class ClueNotifierTest extends MockedNotifierTest {
         when(config.clueNotifyMessage()).thenReturn("%USERNAME% has completed a %CLUE% clue, for a total of %COUNT%. They obtained: %LOOT%");
 
         // init item mocks
-        when(itemManager.getItemPrice(ItemID.RUBY)).thenReturn(RUBY_PRICE);
-        ItemComposition ruby = mock(ItemComposition.class);
-        when(ruby.getName()).thenReturn("Ruby");
-        when(itemManager.getItemComposition(ItemID.RUBY)).thenReturn(ruby);
-
-        when(itemManager.getItemPrice(ItemID.TUNA)).thenReturn(TUNA_PRICE);
-        ItemComposition tuna = mock(ItemComposition.class);
-        when(tuna.getName()).thenReturn("Tuna");
-        when(itemManager.getItemComposition(ItemID.TUNA)).thenReturn(tuna);
+        mockItem(itemManager, ItemID.RUBY, RUBY_PRICE, "Ruby");
+        mockItem(itemManager, ItemID.TUNA, TUNA_PRICE, "Tuna");
     }
 
     @Test
@@ -106,6 +98,34 @@ class ClueNotifierTest extends MockedNotifierTest {
         Widget child = mock(Widget.class);
         when(child.getItemQuantity()).thenReturn(1);
         when(child.getItemId()).thenReturn(ItemID.TUNA);
+
+        Widget[] children = { child };
+        when(widget.getChildren()).thenReturn(children);
+
+        // fire widget event
+        WidgetLoaded event = new WidgetLoaded();
+        event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
+        notifier.onWidgetLoaded(event);
+
+        // ensure no notification was fired
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifyClue()).thenReturn(false);
+
+        // fire chat event
+        notifier.onChatMessage("You have completed 1312 medium Treasure Trails.");
+
+        // mock widgets
+        Widget widget = mock(Widget.class);
+        when(client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
+
+        Widget child = mock(Widget.class);
+        when(child.getItemQuantity()).thenReturn(1);
+        when(child.getItemId()).thenReturn(ItemID.RUBY);
 
         Widget[] children = { child };
         when(widget.getChildren()).thenReturn(children);

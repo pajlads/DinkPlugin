@@ -131,4 +131,19 @@ class LevelNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifyLevel()).thenReturn(false);
+
+        // fire skill event
+        notifier.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
 }
