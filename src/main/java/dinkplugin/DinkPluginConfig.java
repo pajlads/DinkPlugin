@@ -9,6 +9,15 @@ import net.runelite.client.config.ConfigSection;
 
 @ConfigGroup("dinkplugin")
 public interface DinkPluginConfig extends Config {
+
+    @ConfigSection(
+        name = "Webhook URLs",
+        description = "The webhook URLs to send notification data to",
+        position = -20,
+        closedByDefault = true
+    )
+    String webhookSection = "Webhook URLs";
+
     @ConfigSection(
         name = "Collection Log",
         description = "Settings for notifying about collection log",
@@ -95,11 +104,144 @@ public interface DinkPluginConfig extends Config {
 
     @ConfigItem(
         keyName = "discordWebhook",
-        name = "Discord Webhook",
-        description = "The Webhook URL for the discord channel",
-        position = -1
+        name = "Primary Webhook URL",
+        description = "The default webhook URL to send notifications to, if no override is specified",
+        position = -20,
+        section = webhookSection
     )
     default String discordWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "collectionWebhook",
+        name = "Collection Webhook Override",
+        description = "If non-empty, collection messages are sent to this URL, instead of the primary URL",
+        position = -19,
+        section = webhookSection
+    )
+    default String collectionWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "petWebhook",
+        name = "Pet Webhook Override",
+        description = "If non-empty, pet messages are sent to this URL, instead of the primary URL",
+        position = -18,
+        section = webhookSection
+    )
+    default String petWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "levelWebhook",
+        name = "Level Webhook Override",
+        description = "If non-empty, level up messages are sent to this URL, instead of the primary URL",
+        position = -17,
+        section = webhookSection
+    )
+    default String levelWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "lootWebhook",
+        name = "Loot Webhook Override",
+        description = "If non-empty, loot messages are sent to this URL, instead of the primary URL",
+        position = -16,
+        section = webhookSection
+    )
+    default String lootWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "deathWebhook",
+        name = "Death Webhook Override",
+        description = "If non-empty, death messages are sent to this URL, instead of the primary URL",
+        position = -15,
+        section = webhookSection
+    )
+    default String deathWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "slayerWebhook",
+        name = "Slayer Webhook Override",
+        description = "If non-empty, slayer messages are sent to this URL, instead of the primary URL",
+        position = -14,
+        section = webhookSection
+    )
+    default String slayerWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "questWebhook",
+        name = "Quest Webhook Override",
+        description = "If non-empty, quest messages are sent to this URL, instead of the primary URL",
+        position = -13,
+        section = webhookSection
+    )
+    default String questWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "clueWebhook",
+        name = "Clue Webhook Override",
+        description = "If non-empty, clue messages are sent to this URL, instead of the primary URL",
+        position = -12,
+        section = webhookSection
+    )
+    default String clueWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "speedrunWebhook",
+        name = "Speedrun Webhook Override",
+        description = "If non-empty, speedrun messages are sent to this URL, instead of the primary URL",
+        position = -11,
+        section = webhookSection
+    )
+    default String speedrunWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "killCountWebhook",
+        name = "Kill Count Webhook Override",
+        description = "If non-empty, kill count messages are sent to this URL, instead of the primary URL",
+        position = -10,
+        section = webhookSection
+    )
+    default String killCountWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "combatTaskWebhook",
+        name = "Combat Task Webhook Override",
+        description = "If non-empty, combat task messages are sent to this URL, instead of the primary URL",
+        position = -9,
+        section = webhookSection
+    )
+    default String combatTaskWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "diaryWebhook",
+        name = "Diary Webhook Override",
+        description = "If non-empty, achievement diary messages are sent to this URL, instead of the primary URL",
+        position = -8,
+        section = webhookSection
+    )
+    default String diaryWebhook() {
         return "";
     }
 
