@@ -148,6 +148,25 @@ class DiaryNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifyAchievementDiary()).thenReturn(false);
+
+        // initially 0 diary completions
+        when(client.getVarbitValue(anyInt())).thenReturn(0);
+
+        // perform enough ticks to trigger diary initialization
+        IntStream.range(0, 16).forEach(i -> notifier.onTick());
+
+        // trigger diary completion
+        int id = Varbits.DIARY_DESERT_ELITE;
+        notifier.onVarbitChanged(event(id, 1));
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
     private static VarbitChanged event(int id, int value) {
         VarbitChanged event = new VarbitChanged();
         event.setVarbitId(id);

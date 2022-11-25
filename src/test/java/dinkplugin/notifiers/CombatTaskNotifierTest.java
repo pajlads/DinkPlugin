@@ -67,4 +67,16 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifyCombatTask()).thenReturn(false);
+
+        // send fake message
+        notifier.onGameMessage("Congratulations, you've completed a hard combat task: Whack-a-Mole.");
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
 }

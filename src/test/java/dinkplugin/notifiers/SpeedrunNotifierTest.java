@@ -89,6 +89,23 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifySpeedrun()).thenReturn(false);
+
+        // mock widget
+        Widget time = mock(Widget.class);
+        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(time.getText()).thenReturn("1:15.30");
+
+        // fire fake event
+        notifier.onWidgetLoaded(event());
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
     private WidgetLoaded event() {
         WidgetLoaded event = new WidgetLoaded();
         event.setGroupId(SPEEDRUN_COMPLETED_GROUP_ID);

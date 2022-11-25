@@ -52,4 +52,16 @@ class PetNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifyPet()).thenReturn(false);
+
+        // send fake message
+        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
 }

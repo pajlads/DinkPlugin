@@ -5,12 +5,17 @@ import dinkplugin.DinkPluginConfig;
 import dinkplugin.MockedTestBase;
 import dinkplugin.message.DiscordMessageHandler;
 import net.runelite.api.Client;
+import net.runelite.api.ItemComposition;
 import net.runelite.api.Player;
 import net.runelite.api.WorldType;
+import net.runelite.api.vars.AccountType;
+import net.runelite.client.game.ItemManager;
 import org.mockito.Mock;
 
 import java.util.EnumSet;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MockedNotifierTest extends MockedTestBase {
@@ -38,8 +43,17 @@ class MockedNotifierTest extends MockedTestBase {
 
         // init client mocks
         when(client.getWorldType()).thenReturn(EnumSet.noneOf(WorldType.class));
+        when(client.getAccountType()).thenReturn(AccountType.NORMAL);
+        when(client.isPrayerActive(any())).thenReturn(false);
         when(client.getLocalPlayer()).thenReturn(localPlayer);
         when(localPlayer.getName()).thenReturn(PLAYER_NAME);
+    }
+
+    protected void mockItem(ItemManager manager, int id, int price, String name) {
+        when(manager.getItemPrice(id)).thenReturn(price);
+        ItemComposition item = mock(ItemComposition.class);
+        when(item.getName()).thenReturn(name);
+        when(manager.getItemComposition(id)).thenReturn(item);
     }
 
 }

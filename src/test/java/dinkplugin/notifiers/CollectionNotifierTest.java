@@ -56,4 +56,17 @@ class CollectionNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifyCollectionLog()).thenReturn(false);
+
+        // send fake message
+        String item = "Seercull";
+        notifier.onChatMessage("New item added to your collection log: " + item);
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
 }

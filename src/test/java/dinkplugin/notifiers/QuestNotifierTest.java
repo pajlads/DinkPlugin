@@ -64,6 +64,23 @@ class QuestNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // disable notifier
+        when(config.notifyQuest()).thenReturn(false);
+
+        // mock widget
+        Widget questWidget = mock(Widget.class);
+        when(client.getWidget(QUEST_COMPLETED_NAME_TEXT)).thenReturn(questWidget);
+        when(questWidget.getText()).thenReturn("You have completed the Dragon Slayer quest!");
+
+        // send event
+        notifier.onWidgetLoaded(event(QUEST_COMPLETED_GROUP_ID));
+
+        // verify no message
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
     private static WidgetLoaded event(int id) {
         WidgetLoaded event = new WidgetLoaded();
         event.setGroupId(id);

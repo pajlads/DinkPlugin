@@ -87,4 +87,19 @@ class KillCountNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(anyBoolean(), any());
     }
 
+    @Test
+    void testDisabled() {
+        // more config
+        when(config.notifyKillCount()).thenReturn(false);
+        when(config.killCountNotifyInitial()).thenReturn(true);
+        when(config.killCountInterval()).thenReturn(1);
+
+        // fire event
+        String gameMessage = "Your King Black Dragon kill count is: 1.";
+        notifier.onGameMessage(gameMessage);
+
+        // ensure no message
+        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+    }
+
 }
