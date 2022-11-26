@@ -99,6 +99,7 @@ public class LevelNotifier extends BaseNotifier {
         createMessage(DinkPluginConfig::levelSendImage, NotificationBody.builder()
             .content(fullNotification)
             .extra(new LevelNotificationData(lSkills, currentLevels))
+            .screenshotFile("levelUpImage.png")
             .type(NotificationType.LEVEL)
             .build());
     }

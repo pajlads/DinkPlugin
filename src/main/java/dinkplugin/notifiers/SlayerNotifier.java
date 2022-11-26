@@ -83,6 +83,7 @@ public class SlayerNotifier extends BaseNotifier {
             createMessage(DinkPluginConfig::slayerSendImage, NotificationBody.builder()
                 .content(notifyMessage)
                 .extra(new SlayerNotificationData(slayerTask, slayerCompleted, slayerPoints))
+                .screenshotFile("slayerImage.png")
                 .type(NotificationType.SLAYER)
                 .build());
         }

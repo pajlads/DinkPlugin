@@ -50,6 +50,7 @@ public class KillCountNotifier extends BaseNotifier {
                 .content(content)
                 .extra(new BossNotificationData(boss, killCount, rawMessage))
                 .playerName(player)
+                .screenshotFile("killCountImage.png")
                 .type(NotificationType.KILL_COUNT);
 
         // Add embed if not screenshotting

@@ -29,6 +29,7 @@ public class PetNotifier extends BaseNotifier {
 
         createMessage(DinkPluginConfig::petSendImage, NotificationBody.builder()
             .content(notifyMessage)
+            .screenshotFile("petImage.png")
             .type(NotificationType.PET)
             .build());
     }

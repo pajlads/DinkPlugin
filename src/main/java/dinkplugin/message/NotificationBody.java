@@ -3,6 +3,7 @@ package dinkplugin.message;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 
@@ -18,8 +19,13 @@ public class NotificationBody<T> {
     private T extra;
     private String content;
     private String playerName;
+
     @Builder.Default
     private List<Embed> embeds = new LinkedList<>();
+
+    @Builder.Default
+    @EqualsAndHashCode.Exclude
+    private String screenshotFile = "image.png";
 
     @Value
     public static class Embed {

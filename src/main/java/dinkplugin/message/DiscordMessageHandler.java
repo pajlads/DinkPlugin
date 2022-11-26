@@ -62,7 +62,7 @@ public class DiscordMessageHandler {
 
                     reqBodyBuilder.addFormDataPart(
                         "file",
-                        "collectionImage.png",
+                        mBody.getScreenshotFile(),
                         RequestBody.create(
                             MediaType.parse("image/png"),
                             imageBytes
