@@ -38,6 +38,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
 
         // check notification message
         verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has completed: %s, getting %d points for a total %d tasks completed", PLAYER_NAME, "1 TzTok-Jad", 10, 100))
@@ -54,7 +55,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You've completed 101 tasks and received 0 points, giving you a total of 200; return to a Slayer master.");
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -67,7 +68,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You've completed 100 tasks and received 10 points, giving you a total of 200; return to a Slayer master.");
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
 }

@@ -17,6 +17,11 @@ public class PetNotifier extends BaseNotifier {
         return config.notifyPet() && super.isEnabled();
     }
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.petWebhook();
+    }
+
     public void onChatMessage(String chatMessage) {
         if (isEnabled() && PET_REGEX.matcher(chatMessage).matches()) {
             this.handleNotify();

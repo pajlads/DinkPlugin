@@ -64,6 +64,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
 
         // check notification message
         verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has beat their PB of %s with a time of %s", PLAYER_NAME, QUEST_NAME, latest))
@@ -86,7 +87,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         notifier.onWidgetLoaded(event());
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -103,7 +104,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         notifier.onWidgetLoaded(event());
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     private WidgetLoaded event() {

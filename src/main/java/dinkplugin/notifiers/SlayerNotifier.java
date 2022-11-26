@@ -26,6 +26,11 @@ public class SlayerNotifier extends BaseNotifier {
         return config.notifySlayer() && super.isEnabled();
     }
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.slayerWebhook();
+    }
+
     public void onChatMessage(String chatMessage) {
         if (isEnabled()
             && (chatMessage.contains("Slayer master")

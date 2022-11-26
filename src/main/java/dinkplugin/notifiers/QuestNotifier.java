@@ -19,6 +19,11 @@ public class QuestNotifier extends BaseNotifier {
         return config.notifyQuest() && super.isEnabled();
     }
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.questWebhook();
+    }
+
     public void onWidgetLoaded(WidgetLoaded event) {
         if (event.getGroupId() == QUEST_COMPLETED_GROUP_ID && isEnabled()) {
             Widget quest = client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);

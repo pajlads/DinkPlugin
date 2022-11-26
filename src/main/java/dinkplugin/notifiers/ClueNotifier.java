@@ -41,6 +41,11 @@ public class ClueNotifier extends BaseNotifier {
         return config.notifyClue() && super.isEnabled();
     }
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.clueWebhook();
+    }
+
     public void onChatMessage(String chatMessage) {
         if (isEnabled()) {
             Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(chatMessage);

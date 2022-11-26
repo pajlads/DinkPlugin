@@ -28,6 +28,11 @@ public class SpeedrunNotifier extends BaseNotifier {
         return config.notifySpeedrun(); // intentionally doesn't call super
     }
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.speedrunWebhook();
+    }
+
     public void onWidgetLoaded(WidgetLoaded event) {
         if (event.getGroupId() == SPEEDRUN_COMPLETED_GROUP_ID && isEnabled()) {
             Widget questName = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID);

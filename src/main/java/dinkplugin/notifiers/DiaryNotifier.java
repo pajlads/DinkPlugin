@@ -26,6 +26,11 @@ public class DiaryNotifier extends BaseNotifier {
         return config.notifyAchievementDiary() && super.isEnabled();
     }
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.diaryWebhook();
+    }
+
     public void reset() {
         this.diaryCompletionById.clear();
         this.initDelayTicks = 0;
