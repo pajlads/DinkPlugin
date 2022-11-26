@@ -35,7 +35,7 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // verify handled
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " got a pet")

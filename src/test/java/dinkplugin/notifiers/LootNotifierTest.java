@@ -75,7 +75,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // verify notification message
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has looted: %s from %s for %d gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", name, RUBY_PRICE))
@@ -107,7 +107,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // verify notification message
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has looted: %s from %s for %d gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", LOOTED_NAME, RUBY_PRICE))
@@ -139,7 +139,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // verify notification message
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", LOOTED_NAME, QuantityFormatter.quantityToStackSize(RUBY_PRICE + TUNA_PRICE)))
@@ -169,7 +169,7 @@ class LootNotifierTest extends MockedNotifierTest {
         // verify notification message
         String loot = String.format("1 x Ruby (%d)\n1 x Opal (%d)", RUBY_PRICE, OPAL_PRICE);
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, loot, LOOTED_NAME, QuantityFormatter.quantityToStackSize(total)))
@@ -201,7 +201,7 @@ class LootNotifierTest extends MockedNotifierTest {
         // verify notification message
         String loot = String.format("5 x Tuna (%d)", 5 * TUNA_PRICE);
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, loot, LOOTED_NAME, QuantityFormatter.quantityToStackSize(total)))

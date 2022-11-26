@@ -39,7 +39,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
 
         // verify handled
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has completed %s combat task: %s", PLAYER_NAME, AchievementDiaries.Difficulty.HARD, "Whack-a-Mole"))

@@ -81,7 +81,7 @@ class DeathNotifierTest extends MockedNotifierTest {
 
         // verify notification
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
@@ -123,7 +123,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new NotificationBody.Embed(new NotificationBody.UrlEmbed("https://static.runelite.net/cache/item/icon/" + ItemID.TUNA + ".png"))
         );
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE))
@@ -148,7 +148,7 @@ class DeathNotifierTest extends MockedNotifierTest {
 
         // verify notification
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
@@ -175,7 +175,7 @@ class DeathNotifierTest extends MockedNotifierTest {
 
         // verify notification
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
@@ -199,7 +199,7 @@ class DeathNotifierTest extends MockedNotifierTest {
 
         // verify non-PK notification
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))

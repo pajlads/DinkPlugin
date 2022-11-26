@@ -41,7 +41,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
         // check notification
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " has defeated King Black Dragon with a completion count of 420")
@@ -64,7 +64,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
         // check notification
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " has defeated King Black Dragon with a completion count of 1")

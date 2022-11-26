@@ -38,7 +38,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
 
         // check notification message
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has completed: %s, getting %d points for a total %d tasks completed", PLAYER_NAME, "1 TzTok-Jad", 10, 100))

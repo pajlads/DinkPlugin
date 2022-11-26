@@ -64,7 +64,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
 
         // check notification message
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has beat their PB of %s with a time of %s", PLAYER_NAME, QUEST_NAME, latest))

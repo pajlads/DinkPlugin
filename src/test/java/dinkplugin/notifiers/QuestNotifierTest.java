@@ -46,7 +46,7 @@ class QuestNotifierTest extends MockedNotifierTest {
 
         // verify notification
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " has completed: Dragon Slayer")

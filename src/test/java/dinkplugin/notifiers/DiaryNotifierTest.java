@@ -55,7 +55,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
         // verify notification message
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiaries.Difficulty.ELITE, "Desert", 1))
@@ -81,7 +81,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
         // verify notification message
         verify(messageHandler).createMessage(
-            URL,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiaries.Difficulty.HARD, "Karamja", total + 1))

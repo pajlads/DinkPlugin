@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 class MockedNotifierTest extends MockedTestBase {
 
     protected static final String PLAYER_NAME = "dank";
-    protected static final String URL = "";
+    protected static final String PRIMARY_WEBHOOK_URL = "";
 
     @Bind
     @Mock
@@ -48,7 +48,7 @@ class MockedNotifierTest extends MockedTestBase {
         when(client.isPrayerActive(any())).thenReturn(false);
         when(client.getLocalPlayer()).thenReturn(localPlayer);
         when(localPlayer.getName()).thenReturn(PLAYER_NAME);
-        when(config.primaryWebhook()).thenReturn(URL);
+        when(config.primaryWebhook()).thenReturn(PRIMARY_WEBHOOK_URL);
     }
 
     protected void mockItem(ItemManager manager, int id, int price, String name) {
