@@ -11,12 +11,12 @@ import net.runelite.client.config.ConfigSection;
 public interface DinkPluginConfig extends Config {
 
     @ConfigSection(
-        name = "Webhook URLs",
-        description = "The webhook URLs to send notification data to",
+        name = "Webhook Overrides",
+        description = "Allows webhook data to be sent to a different URL, for the various notifiers",
         position = -20,
         closedByDefault = true
     )
-    String webhookSection = "Webhook URLs";
+    String webhookSection = "Webhook Overrides";
 
     @ConfigSection(
         name = "Collection Log",
@@ -106,8 +106,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URL",
         description = "The default webhook URL to send notifications to, if no override is specified",
-        position = -20,
-        section = webhookSection
+        position = -20
     )
     default String primaryWebhook() {
         return "";
