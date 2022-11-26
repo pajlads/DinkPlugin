@@ -28,6 +28,11 @@ public class KillCountNotifier extends BaseNotifier {
         return config.notifyKillCount() && super.isEnabled();
     }
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.killCountWebhook();
+    }
+
     public void onGameMessage(String message) {
         if (isEnabled())
             parse(message).ifPresent(pair -> handleKill(pair.getLeft(), pair.getRight(), message));

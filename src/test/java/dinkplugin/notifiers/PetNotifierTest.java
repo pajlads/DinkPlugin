@@ -35,6 +35,26 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // verify handled
         verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .content(PLAYER_NAME + " got a pet")
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyOverride() {
+        // define url override
+        when(config.petWebhook()).thenReturn("example.com");
+
+        // send fake message
+        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+
+        // verify handled at override url
+        verify(messageHandler).createMessage(
+            "example.com",
             false,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " got a pet")
@@ -49,7 +69,7 @@ class PetNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You feel Forsen's warmth behind you.");
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -61,7 +81,7 @@ class PetNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
 }

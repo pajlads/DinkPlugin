@@ -27,6 +27,11 @@ public class LevelNotifier extends BaseNotifier {
     private boolean sendMessage = false;
     private int ticksWaited = 0;
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.levelWebhook();
+    }
+
     public void reset() {
         currentLevels.clear();
         levelledSkills.clear();

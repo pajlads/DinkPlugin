@@ -5,6 +5,7 @@ import dinkplugin.Utils;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
 import net.runelite.api.Client;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.function.Function;
@@ -24,8 +25,12 @@ public abstract class BaseNotifier {
         return !Utils.isIgnoredWorld(client.getWorldType());
     }
 
+    protected abstract String getWebhookUrl();
+
     protected final void createMessage(Function<DinkPluginConfig, Boolean> sendImage, NotificationBody<?> body) {
-        messageHandler.createMessage(sendImage.apply(config), body);
+        String overrideUrl = getWebhookUrl();
+        String url = StringUtils.isNotBlank(overrideUrl) ? overrideUrl : config.primaryWebhook();
+        messageHandler.createMessage(url, sendImage.apply(config), body);
     }
 
 }

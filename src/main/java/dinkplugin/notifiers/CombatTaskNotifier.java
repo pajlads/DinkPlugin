@@ -22,6 +22,11 @@ public class CombatTaskNotifier extends BaseNotifier {
         return config.notifyCombatTask() && super.isEnabled();
     }
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.combatTaskWebhook();
+    }
+
     public void onGameMessage(String message) {
         if (isEnabled())
             parse(message).ifPresent(pair -> handle(pair.getLeft(), pair.getRight()));

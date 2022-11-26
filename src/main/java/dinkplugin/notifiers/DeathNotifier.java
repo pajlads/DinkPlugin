@@ -55,6 +55,11 @@ public class DeathNotifier extends BaseNotifier {
         return config.notifyDeath() && super.isEnabled() && !Utils.isSafeArea(client);
     }
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.deathWebhook();
+    }
+
     public void onActorDeath(ActorDeath actor) {
         boolean self = client.getLocalPlayer() == actor.getActor();
 

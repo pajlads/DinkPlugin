@@ -38,6 +38,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
         // verify handled
         verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has added %s to their collection", PLAYER_NAME, item))
@@ -53,7 +54,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("New item added to your backpack: weed");
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -66,7 +67,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("New item added to your collection log: " + item);
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
 }
