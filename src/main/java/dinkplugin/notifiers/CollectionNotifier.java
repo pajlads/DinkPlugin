@@ -20,6 +20,11 @@ public class CollectionNotifier extends BaseNotifier {
         return config.notifyCollectionLog() && super.isEnabled();
     }
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.collectionWebhook();
+    }
+
     public void onChatMessage(String chatMessage) {
         if (!isEnabled()) return;
 

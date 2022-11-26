@@ -55,6 +55,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
         // verify notification message
         verify(messageHandler).createMessage(
+            URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiaries.Difficulty.ELITE, "Desert", 1))
@@ -80,6 +81,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
         // verify notification message
         verify(messageHandler).createMessage(
+            URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiaries.Difficulty.HARD, "Karamja", total + 1))
@@ -103,7 +105,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         notifier.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -119,7 +121,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         notifier.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -129,7 +131,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         notifier.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -145,7 +147,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         notifier.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -164,7 +166,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         notifier.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     private static VarbitChanged event(int id, int value) {

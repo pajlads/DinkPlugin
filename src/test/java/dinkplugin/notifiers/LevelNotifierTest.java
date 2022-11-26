@@ -50,6 +50,7 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // verify handled
         verify(messageHandler).createMessage(
+            URL,
             false,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " has levelled Agility to 5")
@@ -69,6 +70,7 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // verify handled
         verify(messageHandler).createMessage(
+            URL,
             false,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " has levelled Attack to 100")
@@ -89,6 +91,7 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // verify handled
         verify(messageHandler).createMessage(
+            URL,
             false,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " has levelled Agility to 5 and Attack to 100")
@@ -110,6 +113,7 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // verify handled
         verify(messageHandler).createMessage(
+            URL,
             false,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " has levelled Agility to 5, Attack to 100, and Hunter to 5")
@@ -128,7 +132,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -143,7 +147,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
 }

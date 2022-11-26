@@ -39,6 +39,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
 
         // verify handled
         verify(messageHandler).createMessage(
+            URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has completed %s combat task: %s", PLAYER_NAME, AchievementDiaries.Difficulty.HARD, "Whack-a-Mole"))
@@ -55,7 +56,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage("Congratulations, you've completed an easy combat task: A Slow Death.");
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -64,7 +65,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage("Congratulations, you've completed a gachi combat task: Swordfight with the homies.");
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -76,7 +77,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage("Congratulations, you've completed a hard combat task: Whack-a-Mole.");
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
 }

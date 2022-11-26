@@ -31,6 +31,11 @@ public class LootNotifier extends BaseNotifier {
         return config.notifyLoot() && super.isEnabled();
     }
 
+    @Override
+    protected String getWebhookUrl() {
+        return config.lootWebhook();
+    }
+
     public void onNpcLootReceived(NpcLootReceived event) {
         if (isEnabled())
             this.handleNotify(event.getItems(), event.getNpc().getName());

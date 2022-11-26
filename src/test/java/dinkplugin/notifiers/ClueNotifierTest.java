@@ -77,6 +77,7 @@ class ClueNotifierTest extends MockedNotifierTest {
 
         // verify notification message
         verify(messageHandler).createMessage(
+            URL,
             false,
             NotificationBody.builder()
                 .content(String.format("%s has completed a %s clue, for a total of %d. They obtained: %s", PLAYER_NAME, "medium", 1312, "1 x Ruby (" + RUBY_PRICE + ")"))
@@ -108,7 +109,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         notifier.onWidgetLoaded(event);
 
         // ensure no notification was fired
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -136,7 +137,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         notifier.onWidgetLoaded(event);
 
         // ensure no notification was fired
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
 }

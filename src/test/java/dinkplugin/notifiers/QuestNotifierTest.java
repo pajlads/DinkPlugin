@@ -46,6 +46,7 @@ class QuestNotifierTest extends MockedNotifierTest {
 
         // verify notification
         verify(messageHandler).createMessage(
+            URL,
             false,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " has completed: Dragon Slayer")
@@ -61,7 +62,7 @@ class QuestNotifierTest extends MockedNotifierTest {
         notifier.onWidgetLoaded(event(-1));
 
         // verify no message
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -78,7 +79,7 @@ class QuestNotifierTest extends MockedNotifierTest {
         notifier.onWidgetLoaded(event(QUEST_COMPLETED_GROUP_ID));
 
         // verify no message
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     private static WidgetLoaded event(int id) {

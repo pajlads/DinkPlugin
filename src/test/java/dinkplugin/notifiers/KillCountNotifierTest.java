@@ -41,6 +41,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
         // check notification
         verify(messageHandler).createMessage(
+            URL,
             true,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " has defeated King Black Dragon with a completion count of 420")
@@ -63,6 +64,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
         // check notification
         verify(messageHandler).createMessage(
+            URL,
             true,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " has defeated King Black Dragon with a completion count of 1")
@@ -84,7 +86,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage(gameMessage);
 
         // ensure no message
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
@@ -99,7 +101,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage(gameMessage);
 
         // ensure no message
-        verify(messageHandler, never()).createMessage(anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
 }
