@@ -104,8 +104,9 @@ public interface DinkPluginConfig extends Config {
 
     @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
-        name = "Primary Webhook URL",
-        description = "The default webhook URL to send notifications to, if no override is specified",
+        name = "Primary Webhook URLs",
+        description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
+            "You can target multiple webhooks by specifying their URLs on separate lines",
         position = -20
     )
     default String primaryWebhook() {
