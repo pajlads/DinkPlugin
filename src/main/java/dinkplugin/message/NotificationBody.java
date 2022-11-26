@@ -25,7 +25,7 @@ public class NotificationBody<T> {
 
     @Builder.Default
     @EqualsAndHashCode.Exclude
-    private String screenshotFile = "image.png";
+    private transient String screenshotFile = "image.png";
 
     @Value
     public static class Embed {
