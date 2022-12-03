@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Use notifier-specific screenshot filenames. (#79)
 - Minor: Support notifier-specific webhook URLs. (#78)
 - Dev: Explicitly define achievement diaries. (#80)
 - Dev: Add mockito test suite for notifiers. (#74, #75)

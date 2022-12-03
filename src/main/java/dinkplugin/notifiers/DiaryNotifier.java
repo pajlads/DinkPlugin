@@ -97,6 +97,7 @@ public class DiaryNotifier extends BaseNotifier {
             .content(message)
             .extra(new DiaryNotificationData(area, difficulty, total))
             .playerName(player)
+            .screenshotFile("achievementDiaryImage.png")
             .build());
     }
 
