@@ -1,6 +1,6 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.domain.AchievementDiaries;
+import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DiaryNotificationData;
@@ -34,7 +34,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         // init config mocks
         when(config.notifyAchievementDiary()).thenReturn(true);
         when(config.diarySendImage()).thenReturn(false);
-        when(config.minDiaryDifficulty()).thenReturn(AchievementDiaries.Difficulty.MEDIUM);
+        when(config.minDiaryDifficulty()).thenReturn(AchievementDiary.Difficulty.MEDIUM);
         when(config.diaryNotifyMessage()).thenReturn("%USERNAME% has completed the %DIFFICULTY% %AREA% Diary, for a total of %TOTAL%");
 
         // init client mocks
@@ -58,8 +58,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiaries.Difficulty.ELITE, "Desert", 1))
-                .extra(new DiaryNotificationData("Desert", AchievementDiaries.Difficulty.ELITE, 1))
+                .content(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.ELITE, "Desert", 1))
+                .extra(new DiaryNotificationData("Desert", AchievementDiary.Difficulty.ELITE, 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
                 .build()
@@ -70,7 +70,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
     void testNotifyKaramja() {
         // initially many diary completions
         when(client.getVarbitValue(anyInt())).thenReturn(1);
-        int total = AchievementDiaries.INSTANCE.getDiaries().size() - 3;
+        int total = AchievementDiary.DIARIES.size() - 3;
 
         // perform enough ticks to trigger diary initialization
         IntStream.range(0, 16).forEach(i -> notifier.onTick());
@@ -84,8 +84,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiaries.Difficulty.HARD, "Karamja", total + 1))
-                .extra(new DiaryNotificationData("Karamja", AchievementDiaries.Difficulty.HARD, total + 1))
+                .content(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Karamja", total + 1))
+                .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
                 .build()
