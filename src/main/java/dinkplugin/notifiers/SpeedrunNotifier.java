@@ -64,6 +64,7 @@ public class SpeedrunNotifier extends BaseNotifier {
         createMessage(DinkPluginConfig::speedrunSendImage, NotificationBody.builder()
             .content(notifyMessage)
             .extra(new SpeedrunNotificationData(questName, bestTime.toString(), currentTime.toString()))
+            .screenshotFile("speedrunImage.png")
             .type(NotificationType.SPEEDRUN)
             .build());
     }

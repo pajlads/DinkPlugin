@@ -44,6 +44,7 @@ public class QuestNotifier extends BaseNotifier {
         createMessage(DinkPluginConfig::questSendImage, NotificationBody.builder()
             .content(notifyMessage)
             .extra(new QuestNotificationData(parsed))
+            .screenshotFile("questImage.png")
             .type(NotificationType.QUEST)
             .build());
     }
