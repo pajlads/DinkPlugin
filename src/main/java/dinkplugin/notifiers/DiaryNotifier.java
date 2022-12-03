@@ -2,7 +2,7 @@ package dinkplugin.notifiers;
 
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
-import dinkplugin.domain.AchievementDiaries;
+import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DiaryNotificationData;
@@ -10,14 +10,16 @@ import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 
+import static dinkplugin.domain.AchievementDiary.DIARIES;
+
 @Singleton
 public class DiaryNotifier extends BaseNotifier {
-    private static final Map<Integer, AchievementDiaries.Diary> DIARIES = AchievementDiaries.INSTANCE.getDiaries();
     private final Map<Integer, Integer> diaryCompletionById = new HashMap<>();
     private int initDelayTicks = 0;
 
@@ -59,7 +61,7 @@ public class DiaryNotifier extends BaseNotifier {
     public void onVarbitChanged(VarbitChanged event) {
         int id = event.getVarbitId();
         if (id < 0) return;
-        AchievementDiaries.Diary diary = DIARIES.get(id);
+        Pair<String, AchievementDiary.Difficulty> diary = DIARIES.get(id);
         if (diary == null) return;
         if (diaryCompletionById.isEmpty()) return;
         if (!super.isEnabled()) return;
@@ -76,30 +78,30 @@ public class DiaryNotifier extends BaseNotifier {
                 return;
             }
 
-            if (checkDifficulty(diary))
-                handle(diary);
+            if (checkDifficulty(diary.getRight()))
+                handle(diary.getLeft(), diary.getRight());
         }
     }
 
-    private void handle(AchievementDiaries.Diary diary) {
+    private void handle(String area, AchievementDiary.Difficulty difficulty) {
         int total = getTotalCompleted();
         String player = Utils.getPlayerName(client);
         String message = StringUtils.replaceEach(
             config.diaryNotifyMessage(),
             new String[] { "%USERNAME%", "%DIFFICULTY%", "%AREA%", "%TOTAL%" },
-            new String[] { player, diary.getDifficulty().toString(), diary.getArea(), String.valueOf(total) }
+            new String[] { player, difficulty.toString(), area, String.valueOf(total) }
         );
 
         createMessage(DinkPluginConfig::diarySendImage, NotificationBody.builder()
             .type(NotificationType.ACHIEVEMENT_DIARY)
             .content(message)
-            .extra(new DiaryNotificationData(diary.getArea(), diary.getDifficulty(), total))
+            .extra(new DiaryNotificationData(area, difficulty, total))
             .playerName(player)
             .build());
     }
 
-    private boolean checkDifficulty(AchievementDiaries.Diary diary) {
-        return config.notifyAchievementDiary() && diary.getDifficulty().ordinal() >= config.minDiaryDifficulty().ordinal();
+    private boolean checkDifficulty(AchievementDiary.Difficulty difficulty) {
+        return config.notifyAchievementDiary() && difficulty.ordinal() >= config.minDiaryDifficulty().ordinal();
     }
 
     private int getTotalCompleted() {

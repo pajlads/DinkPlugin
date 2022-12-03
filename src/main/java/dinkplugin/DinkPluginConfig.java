@@ -1,6 +1,6 @@
 package dinkplugin;
 
-import dinkplugin.domain.AchievementDiaries;
+import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.CombatAchievementTier;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -781,8 +781,8 @@ public interface DinkPluginConfig extends Config {
         position = 112,
         section = diarySection
     )
-    default AchievementDiaries.Difficulty minDiaryDifficulty() {
-        return AchievementDiaries.Difficulty.EASY;
+    default AchievementDiary.Difficulty minDiaryDifficulty() {
+        return AchievementDiary.Difficulty.EASY;
     }
 
     @ConfigItem(
