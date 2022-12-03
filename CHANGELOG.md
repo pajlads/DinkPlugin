@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.1.1
+
 - Minor: Use notifier-specific screenshot filenames. (#79)
 - Minor: Support notifier-specific webhook URLs. (#78)
 - Dev: Explicitly define achievement diaries. (#80)
