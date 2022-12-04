@@ -403,7 +403,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "lootIncludePlayer",
         name = "Include Player Loot",
-        description = "Include notifications for player loot",
+        description = "Include notifications for loot being dropped on other players' deaths." +
+            "<br/>Requires 'Enable loot' (above) to be on",
         position = 34,
         section = lootSection
     )
@@ -412,10 +413,22 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootPlayerKillOnly",
+        name = "Restrict Player Loot to PKs",
+        description = "Whether player loot notifications should only be triggered if the player death was caused by our damage." +
+            "<br/>Requires 'Include Player Loot' (above) to be enabled",
+        position = 35,
+        section = lootSection
+    )
+    default boolean restrictPlayerLootByDamage() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "lootNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %LOOT% to insert the loot and %SOURCE% to show the source of the loot",
-        position = 35,
+        position = 36,
         section = lootSection
     )
     default String lootNotifyMessage() {
