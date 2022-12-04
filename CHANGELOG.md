@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Avoid level notifier edge cases related to plugin toggling. (#83)
+
 ## 1.1.1
 
 - Minor: Use notifier-specific screenshot filenames. (#79)
