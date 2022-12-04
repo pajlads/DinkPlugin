@@ -42,8 +42,10 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
-        // TODO: player loot should be a configurable toggle
-        if (isEnabled())
+        if (Utils.isCastleWars(client) || Utils.isLastManStanding(client) || Utils.isSoulWars(client))
+            return;
+
+        if (config.includePlayerLoot() && isEnabled())
             this.handleNotify(event.getItems(), event.getPlayer().getName());
     }
 

@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add loot notifier setting to ignore player loot. (#82)
+
 ## 1.1.1
 
 - Minor: Use notifier-specific screenshot filenames. (#79)

@@ -401,10 +401,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootIncludePlayer",
+        name = "Include PK Loot",
+        description = "Allow notifications for loot from player kills",
+        position = 34,
+        section = lootSection
+    )
+    default boolean includePlayerLoot() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "lootNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %LOOT% to insert the loot and %SOURCE% to show the source of the loot",
-        position = 34,
+        position = 35,
         section = lootSection
     )
     default String lootNotifyMessage() {
