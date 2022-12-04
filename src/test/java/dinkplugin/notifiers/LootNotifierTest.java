@@ -156,6 +156,21 @@ class LootNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnorePlayer() {
+        // prepare mocks
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn(LOOTED_NAME);
+        when(config.includePlayerLoot()).thenReturn(false);
+
+        // fire event
+        PlayerLootReceived event = new PlayerLootReceived(player, Arrays.asList(new ItemStack(ItemID.RUBY, 1, null), new ItemStack(ItemID.TUNA, 1, null)));
+        notifier.onPlayerLootReceived(event);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testNotifyMultiple() {
         // fire event
         int total = RUBY_PRICE + OPAL_PRICE + TUNA_PRICE;
