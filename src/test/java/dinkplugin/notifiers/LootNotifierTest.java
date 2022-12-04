@@ -8,6 +8,7 @@ import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
@@ -56,6 +57,10 @@ class LootNotifierTest extends MockedNotifierTest {
         when(config.minLootValue()).thenReturn(500);
         when(config.includePlayerLoot()).thenReturn(true);
         when(config.lootNotifyMessage()).thenReturn("%USERNAME% has looted: %LOOT% from %SOURCE% for %TOTAL_VALUE% gp");
+
+        // init client mocks
+        WorldPoint location = new WorldPoint(0, 0, 0);
+        when(localPlayer.getWorldLocation()).thenReturn(location);
 
         // init item mocks
         mockItem(itemManager, ItemID.RUBY, RUBY_PRICE, "Ruby");
