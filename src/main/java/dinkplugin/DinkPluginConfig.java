@@ -402,8 +402,8 @@ public interface DinkPluginConfig extends Config {
 
     @ConfigItem(
         keyName = "lootIncludePlayer",
-        name = "Include Player Loot",
-        description = "Include notifications for player loot",
+        name = "Include PK Loot",
+        description = "Allow notifications for loot from player kills",
         position = 34,
         section = lootSection
     )
