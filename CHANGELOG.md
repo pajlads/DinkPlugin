@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Add loot notifier setting to ignore player loot. (#82)
+- Bugfix: Avoid level notifier edge cases related to plugin toggling. (#83)
 
 ## 1.1.1
 

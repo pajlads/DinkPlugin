@@ -96,7 +96,7 @@ public class SlayerNotifier extends BaseNotifier {
         this.reset();
     }
 
-    private void reset() {
+    public void reset() {
         slayerTask = "";
         badTicks = 0;
     }

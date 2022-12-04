@@ -132,7 +132,7 @@ public class ClueNotifier extends BaseNotifier {
         return String.format("%s x %s (%s)", item.getQuantity(), item.getName(), QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
     }
 
-    private void reset() {
+    public void reset() {
         this.clueCount = "";
         this.clueType = "";
         this.badTicks = 0;
