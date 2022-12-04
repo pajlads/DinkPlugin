@@ -59,11 +59,16 @@ public class DinkPlugin extends Plugin {
     @Override
     protected void startUp() {
         log.info("Started up Dink");
+        levelNotifier.initLevels();
     }
 
     @Override
     protected void shutDown() {
         log.info("Shutting down Dink");
+        clueNotifier.reset();
+        diaryNotifier.reset();
+        levelNotifier.reset();
+        slayerNotifier.reset();
     }
 
     @Provides

@@ -8,6 +8,7 @@ import dinkplugin.notifiers.data.LevelNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
+import net.runelite.api.Skill;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
 import org.apache.commons.lang3.StringUtils;
@@ -32,12 +33,23 @@ public class LevelNotifier extends BaseNotifier {
         return config.levelWebhook();
     }
 
+    public void initLevels() {
+        if (client.getGameState() != GameState.LOGGED_IN) return;
+        for (Skill skill : Skill.values()) {
+            currentLevels.put(skill.getName(), Experience.getLevelForXp(client.getSkillExperience(skill)));
+        }
+    }
+
     public void reset() {
         currentLevels.clear();
         levelledSkills.clear();
     }
 
     public void onTick() {
+        if (currentLevels.isEmpty()) {
+            initLevels();
+        }
+
         if (!sendMessage) {
             return;
         }
