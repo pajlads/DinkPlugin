@@ -36,7 +36,9 @@ public class LevelNotifier extends BaseNotifier {
     public void initLevels() {
         if (client.getGameState() != GameState.LOGGED_IN) return;
         for (Skill skill : Skill.values()) {
-            currentLevels.put(skill.getName(), Experience.getLevelForXp(client.getSkillExperience(skill)));
+            if (skill != Skill.OVERALL) {
+                currentLevels.put(skill.getName(), Experience.getLevelForXp(client.getSkillExperience(skill)));
+            }
         }
     }
 
