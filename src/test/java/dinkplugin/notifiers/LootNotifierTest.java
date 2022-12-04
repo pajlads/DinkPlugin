@@ -54,6 +54,7 @@ class LootNotifierTest extends MockedNotifierTest {
         when(config.lootSendImage()).thenReturn(false);
         when(config.lootIcons()).thenReturn(false);
         when(config.minLootValue()).thenReturn(500);
+        when(config.includePlayerLoot()).thenReturn(true);
         when(config.lootNotifyMessage()).thenReturn("%USERNAME% has looted: %LOOT% from %SOURCE% for %TOTAL_VALUE% gp");
 
         // init item mocks
