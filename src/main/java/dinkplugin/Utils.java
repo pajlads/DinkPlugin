@@ -44,7 +44,9 @@ public class Utils {
 
     private static final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
 
+    private static final Set<Integer> LMS_REGIONS = ImmutableSet.of(13658, 13659, 13660, 13914, 13915, 13916, 13918, 13919, 13920, 14174, 14175, 14176, 14430, 14431, 14432);
     private static final Set<Integer> POH_REGIONS = ImmutableSet.of(7257, 7513, 7514, 7769, 7770, 8025, 8026);
+    private static final Set<Integer> SOUL_REGIONS = ImmutableSet.of(8493, 8749, 9005);
 
     private static final BinaryOperator<Item> SUM_ITEM_QUANTITIES = (a, b) -> new Item(a.getId(), a.getQuantity() + b.getQuantity());
     private static final BinaryOperator<ItemStack> SUM_ITEM_STACK_QUANTITIES = (a, b) -> new ItemStack(a.getId(), a.getQuantity() + b.getQuantity(), a.getLocation());
@@ -101,6 +103,10 @@ public class Utils {
         return client.getVarbitValue(CASTLE_WARS_COUNTDOWN) > 0 || client.getVarbitValue(CASTLE_WARS_CATAPULT_X_AXIS_OFFSET) > 0 || client.getVarbitValue(CASTLE_WARS_CATAPULT_Y_AXIS_OFFSET) > 0;
     }
 
+    public static boolean isLastManStanding(Client client) {
+        return LMS_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
+    }
+
     public static boolean isPestControl(Client client) {
         Widget widget = client.getWidget(WidgetInfo.PEST_CONTROL_BLUE_SHIELD);
         return widget != null;
@@ -112,6 +118,10 @@ public class Utils {
 
     public static boolean isSafeArea(Client client) {
         return isCastleWars(client) || isPestControl(client) || isPlayerOwnedHouse(client);
+    }
+
+    public static boolean isSoulWars(Client client) {
+        return SOUL_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
     }
 
     public static String getPlayerName(Client client) {
