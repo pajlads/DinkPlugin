@@ -47,17 +47,17 @@ public class Utils {
     private static final Set<Integer> LMS_REGIONS = ImmutableSet.of(13658, 13659, 13660, 13914, 13915, 13916, 13918, 13919, 13920, 14174, 14175, 14176, 14430, 14431, 14432);
     private static final Set<Integer> POH_REGIONS = ImmutableSet.of(7257, 7513, 7514, 7769, 7770, 8025, 8026);
     private static final Set<Integer> SOUL_REGIONS = ImmutableSet.of(8493, 8749, 9005);
+    private static final int CASTLE_WARS_REGION = 9520;
 
     private static final BinaryOperator<Item> SUM_ITEM_QUANTITIES = (a, b) -> new Item(a.getId(), a.getQuantity() + b.getQuantity());
     private static final BinaryOperator<ItemStack> SUM_ITEM_STACK_QUANTITIES = (a, b) -> new ItemStack(a.getId(), a.getQuantity() + b.getQuantity(), a.getLocation());
 
-    @Varbit
     @VisibleForTesting
     public static final int CASTLE_WARS_COUNTDOWN = 380;
     @Varbit
-    private static final int CASTLE_WARS_CATAPULT_X_AXIS_OFFSET = 156;
+    private static final int CASTLE_WARS_X_OFFSET = 156;
     @Varbit
-    private static final int CASTLE_WARS_CATAPULT_Y_AXIS_OFFSET = 157;
+    private static final int CASTLE_WARS_Y_OFFSET = 157;
 
     private static final Set<Integer> NEVER_KEPT_ITEMS = ImmutableSet.of(
         CLUE_BOX, LOOTING_BAG,
@@ -100,7 +100,8 @@ public class Utils {
     }
 
     public static boolean isCastleWars(Client client) {
-        return client.getVarbitValue(CASTLE_WARS_COUNTDOWN) > 0 || client.getVarbitValue(CASTLE_WARS_CATAPULT_X_AXIS_OFFSET) > 0 || client.getVarbitValue(CASTLE_WARS_CATAPULT_Y_AXIS_OFFSET) > 0;
+        return client.getLocalPlayer().getWorldLocation().getRegionID() == CASTLE_WARS_REGION &&
+            (client.getVarpValue(CASTLE_WARS_COUNTDOWN) > 0 || client.getVarbitValue(CASTLE_WARS_X_OFFSET) > 0 || client.getVarbitValue(CASTLE_WARS_Y_OFFSET) > 0);
     }
 
     public static boolean isLastManStanding(Client client) {
