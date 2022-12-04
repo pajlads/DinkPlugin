@@ -6,9 +6,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
-import net.runelite.api.Actor;
 import net.runelite.api.ItemComposition;
-import net.runelite.api.events.HitsplatApplied;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
@@ -17,11 +15,8 @@ import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,9 +25,6 @@ public class LootNotifier extends BaseNotifier {
 
     @Inject
     private ItemManager itemManager;
-
-    @NotNull
-    private WeakReference<@Nullable Actor> lastTarget = new WeakReference<>(null);
 
     @Override
     public boolean isEnabled() {
@@ -44,28 +36,16 @@ public class LootNotifier extends BaseNotifier {
         return config.lootWebhook();
     }
 
-    public void onHitsplat(HitsplatApplied event) {
-        if (event.getHitsplat().isMine() && event.getActor() != client.getLocalPlayer())
-            lastTarget = new WeakReference<>(event.getActor());
-    }
-
     public void onNpcLootReceived(NpcLootReceived event) {
         if (isEnabled())
             this.handleNotify(event.getItems(), event.getNpc().getName());
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
-        if (!config.includePlayerLoot())
-            return;
-
-        boolean pk = client.getLocalPlayer().getInteracting() == event.getPlayer() && event.getPlayer() == lastTarget.get();
-        if (!pk && config.restrictPlayerLootByDamage())
-            return;
-
         if (Utils.isCastleWars(client) || Utils.isLastManStanding(client) || Utils.isSoulWars(client))
             return;
 
-        if (isEnabled())
+        if (config.includePlayerLoot() && isEnabled())
             this.handleNotify(event.getItems(), event.getPlayer().getName());
     }
 
