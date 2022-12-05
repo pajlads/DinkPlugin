@@ -224,7 +224,8 @@ class DeathNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreSafe() {
         // mock castle wars
-        when(client.getVarbitValue(Utils.CASTLE_WARS_COUNTDOWN)).thenReturn(10);
+        when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(2400, 3100, 0));
+        when(client.getVarpValue(Utils.CASTLE_WARS_COUNTDOWN)).thenReturn(10);
 
         // fire event
         notifier.onActorDeath(new ActorDeath(localPlayer));
