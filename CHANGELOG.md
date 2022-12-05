@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.1.2
+
 - Minor: Add loot notifier setting to ignore player loot. (#82)
 - Bugfix: Ensure some death notifications aren't skipped. (#84)
 - Bugfix: Avoid level notifier edge cases related to plugin toggling. (#83)
