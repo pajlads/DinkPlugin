@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Ensure boss name is included in boss slayer messages. (#88)
+
 ## 1.1.2
 
 - Minor: Add loot notifier setting to ignore player loot. (#82)
