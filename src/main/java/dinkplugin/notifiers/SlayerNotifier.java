@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 @Singleton
 public class SlayerNotifier extends BaseNotifier {
-    private static final Pattern BOSS_REGEX = Pattern.compile("You are granted .+ Slayer XP for completing your boss task against the (?<name>.+) boss");
+    private static final Pattern BOSS_REGEX = Pattern.compile("You are granted .+ Slayer XP for completing your boss task against(?: the)? (?<name>.+)\\.$");
     @VisibleForTesting
     static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
     private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
@@ -37,7 +37,8 @@ public class SlayerNotifier extends BaseNotifier {
             if (slayerTask.isEmpty()) {
                 Matcher bossMatcher = BOSS_REGEX.matcher(chatMessage);
                 if (bossMatcher.find()) {
-                    this.slayerTask = bossMatcher.group("name");
+                    String name = bossMatcher.group("name");
+                    this.slayerTask = name.endsWith(" boss") ? name.substring(0, name.length() - " boss".length()) : name;
                     return;
                 }
             }
