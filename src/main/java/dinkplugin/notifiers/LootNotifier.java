@@ -7,6 +7,10 @@ import dinkplugin.Utils;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.ItemComposition;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
@@ -19,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class LootNotifier extends BaseNotifier {
@@ -55,6 +60,28 @@ public class LootNotifier extends BaseNotifier {
         // only consider non-NPC and non-PK loot
         if (lootReceived.getType() == LootRecordType.EVENT || lootReceived.getType() == LootRecordType.PICKPOCKET) {
             this.handleNotify(lootReceived.getItems(), lootReceived.getName());
+        }
+    }
+
+    public void onWidgetLoaded(WidgetLoaded event) {
+        // special case: runelite client & loot tracker do not handle unsired loot at the time of writing
+        if (event.getGroupId() == WidgetID.DIALOG_SPRITE_GROUP_ID && isEnabled()) {
+            Widget spriteWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE);
+            if (spriteWidget == null || spriteWidget.getItemId() < 0) {
+                spriteWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_SPRITE);
+            }
+
+            if (spriteWidget != null && spriteWidget.getItemId() >= 0) {
+                Widget textWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
+                if (textWidget != null && StringUtils.containsIgnoreCase(textWidget.getText(), "The Font consumes the Unsired")) {
+                    ItemStack item = new ItemStack(
+                        spriteWidget.getId(),
+                        Math.max(spriteWidget.getItemQuantity(), 1),
+                        client.getLocalPlayer().getLocalLocation()
+                    );
+                    this.handleNotify(Collections.singletonList(item), "The Font of Consumption");
+                }
+            }
         }
     }
 
