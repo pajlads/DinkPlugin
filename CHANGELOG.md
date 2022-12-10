@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Track Unsired drops for loot notifier. (#89)
+
 ## 1.1.2
 
 - Minor: Add loot notifier setting to ignore player loot. (#82)
