@@ -49,6 +49,25 @@ class SlayerNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifySpecial() {
+        // fire chat messages
+        notifier.onChatMessage("You are granted an extra reward of 5k Slayer XP for completing your boss task against the Cave Kraken boss.");
+        notifier.onChatMessage("You have completed your task! You killed 50 Bosses. You gained 14,200 xp.");
+        notifier.onChatMessage("You've completed 150 tasks and received 10 points, giving you a total of 200; return to a Slayer master.");
+
+        // check notification message
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .content(String.format("%s has completed: %s, getting %d points for a total %d tasks completed", PLAYER_NAME, "50 Cave Kraken", 10, 150))
+                .extra(new SlayerNotificationData("50 Cave Kraken", "150", "10"))
+                .type(NotificationType.SLAYER)
+                .build()
+        );
+    }
+
+    @Test
     void testIgnorePoints() {
         // fire chat messages
         notifier.onChatMessage("You have completed your task! You killed 1 TzTok-Jad. You gained 69,420 xp.");
