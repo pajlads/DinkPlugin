@@ -75,7 +75,7 @@ public class LootNotifier extends BaseNotifier {
                 Widget textWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
                 if (textWidget != null && StringUtils.containsIgnoreCase(textWidget.getText(), "The Font consumes the Unsired")) {
                     ItemStack item = new ItemStack(
-                        spriteWidget.getId(),
+                        spriteWidget.getItemId(),
                         Math.max(spriteWidget.getItemQuantity(), 1),
                         client.getLocalPlayer().getLocalLocation()
                     );
