@@ -15,6 +15,9 @@ import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
+import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
@@ -26,6 +29,7 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.plugins.Plugin;
@@ -42,6 +46,8 @@ import javax.inject.Inject;
     tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun" }
 )
 public class DinkPlugin extends Plugin {
+
+    private @Inject Client client;
 
     private @Inject CollectionNotifier collectionNotifier;
     private @Inject PetNotifier petNotifier;
@@ -74,6 +80,32 @@ public class DinkPlugin extends Plugin {
     @Provides
     DinkPluginConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(DinkPluginConfig.class);
+    }
+
+    @Subscribe
+    public void onConfigChanged(ConfigChanged event) {
+        if (!"dinkplugin".equals(event.getGroup()))
+            return;
+
+        String key = event.getKey();
+        String value = event.getNewValue();
+        GameState gameState = client.getGameState();
+
+        if ("combatTaskEnabled".equals(key) && "true".equals(value) && gameState == GameState.LOGGED_IN) {
+            if (client.getVarbitValue(Varbits.COMBAT_ACHIEVEMENTS_POPUP) < 1) {
+                log.warn("Combat Achievements popup is not enabled in RuneScape settings; Dink Combat Task notifier will not fire.");
+            }
+
+            if (client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP) > 0) {
+                log.warn("Repeat popups for Combat Achievements is enabled; Dink Combat Task notifier will repeatedly fire on each completion.");
+            }
+        }
+
+        if ("collectionLogEnabled".equals(key) && "true".equals(value) && gameState == GameState.LOGGED_IN) {
+            if (client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) % 2 != 1) {
+                log.warn("Collection log addition chat notifications are not enabled in RuneScape settings; Dink Collection notifier will not fire.");
+            }
+        }
     }
 
     @Subscribe

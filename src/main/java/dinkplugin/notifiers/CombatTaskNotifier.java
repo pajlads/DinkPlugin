@@ -6,6 +6,7 @@ import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.CombatAchievementData;
+import net.runelite.api.annotations.Varbit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -16,6 +17,9 @@ import java.util.regex.Pattern;
 
 public class CombatTaskNotifier extends BaseNotifier {
     private static final Pattern ACHIEVEMENT_PATTERN = Pattern.compile("Congratulations, you've completed an? (?<tier>\\w+) combat task: (?<task>.+)\\.");
+
+    @Varbit
+    public static final int COMBAT_TASK_REPEAT_POPUP = 12456;
 
     @Override
     public boolean isEnabled() {
