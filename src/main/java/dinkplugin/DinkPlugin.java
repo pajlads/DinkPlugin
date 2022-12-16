@@ -95,10 +95,6 @@ public class DinkPlugin extends Plugin {
 
         if ("combatTaskEnabled".equals(key) && "true".equals(value) && gameState == GameState.LOGGED_IN) {
             clientThread.invokeLater(() -> {
-                if (client.getVarbitValue(Varbits.COMBAT_ACHIEVEMENTS_POPUP) < 1) {
-                    log.warn("Combat Achievements popup is not enabled in RuneScape settings; Dink Combat Task notifier will not fire.");
-                }
-
                 if (client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP) > 0) {
                     log.warn("Repeat popups for Combat Achievements is enabled; Dink Combat Task notifier will repeatedly fire on each completion.");
                 }
