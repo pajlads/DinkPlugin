@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Add warning logs for improper runescape settings that impact notifiers. (#92)
+
 ## 1.1.2
 
 - Minor: Add loot notifier setting to ignore player loot. (#82)
