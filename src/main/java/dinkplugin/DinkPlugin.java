@@ -28,6 +28,8 @@ import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -36,9 +38,11 @@ import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
+import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
+import java.awt.Color;
 
 @Slf4j
 @PluginDescriptor(
@@ -48,8 +52,14 @@ import javax.inject.Inject;
 )
 public class DinkPlugin extends Plugin {
 
+    private static final Color PINK = ColorUtil.fromHex("#eba2c0");
+    private static final Color RED = ColorUtil.fromHex("#f09d9e");
+
     private @Inject Client client;
     private @Inject ClientThread clientThread;
+    private @Inject ChatMessageManager chatManager;
+
+    private @Inject DinkPluginConfig config;
 
     private @Inject CollectionNotifier collectionNotifier;
     private @Inject PetNotifier petNotifier;
@@ -96,7 +106,7 @@ public class DinkPlugin extends Plugin {
         if ("combatTaskEnabled".equals(key) && "true".equals(value) && gameState == GameState.LOGGED_IN) {
             clientThread.invokeLater(() -> {
                 if (client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP) > 0) {
-                    log.warn("Repeat popups for Combat Achievements is enabled; Dink Combat Task notifier will repeatedly fire on each completion.");
+                    addChatWarning("Combat Task notifier will fire duplicates unless you disable the game setting: Combat Achievement Tasks - Repeat completion");
                 }
             });
             return;
@@ -105,7 +115,7 @@ public class DinkPlugin extends Plugin {
         if ("collectionLogEnabled".equals(key) && "true".equals(value) && gameState == GameState.LOGGED_IN) {
             clientThread.invokeLater(() -> {
                 if (client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) % 2 != 1) {
-                    log.warn("Collection log addition chat notifications are not enabled in RuneScape settings; Dink Collection notifier will not fire.");
+                    addChatWarning("Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification");
                 }
             });
         }
@@ -178,6 +188,14 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onVarbitChanged(VarbitChanged event) {
         diaryNotifier.onVarbitChanged(event);
+
+        if (event.getVarbitId() == CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP && event.getValue() > 0 && config.notifyCombatTask()) {
+            log.warn("Repeat popups for Combat Achievements is enabled; Dink Combat Task notifier will repeatedly fire on each completion.");
+        }
+
+        if (event.getVarbitId() == Varbits.COLLECTION_LOG_NOTIFICATION && event.getValue() % 2 != 1 && config.notifyCollectionLog()) {
+            log.warn("Collection log addition chat notifications are not enabled in RuneScape settings; Dink Collection notifier will not fire.");
+        }
     }
 
     @Subscribe
@@ -185,5 +203,20 @@ public class DinkPlugin extends Plugin {
         questNotifier.onWidgetLoaded(event);
         clueNotifier.onWidgetLoaded(event);
         speedrunNotifier.onWidgetLoaded(event);
+    }
+
+    private void addChatWarning(String message) {
+        String formatted = String.format("[%s] %s: %s",
+            ColorUtil.wrapWithColorTag(getName(), PINK),
+            "Warning",
+            ColorUtil.wrapWithColorTag(message, RED)
+        );
+
+        chatManager.queue(
+            QueuedMessage.builder()
+                .type(ChatMessageType.CONSOLE)
+                .runeLiteFormattedMessage(formatted)
+                .build()
+        );
     }
 }
