@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Retry failed webhook messages with exponential backoff. (#94)
 - Bugfix: Track Unsired drops for loot notifier. (#89)
 
 ## 1.1.2
