@@ -110,7 +110,7 @@ public interface DinkPluginConfig extends Config {
         hidden = true
     )
     default int maxRetries() {
-        return 5;
+        return 3;
     }
 
     @ConfigItem(
@@ -121,7 +121,7 @@ public interface DinkPluginConfig extends Config {
         hidden = true
     )
     default long baseRetryDelay() {
-        return 1000L;
+        return 2000L;
     }
 
     @ConfigItem(
