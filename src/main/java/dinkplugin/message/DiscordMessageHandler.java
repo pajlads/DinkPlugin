@@ -1,5 +1,6 @@
 package dinkplugin.message;
 
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,8 @@ import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static net.runelite.http.api.RuneLiteAPI.GSON;
@@ -35,6 +38,8 @@ public class DiscordMessageHandler {
     private final Client client;
     private final DrawManager drawManager;
     private final OkHttpClient httpClient;
+    private final DinkPluginConfig config;
+    private final ScheduledExecutorService executor;
 
     public <T> void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<T> mBody) {
         if (StringUtils.isBlank(webhookUrl)) return;
@@ -77,10 +82,10 @@ public class DiscordMessageHandler {
     }
 
     private void sendToMultiple(Collection<HttpUrl> urls, MultipartBody.Builder reqBodyBuilder) {
-        urls.forEach(url -> sendMessage(url, reqBodyBuilder));
+        urls.forEach(url -> sendMessage(url, reqBodyBuilder, 0));
     }
 
-    private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody) {
+    private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody, int attempt) {
         Request request = new Request.Builder()
             .url(url)
             .post(requestBody.build())
@@ -88,11 +93,32 @@ public class DiscordMessageHandler {
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                log.warn("There was an error sending the webhook message", e);
+                log.trace(String.format("Failed to send webhook message to %s on attempt %d", url, attempt), e);
+
+                if (attempt == 0) {
+                    log.warn("There was an error sending the webhook message", e);
+                }
+
+                int maxRetries = config.maxRetries();
+                if (attempt < maxRetries) {
+                    long baseDelay = config.baseRetryDelay();
+                    if (baseDelay > 0) {
+                        long delay = baseDelay * (1L << Math.min(attempt, 16)); // exponential backoff
+                        executor.schedule(() -> sendMessage(url, requestBody, attempt + 1), delay, TimeUnit.MILLISECONDS);
+                        log.debug("Scheduled webhook message for retry in {} milliseconds", delay);
+                    } else {
+                        log.debug("Skipping retry attempts for failed webhook since base delay is not positive");
+                    }
+                } else if (maxRetries > 0) {
+                    log.warn("Exhausted retry attempts when sending the webhook message", e);
+                } else {
+                    log.debug("Skipping retry attempts for failed webhook since max retries is not positive");
+                }
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) {
+                log.trace("Successfully sent webhook message to {} after {} attempts", url, attempt + 1);
                 response.close();
             }
         });

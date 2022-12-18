@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Retry failed webhook messages with exponential backoff. (#94)
 - Minor: Add warning logs for improper runescape settings that impact notifiers. (#92)
 
 ## 1.1.2
