@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Retry failed webhook messages with exponential backoff. (#94)
 - Bugfix: Ensure boss name is included in boss slayer messages. (#88)
 
 ## 1.1.2
