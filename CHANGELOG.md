@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Retry failed webhook messages with exponential backoff. (#94)
+
 ## 1.1.2
 
 - Minor: Add loot notifier setting to ignore player loot. (#82)
