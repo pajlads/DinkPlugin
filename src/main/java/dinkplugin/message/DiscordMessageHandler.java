@@ -3,7 +3,6 @@ package dinkplugin.message;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.ui.DrawManager;
@@ -11,6 +10,7 @@ import net.runelite.client.util.ImageUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -33,13 +33,31 @@ import static net.runelite.http.api.RuneLiteAPI.GSON;
 
 @Slf4j
 @Singleton
-@RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class DiscordMessageHandler {
     private final Client client;
     private final DrawManager drawManager;
     private final OkHttpClient httpClient;
     private final DinkPluginConfig config;
     private final ScheduledExecutorService executor;
+
+    @Inject
+    public DiscordMessageHandler(Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor) {
+        this.client = client;
+        this.drawManager = drawManager;
+        this.config = config;
+        this.executor = executor;
+        this.httpClient = httpClient.newBuilder()
+            .addInterceptor(chain -> {
+                Request request = chain.request();
+                Interceptor.Chain updatedChain = chain;
+                // Allow longer timeout when writing a screenshot file to overcome slow internet speeds
+                if (request.body() instanceof MultipartBody && Utils.hasImage((MultipartBody) request.body())) {
+                    updatedChain = chain.withWriteTimeout(30, TimeUnit.SECONDS); // default is 10 seconds
+                }
+                return updatedChain.proceed(request);
+            })
+            .build();
+    }
 
     public <T> void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<T> mBody) {
         if (StringUtils.isBlank(webhookUrl)) return;
