@@ -2,6 +2,7 @@
 
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
 - Minor: Add warning logs for improper runescape settings that impact notifiers. (#92)
+- Dev: Bump mockito version to 4.10.0. (#95)
 
 ## 1.1.2
 
