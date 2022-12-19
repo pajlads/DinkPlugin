@@ -2,6 +2,7 @@
 
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
 - Bugfix: Reduce timeouts from uploading screenshots on slow connections. (#96)
+- Dev: Bump mockito version to 4.10.0. (#95)
 
 ## 1.1.2
 
