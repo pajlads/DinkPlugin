@@ -56,7 +56,7 @@ public class DiscordMessageHandler {
                 Interceptor.Chain updatedChain = chain;
                 // Allow longer timeout when writing a screenshot file to overcome slow internet speeds
                 if (request.body() instanceof MultipartBody && Utils.hasImage((MultipartBody) request.body())) {
-                    updatedChain = chain.withWriteTimeout(30, TimeUnit.SECONDS); // default is 10 seconds
+                    updatedChain = chain.withWriteTimeout(Math.max(config.imageWriteTimeout(), 0), TimeUnit.SECONDS);
                 }
                 return updatedChain.proceed(request);
             })
