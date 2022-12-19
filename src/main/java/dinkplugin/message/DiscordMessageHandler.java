@@ -1,5 +1,6 @@
 package dinkplugin.message;
 
+import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import lombok.NonNull;
@@ -48,7 +49,9 @@ public class DiscordMessageHandler {
         this.executor = executor;
         this.httpClient = httpClient.newBuilder()
             .addInterceptor(chain -> {
-                Request request = chain.request();
+                Request request = chain.request().newBuilder()
+                    .header("User-Agent", DinkPlugin.USER_AGENT)
+                    .build();
                 Interceptor.Chain updatedChain = chain;
                 // Allow longer timeout when writing a screenshot file to overcome slow internet speeds
                 if (request.body() instanceof MultipartBody && Utils.hasImage((MultipartBody) request.body())) {

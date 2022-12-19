@@ -24,6 +24,7 @@ import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.client.RuneLite;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.NpcLootReceived;
@@ -42,6 +43,7 @@ import javax.inject.Inject;
     tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun" }
 )
 public class DinkPlugin extends Plugin {
+    public static final String USER_AGENT = "Dink/1.x " + RuneLite.USER_AGENT;
 
     private @Inject CollectionNotifier collectionNotifier;
     private @Inject PetNotifier petNotifier;
