@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
+- Bugfix: Reduce timeouts from uploading screenshots on slow connections. (#96)
 
 ## 1.1.2
 
