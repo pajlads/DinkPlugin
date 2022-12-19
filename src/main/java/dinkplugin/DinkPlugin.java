@@ -43,7 +43,7 @@ import javax.inject.Inject;
     tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun" }
 )
 public class DinkPlugin extends Plugin {
-    public static final String USER_AGENT = "Dink/1.x " + RuneLite.USER_AGENT;
+    public static final String USER_AGENT = RuneLite.USER_AGENT + " (Dink/1.x)";
 
     private @Inject CollectionNotifier collectionNotifier;
     private @Inject PetNotifier petNotifier;
