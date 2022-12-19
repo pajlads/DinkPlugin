@@ -1,5 +1,6 @@
 package dinkplugin.message;
 
+import com.google.gson.Gson;
 import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
@@ -30,11 +31,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static net.runelite.http.api.RuneLiteAPI.GSON;
-
 @Slf4j
 @Singleton
 public class DiscordMessageHandler {
+    private final Gson gson;
     private final Client client;
     private final DrawManager drawManager;
     private final OkHttpClient httpClient;
@@ -42,7 +42,8 @@ public class DiscordMessageHandler {
     private final ScheduledExecutorService executor;
 
     @Inject
-    public DiscordMessageHandler(Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor) {
+    public DiscordMessageHandler(Gson gson, Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor) {
+        this.gson = gson;
         this.client = client;
         this.drawManager = drawManager;
         this.config = config;
@@ -76,7 +77,7 @@ public class DiscordMessageHandler {
 
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart("payload_json", GSON.toJson(mBody));
+            .addFormDataPart("payload_json", gson.toJson(mBody));
 
         if (sendImage) {
             drawManager.requestNextFrameListener(image -> {
