@@ -101,12 +101,18 @@ public class DeathNotifier extends BaseNotifier {
             .limit(3)
             .toArray();
 
-        List<NotificationBody.Embed> lostItemEmbeds = Utils.buildEmbeds(topLostItemIds);
         List<SerializedItemStack> topLostStacks = getTopLostStacks(itemManager, lostItems, topLostItemIds);
         List<SerializedItemStack> keptStacks = keptItems.stream()
             .map(Pair::getKey)
             .map(item -> Utils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
+        List<NotificationBody.Embed> keptItemEmbeds = Utils.buildEmbeds(
+            keptItems.stream()
+                .map(Pair::getKey)
+                .mapToInt(Item::getId)
+                .distinct()
+                .toArray()
+        );
 
         DeathNotificationData extra = new DeathNotificationData(
             losePrice,
@@ -119,7 +125,7 @@ public class DeathNotifier extends BaseNotifier {
         createMessage(DinkPluginConfig::deathSendImage, NotificationBody.builder()
             .content(notifyMessage)
             .extra(extra)
-            .embeds(lostItemEmbeds)
+            .embeds(keptItemEmbeds)
             .screenshotFile("deathImage.png")
             .type(NotificationType.DEATH)
             .build());
