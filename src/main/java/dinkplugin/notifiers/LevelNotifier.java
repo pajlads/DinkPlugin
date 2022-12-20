@@ -124,6 +124,8 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     private boolean checkLevelInterval(int level) {
+        if (level < config.levelMinValue())
+            return false;
         int interval = config.levelInterval();
         return interval <= 1
             || level == 99
