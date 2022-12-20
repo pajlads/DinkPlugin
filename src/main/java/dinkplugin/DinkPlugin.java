@@ -39,7 +39,8 @@ import javax.inject.Inject;
 @PluginDescriptor(
     name = "Dink",
     description = "A notifier for sending webhooks to Discord or other custom destinations",
-    tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun" }
+    tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun",
+        "diary", "combat achievements" }
 )
 public class DinkPlugin extends Plugin {
 
