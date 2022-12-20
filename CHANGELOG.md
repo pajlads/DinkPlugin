@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add better descriptions for `Min Value` settings. (#100)
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
 - Dev: Bump mockito version to 4.10.0. (#95)
 
