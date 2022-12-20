@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -87,18 +86,22 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
+            final long totalPrice = totalStackValue;
             String notifyMessage = StringUtils.replaceEach(
                 config.lootNotifyMessage(),
                 new String[] { "%USERNAME%", "%LOOT%", "%TOTAL_VALUE%", "%SOURCE%" },
                 new String[] { Utils.getPlayerName(client), lootMessage.toString(), QuantityFormatter.quantityToStackSize(totalStackValue), dropper }
             );
-            createMessage(DinkPluginConfig::lootSendImage, NotificationBody.builder()
-                .content(notifyMessage)
-                .embeds(embeds)
-                .extra(new LootNotificationData(serializedItems, dropper))
-                .screenshotFile("lootImage.png")
-                .type(NotificationType.LOOT)
-                .build());
+            createMessage(
+                config -> config.lootSendImage() && totalPrice >= config.lootImageMinValue(),
+                NotificationBody.builder()
+                    .content(notifyMessage)
+                    .embeds(embeds)
+                    .extra(new LootNotificationData(serializedItems, dropper))
+                    .screenshotFile("lootImage.png")
+                    .type(NotificationType.LOOT)
+                    .build()
+            );
         }
     }
 }
