@@ -612,7 +612,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "clueMinValue",
         name = "Min Value",
-        description = "The minimum value of the items for a notification to be sent",
+        description = "The minimum value of the combined items for a notification to be sent",
         position = 73,
         section = clueSection
     )
