@@ -73,7 +73,7 @@ public class KillCountNotifier extends BaseNotifier {
                 .ifPresent(body::embeds);
 
         // Call webhook
-        createMessage(c -> screenshot, body.build());
+        createMessage(screenshot, body.build());
     }
 
     private boolean checkKillInterval(int killCount) {
