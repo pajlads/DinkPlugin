@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add better descriptions for `Min Value` settings. (#100)
 - Minor: Add clue and loot notifier setting to skip screenshots for low item values. (#98)
 - Minor: Add level up setting to skip notifications below a specified level. (#97)
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
