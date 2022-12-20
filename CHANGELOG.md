@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
+- Bugfix: Ensure boss name is included in boss slayer messages. (#88)
 - Dev: Bump mockito version to 4.10.0. (#95)
 
 ## 1.1.2
