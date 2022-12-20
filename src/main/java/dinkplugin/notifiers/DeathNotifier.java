@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -128,7 +127,7 @@ public class DeathNotifier extends BaseNotifier {
             topLostStacks
         );
 
-        createMessage(DinkPluginConfig::deathSendImage, NotificationBody.builder()
+        createMessage(config.deathSendImage(), NotificationBody.builder()
             .content(notifyMessage)
             .extra(extra)
             .embeds(keptItemEmbeds)

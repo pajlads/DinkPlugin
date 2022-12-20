@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.message.NotificationBody;
@@ -43,7 +42,7 @@ public class CombatTaskNotifier extends BaseNotifier {
             new String[] { player, tier.toString(), task }
         );
 
-        createMessage(DinkPluginConfig::combatTaskSendImage, NotificationBody.<CombatAchievementData>builder()
+        createMessage(config.combatTaskSendImage(), NotificationBody.<CombatAchievementData>builder()
             .type(NotificationType.COMBAT_ACHIEVEMENT)
             .content(message)
             .playerName(player)

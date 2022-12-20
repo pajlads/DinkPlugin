@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -100,7 +99,7 @@ public class SlayerNotifier extends BaseNotifier {
                 new String[] { Utils.getPlayerName(client), slayerTask, slayerCompleted, slayerPoints }
             );
 
-            createMessage(DinkPluginConfig::slayerSendImage, NotificationBody.builder()
+            createMessage(config.slayerSendImage(), NotificationBody.builder()
                 .content(notifyMessage)
                 .extra(new SlayerNotificationData(slayerTask, slayerCompleted, slayerPoints))
                 .screenshotFile("slayerImage.png")
