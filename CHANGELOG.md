@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add death notifier setting to disable kept item embeds. (#99)
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
 - Dev: Bump mockito version to 4.10.0. (#95)
 
