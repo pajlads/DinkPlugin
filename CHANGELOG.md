@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add level up setting to skip notifications below a specified level. (#97)
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
 - Dev: Bump mockito version to 4.10.0. (#95)
 
