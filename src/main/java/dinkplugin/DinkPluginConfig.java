@@ -425,7 +425,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "lootImageMinValue",
         name = "Screenshot Min Value",
-        description = "The minimum loot value to warrant a screenshot. Must have 'Send Image' enabled",
+        description = "The minimum loot value to send a screenshot. Must have 'Send Image' enabled",
         position = 34,
         section = lootSection
     )
@@ -634,7 +634,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "clueImageMinValue",
         name = "Screenshot Min Value",
-        description = "The minimum value of the items to warrant a screenshot. Must have 'Send Image' enabled",
+        description = "The minimum value of the items to send a screenshot. Must have 'Send Image' enabled",
         position = 74,
         section = clueSection
     )
