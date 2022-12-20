@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -114,13 +113,16 @@ public class ClueNotifier extends BaseNotifier {
                 new String[] { "%USERNAME%", "%CLUE%", "%COUNT%", "%TOTAL_VALUE%", "%LOOT%" },
                 new String[] { Utils.getPlayerName(client), clueType, clueCount, QuantityFormatter.quantityToStackSize(totalPrice.get()), lootMessage.toString() }
             );
-            createMessage(DinkPluginConfig::clueSendImage, NotificationBody.builder()
-                .content(notifyMessage)
-                .extra(new ClueNotificationData(clueType, Integer.parseInt(clueCount), itemStacks))
-                .screenshotFile("clueImage.png")
-                .type(NotificationType.CLUE)
-                .embeds(embeds)
-                .build());
+            createMessage(
+                config -> config.clueSendImage() && totalPrice.get() >= config.clueImageMinValue(),
+                NotificationBody.builder()
+                    .content(notifyMessage)
+                    .extra(new ClueNotificationData(clueType, Integer.parseInt(clueCount), itemStacks))
+                    .screenshotFile("clueImage.png")
+                    .type(NotificationType.CLUE)
+                    .embeds(embeds)
+                    .build()
+            );
         }
 
         this.reset();

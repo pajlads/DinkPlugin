@@ -19,7 +19,7 @@ public abstract class BaseNotifier {
     protected Client client;
 
     @Inject
-    protected DiscordMessageHandler messageHandler;
+    private DiscordMessageHandler messageHandler;
 
     public boolean isEnabled() {
         return !Utils.isIgnoredWorld(client.getWorldType());
