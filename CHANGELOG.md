@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add clue and loot notifier setting to skip screenshots for low item values. (#98)
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
 - Dev: Bump mockito version to 4.10.0. (#95)
 
