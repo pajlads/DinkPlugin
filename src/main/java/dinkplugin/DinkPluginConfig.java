@@ -368,10 +368,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "levelMinValue",
+        name = "Minimum Skill Level",
+        description = "The minimum skill level required to warrant a notification. Useful for filtering out low-level notifications",
+        position = 23,
+        section = levelSection
+    )
+    default int levelMinValue() {
+        return 1;
+    }
+
+    @ConfigItem(
         keyName = "levelNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %SKILL% to insert the levelled skill(s)",
-        position = 23,
+        position = 24,
         section = levelSection
     )
     default String levelNotifyMessage() {
