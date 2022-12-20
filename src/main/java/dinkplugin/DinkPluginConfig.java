@@ -387,10 +387,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "levelMinValue",
+        name = "Minimum Skill Level",
+        description = "The minimum skill level required to send a notification. Useful for filtering out low-level notifications",
+        position = 23,
+        section = levelSection
+    )
+    default int levelMinValue() {
+        return 1;
+    }
+
+    @ConfigItem(
         keyName = "levelNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %SKILL% to insert the levelled skill(s)",
-        position = 23,
+        position = 24,
         section = levelSection
     )
     default String levelNotifyMessage() {
@@ -442,10 +453,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootImageMinValue",
+        name = "Screenshot Min Value",
+        description = "The minimum combined loot value to send a screenshot. Must have 'Send Image' enabled",
+        position = 34,
+        section = lootSection
+    )
+    default int lootImageMinValue() {
+        return 0;
+    }
+
+    @ConfigItem(
         keyName = "lootIncludePlayer",
         name = "Include PK Loot",
         description = "Allow notifications for loot from player kills",
-        position = 34,
+        position = 35,
         section = lootSection
     )
     default boolean includePlayerLoot() {
@@ -456,7 +478,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "lootNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %LOOT% to insert the loot and %SOURCE% to show the source of the loot",
-        position = 35,
+        position = 36,
         section = lootSection
     )
     default String lootNotifyMessage() {
@@ -640,10 +662,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "clueImageMinValue",
+        name = "Screenshot Min Value",
+        description = "The minimum combined value of the items to send a screenshot. Must have 'Send Image' enabled",
+        position = 74,
+        section = clueSection
+    )
+    default int clueImageMinValue() {
+        return 0;
+    }
+
+    @ConfigItem(
         keyName = "clueNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %CLUE% to insert the clue type, %LOOT% to show the loot obtained and %COUNT% to insert how many of those clue types you have completed",
-        position = 74,
+        position = 75,
         section = clueSection
     )
     default String clueNotifyMessage() {
