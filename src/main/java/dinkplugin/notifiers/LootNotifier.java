@@ -86,14 +86,13 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
-            final long totalPrice = totalStackValue;
+            boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             String notifyMessage = StringUtils.replaceEach(
                 config.lootNotifyMessage(),
                 new String[] { "%USERNAME%", "%LOOT%", "%TOTAL_VALUE%", "%SOURCE%" },
                 new String[] { Utils.getPlayerName(client), lootMessage.toString(), QuantityFormatter.quantityToStackSize(totalStackValue), dropper }
             );
-            createMessage(
-                config -> config.lootSendImage() && totalPrice >= config.lootImageMinValue(),
+            createMessage(screenshot,
                 NotificationBody.builder()
                     .content(notifyMessage)
                     .embeds(embeds)

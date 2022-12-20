@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
@@ -92,7 +91,7 @@ public class DiaryNotifier extends BaseNotifier {
             new String[] { player, difficulty.toString(), area, String.valueOf(total) }
         );
 
-        createMessage(DinkPluginConfig::diarySendImage, NotificationBody.builder()
+        createMessage(config.diarySendImage(), NotificationBody.builder()
             .type(NotificationType.ACHIEVEMENT_DIARY)
             .content(message)
             .extra(new DiaryNotificationData(area, difficulty, total))
