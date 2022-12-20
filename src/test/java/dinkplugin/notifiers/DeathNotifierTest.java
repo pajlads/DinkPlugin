@@ -57,6 +57,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(config.notifyDeath()).thenReturn(true);
         when(config.deathNotifPvpEnabled()).thenReturn(true);
         when(config.deathSendImage()).thenReturn(false);
+        when(config.deathEmbedKeptItems()).thenReturn(true);
         when(config.deathNotifyMessage()).thenReturn("%USERNAME% has died, losing %VALUELOST% gp");
         when(config.deathNotifPvpMessage()).thenReturn("%USERNAME% has been PKed by %PKER% for %VALUELOST% gp");
 
