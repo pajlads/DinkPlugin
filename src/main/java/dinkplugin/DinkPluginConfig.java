@@ -370,7 +370,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "levelMinValue",
         name = "Minimum Skill Level",
-        description = "The minimum skill level required to warrant a notification. Useful for filtering out low-level notifications",
+        description = "The minimum skill level required to send a notification. Useful for filtering out low-level notifications",
         position = 23,
         section = levelSection
     )
