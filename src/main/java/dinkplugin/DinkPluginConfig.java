@@ -414,7 +414,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "minLootValue",
         name = "Min Loot value",
-        description = "Minimum value of the loot for a notification to be sent",
+        description = "The minimum value of an item for a notification to be sent",
         position = 33,
         section = lootSection
     )
