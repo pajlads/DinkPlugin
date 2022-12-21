@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -41,7 +40,7 @@ public class CollectionNotifier extends BaseNotifier {
             new String[] { Utils.getPlayerName(client), itemName }
         );
 
-        createMessage(DinkPluginConfig::collectionSendImage, NotificationBody.builder()
+        createMessage(config.collectionSendImage(), NotificationBody.builder()
             .content(notifyMessage)
             .extra(new CollectionNotificationData(itemName))
             .screenshotFile("collectionImage.png")

@@ -8,7 +8,6 @@ import net.runelite.api.Client;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
-import java.util.function.Function;
 
 public abstract class BaseNotifier {
 
@@ -27,10 +26,10 @@ public abstract class BaseNotifier {
 
     protected abstract String getWebhookUrl();
 
-    protected final void createMessage(Function<DinkPluginConfig, Boolean> sendImage, NotificationBody<?> body) {
+    protected final void createMessage(boolean sendImage, NotificationBody<?> body) {
         String overrideUrl = getWebhookUrl();
         String url = StringUtils.isNotBlank(overrideUrl) ? overrideUrl : config.primaryWebhook();
-        messageHandler.createMessage(url, sendImage.apply(config), body);
+        messageHandler.createMessage(url, sendImage, body);
     }
 
 }
