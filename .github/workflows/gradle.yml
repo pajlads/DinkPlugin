@@ -24,10 +24,10 @@ jobs:
       with:
         distribution: temurin
         java-version: 11
-        
+
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
-    
+
     - name: Execute Gradle build
       run: ./gradlew build
 
@@ -39,3 +39,28 @@ jobs:
       with:
         name: dinkplugin-shadow
         path: build/libs/dinkplugin-*-all.jar
+
+  create-release:
+    needs: gradle
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/master')
+
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: dinkplugin-shadow
+          path: release-artifacts/
+      - name: Create release
+        uses: ncipollo/release-action@v1.12.0
+        with:
+          removeArtifacts: true
+          allowUpdates: true
+          artifactErrorsFailBuild: true
+          artifacts: "release-artifacts/*"
+          body: |
+            This release should only be used if testing one of the features that have not made it to the plugin hub yet.
+
+            ${{ github.event.head_commit.message }}
+          prerelease: true
+          name: Nightly Release
+          tag: nightly-build
