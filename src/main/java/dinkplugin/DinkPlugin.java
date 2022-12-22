@@ -15,9 +15,6 @@ import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
@@ -27,7 +24,6 @@ import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
@@ -42,7 +38,6 @@ import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
-import java.awt.Color;
 
 @Slf4j
 @PluginDescriptor(
@@ -53,14 +48,9 @@ import java.awt.Color;
 )
 public class DinkPlugin extends Plugin {
 
-    private static final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
-    private static final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
-
-    private @Inject Client client;
-    private @Inject ClientThread clientThread;
     private @Inject ChatMessageManager chatManager;
 
-    private @Inject DinkPluginConfig config;
+    private @Inject SettingsValidator validator;
 
     private @Inject CollectionNotifier collectionNotifier;
     private @Inject PetNotifier petNotifier;
@@ -97,29 +87,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onConfigChanged(ConfigChanged event) {
-        if (!"dinkplugin".equals(event.getGroup()))
-            return;
-
-        String key = event.getKey();
-        String value = event.getNewValue();
-        GameState gameState = client.getGameState();
-
-        if ("combatTaskEnabled".equals(key) && "true".equals(value) && gameState == GameState.LOGGED_IN) {
-            clientThread.invokeLater(() -> {
-                if (client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP) > 0) {
-                    addChatWarning(CombatTaskNotifier.REPEAT_WARNING);
-                }
-            });
-            return;
-        }
-
-        if ("collectionLogEnabled".equals(key) && "true".equals(value) && gameState == GameState.LOGGED_IN) {
-            clientThread.invokeLater(() -> {
-                if (client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) % 2 != 1) {
-                    addChatWarning(CollectionNotifier.ADDITION_WARNING);
-                }
-            });
-        }
+        validator.onConfigChanged(event);
     }
 
     @Subscribe
@@ -188,25 +156,8 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged event) {
+        validator.onVarbitChanged(event);
         diaryNotifier.onVarbitChanged(event);
-
-        if (client.getGameState() == GameState.LOGGED_IN) {
-            if (event.getVarbitId() == CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP && event.getValue() > 0 && config.notifyCombatTask()) {
-                if (Utils.isSettingsOpen(client)) {
-                    addChatWarning(CombatTaskNotifier.REPEAT_WARNING);
-                } else {
-                    log.warn(CombatTaskNotifier.REPEAT_WARNING);
-                }
-            }
-
-            if (event.getVarbitId() == Varbits.COLLECTION_LOG_NOTIFICATION && event.getValue() % 2 != 1 && config.notifyCollectionLog()) {
-                if (Utils.isSettingsOpen(client)) {
-                    addChatWarning(CollectionNotifier.ADDITION_WARNING);
-                } else {
-                    log.warn(CollectionNotifier.ADDITION_WARNING);
-                }
-            }
-        }
     }
 
     @Subscribe
@@ -216,11 +167,11 @@ public class DinkPlugin extends Plugin {
         speedrunNotifier.onWidgetLoaded(event);
     }
 
-    private void addChatWarning(String message) {
+    public void addChatWarning(String message) {
         String formatted = String.format("[%s] %s: %s",
-            ColorUtil.wrapWithColorTag(getName(), PINK),
+            ColorUtil.wrapWithColorTag(getName(), Utils.PINK),
             "Warning",
-            ColorUtil.wrapWithColorTag(message, RED)
+            ColorUtil.wrapWithColorTag(message, Utils.RED)
         );
 
         chatManager.queue(
