@@ -53,8 +53,8 @@ import java.awt.Color;
 )
 public class DinkPlugin extends Plugin {
 
-    private static final Color PINK = ColorUtil.fromHex("#eba2c0");
-    private static final Color RED = ColorUtil.fromHex("#f09d9e");
+    private static final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
+    private static final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
 
     private @Inject Client client;
     private @Inject ClientThread clientThread;
