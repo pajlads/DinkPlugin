@@ -125,6 +125,11 @@ public class Utils {
         return SOUL_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
     }
 
+    public static boolean isSettingsOpen(@NotNull Client client) {
+        Widget widget = client.getWidget(WidgetInfo.SETTINGS_INIT);
+        return widget != null && !widget.isSelfHidden();
+    }
+
     public static String getPlayerName(Client client) {
         return client.getLocalPlayer().getName();
     }

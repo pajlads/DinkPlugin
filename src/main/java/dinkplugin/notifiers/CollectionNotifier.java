@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 public class CollectionNotifier extends BaseNotifier {
     @VisibleForTesting
     static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
+    public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
 
     @Override
     public boolean isEnabled() {

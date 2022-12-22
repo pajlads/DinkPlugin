@@ -107,7 +107,7 @@ public class DinkPlugin extends Plugin {
         if ("combatTaskEnabled".equals(key) && "true".equals(value) && gameState == GameState.LOGGED_IN) {
             clientThread.invokeLater(() -> {
                 if (client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP) > 0) {
-                    addChatWarning("Combat Task notifier will fire duplicates unless you disable the game setting: Combat Achievement Tasks - Repeat completion");
+                    addChatWarning(CombatTaskNotifier.REPEAT_WARNING);
                 }
             });
             return;
@@ -116,7 +116,7 @@ public class DinkPlugin extends Plugin {
         if ("collectionLogEnabled".equals(key) && "true".equals(value) && gameState == GameState.LOGGED_IN) {
             clientThread.invokeLater(() -> {
                 if (client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) % 2 != 1) {
-                    addChatWarning("Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification");
+                    addChatWarning(CollectionNotifier.ADDITION_WARNING);
                 }
             });
         }
@@ -192,11 +192,19 @@ public class DinkPlugin extends Plugin {
 
         if (client.getGameState() == GameState.LOGGED_IN) {
             if (event.getVarbitId() == CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP && event.getValue() > 0 && config.notifyCombatTask()) {
-                log.warn("Repeat popups for Combat Achievements is enabled; Dink Combat Task notifier will repeatedly fire on each completion.");
+                if (Utils.isSettingsOpen(client)) {
+                    addChatWarning(CombatTaskNotifier.REPEAT_WARNING);
+                } else {
+                    log.warn(CombatTaskNotifier.REPEAT_WARNING);
+                }
             }
 
             if (event.getVarbitId() == Varbits.COLLECTION_LOG_NOTIFICATION && event.getValue() % 2 != 1 && config.notifyCollectionLog()) {
-                log.warn("Collection log addition chat notifications are not enabled in RuneScape settings; Dink Collection notifier will not fire.");
+                if (Utils.isSettingsOpen(client)) {
+                    addChatWarning(CollectionNotifier.ADDITION_WARNING);
+                } else {
+                    log.warn(CollectionNotifier.ADDITION_WARNING);
+                }
             }
         }
     }
