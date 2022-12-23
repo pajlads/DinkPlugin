@@ -38,6 +38,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // fire event
         String gameMessage = "Your King Black Dragon kill count is: 420.";
         notifier.onGameMessage(gameMessage);
+        notifier.onTick();
 
         // check notification
         verify(messageHandler).createMessage(
@@ -61,6 +62,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // fire event
         String gameMessage = "Your King Black Dragon kill count is: 1.";
         notifier.onGameMessage(gameMessage);
+        notifier.onTick();
 
         // check notification
         verify(messageHandler).createMessage(
@@ -84,6 +86,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // fire event
         String gameMessage = "Your King Black Dragon kill count is: 1.";
         notifier.onGameMessage(gameMessage);
+        notifier.onTick();
 
         // ensure no message
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -99,6 +102,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // fire event
         String gameMessage = "Your King Black Dragon kill count is: 1.";
         notifier.onGameMessage(gameMessage);
+        notifier.onTick();
 
         // ensure no message
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());

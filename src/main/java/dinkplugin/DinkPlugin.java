@@ -70,6 +70,7 @@ public class DinkPlugin extends Plugin {
         diaryNotifier.reset();
         levelNotifier.reset();
         slayerNotifier.reset();
+        killCountNotifier.reset();
     }
 
     @Provides
@@ -99,6 +100,7 @@ public class DinkPlugin extends Plugin {
         slayerNotifier.onTick();
         levelNotifier.onTick();
         diaryNotifier.onTick();
+        killCountNotifier.onTick();
     }
 
     @Subscribe

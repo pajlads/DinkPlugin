@@ -4,6 +4,8 @@ import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
+import lombok.AccessLevel;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
@@ -19,9 +22,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
+@Singleton
 public class KillCountNotifier extends BaseNotifier {
     private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion)\\s?count is: (?<value>\\d+)\\b");
     private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>\\d+)\\b");
+
+    @Setter(AccessLevel.PRIVATE)
+    private BossNotificationData data;
 
     @Override
     public boolean isEnabled() {
@@ -33,27 +40,45 @@ public class KillCountNotifier extends BaseNotifier {
         return config.killCountWebhook();
     }
 
-    public void onGameMessage(String message) {
-        if (isEnabled())
-            parse(message).ifPresent(pair -> handleKill(pair.getLeft(), pair.getRight(), message));
+    public void reset() {
+        this.data = null;
     }
 
-    private void handleKill(String boss, int killCount, String rawMessage) {
-        if (!checkKillInterval(killCount)) return;
+    public void onGameMessage(String message) {
+        if (isEnabled()) {
+            if (data == null) {
+                parse(message)
+                    .map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message))
+                    .ifPresent(this::setData);
+            } else {
+                // TODO: check for fight duration
+            }
+        }
+    }
+
+    public void onTick() {
+        if (data != null) {
+            handleKill(data);
+            reset();
+        }
+    }
+
+    private void handleKill(BossNotificationData data) {
+        if (!checkKillInterval(data.getCount())) return;
 
         // Assemble content
         String player = Utils.getPlayerName(client);
         String content = StringUtils.replaceEach(
             config.killCountMessage(),
             new String[] { "%USERNAME%", "%BOSS%", "%COUNT%" },
-            new String[] { player, boss, String.valueOf(killCount) }
+            new String[] { player, data.getBoss(), String.valueOf(data.getCount()) }
         );
 
         // Prepare body
         NotificationBody.NotificationBodyBuilder<BossNotificationData> body =
             NotificationBody.<BossNotificationData>builder()
                 .content(content)
-                .extra(new BossNotificationData(boss, killCount, rawMessage))
+                .extra(data)
                 .playerName(player)
                 .screenshotFile("killCountImage.png")
                 .type(NotificationType.KILL_COUNT);
@@ -63,7 +88,7 @@ public class KillCountNotifier extends BaseNotifier {
         if (!screenshot)
             Arrays.stream(client.getCachedNPCs())
                 .filter(Objects::nonNull)
-                .filter(npc -> boss.equalsIgnoreCase(npc.getName()))
+                .filter(npc -> data.getBoss().equalsIgnoreCase(npc.getName()))
                 .findAny()
                 .map(NPC::getId)
                 .map(Utils::getNpcImageUrl)
