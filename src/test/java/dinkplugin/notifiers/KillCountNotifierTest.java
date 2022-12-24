@@ -3,12 +3,14 @@ package dinkplugin.notifiers;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
+import net.runelite.http.api.RuneLiteAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import java.time.Duration;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
@@ -45,16 +47,20 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
+        NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
+            .content(PLAYER_NAME + " has defeated King Black Dragon with a completion count of 420")
+            .extra(new BossNotificationData("King Black Dragon", 420, gameMessage, null, null))
+            .playerName(PLAYER_NAME)
+            .type(NotificationType.KILL_COUNT)
+            .build();
+
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             true,
-            NotificationBody.builder()
-                .content(PLAYER_NAME + " has defeated King Black Dragon with a completion count of 420")
-                .extra(new BossNotificationData("King Black Dragon", 420, gameMessage, null, null))
-                .playerName(PLAYER_NAME)
-                .type(NotificationType.KILL_COUNT)
-                .build()
+            body
         );
+
+        assertDoesNotThrow(() -> RuneLiteAPI.GSON.toJson(body));
     }
 
     @Test
@@ -124,16 +130,20 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
+        NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
+            .content(PLAYER_NAME + " has defeated Zulrah with a new personal best time of 00:00:56.500 and a completion count of 12")
+            .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(56).plusMillis(500), true))
+            .playerName(PLAYER_NAME)
+            .type(NotificationType.KILL_COUNT)
+            .build();
+
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             true,
-            NotificationBody.builder()
-                .content(PLAYER_NAME + " has defeated Zulrah with a new personal best time of 00:00:56.500 and a completion count of 12")
-                .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(56).plusMillis(500), true))
-                .playerName(PLAYER_NAME)
-                .type(NotificationType.KILL_COUNT)
-                .build()
+            body
         );
+
+        assertDoesNotThrow(() -> RuneLiteAPI.GSON.toJson(body));
     }
 
     @Test
