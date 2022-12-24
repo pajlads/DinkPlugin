@@ -30,6 +30,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         when(config.killCountNotifyBestTime()).thenReturn(true);
         when(config.killCountSendImage()).thenReturn(true);
         when(config.killCountMessage()).thenReturn("%USERNAME% has defeated %BOSS% with a completion count of %COUNT%");
+        when(config.killCountBestTimeMessage()).thenReturn("%USERNAME% has defeated %BOSS% with a new personal best time of %TIME% and a completion count of %COUNT%");
     }
 
     @Test
@@ -127,7 +128,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has defeated Zulrah with a completion count of 12")
+                .content(PLAYER_NAME + " has defeated Zulrah with a new personal best time of 00:00:56.500 and a completion count of 12")
                 .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(56).plusMillis(500), true))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)

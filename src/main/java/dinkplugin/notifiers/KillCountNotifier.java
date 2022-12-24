@@ -7,6 +7,7 @@ import dinkplugin.notifiers.data.BossNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -63,10 +64,11 @@ public class KillCountNotifier extends BaseNotifier {
 
         // Assemble content
         String player = Utils.getPlayerName(client);
+        String time = DurationFormatUtils.formatDurationHMS(defaultIfNull(data.getTime(), Duration.ZERO).toMillis());
         String content = StringUtils.replaceEach(
-            config.killCountMessage(),
-            new String[] { "%USERNAME%", "%BOSS%", "%COUNT%" },
-            new String[] { player, data.getBoss(), String.valueOf(data.getCount()) }
+            data.isPersonalBest() == Boolean.TRUE ? config.killCountBestTimeMessage() : config.killCountMessage(),
+            new String[] { "%USERNAME%", "%BOSS%", "%COUNT%", "%TIME%" },
+            new String[] { player, data.getBoss(), String.valueOf(data.getCount()), time }
         );
 
         // Prepare body

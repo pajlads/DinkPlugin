@@ -797,6 +797,17 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "killCountBestTimeMessage",
+        name = "PB Notification Message",
+        description = "The message to be sent to the webhook upon a personal best time. Use %USERNAME% to insert your username, %BOSS% to insert the NPC name, %COUNT% to insert the kill count, %TIME% to insert the completion time",
+        position = 96,
+        section = killCountSection
+    )
+    default String killCountBestTimeMessage() {
+        return "%USERNAME% has defeated %BOSS% with a new personal best time of %TIME% and a completion count of %COUNT%";
+    }
+
+    @ConfigItem(
         keyName = "combatTaskEnabled",
         name = "Enable Combat Tasks",
         description = "Enable notifications for combat achievements",
