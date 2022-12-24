@@ -128,7 +128,7 @@ class MatchersTest {
     @ParameterizedTest(name = "Kill count message should trigger on: {0}")
     @ArgumentsSource(KillCountProvider.class)
     void killCountRegexFindsMatch(String message, Pair<String, Integer> expected) {
-        assertEquals(expected, KillCountNotifier.parse(message).orElse(null));
+        assertEquals(expected, KillCountNotifier.parseBoss(message).orElse(null));
     }
 
     @ParameterizedTest(name = "Kill count message should not trigger on: {0}")
@@ -139,7 +139,7 @@ class MatchersTest {
         }
     )
     void killCountRegexDoesNotMatch(String message) {
-        assertFalse(KillCountNotifier.parse(message).isPresent());
+        assertFalse(KillCountNotifier.parseBoss(message).isPresent());
     }
 
     private static class KillCountProvider implements ArgumentsProvider {

@@ -4,8 +4,6 @@ import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
-import lombok.AccessLevel;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Singleton;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
@@ -21,13 +20,15 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 @Slf4j
 @Singleton
 public class KillCountNotifier extends BaseNotifier {
     private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion)\\s?count is: (?<value>\\d+)\\b");
     private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>\\d+)\\b");
+    private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(.\\d+)?)\\.?", Pattern.CASE_INSENSITIVE);
 
-    @Setter(AccessLevel.PRIVATE)
     private BossNotificationData data;
 
     @Override
@@ -45,15 +46,8 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     public void onGameMessage(String message) {
-        if (isEnabled()) {
-            if (data == null) {
-                parse(message)
-                    .map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message))
-                    .ifPresent(this::setData);
-            } else {
-                // TODO: check for fight duration
-            }
-        }
+        if (isEnabled())
+            parse(message).ifPresent(this::updateData);
     }
 
     public void onTick() {
@@ -64,7 +58,8 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private void handleKill(BossNotificationData data) {
-        if (!checkKillInterval(data.getCount())) return;
+        if (data.getBoss() == null || data.getCount() == null || !checkKillInterval(data.getCount(), data.isPersonalBest()))
+            return;
 
         // Assemble content
         String player = Utils.getPlayerName(client);
@@ -101,7 +96,10 @@ public class KillCountNotifier extends BaseNotifier {
         createMessage(screenshot, body.build());
     }
 
-    private boolean checkKillInterval(int killCount) {
+    private boolean checkKillInterval(int killCount, @Nullable Boolean pb) {
+        if (pb == Boolean.TRUE && config.killCountNotifyBestTime())
+            return true;
+
         if (killCount == 1 && config.killCountNotifyInitial())
             return true;
 
@@ -109,8 +107,39 @@ public class KillCountNotifier extends BaseNotifier {
         return interval <= 1 || killCount % interval == 0;
     }
 
+    private void updateData(BossNotificationData updated) {
+        if (data == null) {
+            this.data = updated;
+        } else {
+            this.data = new BossNotificationData(
+                defaultIfNull(updated.getBoss(), data.getBoss()),
+                defaultIfNull(updated.getCount(), data.getCount()),
+                defaultIfNull(updated.getGameMessage(), data.getGameMessage()),
+                defaultIfNull(updated.getTime(), data.getTime()),
+                defaultIfNull(updated.isPersonalBest(), data.isPersonalBest())
+            );
+        }
+    }
+
+    private static Optional<BossNotificationData> parse(String message) {
+        return parseBoss(message)
+            .map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null))
+            .map(Optional::of)
+            .orElseGet(() -> parseTime(message).map(time -> new BossNotificationData(null, null, null, time.getLeft(), time.getRight())));
+    }
+
+    private static Optional<Pair<Duration, Boolean>> parseTime(String message) {
+        Matcher matcher = TIME_REGEX.matcher(message);
+        if (matcher.find()) {
+            Duration duration = Utils.parseTime(matcher.group("time"));
+            boolean pb = message.contains("(new personal best)");
+            return Optional.of(Pair.of(duration, pb));
+        }
+        return Optional.empty();
+    }
+
     @VisibleForTesting
-    static Optional<Pair<String, Integer>> parse(String message) {
+    static Optional<Pair<String, Integer>> parseBoss(String message) {
         Matcher primary = PRIMARY_REGEX.matcher(message);
         Matcher secondary; // lazy init
         if (primary.find()) {
