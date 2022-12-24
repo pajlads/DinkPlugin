@@ -137,6 +137,78 @@ class KillCountNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyGauntletPb() {
+        // more config
+        when(config.killCountInterval()).thenReturn(99);
+
+        // fire events
+        notifier.onGameMessage("Challenge duration: 10:25 (new personal best).");
+        String gameMessage = "Your Gauntlet completion count is: 10.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .content(PLAYER_NAME + " has defeated Crystalline Hunllef with a new personal best time of 00:10:25.000 and a completion count of 10")
+                .extra(new BossNotificationData("Crystalline Hunllef", 10, gameMessage, Duration.ofMinutes(10).plusSeconds(25), true))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyTemporossPb() {
+        // more config
+        when(config.killCountInterval()).thenReturn(99);
+
+        // fire events
+        notifier.onGameMessage("Subdued in 6:30 (new personal best).");
+        String gameMessage = "Your Tempoross kill count is: 69.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .content(PLAYER_NAME + " has defeated Tempoross with a new personal best time of 00:06:30.000 and a completion count of 69")
+                .extra(new BossNotificationData("Tempoross", 69, gameMessage, Duration.ofMinutes(6).plusSeconds(30), true))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyTombsPb() {
+        // more config
+        when(config.killCountInterval()).thenReturn(99);
+
+        // fire events
+        notifier.onGameMessage("Tombs of Amascut total completion time: 25:00 (new personal best)");
+        String gameMessage = "Your completed Tombs of Amascut: Expert Mode count is: 8.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .content(PLAYER_NAME + " has defeated Tombs of Amascut: Expert Mode with a new personal best time of 00:25:00.000 and a completion count of 8")
+                .extra(new BossNotificationData("Tombs of Amascut: Expert Mode", 8, gameMessage, Duration.ofMinutes(25), true))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyNoPb() {
         // more config
         when(config.killCountInterval()).thenReturn(6);
