@@ -22,6 +22,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,6 +42,8 @@ import java.util.stream.Stream;
 import static net.runelite.api.ItemID.*;
 
 public class Utils {
+
+    private static final Pattern TIME_PATTERN = Pattern.compile("\\b(?:(?<hours>\\d+):)?(?<minutes>\\d+):(?<seconds>\\d{2})(?:\\.(?<fractional>\\d{2}))?\\b");
 
     private static final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
 
@@ -183,6 +186,28 @@ public class Utils {
             .map(NotificationBody.UrlEmbed::new)
             .map(NotificationBody.Embed::new)
             .collect(Collectors.toList());
+    }
+
+    public static Duration parseTime(String in) {
+        Matcher m = TIME_PATTERN.matcher(in);
+        if (!m.find()) return Duration.ZERO;
+
+        int minutes = Integer.parseInt(m.group("minutes"));
+        int seconds = Integer.parseInt(m.group("seconds"));
+
+        Duration d = Duration.ofMinutes(minutes).plusSeconds(seconds);
+
+        String hours = m.group("hours");
+        if (hours != null) {
+            d = d.plusHours(Integer.parseInt(hours));
+        }
+
+        String fractional = m.group("fractional");
+        if (fractional != null) {
+            d = d.plusMillis(Integer.parseInt(fractional) * 10L);
+        }
+
+        return d;
     }
 
     // Credit to: https://github.com/oliverpatrick/Enhanced-Discord-Notifications/blob/master/src/main/java/com/enhanceddiscordnotifications/EnhancedDiscordNotificationsPlugin.java

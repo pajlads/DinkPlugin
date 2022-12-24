@@ -11,12 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.time.Duration;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 public class SpeedrunNotifier extends BaseNotifier {
-    private static final Pattern TIME_PATTERN = Pattern.compile("(?<minutes>\\d+):(?<seconds>\\d{2})\\.(?<fractional>\\d{2})");
     static final @VisibleForTesting int SPEEDRUN_COMPLETED_GROUP_ID = 781;
     static final @VisibleForTesting int SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID = 4;
     static final @VisibleForTesting int SPEEDRUN_COMPLETED_DURATION_CHILD_ID = 10;
@@ -46,8 +43,8 @@ public class SpeedrunNotifier extends BaseNotifier {
     }
 
     private void attemptNotify(String questName, String duration, String pb) {
-        Duration bestTime = parseTime(pb);
-        Duration currentTime = parseTime(duration);
+        Duration bestTime = Utils.parseTime(pb);
+        Duration currentTime = Utils.parseTime(duration);
         boolean isPb = bestTime.compareTo(currentTime) >= 0;
         if (!isPb && config.speedrunPBOnly()) {
             return;
@@ -66,15 +63,5 @@ public class SpeedrunNotifier extends BaseNotifier {
             .screenshotFile("speedrunImage.png")
             .type(NotificationType.SPEEDRUN)
             .build());
-    }
-
-    private static Duration parseTime(String in) {
-        Matcher m = TIME_PATTERN.matcher(in);
-        if (!m.find()) return Duration.ofMillis(0);
-        int minutes = Integer.parseInt(m.group("minutes"));
-        int seconds = Integer.parseInt(m.group("seconds"));
-        int fractional = Integer.parseInt(m.group("fractional"));
-        // 0.001
-        return Duration.ofMillis(10L * (100L * (60L * minutes + seconds) + fractional));
     }
 }
