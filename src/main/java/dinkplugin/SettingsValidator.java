@@ -42,7 +42,8 @@ class SettingsValidator {
 
         if ("collectionLogEnabled".equals(key) && "true".equals(value)) {
             clientThread.invokeLater(() -> {
-                if (client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) % 2 != 1) {
+                int colLogOption = client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION);
+                if (colLogOption != 1 && colLogOption != 3) {
                     plugin.addChatWarning(CollectionNotifier.ADDITION_WARNING);
                 }
             });
@@ -54,7 +55,8 @@ class SettingsValidator {
             warnForGameSetting(CombatTaskNotifier.REPEAT_WARNING);
         }
 
-        if (event.getVarbitId() == Varbits.COLLECTION_LOG_NOTIFICATION && event.getValue() % 2 != 1 && config.notifyCollectionLog()) {
+        int value = event.getValue();
+        if (event.getVarbitId() == Varbits.COLLECTION_LOG_NOTIFICATION && value != 1 && value != 3 && config.notifyCollectionLog()) {
             warnForGameSetting(CollectionNotifier.ADDITION_WARNING);
         }
     }
