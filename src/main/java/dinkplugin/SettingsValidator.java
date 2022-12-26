@@ -33,7 +33,7 @@ class SettingsValidator {
 
         if ("combatTaskEnabled".equals(key) && "true".equals(value)) {
             clientThread.invokeLater(() -> {
-                if (client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP) > 0) {
+                if (isRepeatPopupInvalid(client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP))) {
                     plugin.addChatWarning(CombatTaskNotifier.REPEAT_WARNING);
                 }
             });
@@ -42,8 +42,7 @@ class SettingsValidator {
 
         if ("collectionLogEnabled".equals(key) && "true".equals(value)) {
             clientThread.invokeLater(() -> {
-                int colLogOption = client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION);
-                if (colLogOption != 1 && colLogOption != 3) {
+                if (isCollectionLogInvalid(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION))) {
                     plugin.addChatWarning(CollectionNotifier.ADDITION_WARNING);
                 }
             });
@@ -51,12 +50,13 @@ class SettingsValidator {
     }
 
     void onVarbitChanged(VarbitChanged event) {
-        if (event.getVarbitId() == CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP && event.getValue() > 0 && config.notifyCombatTask()) {
+        int value = event.getValue();
+
+        if (event.getVarbitId() == CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP && isRepeatPopupInvalid(value) && config.notifyCombatTask()) {
             warnForGameSetting(CombatTaskNotifier.REPEAT_WARNING);
         }
 
-        int value = event.getValue();
-        if (event.getVarbitId() == Varbits.COLLECTION_LOG_NOTIFICATION && value != 1 && value != 3 && config.notifyCollectionLog()) {
+        if (event.getVarbitId() == Varbits.COLLECTION_LOG_NOTIFICATION && isCollectionLogInvalid(value) && config.notifyCollectionLog()) {
             warnForGameSetting(CollectionNotifier.ADDITION_WARNING);
         }
     }
@@ -67,5 +67,15 @@ class SettingsValidator {
         } else {
             log.warn(message);
         }
+    }
+
+    private static boolean isCollectionLogInvalid(int varbitValue) {
+        // we require chat notification for collection log notifier
+        return varbitValue != 1 && varbitValue != 3;
+    }
+
+    private static boolean isRepeatPopupInvalid(int varbitValue) {
+        // we discourage repeat notifications for combat task notifier if unintentional
+        return varbitValue > 0;
     }
 }
