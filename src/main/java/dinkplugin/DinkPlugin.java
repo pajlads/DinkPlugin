@@ -106,7 +106,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onChatMessage(ChatMessage message) {
         ChatMessageType msgType = message.getType();
-        String chatMessage = Text.removeTags(message.getMessage());
+        String chatMessage = Text.removeTags(message.getMessage().replace("<br>", "\n")).replace('\u00A0', ' ').trim();
 
         if (msgType == ChatMessageType.GAMEMESSAGE) {
             collectionNotifier.onChatMessage(chatMessage);
