@@ -51,12 +51,14 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     public void onFriendsChatNotification(String message) {
+        // For CoX, Jagex sends duration via FRIENDSCHATNOTIFICATION
         if (message.startsWith("Congratulations - your raid is complete!"))
             this.onGameMessage(message);
     }
 
     public void onTick() {
         if (data != null) {
+            // all data must be sent on the same tick to be included
             handleKill(data);
             reset();
         }
@@ -117,6 +119,9 @@ public class KillCountNotifier extends BaseNotifier {
         if (data == null) {
             this.data = updated;
         } else {
+            // Boss data and timing are sent in separate messages
+            // where the order of the messages differs depending on the boss.
+            // Here, we update data without setting any not-null values back to null.
             this.data = new BossNotificationData(
                 defaultIfNull(updated.getBoss(), data.getBoss()),
                 defaultIfNull(updated.getCount(), data.getCount()),
@@ -128,9 +133,10 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private static Optional<BossNotificationData> parse(String message) {
+        // try to parse kill count or fight duration
         return parseBoss(message)
             .map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null))
-            .map(Optional::of)
+            .map(Optional::of) // hack since Optional#or was added in jdk 9, not 8
             .orElseGet(() -> parseTime(message).map(time -> new BossNotificationData(null, null, null, time.getLeft(), time.getRight())));
     }
 
@@ -138,7 +144,7 @@ public class KillCountNotifier extends BaseNotifier {
         Matcher matcher = TIME_REGEX.matcher(message);
         if (matcher.find()) {
             Duration duration = Utils.parseTime(matcher.group("time"));
-            boolean pb = message.contains("(new personal best)");
+            boolean pb = message.toLowerCase().contains("(new personal best)");
             return Optional.of(Pair.of(duration, pb));
         }
         return Optional.empty();
@@ -161,6 +167,7 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private static Optional<Pair<String, Integer>> result(String boss, String count) {
+        // safely transform (String, String) => (String, Int)
         try {
             return Optional.ofNullable(boss).map(k -> Pair.of(boss, Integer.parseInt(count)));
         } catch (NumberFormatException e) {

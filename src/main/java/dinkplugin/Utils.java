@@ -204,6 +204,7 @@ public class Utils {
         return client.getVarbitValue(ENABLE_PRECISE_TIMING) > 0;
     }
 
+    @NotNull
     public static Duration parseTime(String in) {
         Matcher m = TIME_PATTERN.matcher(in);
         if (!m.find()) return Duration.ZERO;
@@ -228,6 +229,7 @@ public class Utils {
         return d;
     }
 
+    @NotNull
     public static String format(@Nullable Duration duration, boolean precise) {
         Temporal time = ObjectUtils.defaultIfNull(duration, Duration.ZERO).addTo(LocalTime.of(0, 0));
         StringBuilder sb = new StringBuilder();

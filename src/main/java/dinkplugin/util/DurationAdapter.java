@@ -15,7 +15,7 @@ import java.time.format.DateTimeParseException;
  * This adapter exists because GSON does not ship with
  * a module for the Java 8 time API.
  *
- * @see <a href="https://github.com/google/gson/issues/1059">GSON Issue</>
+ * @see <a href="https://github.com/google/gson/issues/1059">GSON Issue</a>
  */
 public class DurationAdapter extends TypeAdapter<Duration> {
     @Override
