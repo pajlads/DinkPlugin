@@ -116,6 +116,10 @@ public class DinkPlugin extends Plugin {
             killCountNotifier.onGameMessage(chatMessage);
             combatTaskNotifier.onGameMessage(chatMessage);
         }
+
+        if (msgType == ChatMessageType.FRIENDSCHATNOTIFICATION) {
+            killCountNotifier.onFriendsChatNotification(chatMessage);
+        }
     }
 
     @Subscribe

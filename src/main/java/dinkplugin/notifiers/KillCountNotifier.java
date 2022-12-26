@@ -50,6 +50,11 @@ public class KillCountNotifier extends BaseNotifier {
             parse(message).ifPresent(this::updateData);
     }
 
+    public void onFriendsChatNotification(String message) {
+        if (message.startsWith("Congratulations - your raid is complete!"))
+            this.onGameMessage(message);
+    }
+
     public void onTick() {
         if (data != null) {
             handleKill(data);

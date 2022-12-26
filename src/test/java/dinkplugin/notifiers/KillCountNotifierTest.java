@@ -204,6 +204,55 @@ class KillCountNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyChambersPb() {
+        // more config
+        when(config.killCountInterval()).thenReturn(99);
+
+        // fire events
+        notifier.onFriendsChatNotification("Congratulations - your raid is complete!\nTeam size: 24+ players Duration: 36:04.20 (new personal best)");
+        String gameMessage = "Your completed Chambers of Xeric count is: 125.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .content(PLAYER_NAME + " has defeated Chambers of Xeric with a new personal best time of 36:04.20 and a completion count of 125")
+                .extra(new BossNotificationData("Chambers of Xeric", 125, gameMessage, Duration.ofMinutes(36).plusSeconds(4).plusMillis(200), true))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyChambersInterval() {
+        // more config
+        when(config.killCountNotifyInitial()).thenReturn(false);
+        when(config.killCountInterval()).thenReturn(25);
+
+        // fire events
+        notifier.onFriendsChatNotification("Congratulations - your raid is complete!\nTeam size: Solo Duration: 46:31.80 Personal best: 40:24.60");
+        String gameMessage = "Your completed Chambers of Xeric count is: 150.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .content(PLAYER_NAME + " has defeated Chambers of Xeric with a completion count of 150")
+                .extra(new BossNotificationData("Chambers of Xeric", 150, gameMessage, Duration.ofMinutes(46).plusSeconds(31).plusMillis(800), false))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyGauntletPb() {
         // more config
         when(config.killCountInterval()).thenReturn(99);
@@ -308,6 +357,21 @@ class KillCountNotifierTest extends MockedNotifierTest {
         String gameMessage = "Your Zulrah kill count is: 12.";
         notifier.onGameMessage(gameMessage);
         notifier.onGameMessage("Fight duration: 0:59.30. Personal best: 0:56.50");
+        notifier.onTick();
+
+        // ensure no message
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreChambersNoPb() {
+        // more config
+        when(config.killCountInterval()).thenReturn(99);
+
+        // fire events
+        notifier.onFriendsChatNotification("Congratulations - your raid is complete!\nTeam size: Solo Duration: 46:31.80 Personal best: 40:24.60");
+        String gameMessage = "Your completed Chambers of Xeric count is: 147.";
+        notifier.onGameMessage(gameMessage);
         notifier.onTick();
 
         // ensure no message
