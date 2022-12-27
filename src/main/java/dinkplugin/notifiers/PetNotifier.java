@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -32,7 +31,7 @@ public class PetNotifier extends BaseNotifier {
         String notifyMessage = config.petNotifyMessage()
             .replace("%USERNAME%", Utils.getPlayerName(client));
 
-        createMessage(DinkPluginConfig::petSendImage, NotificationBody.builder()
+        createMessage(config.petSendImage(), NotificationBody.builder()
             .content(notifyMessage)
             .screenshotFile("petImage.png")
             .type(NotificationType.PET)

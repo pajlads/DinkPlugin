@@ -444,7 +444,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "minLootValue",
         name = "Min Loot value",
-        description = "Minimum value of the loot to notify",
+        description = "The minimum value of an item for a notification to be sent",
         position = 33,
         section = lootSection
     )
@@ -508,10 +508,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "deathEmbedProtected",
+        name = "Embed Kept Items",
+        description = "Whether embeds of the protected items should be sent to the webhook",
+        position = 42,
+        section = deathSection
+    )
+    default boolean deathEmbedKeptItems() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "deathNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 42,
+        position = 43,
         section = deathSection
     )
     default String deathNotifyMessage() {
@@ -522,7 +533,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpEnabled",
         name = "Distinguish PvP deaths",
         description = "Should the plugin use a different message for dying in PvP?",
-        position = 43,
+        position = 44,
         section = deathSection
     )
     default boolean deathNotifPvpEnabled() {
@@ -533,7 +544,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpMessage",
         name = "PvP notification message",
         description = "The message to be sent through the webhook. Use %PKER% to insert the killer, %USERNAME% to insert your username, %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 44,
+        position = 45,
         section = deathSection
     )
     default String deathNotifPvpMessage() {
@@ -653,7 +664,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "clueMinValue",
         name = "Min Value",
-        description = "The minimum value of the items to be shown",
+        description = "The minimum value of the combined items for a notification to be sent",
         position = 73,
         section = clueSection
     )

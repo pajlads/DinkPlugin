@@ -108,13 +108,13 @@ public class ClueNotifier extends BaseNotifier {
         });
 
         if (totalPrice.get() >= config.clueMinValue()) {
+            boolean screenshot = config.clueSendImage() && totalPrice.get() >= config.clueImageMinValue();
             String notifyMessage = StringUtils.replaceEach(
                 config.clueNotifyMessage(),
                 new String[] { "%USERNAME%", "%CLUE%", "%COUNT%", "%TOTAL_VALUE%", "%LOOT%" },
                 new String[] { Utils.getPlayerName(client), clueType, clueCount, QuantityFormatter.quantityToStackSize(totalPrice.get()), lootMessage.toString() }
             );
-            createMessage(
-                config -> config.clueSendImage() && totalPrice.get() >= config.clueImageMinValue(),
+            createMessage(screenshot,
                 NotificationBody.builder()
                     .content(notifyMessage)
                     .extra(new ClueNotificationData(clueType, Integer.parseInt(clueCount), itemStacks))

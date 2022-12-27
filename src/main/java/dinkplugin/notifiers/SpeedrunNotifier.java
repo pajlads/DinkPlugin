@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -61,7 +60,7 @@ public class SpeedrunNotifier extends BaseNotifier {
             new String[] { Utils.getPlayerName(client), questName, duration, pb }
         );
 
-        createMessage(DinkPluginConfig::speedrunSendImage, NotificationBody.builder()
+        createMessage(config.speedrunSendImage(), NotificationBody.builder()
             .content(notifyMessage)
             .extra(new SpeedrunNotificationData(questName, bestTime.toString(), currentTime.toString()))
             .screenshotFile("speedrunImage.png")

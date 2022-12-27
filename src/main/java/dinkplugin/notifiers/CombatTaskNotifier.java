@@ -1,11 +1,11 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.Utils;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.CombatAchievementData;
+import net.runelite.api.annotations.Varbit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -16,6 +16,10 @@ import java.util.regex.Pattern;
 
 public class CombatTaskNotifier extends BaseNotifier {
     private static final Pattern ACHIEVEMENT_PATTERN = Pattern.compile("Congratulations, you've completed an? (?<tier>\\w+) combat task: (?<task>.+)\\.");
+    public static final String REPEAT_WARNING = "Combat Task notifier will fire duplicates unless you disable the game setting: Combat Achievement Tasks - Repeat completion";
+
+    @Varbit
+    public static final int COMBAT_TASK_REPEAT_POPUP = 12456;
 
     @Override
     public boolean isEnabled() {
@@ -43,7 +47,7 @@ public class CombatTaskNotifier extends BaseNotifier {
             new String[] { player, tier.toString(), task }
         );
 
-        createMessage(DinkPluginConfig::combatTaskSendImage, NotificationBody.<CombatAchievementData>builder()
+        createMessage(config.combatTaskSendImage(), NotificationBody.<CombatAchievementData>builder()
             .type(NotificationType.COMBAT_ACHIEVEMENT)
             .content(message)
             .playerName(player)

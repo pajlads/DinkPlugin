@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -14,6 +13,7 @@ import java.util.regex.Pattern;
 public class CollectionNotifier extends BaseNotifier {
     @VisibleForTesting
     static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
+    public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
 
     @Override
     public boolean isEnabled() {
@@ -41,7 +41,7 @@ public class CollectionNotifier extends BaseNotifier {
             new String[] { Utils.getPlayerName(client), itemName }
         );
 
-        createMessage(DinkPluginConfig::collectionSendImage, NotificationBody.builder()
+        createMessage(config.collectionSendImage(), NotificationBody.builder()
             .content(notifyMessage)
             .extra(new CollectionNotificationData(itemName))
             .screenshotFile("collectionImage.png")
