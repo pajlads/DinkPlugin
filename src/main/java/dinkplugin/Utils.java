@@ -15,6 +15,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
+import net.runelite.client.util.ColorUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.imageio.ImageIO;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,6 +53,9 @@ import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
 import static net.runelite.api.ItemID.*;
 
 public class Utils {
+
+    public static final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
+    public static final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
 
     private static final Pattern TIME_PATTERN = Pattern.compile("\\b(?:(?<hours>\\d+):)?(?<minutes>\\d+):(?<seconds>\\d{2})(?:\\.(?<fractional>\\d{2}))?\\b");
 
@@ -138,6 +143,11 @@ public class Utils {
 
     public static boolean isSoulWars(Client client) {
         return SOUL_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
+    }
+
+    public static boolean isSettingsOpen(@NotNull Client client) {
+        Widget widget = client.getWidget(WidgetInfo.SETTINGS_INIT);
+        return widget != null && !widget.isSelfHidden();
     }
 
     public static String getPlayerName(Client client) {

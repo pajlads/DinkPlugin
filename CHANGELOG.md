@@ -6,6 +6,7 @@
 - Minor: Add clue and loot notifier setting to skip screenshots for low item values. (#98)
 - Minor: Add level up setting to skip notifications below a specified level. (#97)
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
+- Minor: Add warning logs for improper runescape settings that impact notifiers. (#92)
 - Bugfix: Ensure boss name is included in boss slayer messages. (#88)
 - Dev: Add more plugin-hub search tags (#101)
 - Dev: Simplify notifier send image evaluation. (#102)
