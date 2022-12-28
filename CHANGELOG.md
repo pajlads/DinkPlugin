@@ -7,6 +7,7 @@
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
 - Minor: Add warning logs for improper runescape settings that impact notifiers. (#92)
 - Bugfix: Ensure boss name is included in boss slayer messages. (#88)
+- Dev: Bump mockito version to 4.11.0. (#107)
 - Dev: Add more plugin-hub search tags (#101)
 - Dev: Simplify notifier send image evaluation. (#102)
 - Dev: Bump mockito version to 4.10.0. (#95)
