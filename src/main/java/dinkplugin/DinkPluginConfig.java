@@ -102,12 +102,20 @@ public interface DinkPluginConfig extends Config {
     )
     String diarySection = "Achievement Diary";
 
+    @ConfigSection(
+        name = "Advanced",
+        description = "Do not modify without fully understanding these settings",
+        position = 1000,
+        closedByDefault = true
+    )
+    String advancedSection = "Advanced";
+
     @ConfigItem(
         keyName = "maxRetries",
         name = "Webhook Max Retries",
         description = "The maximum number of retry attempts for sending a webhook message. Negative implies no attempts",
-        position = -100,
-        hidden = true
+        position = 1000,
+        section = advancedSection
     )
     default int maxRetries() {
         return 3;
@@ -117,11 +125,22 @@ public interface DinkPluginConfig extends Config {
         keyName = "baseRetryDelay",
         name = "Webhook Retry Base Delay",
         description = "The base number of milliseconds to wait before attempting a retry for a webhook message",
-        position = -99,
-        hidden = true
+        position = 1001,
+        section = advancedSection
     )
-    default long baseRetryDelay() {
-        return 2000L;
+    default int baseRetryDelay() {
+        return 2000;
+    }
+
+    @ConfigItem(
+        keyName = "imageWriteTimeout",
+        name = "Image Upload Timeout",
+        description = "The maximum number of seconds that uploading a screenshot can take before timing out",
+        position = 1002,
+        section = advancedSection
+    )
+    default int imageWriteTimeout() {
+        return 30; // elevated from okhttp default of 10
     }
 
     @ConfigItem(

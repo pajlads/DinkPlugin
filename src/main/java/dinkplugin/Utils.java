@@ -16,6 +16,8 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.util.ColorUtil;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -208,6 +210,13 @@ public class Utils {
             .map(NotificationBody.UrlEmbed::new)
             .map(NotificationBody.Embed::new)
             .collect(Collectors.toList());
+    }
+
+    public static boolean hasImage(@NotNull MultipartBody body) {
+        return body.parts().stream().anyMatch(part -> {
+            MediaType type = part.body().contentType();
+            return type != null && "image".equals(type.type());
+        });
     }
 
     public static boolean isPreciseTiming(Client client) {
