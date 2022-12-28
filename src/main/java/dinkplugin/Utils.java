@@ -16,6 +16,8 @@ import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.util.ColorUtil;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -193,6 +195,13 @@ public class Utils {
             .map(NotificationBody.UrlEmbed::new)
             .map(NotificationBody.Embed::new)
             .collect(Collectors.toList());
+    }
+
+    public static boolean hasImage(@NotNull MultipartBody body) {
+        return body.parts().stream().anyMatch(part -> {
+            MediaType type = part.body().contentType();
+            return type != null && "image".equals(type.type());
+        });
     }
 
     // Credit to: https://github.com/oliverpatrick/Enhanced-Discord-Notifications/blob/master/src/main/java/com/enhanceddiscordnotifications/EnhancedDiscordNotificationsPlugin.java
