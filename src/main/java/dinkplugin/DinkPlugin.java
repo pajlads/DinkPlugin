@@ -24,6 +24,7 @@ import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.client.RuneLite;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
@@ -47,6 +48,7 @@ import javax.inject.Inject;
         "diary", "combat achievements", "combat task" }
 )
 public class DinkPlugin extends Plugin {
+    public static final String USER_AGENT = RuneLite.USER_AGENT + " (Dink/1.x)";
 
     private @Inject ChatMessageManager chatManager;
 
