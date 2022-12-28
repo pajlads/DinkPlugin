@@ -24,13 +24,18 @@ import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.client.RuneLite;
+import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
+import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
@@ -39,9 +44,15 @@ import javax.inject.Inject;
 @PluginDescriptor(
     name = "Dink",
     description = "A notifier for sending webhooks to Discord or other custom destinations",
-    tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun" }
+    tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun",
+        "diary", "combat achievements", "combat task" }
 )
 public class DinkPlugin extends Plugin {
+    public static final String USER_AGENT = RuneLite.USER_AGENT + " (Dink/1.x)";
+
+    private @Inject ChatMessageManager chatManager;
+
+    private @Inject SettingsValidator validator;
 
     private @Inject CollectionNotifier collectionNotifier;
     private @Inject PetNotifier petNotifier;
@@ -74,6 +85,11 @@ public class DinkPlugin extends Plugin {
     @Provides
     DinkPluginConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(DinkPluginConfig.class);
+    }
+
+    @Subscribe
+    public void onConfigChanged(ConfigChanged event) {
+        validator.onConfigChanged(event);
     }
 
     @Subscribe
@@ -142,6 +158,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged event) {
+        validator.onVarbitChanged(event);
         diaryNotifier.onVarbitChanged(event);
     }
 
@@ -151,5 +168,20 @@ public class DinkPlugin extends Plugin {
         clueNotifier.onWidgetLoaded(event);
         speedrunNotifier.onWidgetLoaded(event);
         lootNotifier.onWidgetLoaded(event);
+    }
+
+    public void addChatWarning(String message) {
+        String formatted = String.format("[%s] %s: %s",
+            ColorUtil.wrapWithColorTag(getName(), Utils.PINK),
+            "Warning",
+            ColorUtil.wrapWithColorTag(message, Utils.RED)
+        );
+
+        chatManager.queue(
+            QueuedMessage.builder()
+                .type(ChatMessageType.CONSOLE)
+                .runeLiteFormattedMessage(formatted)
+                .build()
+        );
     }
 }

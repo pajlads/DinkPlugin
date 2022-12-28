@@ -102,12 +102,20 @@ public interface DinkPluginConfig extends Config {
     )
     String diarySection = "Achievement Diary";
 
+    @ConfigSection(
+        name = "Advanced",
+        description = "Do not modify without fully understanding these settings",
+        position = 1000,
+        closedByDefault = true
+    )
+    String advancedSection = "Advanced";
+
     @ConfigItem(
         keyName = "maxRetries",
         name = "Webhook Max Retries",
         description = "The maximum number of retry attempts for sending a webhook message. Negative implies no attempts",
-        position = -100,
-        hidden = true
+        position = 1000,
+        section = advancedSection
     )
     default int maxRetries() {
         return 3;
@@ -117,11 +125,22 @@ public interface DinkPluginConfig extends Config {
         keyName = "baseRetryDelay",
         name = "Webhook Retry Base Delay",
         description = "The base number of milliseconds to wait before attempting a retry for a webhook message",
-        position = -99,
-        hidden = true
+        position = 1001,
+        section = advancedSection
     )
-    default long baseRetryDelay() {
-        return 2000L;
+    default int baseRetryDelay() {
+        return 2000;
+    }
+
+    @ConfigItem(
+        keyName = "imageWriteTimeout",
+        name = "Image Upload Timeout",
+        description = "The maximum number of seconds that uploading a screenshot can take before timing out",
+        position = 1002,
+        section = advancedSection
+    )
+    default int imageWriteTimeout() {
+        return 30; // elevated from okhttp default of 10
     }
 
     @ConfigItem(
@@ -368,10 +387,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "levelMinValue",
+        name = "Minimum Skill Level",
+        description = "The minimum skill level required to send a notification. Useful for filtering out low-level notifications",
+        position = 23,
+        section = levelSection
+    )
+    default int levelMinValue() {
+        return 1;
+    }
+
+    @ConfigItem(
         keyName = "levelNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %SKILL% to insert the levelled skill(s)",
-        position = 23,
+        position = 24,
         section = levelSection
     )
     default String levelNotifyMessage() {
@@ -414,7 +444,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "minLootValue",
         name = "Min Loot value",
-        description = "Minimum value of the loot to notify",
+        description = "The minimum value of an item for a notification to be sent",
         position = 33,
         section = lootSection
     )
@@ -423,10 +453,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootImageMinValue",
+        name = "Screenshot Min Value",
+        description = "The minimum combined loot value to send a screenshot. Must have 'Send Image' enabled",
+        position = 34,
+        section = lootSection
+    )
+    default int lootImageMinValue() {
+        return 0;
+    }
+
+    @ConfigItem(
         keyName = "lootIncludePlayer",
         name = "Include PK Loot",
         description = "Allow notifications for loot from player kills",
-        position = 34,
+        position = 35,
         section = lootSection
     )
     default boolean includePlayerLoot() {
@@ -437,7 +478,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "lootNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %LOOT% to insert the loot and %SOURCE% to show the source of the loot",
-        position = 35,
+        position = 36,
         section = lootSection
     )
     default String lootNotifyMessage() {
@@ -467,10 +508,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "deathEmbedProtected",
+        name = "Embed Kept Items",
+        description = "Whether embeds of the protected items should be sent to the webhook",
+        position = 42,
+        section = deathSection
+    )
+    default boolean deathEmbedKeptItems() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "deathNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 42,
+        position = 43,
         section = deathSection
     )
     default String deathNotifyMessage() {
@@ -481,7 +533,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpEnabled",
         name = "Distinguish PvP deaths",
         description = "Should the plugin use a different message for dying in PvP?",
-        position = 43,
+        position = 44,
         section = deathSection
     )
     default boolean deathNotifPvpEnabled() {
@@ -492,7 +544,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpMessage",
         name = "PvP notification message",
         description = "The message to be sent through the webhook. Use %PKER% to insert the killer, %USERNAME% to insert your username, %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 44,
+        position = 45,
         section = deathSection
     )
     default String deathNotifPvpMessage() {
@@ -612,7 +664,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "clueMinValue",
         name = "Min Value",
-        description = "The minimum value of the items to be shown",
+        description = "The minimum value of the combined items for a notification to be sent",
         position = 73,
         section = clueSection
     )
@@ -621,10 +673,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "clueImageMinValue",
+        name = "Screenshot Min Value",
+        description = "The minimum combined value of the items to send a screenshot. Must have 'Send Image' enabled",
+        position = 74,
+        section = clueSection
+    )
+    default int clueImageMinValue() {
+        return 0;
+    }
+
+    @ConfigItem(
         keyName = "clueNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %CLUE% to insert the clue type, %LOOT% to show the loot obtained and %COUNT% to insert how many of those clue types you have completed",
-        position = 74,
+        position = 75,
         section = clueSection
     )
     default String clueNotifyMessage() {

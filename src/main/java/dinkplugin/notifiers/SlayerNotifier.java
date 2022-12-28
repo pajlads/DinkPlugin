@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -14,6 +13,7 @@ import java.util.regex.Pattern;
 
 @Singleton
 public class SlayerNotifier extends BaseNotifier {
+    private static final Pattern BOSS_REGEX = Pattern.compile("You are granted .+ Slayer XP for completing your boss task against(?: the)? (?<name>.+)\\.$");
     @VisibleForTesting
     static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
     private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
@@ -32,14 +32,28 @@ public class SlayerNotifier extends BaseNotifier {
     }
 
     public void onChatMessage(String chatMessage) {
-        if (isEnabled()
-            && (chatMessage.contains("Slayer master")
-            || chatMessage.contains("Slayer Master")
-            || chatMessage.contains("completed your task!")
-        )) {
+        if (isEnabled()) {
+            if (slayerTask.isEmpty()) {
+                Matcher bossMatcher = BOSS_REGEX.matcher(chatMessage);
+                if (bossMatcher.find()) {
+                    String name = bossMatcher.group("name");
+                    this.slayerTask = name.endsWith(" boss") ? name.substring(0, name.length() - " boss".length()) : name;
+                    return;
+                }
+            }
+
             Matcher taskMatcher = SLAYER_TASK_REGEX.matcher(chatMessage);
             if (taskMatcher.find()) {
-                this.slayerTask = taskMatcher.group("task");
+                String task = taskMatcher.group("task");
+                if (slayerTask.isEmpty()) {
+                    this.slayerTask = task;
+                } else {
+                    this.slayerTask = String.format("%s %s", task.substring(0, task.indexOf(' ')), slayerTask);
+                }
+                return;
+            }
+
+            if (slayerTask.isEmpty()) {
                 return;
             }
 
@@ -85,7 +99,7 @@ public class SlayerNotifier extends BaseNotifier {
                 new String[] { Utils.getPlayerName(client), slayerTask, slayerCompleted, slayerPoints }
             );
 
-            createMessage(DinkPluginConfig::slayerSendImage, NotificationBody.builder()
+            createMessage(config.slayerSendImage(), NotificationBody.builder()
                 .content(notifyMessage)
                 .extra(new SlayerNotificationData(slayerTask, slayerCompleted, slayerPoints))
                 .screenshotFile("slayerImage.png")

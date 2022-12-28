@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -41,7 +40,7 @@ public class QuestNotifier extends BaseNotifier {
             new String[] { Utils.getPlayerName(client), parsed }
         );
 
-        createMessage(DinkPluginConfig::questSendImage, NotificationBody.builder()
+        createMessage(config.questSendImage(), NotificationBody.builder()
             .content(notifyMessage)
             .extra(new QuestNotificationData(parsed))
             .screenshotFile("questImage.png")

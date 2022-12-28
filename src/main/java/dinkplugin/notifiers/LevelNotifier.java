@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.DinkPluginConfig;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.Utils;
@@ -115,7 +114,7 @@ public class LevelNotifier extends BaseNotifier {
             new String[] { Utils.getPlayerName(client), skillMessage.toString() }
         );
 
-        createMessage(DinkPluginConfig::levelSendImage, NotificationBody.builder()
+        createMessage(config.levelSendImage(), NotificationBody.builder()
             .content(fullNotification)
             .extra(new LevelNotificationData(lSkills, currentLevels))
             .screenshotFile("levelImage.png")
@@ -124,6 +123,8 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     private boolean checkLevelInterval(int level) {
+        if (level < config.levelMinValue())
+            return false;
         int interval = config.levelInterval();
         return interval <= 1
             || level == 99
