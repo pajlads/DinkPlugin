@@ -7,7 +7,7 @@
 - Minor: Add level up setting to skip notifications below a specified level. (#97)
 - Minor: Retry failed webhook messages with exponential backoff. (#94)
 - Minor: Add warning logs for improper runescape settings that impact notifiers. (#92)
-- Bugfix: Track Unsired drops for loot notifier. (#89)
+- Bugfix: Track Unsired drops for loot notifier. This is still experimental for wider testing - please report any problems to our [issue tracker](https://github.com/pajlads/DinkPlugin/issues) (#89)
 - Bugfix: Reduce timeouts from uploading screenshots on slow connections. (#96)
 - Bugfix: Ensure boss name is included in boss slayer messages. (#88)
 - Dev: Bump mockito version to 4.11.0. (#107)
