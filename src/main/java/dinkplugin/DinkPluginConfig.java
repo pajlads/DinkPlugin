@@ -783,10 +783,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "killCountPB",
+        name = "Personal Best",
+        description = "Notify on achieving a new personal best time",
+        position = 93,
+        section = killCountSection
+    )
+    default boolean killCountNotifyBestTime() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "killCountInterval",
         name = "Kill Count Interval",
         description = "Interval between when a notification should be sent",
-        position = 93,
+        position = 94,
         section = killCountSection
     )
     default int killCountInterval() {
@@ -797,11 +808,22 @@ public interface DinkPluginConfig extends Config {
         keyName = "killCountMessage",
         name = "Notification Message",
         description = "The message to be sent to the webhook. Use %USERNAME% to insert your username, %BOSS% to insert the NPC name, %COUNT% to insert the kill count",
-        position = 94,
+        position = 95,
         section = killCountSection
     )
     default String killCountMessage() {
         return "%USERNAME% has defeated %BOSS% with a completion count of %COUNT%";
+    }
+
+    @ConfigItem(
+        keyName = "killCountBestTimeMessage",
+        name = "PB Notification Message",
+        description = "The message to be sent to the webhook upon a personal best time. Use %USERNAME% to insert your username, %BOSS% to insert the NPC name, %COUNT% to insert the kill count, %TIME% to insert the completion time",
+        position = 96,
+        section = killCountSection
+    )
+    default String killCountBestTimeMessage() {
+        return "%USERNAME% has defeated %BOSS% with a new personal best time of %TIME% and a completion count of %COUNT%";
     }
 
     @ConfigItem(
