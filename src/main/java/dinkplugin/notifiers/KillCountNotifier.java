@@ -65,14 +65,20 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private void handleKill(BossNotificationData data) {
-        if (data.getBoss() == null || data.getCount() == null || !checkKillInterval(data.getCount(), data.isPersonalBest()))
+        // ensure data is present
+        if (data.getBoss() == null || data.getCount() == null)
+            return;
+
+        // ensure interval met or pb, depending on config
+        if (!checkKillInterval(data.getCount(), data.isPersonalBest()))
             return;
 
         // Assemble content
+        boolean isPb = data.isPersonalBest() == Boolean.TRUE;
         String player = Utils.getPlayerName(client);
         String time = Utils.format(data.getTime(), Utils.isPreciseTiming(client));
         String content = StringUtils.replaceEach(
-            data.isPersonalBest() == Boolean.TRUE ? config.killCountBestTimeMessage() : config.killCountMessage(),
+            isPb ? config.killCountBestTimeMessage() : config.killCountMessage(),
             new String[] { "%USERNAME%", "%BOSS%", "%COUNT%", "%TIME%" },
             new String[] { player, data.getBoss(), String.valueOf(data.getCount()), time }
         );
@@ -133,11 +139,10 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private static Optional<BossNotificationData> parse(String message) {
-        // try to parse kill count or fight duration
-        return parseBoss(message)
-            .map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null))
-            .map(Optional::of) // hack since Optional#or was added in jdk 9, not 8
-            .orElseGet(() -> parseTime(message).map(time -> new BossNotificationData(null, null, null, time.getLeft(), time.getRight())));
+        Optional<Pair<String, Integer>> boss = parseBoss(message);
+        if (boss.isPresent())
+            return boss.map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null));
+        return parseTime(message).map(t -> new BossNotificationData(null, null, null, t.getLeft(), t.getRight()));
     }
 
     private static Optional<Pair<Duration, Boolean>> parseTime(String message) {
