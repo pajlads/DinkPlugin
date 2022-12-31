@@ -2,7 +2,7 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
-import dinkplugin.Utils;
+import dinkplugin.util.Utils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.regex.Pattern;

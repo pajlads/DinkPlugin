@@ -2,7 +2,8 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
-import dinkplugin.Utils;
+import dinkplugin.util.QuestUtils;
+import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.QuestNotificationData;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
@@ -33,7 +34,7 @@ public class QuestNotifier extends BaseNotifier {
     }
 
     private void handleNotify(String questText) {
-        String parsed = Utils.parseQuestWidget(questText);
+        String parsed = QuestUtils.parseQuestWidget(questText);
         String notifyMessage = StringUtils.replaceEach(
             config.questNotifyMessage(),
             new String[] { "%USERNAME%", "%QUEST%" },

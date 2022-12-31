@@ -13,6 +13,7 @@ import dinkplugin.notifiers.PetNotifier;
 import dinkplugin.notifiers.QuestNotifier;
 import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
+import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.events.ActorDeath;

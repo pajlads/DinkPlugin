@@ -1,10 +1,12 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.Utils;
+import dinkplugin.util.ItemUtils;
+import dinkplugin.util.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.WorldUtils;
 import net.runelite.api.Actor;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
@@ -52,7 +54,7 @@ public class DeathNotifier extends BaseNotifier {
 
     @Override
     public boolean isEnabled() {
-        return config.notifyDeath() && super.isEnabled() && !Utils.isSafeArea(client);
+        return config.notifyDeath() && super.isEnabled() && !WorldUtils.isSafeArea(client);
     }
 
     @Override
@@ -79,7 +81,7 @@ public class DeathNotifier extends BaseNotifier {
     private void handleNotify() {
         Actor pker = identifyPker();
 
-        Collection<Item> items = Utils.getItems(client);
+        Collection<Item> items = ItemUtils.getItems(client);
         List<Pair<Item, Long>> itemsByPrice = getPricedItems(itemManager, items);
 
         int keepCount = getKeepCount();
@@ -104,11 +106,11 @@ public class DeathNotifier extends BaseNotifier {
         List<SerializedItemStack> topLostStacks = getTopLostStacks(itemManager, lostItems, topLostItemIds);
         List<SerializedItemStack> keptStacks = keptItems.stream()
             .map(Pair::getKey)
-            .map(item -> Utils.stackFromItem(itemManager, item))
+            .map(item -> ItemUtils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
         List<NotificationBody.Embed> keptItemEmbeds;
         if (config.deathEmbedKeptItems()) {
-            keptItemEmbeds = Utils.buildEmbeds(
+            keptItemEmbeds = ItemUtils.buildEmbeds(
                 keptItems.stream()
                     .map(Pair::getKey)
                     .mapToInt(Item::getId)
@@ -175,11 +177,11 @@ public class DeathNotifier extends BaseNotifier {
     @Nullable
     private Player identifyPker() {
         // cannot be pk'd in safe zone
-        if (Utils.isPvpSafeZone(client))
+        if (WorldUtils.isPvpSafeZone(client))
             return null;
 
         // must be in wildness or pvp world to be pk'd
-        if (client.getVarbitValue(Varbits.IN_WILDERNESS) <= 0 && !Utils.isPvpWorld(client.getWorldType()))
+        if (client.getVarbitValue(Varbits.IN_WILDERNESS) <= 0 && !WorldUtils.isPvpWorld(client.getWorldType()))
             return null;
 
         Player localPlayer = client.getLocalPlayer();
@@ -208,7 +210,7 @@ public class DeathNotifier extends BaseNotifier {
     @NotNull
     private static List<Pair<Item, Long>> getPricedItems(ItemManager itemManager, Collection<Item> items) {
         return items.stream()
-            .map(item -> Pair.of(item, Utils.getPrice(itemManager, item.getId()) * item.getQuantity()))
+            .map(item -> Pair.of(item, ItemUtils.getPrice(itemManager, item.getId()) * item.getQuantity()))
             .sorted((a, b) -> Math.toIntExact(b.getRight() - a.getRight()))
             .collect(Collectors.toList());
     }
@@ -238,7 +240,7 @@ public class DeathNotifier extends BaseNotifier {
                 continue;
             }
 
-            if (kept < keepCount && !Utils.isItemNeverKeptOnDeath(id)) {
+            if (kept < keepCount && !ItemUtils.isItemNeverKeptOnDeath(id)) {
                 keep.add(item);
                 kept++;
             } else {
@@ -260,11 +262,11 @@ public class DeathNotifier extends BaseNotifier {
      */
     @NotNull
     private static List<SerializedItemStack> getTopLostStacks(ItemManager itemManager, List<Pair<Item, Long>> lostItems, int[] topLostItemIds) {
-        Map<Integer, Item> reducedLostItems = Utils.reduceItems(lostItems.stream().map(Pair::getLeft).collect(Collectors.toList()));
+        Map<Integer, Item> reducedLostItems = ItemUtils.reduceItems(lostItems.stream().map(Pair::getLeft).collect(Collectors.toList()));
         return Arrays.stream(topLostItemIds)
             .mapToObj(reducedLostItems::get)
             .filter(Objects::nonNull)
-            .map(item -> Utils.stackFromItem(itemManager, item))
+            .map(item -> ItemUtils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
     }
 

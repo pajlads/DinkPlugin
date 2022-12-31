@@ -1,11 +1,11 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
-import dinkplugin.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.WorldUtils;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -229,7 +229,7 @@ class DeathNotifierTest extends MockedNotifierTest {
     void testIgnoreSafe() {
         // mock castle wars
         when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(2400, 3100, 0));
-        when(client.getVarpValue(Utils.CASTLE_WARS_COUNTDOWN)).thenReturn(10);
+        when(client.getVarpValue(WorldUtils.CASTLE_WARS_COUNTDOWN)).thenReturn(10);
 
         // fire event
         notifier.onActorDeath(new ActorDeath(localPlayer));

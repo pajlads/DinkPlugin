@@ -1,6 +1,6 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.Utils;
+import dinkplugin.util.Utils;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;

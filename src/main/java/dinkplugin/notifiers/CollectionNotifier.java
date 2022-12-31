@@ -2,7 +2,7 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
-import dinkplugin.Utils;
+import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.CollectionNotificationData;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
