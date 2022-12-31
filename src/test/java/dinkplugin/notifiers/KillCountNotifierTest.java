@@ -1,6 +1,6 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.util.Utils;
+import dinkplugin.util.TimeUtils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
@@ -36,7 +36,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         when(config.killCountBestTimeMessage()).thenReturn("%USERNAME% has defeated %BOSS% with a new personal best time of %TIME% and a completion count of %COUNT%");
 
         // init client mocks
-        when(client.getVarbitValue(Utils.ENABLE_PRECISE_TIMING)).thenReturn(1);
+        when(client.getVarbitValue(TimeUtils.ENABLE_PRECISE_TIMING)).thenReturn(1);
     }
 
     @Test
@@ -178,7 +178,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
     void testNotifyPbImprecise() {
         // more mocks
         when(config.killCountInterval()).thenReturn(99);
-        when(client.getVarbitValue(Utils.ENABLE_PRECISE_TIMING)).thenReturn(0);
+        when(client.getVarbitValue(TimeUtils.ENABLE_PRECISE_TIMING)).thenReturn(0);
 
         // fire events
         String gameMessage = "Your Zulrah kill count is: 13.";

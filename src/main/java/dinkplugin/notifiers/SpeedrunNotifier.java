@@ -2,6 +2,7 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.util.TimeUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.SpeedrunNotificationData;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +44,8 @@ public class SpeedrunNotifier extends BaseNotifier {
     }
 
     private void attemptNotify(String questName, String duration, String pb) {
-        Duration bestTime = Utils.parseTime(pb);
-        Duration currentTime = Utils.parseTime(duration);
+        Duration bestTime = TimeUtils.parseTime(pb);
+        Duration currentTime = TimeUtils.parseTime(duration);
         boolean isPb = bestTime.compareTo(currentTime) >= 0;
         if (!isPb && config.speedrunPBOnly()) {
             return;
