@@ -6,6 +6,7 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.WorldUtils;
 import net.runelite.api.Actor;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
@@ -53,7 +54,7 @@ public class DeathNotifier extends BaseNotifier {
 
     @Override
     public boolean isEnabled() {
-        return config.notifyDeath() && super.isEnabled() && !Utils.isSafeArea(client);
+        return config.notifyDeath() && super.isEnabled() && !WorldUtils.isSafeArea(client);
     }
 
     @Override
@@ -176,11 +177,11 @@ public class DeathNotifier extends BaseNotifier {
     @Nullable
     private Player identifyPker() {
         // cannot be pk'd in safe zone
-        if (Utils.isPvpSafeZone(client))
+        if (WorldUtils.isPvpSafeZone(client))
             return null;
 
         // must be in wildness or pvp world to be pk'd
-        if (client.getVarbitValue(Varbits.IN_WILDERNESS) <= 0 && !Utils.isPvpWorld(client.getWorldType()))
+        if (client.getVarbitValue(Varbits.IN_WILDERNESS) <= 0 && !WorldUtils.isPvpWorld(client.getWorldType()))
             return null;
 
         Player localPlayer = client.getLocalPlayer();

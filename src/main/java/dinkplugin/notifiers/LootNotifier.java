@@ -6,6 +6,7 @@ import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.WorldUtils;
 import net.runelite.api.ItemComposition;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
@@ -42,7 +43,7 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
-        if (Utils.isCastleWars(client) || Utils.isLastManStanding(client) || Utils.isSoulWars(client))
+        if (WorldUtils.isCastleWars(client) || WorldUtils.isLastManStanding(client) || WorldUtils.isSoulWars(client))
             return;
 
         if (config.includePlayerLoot() && isEnabled())

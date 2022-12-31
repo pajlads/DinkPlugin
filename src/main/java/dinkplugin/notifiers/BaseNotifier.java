@@ -1,9 +1,9 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPluginConfig;
-import dinkplugin.util.Utils;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
+import dinkplugin.util.WorldUtils;
 import net.runelite.api.Client;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,7 +21,7 @@ public abstract class BaseNotifier {
     private DiscordMessageHandler messageHandler;
 
     public boolean isEnabled() {
-        return !Utils.isIgnoredWorld(client.getWorldType());
+        return !WorldUtils.isIgnoredWorld(client.getWorldType());
     }
 
     protected abstract String getWebhookUrl();
