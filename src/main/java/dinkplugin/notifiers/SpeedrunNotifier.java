@@ -2,6 +2,7 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.util.QuestUtils;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.SpeedrunNotificationData;
@@ -36,7 +37,7 @@ public class SpeedrunNotifier extends BaseNotifier {
             Widget duration = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID);
             Widget personalBest = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID);
             if (questName != null && duration != null && personalBest != null) {
-                this.attemptNotify(Utils.parseQuestWidget(questName.getText()), duration.getText(), personalBest.getText());
+                this.attemptNotify(QuestUtils.parseQuestWidget(questName.getText()), duration.getText(), personalBest.getText());
             } else {
                 log.error("Found speedrun finished widget (group id {}) but it is missing something, questName={}, duration={}, pb={}", SPEEDRUN_COMPLETED_GROUP_ID, questName, duration, personalBest);
             }
