@@ -63,8 +63,10 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void onWidgetLoaded(WidgetLoaded event) {
+        if (!isEnabled()) return;
+
         // special case: runelite client & loot tracker do not handle unsired loot at the time of writing
-        if (event.getGroupId() == WidgetID.DIALOG_SPRITE_GROUP_ID && isEnabled()) {
+        if (event.getGroupId() == WidgetID.DIALOG_SPRITE_GROUP_ID) {
             Widget spriteWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE);
             if (spriteWidget == null || spriteWidget.getItemId() < 0) {
                 spriteWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_SPRITE);
