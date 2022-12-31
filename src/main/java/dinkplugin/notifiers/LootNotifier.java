@@ -27,11 +27,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Predicate;
 
 @Slf4j
 public class LootNotifier extends BaseNotifier {
-    private static final Predicate<Widget> WIDGET_HAS_ITEM = w -> w != null && w.getItemId() >= 0;
 
     @Inject
     private ItemManager itemManager;
@@ -76,8 +74,7 @@ public class LootNotifier extends BaseNotifier {
             Widget textWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
             if (textWidget != null && StringUtils.containsIgnoreCase(textWidget.getText(), "The Font consumes the Unsired")) {
                 Widget spriteWidget = firstWithItem(WidgetInfo.DIALOG_SPRITE, WidgetInfo.DIALOG_SPRITE_SPRITE, WidgetInfo.DIALOG_SPRITE_TEXT);
-                if (WIDGET_HAS_ITEM.test(spriteWidget)) {
-                    assert spriteWidget != null;
+                if (hasItem(spriteWidget)) {
                     ItemStack item = new ItemStack(
                         spriteWidget.getItemId(),
                         Math.max(spriteWidget.getItemQuantity(), 1),
@@ -149,13 +146,16 @@ public class LootNotifier extends BaseNotifier {
     private Widget firstWithItem(WidgetInfo... widgets) {
         for (WidgetInfo info : widgets) {
             Widget widget = client.getWidget(info);
-            if (WIDGET_HAS_ITEM.test(widget)) {
-                assert widget != null;
+            if (hasItem(widget)) {
                 log.debug("Obtained item from widget via {}", info);
                 return widget;
             }
         }
         return null;
+    }
+
+    private static boolean hasItem(Widget widget) {
+        return widget != null && widget.getItemId() >= 0;
     }
 
 }
