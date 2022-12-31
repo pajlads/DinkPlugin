@@ -2,7 +2,7 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
-import dinkplugin.Utils;
+import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.SpeedrunNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.events.WidgetLoaded;

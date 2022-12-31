@@ -1,4 +1,4 @@
-package dinkplugin;
+package dinkplugin.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;

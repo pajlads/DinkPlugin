@@ -3,7 +3,7 @@ package dinkplugin.message;
 import com.google.gson.Gson;
 import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
-import dinkplugin.Utils;
+import dinkplugin.util.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;

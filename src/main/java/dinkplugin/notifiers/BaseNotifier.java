@@ -1,7 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPluginConfig;
-import dinkplugin.Utils;
+import dinkplugin.util.Utils;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
 import net.runelite.api.Client;
