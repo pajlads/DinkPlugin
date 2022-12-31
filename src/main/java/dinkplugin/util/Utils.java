@@ -2,19 +2,11 @@ package dinkplugin.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import dinkplugin.message.NotificationBody;
-import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
-import net.runelite.api.Item;
-import net.runelite.api.ItemComposition;
-import net.runelite.api.ItemContainer;
 import net.runelite.api.WorldType;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.game.ItemManager;
-import net.runelite.client.game.ItemStack;
 import net.runelite.client.util.ColorUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -32,27 +24,16 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.temporal.Temporal;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.time.temporal.ChronoField.HOUR_OF_DAY;
 import static java.time.temporal.ChronoField.MILLI_OF_SECOND;
 import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
-import static net.runelite.api.ItemID.*;
 
 public class Utils {
 
@@ -68,9 +49,6 @@ public class Utils {
     private static final Set<Integer> SOUL_REGIONS = ImmutableSet.of(8493, 8749, 9005);
     private static final int CASTLE_WARS_REGION = 9520;
 
-    private static final BinaryOperator<Item> SUM_ITEM_QUANTITIES = (a, b) -> new Item(a.getId(), a.getQuantity() + b.getQuantity());
-    private static final BinaryOperator<ItemStack> SUM_ITEM_STACK_QUANTITIES = (a, b) -> new ItemStack(a.getId(), a.getQuantity() + b.getQuantity(), a.getLocation());
-
     @VisibleForTesting
     public static final int CASTLE_WARS_COUNTDOWN = 380;
     @Varbit
@@ -80,33 +58,6 @@ public class Utils {
 
     @VisibleForTesting
     public static final @Varbit int ENABLE_PRECISE_TIMING = 11866;
-
-    private static final Set<Integer> NEVER_KEPT_ITEMS = ImmutableSet.of(
-        CLUE_BOX, LOOTING_BAG,
-        AMULET_OF_THE_DAMNED, AMULET_OF_THE_DAMNED_FULL,
-        BRACELET_OF_ETHEREUM, BRACELET_OF_ETHEREUM_UNCHARGED,
-        AVAS_ACCUMULATOR, AVAS_ATTRACTOR, MAGIC_SECATEURS,
-        SILLY_JESTER_HAT, SILLY_JESTER_TOP, SILLY_JESTER_TIGHTS, SILLY_JESTER_BOOTS,
-        LUNAR_HELM, LUNAR_TORSO, LUNAR_LEGS, LUNAR_GLOVES, LUNAR_BOOTS,
-        LUNAR_CAPE, LUNAR_AMULET, LUNAR_RING, LUNAR_STAFF,
-        SHATTERED_RELICS_ADAMANT_TROPHY, SHATTERED_RELICS_BRONZE_TROPHY, SHATTERED_RELICS_DRAGON_TROPHY,
-        SHATTERED_RELICS_IRON_TROPHY, SHATTERED_RELICS_MITHRIL_TROPHY, SHATTERED_RELICS_RUNE_TROPHY, SHATTERED_RELICS_STEEL_TROPHY,
-        TRAILBLAZER_ADAMANT_TROPHY, TRAILBLAZER_BRONZE_TROPHY, TRAILBLAZER_DRAGON_TROPHY, TRAILBLAZER_IRON_TROPHY,
-        TRAILBLAZER_MITHRIL_TROPHY, TRAILBLAZER_RUNE_TROPHY, TRAILBLAZER_STEEL_TROPHY,
-        TWISTED_ADAMANT_TROPHY, TWISTED_BRONZE_TROPHY, TWISTED_DRAGON_TROPHY, TWISTED_IRON_TROPHY,
-        TWISTED_MITHRIL_TROPHY, TWISTED_RUNE_TROPHY, TWISTED_STEEL_TROPHY
-    );
-
-    public static boolean isItemNeverKeptOnDeath(int itemId) {
-        // https://oldschool.runescape.wiki/w/Items_Kept_on_Death#Items_that_are_never_kept
-        // https://oldschoolrunescape.fandom.com/wiki/Items_Kept_on_Death#Items_that_are_never_kept
-        return NEVER_KEPT_ITEMS.contains(itemId);
-    }
-
-    public static long getPrice(ItemManager itemManager, int itemId) {
-        int price = itemManager.getItemPrice(itemId);
-        return price > 0 ? price : itemManager.getItemComposition(itemId).getPrice();
-    }
 
     public static boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);
@@ -160,56 +111,6 @@ public class Utils {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
         return byteArrayOutputStream.toByteArray();
-    }
-
-    public static Collection<Item> getItems(Client client) {
-        return Stream.of(InventoryID.INVENTORY, InventoryID.EQUIPMENT)
-            .map(client::getItemContainer)
-            .filter(Objects::nonNull)
-            .map(ItemContainer::getItems)
-            .flatMap(Arrays::stream)
-            .filter(Objects::nonNull)
-            .filter(item -> item.getId() >= 0) // -1 implies empty slot
-            .collect(Collectors.toList());
-    }
-
-    public static <K, V> Map<K, V> reduce(@NotNull Iterable<V> items, Function<V, K> deriveKey, BinaryOperator<V> aggregate) {
-        final Map<K, V> map = new LinkedHashMap<>();
-        items.forEach(v -> map.merge(deriveKey.apply(v), v, aggregate));
-        return map;
-    }
-
-    public static Map<Integer, Item> reduceItems(@NotNull Iterable<Item> items) {
-        return reduce(items, Item::getId, SUM_ITEM_QUANTITIES);
-    }
-
-    @NotNull
-    public static Collection<ItemStack> reduceItemStack(@NotNull Iterable<ItemStack> items) {
-        return reduce(items, ItemStack::getId, SUM_ITEM_STACK_QUANTITIES).values();
-    }
-
-    public static SerializedItemStack stackFromItem(ItemManager itemManager, Item item) {
-        int id = item.getId();
-        int quantity = item.getQuantity();
-        int price = itemManager.getItemPrice(id);
-        ItemComposition composition = itemManager.getItemComposition(id);
-        return new SerializedItemStack(id, quantity, price, composition.getName());
-    }
-
-    public static String getItemImageUrl(int itemId) {
-        return "https://static.runelite.net/cache/item/icon/" + itemId + ".png";
-    }
-
-    public static String getNpcImageUrl(int npcId) {
-        return String.format("https://chisel.weirdgloop.org/static/img/osrs-npc/%d_128.png", npcId);
-    }
-
-    public static List<NotificationBody.Embed> buildEmbeds(int[] itemIds) {
-        return Arrays.stream(itemIds)
-            .mapToObj(Utils::getItemImageUrl)
-            .map(NotificationBody.UrlEmbed::new)
-            .map(NotificationBody.Embed::new)
-            .collect(Collectors.toList());
     }
 
     public static boolean hasImage(@NotNull MultipartBody body) {

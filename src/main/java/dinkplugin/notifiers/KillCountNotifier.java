@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -100,7 +101,7 @@ public class KillCountNotifier extends BaseNotifier {
                 .filter(npc -> data.getBoss().equalsIgnoreCase(npc.getName()))
                 .findAny()
                 .map(NPC::getId)
-                .map(Utils::getNpcImageUrl)
+                .map(ItemUtils::getNpcImageUrl)
                 .map(NotificationBody.UrlEmbed::new)
                 .map(NotificationBody.Embed::new)
                 .map(Collections::singletonList)
