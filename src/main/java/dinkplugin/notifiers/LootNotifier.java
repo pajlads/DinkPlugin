@@ -2,9 +2,11 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
-import dinkplugin.Utils;
+import dinkplugin.util.ItemUtils;
+import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.events.WidgetLoaded;
@@ -50,7 +52,7 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
-        if (Utils.isCastleWars(client) || Utils.isLastManStanding(client) || Utils.isSoulWars(client))
+        if (WorldUtils.isCastleWars(client) || WorldUtils.isLastManStanding(client) || WorldUtils.isSoulWars(client))
             return;
 
         if (config.includePlayerLoot() && isEnabled())
@@ -101,7 +103,7 @@ public class LootNotifier extends BaseNotifier {
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
 
-        Collection<ItemStack> reduced = Utils.reduceItemStack(items);
+        Collection<ItemStack> reduced = ItemUtils.reduceItemStack(items);
         List<SerializedItemStack> serializedItems = new ArrayList<>(reduced.size());
         List<NotificationBody.Embed> embeds = new ArrayList<>(icons ? reduced.size() : 0);
 
@@ -119,7 +121,7 @@ public class LootNotifier extends BaseNotifier {
                 sendMessage = true;
                 if (lootMessage.length() > 0) lootMessage.append("\n");
                 lootMessage.append(String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice)));
-                if (icons) embeds.add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(Utils.getItemImageUrl(itemId))));
+                if (icons) embeds.add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(ItemUtils.getItemImageUrl(itemId))));
             }
             serializedItems.add(new SerializedItemStack(itemId, quantity, price, itemComposition.getName()));
             totalStackValue += totalPrice;

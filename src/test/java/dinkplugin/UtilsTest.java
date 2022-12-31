@@ -1,5 +1,6 @@
 package dinkplugin;
 
+import dinkplugin.util.ItemUtils;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,7 +20,7 @@ class UtilsTest {
     @ParameterizedTest(name = "Item stack should be reduced {0}")
     @ArgumentsSource(ItemStackReductionProvider.class)
     void itemStackShouldBeReduced(Collection<ItemStack> input, Collection<ItemStack> reduced) {
-        Collection<ItemStack> output = Utils.reduceItemStack(input);
+        Collection<ItemStack> output = ItemUtils.reduceItemStack(input);
         assertTrue(reduced.containsAll(output));
         assertTrue(output.containsAll(reduced));
     }

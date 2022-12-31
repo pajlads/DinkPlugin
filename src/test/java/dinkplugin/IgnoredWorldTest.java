@@ -1,5 +1,6 @@
 package dinkplugin;
 
+import dinkplugin.util.WorldUtils;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,7 +20,7 @@ class IgnoredWorldTest {
     @ParameterizedTest(name = "World should not be ignored {0}")
     @ArgumentsSource(NonIgnoredWorldTypeProvider.class)
     void worldShouldNotBeIgnored(Set<WorldType> worldType) {
-        assertFalse(Utils.isIgnoredWorld(worldType));
+        assertFalse(WorldUtils.isIgnoredWorld(worldType));
     }
 
     private static class NonIgnoredWorldTypeProvider implements ArgumentsProvider {
@@ -37,7 +38,7 @@ class IgnoredWorldTest {
     @ParameterizedTest(name = "World should be ignored {0}")
     @ArgumentsSource(IgnoredWorldTypeProvider.class)
     void worldShouldBeIgnored(Set<WorldType> worldType) {
-        assertTrue(Utils.isIgnoredWorld(worldType));
+        assertTrue(WorldUtils.isIgnoredWorld(worldType));
     }
 
     private static class IgnoredWorldTypeProvider implements ArgumentsProvider {

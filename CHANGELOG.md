@@ -10,6 +10,7 @@
 - Bugfix: Track Unsired drops for loot notifier. This is still experimental for wider testing - please report any problems to our [issue tracker](https://github.com/pajlads/DinkPlugin/issues) (#89)
 - Bugfix: Reduce timeouts from uploading screenshots on slow connections. (#96)
 - Bugfix: Ensure boss name is included in boss slayer messages. (#88)
+- Dev: Clean up utility code package. (#108)
 - Dev: Bump mockito version to 4.11.0. (#107)
 - Dev: Add more plugin-hub search tags (#101)
 - Dev: Simplify notifier send image evaluation. (#102)

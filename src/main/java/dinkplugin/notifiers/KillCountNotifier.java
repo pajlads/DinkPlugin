@@ -1,6 +1,8 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.Utils;
+import dinkplugin.util.ItemUtils;
+import dinkplugin.util.TimeUtils;
+import dinkplugin.util.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
@@ -76,7 +78,7 @@ public class KillCountNotifier extends BaseNotifier {
         // Assemble content
         boolean isPb = data.isPersonalBest() == Boolean.TRUE;
         String player = Utils.getPlayerName(client);
-        String time = Utils.format(data.getTime(), Utils.isPreciseTiming(client));
+        String time = TimeUtils.format(data.getTime(), TimeUtils.isPreciseTiming(client));
         String content = StringUtils.replaceEach(
             isPb ? config.killCountBestTimeMessage() : config.killCountMessage(),
             new String[] { "%USERNAME%", "%BOSS%", "%COUNT%", "%TIME%" },
@@ -100,7 +102,7 @@ public class KillCountNotifier extends BaseNotifier {
                 .filter(npc -> data.getBoss().equalsIgnoreCase(npc.getName()))
                 .findAny()
                 .map(NPC::getId)
-                .map(Utils::getNpcImageUrl)
+                .map(ItemUtils::getNpcImageUrl)
                 .map(NotificationBody.UrlEmbed::new)
                 .map(NotificationBody.Embed::new)
                 .map(Collections::singletonList)
@@ -148,7 +150,7 @@ public class KillCountNotifier extends BaseNotifier {
     private static Optional<Pair<Duration, Boolean>> parseTime(String message) {
         Matcher matcher = TIME_REGEX.matcher(message);
         if (matcher.find()) {
-            Duration duration = Utils.parseTime(matcher.group("time"));
+            Duration duration = TimeUtils.parseTime(matcher.group("time"));
             boolean pb = message.toLowerCase().contains("(new personal best)");
             return Optional.of(Pair.of(duration, pb));
         }
