@@ -86,7 +86,7 @@ public class LootNotifier extends BaseNotifier {
                     this.handleNotify(Collections.singletonList(item), "The Font of Consumption");
                 } else {
                     Widget widget = client.getWidget(WidgetInfo.DIALOG_SPRITE);
-                    log.debug(
+                    log.warn(
                         "Failed to locate widget with item for Unsired loot. Exists: {} - Children: {} - Nested: {} - Sprite: {} - Model: {}",
                         widget != null,
                         widget != null && widget.getDynamicChildren() != null ? widget.getDynamicChildren().length : -1,
