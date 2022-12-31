@@ -84,8 +84,7 @@ public class LootNotifier extends BaseNotifier {
                 } else {
                     Widget widget = client.getWidget(WidgetInfo.DIALOG_SPRITE);
                     log.warn(
-                        "Failed to locate widget with item for Unsired loot. Exists: {} - Children: {} - Nested: {} - Sprite: {} - Model: {}",
-                        widget != null,
+                        "Failed to locate widget with item for Unsired loot. Children: {} - Nested: {} - Sprite: {} - Model: {}",
                         widget != null && widget.getDynamicChildren() != null ? widget.getDynamicChildren().length : -1,
                         widget != null && widget.getNestedChildren() != null ? widget.getNestedChildren().length : -1,
                         widget != null ? widget.getSpriteId() : -1,
