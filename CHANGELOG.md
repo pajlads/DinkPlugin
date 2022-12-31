@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.1.3
+
 - Minor: Add personal best time message to kill count notifier. (#106)
 - Minor: Add better descriptions for `Min Value` settings. (#100)
 - Minor: Add death notifier setting to disable kept item embeds. (#99)
