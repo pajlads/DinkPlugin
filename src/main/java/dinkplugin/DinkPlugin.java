@@ -174,6 +174,7 @@ public class DinkPlugin extends Plugin {
         questNotifier.onWidgetLoaded(event);
         clueNotifier.onWidgetLoaded(event);
         speedrunNotifier.onWidgetLoaded(event);
+        lootNotifier.onWidgetLoaded(event);
     }
 
     public void addChatWarning(String message) {

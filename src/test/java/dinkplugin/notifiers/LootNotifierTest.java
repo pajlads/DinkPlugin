@@ -9,6 +9,10 @@ import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
@@ -227,6 +231,38 @@ class LootNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .content(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, loot, LOOTED_NAME, QuantityFormatter.quantityToStackSize(total)))
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 5, TUNA_PRICE, "Tuna")), LOOTED_NAME))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyUnsired() {
+        // prepare mocks
+        Widget spriteWidget = mock(Widget.class);
+        when(spriteWidget.getItemId()).thenReturn(ItemID.ABYSSAL_WHIP);
+        when(client.getWidget(WidgetInfo.DIALOG_SPRITE)).thenReturn(spriteWidget);
+        final int whipPrice = 1_500_000;
+        mockItem(itemManager, ItemID.ABYSSAL_WHIP, whipPrice, "Abyssal Whip");
+
+        Widget textWidget = mock(Widget.class);
+        when(textWidget.getText()).thenReturn("The Font consumes the Unsired and returns you a reward.");
+        when(client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT)).thenReturn(textWidget);
+
+        // fire event
+        WidgetLoaded event = new WidgetLoaded();
+        event.setGroupId(WidgetID.DIALOG_SPRITE_GROUP_ID);
+        notifier.onWidgetLoaded(event);
+
+        // verify notification message
+        String source = "The Font of Consumption";
+        String formattedPrice = QuantityFormatter.quantityToStackSize(whipPrice);
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .content(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, "1 x Abyssal Whip (" + formattedPrice + ")", source, formattedPrice))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.ABYSSAL_WHIP, 1, whipPrice, "Abyssal Whip")), source))
                 .type(NotificationType.LOOT)
                 .build()
         );
