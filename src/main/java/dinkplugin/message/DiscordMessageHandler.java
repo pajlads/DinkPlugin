@@ -163,6 +163,7 @@ public class DiscordMessageHandler {
             Embed.builder()
                 .author(new Author(body.getPlayerName()))
                 .color(Utils.PINK)
+                .title(body.getType().getTitle())
                 .description(body.getContent())
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + body.getScreenshotFile()) : null)
                 .footer(FOOTER)
