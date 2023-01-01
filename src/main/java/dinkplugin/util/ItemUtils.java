@@ -1,7 +1,7 @@
 package dinkplugin.util;
 
 import com.google.common.collect.ImmutableSet;
-import dinkplugin.message.NotificationBody;
+import dinkplugin.message.Embed;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
@@ -108,11 +108,10 @@ public class ItemUtils {
         return String.format("https://chisel.weirdgloop.org/static/img/osrs-npc/%d_128.png", npcId);
     }
 
-    public List<NotificationBody.Embed> buildEmbeds(int[] itemIds) {
+    public List<Embed> buildEmbeds(int[] itemIds) {
         return Arrays.stream(itemIds)
             .mapToObj(ItemUtils::getItemImageUrl)
-            .map(NotificationBody.UrlEmbed::new)
-            .map(NotificationBody.Embed::new)
+            .map(Embed::ofImage)
             .collect(Collectors.toList());
     }
 

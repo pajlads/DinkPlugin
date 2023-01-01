@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
@@ -120,11 +121,11 @@ class DeathNotifierTest extends MockedNotifierTest {
         List<SerializedItemStack> lost = Collections.singletonList(
             new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")
         );
-        List<NotificationBody.Embed> embeds = Arrays.asList(
-            new NotificationBody.Embed(new NotificationBody.UrlEmbed("https://static.runelite.net/cache/item/icon/" + ItemID.RUBY + ".png")),
-            new NotificationBody.Embed(new NotificationBody.UrlEmbed("https://static.runelite.net/cache/item/icon/" + ItemID.SHARK + ".png")),
-            new NotificationBody.Embed(new NotificationBody.UrlEmbed("https://static.runelite.net/cache/item/icon/" + ItemID.OPAL + ".png")),
-            new NotificationBody.Embed(new NotificationBody.UrlEmbed("https://static.runelite.net/cache/item/icon/" + ItemID.COAL + ".png"))
+        List<Embed> embeds = Arrays.asList(
+            Embed.ofImage("https://static.runelite.net/cache/item/icon/" + ItemID.RUBY + ".png"),
+            Embed.ofImage("https://static.runelite.net/cache/item/icon/" + ItemID.SHARK + ".png"),
+            Embed.ofImage("https://static.runelite.net/cache/item/icon/" + ItemID.OPAL + ".png"),
+            Embed.ofImage("https://static.runelite.net/cache/item/icon/" + ItemID.COAL + ".png")
         );
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,

@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.util.ItemUtils;
@@ -94,7 +95,7 @@ public class ClueNotifier extends BaseNotifier {
         StringBuilder lootMessage = new StringBuilder();
         AtomicLong totalPrice = new AtomicLong();
         List<SerializedItemStack> itemStacks = new ArrayList<>(clueItems.size());
-        List<NotificationBody.Embed> embeds = new ArrayList<>(config.clueShowItems() ? clueItems.size() : 0);
+        List<Embed> embeds = new ArrayList<>(config.clueShowItems() ? clueItems.size() : 0);
 
         clueItems.forEach((itemId, quantity) -> {
             if (lootMessage.length() > 0) lootMessage.append('\n');
@@ -129,9 +130,9 @@ public class ClueNotifier extends BaseNotifier {
         this.reset();
     }
 
-    private String getItemMessage(SerializedItemStack item, Collection<NotificationBody.Embed> embeds) {
+    private String getItemMessage(SerializedItemStack item, Collection<Embed> embeds) {
         if (config.clueShowItems())
-            embeds.add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(ItemUtils.getItemImageUrl(item.getId()))));
+            embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
         return String.format("%s x %s (%s)", item.getQuantity(), item.getName(), QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
     }
 

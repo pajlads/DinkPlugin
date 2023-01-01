@@ -1,13 +1,13 @@
 package dinkplugin.message;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Value;
+import lombok.Singular;
 
-import java.util.LinkedList;
 import java.util.List;
 
 @Data
@@ -15,25 +15,24 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationBody<T> {
-    private NotificationType type;
-    private T extra;
-    private String content;
-    private String playerName;
 
-    @Builder.Default
-    private List<Embed> embeds = new LinkedList<>();
-
+    /*
+     * Dink fields
+     */
     @Builder.Default
     @EqualsAndHashCode.Exclude
     private transient String screenshotFile = "image.png";
+    private NotificationType type;
+    private String playerName;
+    private T extra;
 
-    @Value
-    public static class Embed {
-        UrlEmbed image;
-    }
+    /*
+     * Discord fields
+     */
+    private String content;
+    private String username;
+    private boolean tts;
+    private @SerializedName("avatar_url") String avatarUrl;
+    private @Singular List<Embed> embeds;
 
-    @Value
-    public static class UrlEmbed {
-        String url;
-    }
 }

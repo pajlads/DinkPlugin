@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.message.Embed;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.message.NotificationBody;
@@ -108,7 +109,7 @@ public class DeathNotifier extends BaseNotifier {
             .map(Pair::getKey)
             .map(item -> ItemUtils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
-        List<NotificationBody.Embed> keptItemEmbeds;
+        List<Embed> keptItemEmbeds;
         if (config.deathEmbedKeptItems()) {
             keptItemEmbeds = ItemUtils.buildEmbeds(
                 keptItems.stream()
