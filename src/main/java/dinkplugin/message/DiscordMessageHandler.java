@@ -25,8 +25,11 @@ import org.jetbrains.annotations.NotNull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -74,6 +77,8 @@ public class DiscordMessageHandler {
 
         if (mBody.getPlayerName() == null)
             mBody.setPlayerName(Utils.getPlayerName(client));
+
+        injectContent(mBody);
 
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
@@ -144,5 +149,15 @@ public class DiscordMessageHandler {
                 response.close();
             }
         });
+    }
+
+    private static void injectContent(NotificationBody<?> body) {
+        List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
+        embeds.add(0,
+            Embed.builder()
+                .description(body.getContent())
+                .build()
+        );
+        body.setEmbeds(embeds);
     }
 }

@@ -26,10 +26,12 @@ public class NotificationBody<T> {
     private String playerName;
     private T extra;
 
+    @SerializedName("text") // used by slack; avoids duplication in discord webhook
+    private String content;
+
     /*
      * Discord fields
      */
-    private String content;
     private String username;
     private boolean tts;
     private @SerializedName("avatar_url") String avatarUrl;
