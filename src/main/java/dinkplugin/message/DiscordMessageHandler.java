@@ -78,7 +78,7 @@ public class DiscordMessageHandler {
         if (mBody.getPlayerName() == null)
             mBody.setPlayerName(Utils.getPlayerName(client));
 
-        injectContent(mBody);
+        injectContent(mBody, sendImage);
 
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
@@ -151,11 +151,12 @@ public class DiscordMessageHandler {
         });
     }
 
-    private static void injectContent(NotificationBody<?> body) {
+    private static void injectContent(@NotNull NotificationBody<?> body, boolean screenshot) {
         List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
         embeds.add(0,
             Embed.builder()
                 .description(body.getContent())
+                .image(screenshot ? new Embed.UrlEmbed("attachment://" + body.getScreenshotFile()) : null)
                 .build()
         );
         body.setEmbeds(embeds);
