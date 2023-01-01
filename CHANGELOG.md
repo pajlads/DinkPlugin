@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Major: Use Discord rich embed format for webhooks. (#110)
+
 ## 1.1.3
 
 - Minor: Add personal best time message to kill count notifier. (#106)
