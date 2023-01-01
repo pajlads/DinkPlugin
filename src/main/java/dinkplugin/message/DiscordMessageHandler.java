@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,6 +38,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class DiscordMessageHandler {
+    private static final Footer FOOTER = Footer.builder()
+        .text("Powered by Dink")
+        .iconUrl("https://github.com/pajlads/DinkPlugin/raw/master/icon.png")
+        .build();
+
     private final Gson gson;
     private final Client client;
     private final DrawManager drawManager;
@@ -155,8 +161,12 @@ public class DiscordMessageHandler {
         List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
         embeds.add(0,
             Embed.builder()
+                .author(new Author(body.getPlayerName()))
+                .color(Utils.PINK)
                 .description(body.getContent())
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + body.getScreenshotFile()) : null)
+                .footer(FOOTER)
+                .timestamp(Instant.now())
                 .build()
         );
         body.setEmbeds(embeds);

@@ -10,7 +10,7 @@ import java.io.IOException;
 public class ColorAdapter extends TypeAdapter<Color> {
     @Override
     public void write(JsonWriter out, Color color) throws IOException {
-        out.value(color != null ? color.getRGB() : null);
+        out.value(color != null ? color.getRGB() ^ 0xFF000000 : null);
     }
 
     @Override

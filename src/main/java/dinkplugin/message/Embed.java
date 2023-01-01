@@ -2,11 +2,13 @@ package dinkplugin.message;
 
 import com.google.gson.annotations.JsonAdapter;
 import dinkplugin.util.ColorAdapter;
+import dinkplugin.util.InstantAdapter;
 import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 
 import java.awt.Color;
+import java.time.Instant;
 import java.util.List;
 
 @Value
@@ -23,6 +25,8 @@ public class Embed {
     @Singular
     List<Field> fields;
     Footer footer;
+    @JsonAdapter(InstantAdapter.class)
+    Instant timestamp;
 
     public static Embed ofImage(String url) {
         return Embed.builder()
