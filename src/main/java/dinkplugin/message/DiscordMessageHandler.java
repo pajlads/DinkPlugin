@@ -166,6 +166,7 @@ public class DiscordMessageHandler {
                 .title(body.getType().getTitle())
                 .description(body.getContent())
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + body.getScreenshotFile()) : null)
+                .thumbnail(new Embed.UrlEmbed(body.getType().getThumbnail()))
                 .footer(FOOTER)
                 .timestamp(Instant.now())
                 .build()
