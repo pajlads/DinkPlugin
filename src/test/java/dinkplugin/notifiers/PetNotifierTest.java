@@ -47,14 +47,14 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyOverride() {
         // define url override
-        when(config.petWebhook()).thenReturn("example.com");
+        when(config.petWebhook()).thenReturn("https://example.com");
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
 
         // verify handled at override url
         verify(messageHandler).createMessage(
-            "example.com",
+            "https://example.com",
             false,
             NotificationBody.builder()
                 .content(PLAYER_NAME + " got a pet")

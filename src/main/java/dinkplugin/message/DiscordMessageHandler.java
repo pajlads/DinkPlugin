@@ -172,7 +172,7 @@ public class DiscordMessageHandler {
                 .description(body.getContent())
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(type.getThumbnail()))
-                .fields(extra != null ? extra.getFields() : null)
+                .fields(extra != null ? extra.getFields() : Collections.emptyList())
                 .footer(FOOTER)
                 .timestamp(Instant.now())
                 .build()
