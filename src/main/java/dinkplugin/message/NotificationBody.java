@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -19,9 +19,7 @@ public class NotificationBody<T> {
     /*
      * Dink fields
      */
-    @Builder.Default
-    @EqualsAndHashCode.Exclude
-    private transient String screenshotFile = "image.png";
+    @NotNull
     private NotificationType type;
     private String playerName;
     private T extra;

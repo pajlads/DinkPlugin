@@ -33,7 +33,6 @@ public class PetNotifier extends BaseNotifier {
 
         createMessage(config.petSendImage(), NotificationBody.builder()
             .content(notifyMessage)
-            .screenshotFile("petImage.png")
             .type(NotificationType.PET)
             .build());
     }

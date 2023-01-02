@@ -134,7 +134,6 @@ public class DeathNotifier extends BaseNotifier {
             .content(notifyMessage)
             .extra(extra)
             .embeds(keptItemEmbeds)
-            .screenshotFile("deathImage.png")
             .type(NotificationType.DEATH)
             .build());
     }

@@ -52,7 +52,6 @@ public class CombatTaskNotifier extends BaseNotifier {
             .content(message)
             .playerName(player)
             .extra(new CombatAchievementData(tier, task))
-            .screenshotFile("combatTaskImage.png")
             .build());
     }
 

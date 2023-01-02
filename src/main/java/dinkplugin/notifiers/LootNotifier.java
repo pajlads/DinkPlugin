@@ -136,7 +136,6 @@ public class LootNotifier extends BaseNotifier {
                     .content(notifyMessage)
                     .embeds(embeds)
                     .extra(new LootNotificationData(serializedItems, dropper))
-                    .screenshotFile("lootImage.png")
                     .type(NotificationType.LOOT)
                     .build()
             );

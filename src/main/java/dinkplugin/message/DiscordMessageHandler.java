@@ -97,7 +97,7 @@ public class DiscordMessageHandler {
 
                     reqBodyBuilder.addFormDataPart(
                         "file",
-                        mBody.getScreenshotFile(),
+                        mBody.getType().getScreenshot(),
                         RequestBody.create(
                             MediaType.parse("image/png"),
                             imageBytes
@@ -158,15 +158,16 @@ public class DiscordMessageHandler {
     }
 
     private static void injectContent(@NotNull NotificationBody<?> body, boolean screenshot) {
+        NotificationType type = body.getType();
         List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
         embeds.add(0,
             Embed.builder()
                 .author(new Author(body.getPlayerName()))
                 .color(Utils.PINK)
-                .title(body.getType().getTitle())
+                .title(type.getTitle())
                 .description(body.getContent())
-                .image(screenshot ? new Embed.UrlEmbed("attachment://" + body.getScreenshotFile()) : null)
-                .thumbnail(new Embed.UrlEmbed(body.getType().getThumbnail()))
+                .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
+                .thumbnail(new Embed.UrlEmbed(type.getThumbnail()))
                 .footer(FOOTER)
                 .timestamp(Instant.now())
                 .build()

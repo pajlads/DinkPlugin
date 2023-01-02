@@ -92,7 +92,6 @@ public class KillCountNotifier extends BaseNotifier {
                 .content(content)
                 .extra(data)
                 .playerName(player)
-                .screenshotFile("killCountImage.png")
                 .type(NotificationType.KILL_COUNT);
 
         // Add embed if not screenshotting

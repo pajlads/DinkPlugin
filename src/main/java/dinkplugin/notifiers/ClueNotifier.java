@@ -120,7 +120,6 @@ public class ClueNotifier extends BaseNotifier {
                 NotificationBody.builder()
                     .content(notifyMessage)
                     .extra(new ClueNotificationData(clueType, Integer.parseInt(clueCount), itemStacks))
-                    .screenshotFile("clueImage.png")
                     .type(NotificationType.CLUE)
                     .embeds(embeds)
                     .build()
