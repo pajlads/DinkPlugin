@@ -1,8 +1,10 @@
 package dinkplugin.notifiers.data;
 
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 @Value
-public class CollectionNotificationData {
+@EqualsAndHashCode(callSuper = false)
+public class CollectionNotificationData extends NotificationData {
     String itemName;
 }

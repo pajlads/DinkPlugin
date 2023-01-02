@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationBody<T> {
+public class NotificationBody<T extends Fieldable> {
 
     /*
      * Dink fields
@@ -22,6 +23,7 @@ public class NotificationBody<T> {
     @NotNull
     private NotificationType type;
     private String playerName;
+    @Nullable
     private T extra;
 
     private transient String content;

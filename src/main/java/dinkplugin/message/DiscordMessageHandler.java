@@ -72,7 +72,7 @@ public class DiscordMessageHandler {
             .build();
     }
 
-    public <T> void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<T> mBody) {
+    public void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<?> mBody) {
         if (StringUtils.isBlank(webhookUrl)) return;
 
         Collection<HttpUrl> urlList = Arrays.stream(StringUtils.split(webhookUrl, '\n'))
@@ -159,6 +159,7 @@ public class DiscordMessageHandler {
 
     private static void injectContent(@NotNull NotificationBody<?> body, boolean screenshot) {
         NotificationType type = body.getType();
+        Fieldable extra = body.getExtra();
         List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
         embeds.add(0,
             Embed.builder()
@@ -168,6 +169,7 @@ public class DiscordMessageHandler {
                 .description(body.getContent())
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(type.getThumbnail()))
+                .fields(extra != null ? extra.getFields() : null)
                 .footer(FOOTER)
                 .timestamp(Instant.now())
                 .build()

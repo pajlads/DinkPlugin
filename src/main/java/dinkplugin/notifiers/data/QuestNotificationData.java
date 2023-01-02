@@ -1,8 +1,10 @@
 package dinkplugin.notifiers.data;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class QuestNotificationData {
+@EqualsAndHashCode(callSuper = false)
+public class QuestNotificationData extends NotificationData {
     final String questName;
 }
