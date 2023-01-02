@@ -3,21 +3,23 @@ package dinkplugin.message;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import static dinkplugin.util.Utils.WIKI_IMG_URL;
+
 @Getter
 @RequiredArgsConstructor
 public enum NotificationType {
-    CLUE("Clue Scroll", "clueImage.png", "https://oldschool.runescape.wiki/images/Treasure_Trails_logo.jpg"),
-    COLLECTION("Collection Log", "collectionImage.png", "https://oldschool.runescape.wiki/images/Collection_log_detail.png"),
-    DEATH("Player Death", "deathImage.png", "https://oldschool.runescape.wiki/images/Death.png"),
-    LEVEL("Level Up", "levelImage.png", "https://oldschool.runescape.wiki/images/Stats_icon.png"),
-    LOOT("Loot Drop", "lootImage.png", "https://oldschool.runescape.wiki/images/Rare_drop_table.png"),
-    PET("Pet Obtained", "petImage.png", "https://oldschool.runescape.wiki/images/Pet_list_icon.png"),
-    QUEST("Quest Completed", "questImage.png", "https://oldschool.runescape.wiki/images/Quests.png"),
-    SLAYER("Slayer Task", "slayerImage.png", "https://oldschool.runescape.wiki/images/Slayer_icon_%28detail%29.png"),
-    SPEEDRUN("Quest Speedrunning", "speedrunImage.png", "https://oldschool.runescape.wiki/images/Quest_Speedrunning_logo.png"),
-    KILL_COUNT("Completion Count", "killCountImage.png", "https://oldschool.runescape.wiki/images/Enchanted_gem_detail.png"),
-    COMBAT_ACHIEVEMENT("Combat Achievement", "combatTaskImage.png", "https://oldschool.runescape.wiki/images/Combat_achievements_detail.png"),
-    ACHIEVEMENT_DIARY("Achievement Diary", "achievementDiaryImage.png", "https://oldschool.runescape.wiki/images/Achievement_Diaries.png");
+    CLUE("Clue Scroll", "clueImage.png", WIKI_IMG_URL + "Clue_scroll_%28Song_of_the_Elves%29.png"),
+    COLLECTION("Collection Log", "collectionImage.png", WIKI_IMG_URL + "Collection_log.png"),
+    DEATH("Player Death", "deathImage.png", WIKI_IMG_URL + "Items_kept_on_death.png"),
+    LEVEL("Level Up", "levelImage.png", WIKI_IMG_URL + "Stats_icon.png"),
+    LOOT("Loot Drop", "lootImage.png", WIKI_IMG_URL + "Rare_drop_table.png"),
+    PET("Pet Obtained", "petImage.png", WIKI_IMG_URL + "Call_follower.png"),
+    QUEST("Quest Completed", "questImage.png", WIKI_IMG_URL + "Quest_point_icon.png"),
+    SLAYER("Slayer Task", "slayerImage.png", WIKI_IMG_URL + "Slayer_icon_%28detail%29.png"),
+    SPEEDRUN("Quest Speedrunning", "speedrunImage.png", WIKI_IMG_URL + "Giant_stopwatch.png"),
+    KILL_COUNT("Completion Count", "killCountImage.png", WIKI_IMG_URL + "Enchanted_gem.png"),
+    COMBAT_ACHIEVEMENT("Combat Achievement", "combatTaskImage.png", WIKI_IMG_URL + "Combat_achievements.png"),
+    ACHIEVEMENT_DIARY("Achievement Diary", "achievementDiaryImage.png", WIKI_IMG_URL + "Achievement_Diaries_icon.png");
 
     private final String title;
     private final String screenshot;

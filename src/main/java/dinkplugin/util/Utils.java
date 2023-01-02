@@ -18,6 +18,8 @@ import java.io.IOException;
 @UtilityClass
 public class Utils {
 
+    public static final String WIKI_IMG_URL = "https://oldschool.runescape.wiki/images/";
+
     public final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
     public final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
 
