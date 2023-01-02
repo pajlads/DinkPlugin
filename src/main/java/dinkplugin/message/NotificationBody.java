@@ -6,12 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
+import lombok.With;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 @Data
+@With
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,7 +27,7 @@ public class NotificationBody<T extends Fieldable> {
     private String playerName;
     @Nullable
     private T extra;
-
+    @NotNull
     private transient String content;
 
     /*

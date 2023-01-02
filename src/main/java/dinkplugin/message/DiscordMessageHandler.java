@@ -21,6 +21,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -51,6 +52,7 @@ public class DiscordMessageHandler {
     private final ScheduledExecutorService executor;
 
     @Inject
+    @VisibleForTesting
     public DiscordMessageHandler(Gson gson, Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor) {
         this.gson = gson;
         this.client = client;
@@ -82,28 +84,29 @@ public class DiscordMessageHandler {
         if (urlList.isEmpty()) return;
 
         if (mBody.getPlayerName() == null)
-            mBody.setPlayerName(Utils.getPlayerName(client));
+            mBody = mBody.withPlayerName(Utils.getPlayerName(client));
 
-        injectContent(mBody, sendImage);
+        mBody = injectContent(mBody, sendImage);
 
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("payload_json", gson.toJson(mBody));
 
         if (sendImage) {
+            String screenshotFile = mBody.getType().getScreenshot();
             drawManager.requestNextFrameListener(image -> {
                 try {
                     byte[] imageBytes = Utils.convertImageToByteArray(ImageUtil.bufferedImageFromImage(image));
 
                     reqBodyBuilder.addFormDataPart(
                         "file",
-                        mBody.getType().getScreenshot(),
+                        screenshotFile,
                         RequestBody.create(
                             MediaType.parse("image/png"),
                             imageBytes
                         )
                     );
-                } catch (IOException e) {
+                } catch (Exception e) {
                     log.warn("There was an error creating bytes from captured image", e);
                 } finally {
                     sendToMultiple(urlList, reqBodyBuilder);
@@ -157,7 +160,7 @@ public class DiscordMessageHandler {
         });
     }
 
-    private static void injectContent(@NotNull NotificationBody<?> body, boolean screenshot) {
+    private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot) {
         NotificationType type = body.getType();
         Fieldable extra = body.getExtra();
         List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
@@ -174,6 +177,6 @@ public class DiscordMessageHandler {
                 .timestamp(Instant.now())
                 .build()
         );
-        body.setEmbeds(embeds);
+        return body.withEmbeds(embeds);
     }
 }
