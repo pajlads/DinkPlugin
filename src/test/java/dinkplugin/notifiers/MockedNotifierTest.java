@@ -5,6 +5,7 @@ import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.MockedTestBase;
 import dinkplugin.message.DiscordMessageHandler;
+import dinkplugin.util.TestImageUtil;
 import net.runelite.api.Client;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.Player;
@@ -70,7 +71,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
 
         doAnswer(invocation -> {
             Consumer<Image> callback = invocation.getArgument(0);
-            callback.accept(null); // TODO: random image
+            callback.accept(TestImageUtil.getExample());
             return null;
         }).when(drawManager).requestNextFrameListener(any());
 
@@ -79,6 +80,9 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.maxRetries()).thenReturn(0);
         when(config.baseRetryDelay()).thenReturn(2000);
         when(config.imageWriteTimeout()).thenReturn(30_000);
+
+        // make okhttp send message blocking
+        when(messageHandler.isAsync()).thenReturn(false);
     }
 
     protected void mockItem(ItemManager manager, int id, int price, String name) {

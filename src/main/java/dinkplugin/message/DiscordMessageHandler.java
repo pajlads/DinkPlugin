@@ -5,6 +5,7 @@ import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.util.Utils;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.ui.DrawManager;
@@ -32,6 +33,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -121,7 +123,9 @@ public class DiscordMessageHandler {
         urls.forEach(url -> sendMessage(url, reqBodyBuilder, 0));
     }
 
+    @SneakyThrows
     private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody, int attempt) {
+        CountDownLatch latch = isAsync() ? null : new CountDownLatch(1);
         Request request = new Request.Builder()
             .url(url)
             .post(requestBody.build())
@@ -150,14 +154,28 @@ public class DiscordMessageHandler {
                 } else {
                     log.debug("Skipping retry attempts for failed webhook since max retries is not positive");
                 }
+
+                if (latch != null)
+                    latch.countDown();
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) {
                 log.trace("Successfully sent webhook message to {} after {} attempts", url, attempt + 1);
                 response.close();
+
+                if (latch != null)
+                    latch.countDown();
             }
         });
+
+        if (latch != null)
+            latch.await();
+    }
+
+    @VisibleForTesting
+    public boolean isAsync() {
+        return true;
     }
 
     private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot) {

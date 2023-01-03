@@ -4,6 +4,7 @@ import dinkplugin.util.TimeUtils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
+import net.runelite.api.NPC;
 import net.runelite.http.api.RuneLiteAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
         // init client mocks
         when(client.getVarbitValue(TimeUtils.ENABLE_PRECISE_TIMING)).thenReturn(1);
+        when(client.getCachedNPCs()).thenReturn(new NPC[0]);
     }
 
     @Test
