@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 import lombok.With;
+import net.runelite.api.vars.AccountType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +26,7 @@ public class NotificationBody<T extends Fieldable> {
     @NotNull
     private NotificationType type;
     private String playerName;
+    private AccountType accountType;
     @Nullable
     private T extra;
     @NotNull

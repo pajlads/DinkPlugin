@@ -2,12 +2,14 @@ package dinkplugin.util;
 
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
+import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.util.ColorUtil;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
@@ -30,6 +32,24 @@ public class Utils {
 
     public String getPlayerName(Client client) {
         return client.getLocalPlayer().getName();
+    }
+
+    @Nullable
+    public String getChatBadge(@NotNull AccountType type) {
+        switch (type) {
+            case IRONMAN:
+                return "https://oldschool.runescape.wiki/images/Ironman_chat_badge.png";
+            case ULTIMATE_IRONMAN:
+                return "https://oldschool.runescape.wiki/images/Ultimate_ironman_chat_badge.png";
+            case HARDCORE_IRONMAN:
+                return "https://oldschool.runescape.wiki/images/Hardcore_ironman_chat_badge.png";
+            case GROUP_IRONMAN:
+                return "https://oldschool.runescape.wiki/images/Group_ironman_chat_badge.png";
+            case HARDCORE_GROUP_IRONMAN:
+                return "https://oldschool.runescape.wiki/images/Hardcore_group_ironman_chat_badge.png";
+            default:
+                return null;
+        }
     }
 
     public byte[] convertImageToByteArray(BufferedImage bufferedImage) throws IOException {

@@ -64,7 +64,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
 
         // init client mocks
         when(client.getWorldType()).thenReturn(EnumSet.noneOf(WorldType.class));
-        when(client.getAccountType()).thenReturn(AccountType.NORMAL);
+        when(client.getAccountType()).thenReturn(AccountType.GROUP_IRONMAN);
         when(client.isPrayerActive(any())).thenReturn(false);
         when(client.getLocalPlayer()).thenReturn(localPlayer);
         when(localPlayer.getName()).thenReturn(PLAYER_NAME);

@@ -88,6 +88,9 @@ public class DiscordMessageHandler {
         if (mBody.getPlayerName() == null)
             mBody = mBody.withPlayerName(Utils.getPlayerName(client));
 
+        if (mBody.getAccountType() == null)
+            mBody = mBody.withAccountType(client.getAccountType());
+
         mBody = injectContent(mBody, sendImage);
 
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
@@ -181,10 +184,14 @@ public class DiscordMessageHandler {
     private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot) {
         NotificationType type = body.getType();
         Fieldable extra = body.getExtra();
+        Author author = Author.builder()
+            .name(body.getPlayerName())
+            .iconUrl(Utils.getChatBadge(body.getAccountType()))
+            .build();
         List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
         embeds.add(0,
             Embed.builder()
-                .author(new Author(body.getPlayerName()))
+                .author(author)
                 .color(Utils.PINK)
                 .title(type.getTitle())
                 .description(body.getContent())
