@@ -515,7 +515,7 @@ public interface DinkPluginConfig extends Config {
         section = deathSection
     )
     default boolean deathEmbedKeptItems() {
-        return true;
+        return false;
     }
 
     @ConfigItem(
