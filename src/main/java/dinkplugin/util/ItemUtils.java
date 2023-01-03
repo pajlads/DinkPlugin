@@ -11,6 +11,7 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
+import net.runelite.client.util.QuantityFormatter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -113,6 +114,10 @@ public class ItemUtils {
             .mapToObj(ItemUtils::getItemImageUrl)
             .map(Embed::ofImage)
             .collect(Collectors.toList());
+    }
+
+    public String formatGold(long amount) {
+        return String.format("```ldif\n%s gp\n```", QuantityFormatter.quantityToStackSize(amount));
     }
 
 }

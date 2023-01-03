@@ -1,9 +1,9 @@
 package dinkplugin.notifiers.data;
 
 import dinkplugin.message.Field;
+import dinkplugin.util.ItemUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
-import net.runelite.client.util.QuantityFormatter;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +19,7 @@ public class LootNotificationData extends NotificationData {
         return Collections.singletonList(
             new Field(
                 "Total Value",
-                QuantityFormatter.quantityToStackSize(items.stream().mapToLong(SerializedItemStack::getTotalPrice).sum()) + " gp"
+                ItemUtils.formatGold(items.stream().mapToLong(SerializedItemStack::getTotalPrice).sum())
             )
         );
     }

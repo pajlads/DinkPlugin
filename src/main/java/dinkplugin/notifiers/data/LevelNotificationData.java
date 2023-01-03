@@ -19,8 +19,8 @@ public class LevelNotificationData extends NotificationData {
         if (levelledSkills.values().stream().anyMatch(lvl -> lvl >= 99)) {
             return Collections.singletonList(
                 new Field(
-                    "Skill Mastery Count",
-                    String.valueOf(allSkills.values().stream().filter(lvl -> lvl >= 99).count())
+                    "Total 99+ Skills",
+                    String.format("```\n%d\n```", allSkills.values().stream().filter(lvl -> lvl >= 99).count())
                 )
             );
         }
