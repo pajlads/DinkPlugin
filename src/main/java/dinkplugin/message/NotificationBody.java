@@ -36,7 +36,8 @@ public class NotificationBody<T extends Fieldable> {
      * Discord fields
      */
     @Nullable
-    private String content;
+    @SerializedName("content")
+    private String computedDiscordContent; // this should be set by DiscordMessageHandler, not notifiers
     private String username;
     private boolean tts;
     private @SerializedName("avatar_url") String avatarUrl;

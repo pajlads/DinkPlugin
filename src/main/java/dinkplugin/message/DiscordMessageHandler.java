@@ -89,7 +89,7 @@ public class DiscordMessageHandler {
         if (config.discordRichEmbeds()) {
             mBody = injectContent(mBody, sendImage, config.embedFooterText(), config.embedFooterIcon());
         } else {
-            mBody = mBody.withContent(mBody.getText());
+            mBody = mBody.withComputedDiscordContent(mBody.getText());
         }
 
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
