@@ -42,7 +42,7 @@ public class CollectionNotifier extends BaseNotifier {
         );
 
         createMessage(config.collectionSendImage(), NotificationBody.builder()
-            .content(notifyMessage)
+            .text(notifyMessage)
             .extra(new CollectionNotificationData(itemName))
             .type(NotificationType.COLLECTION)
             .build());

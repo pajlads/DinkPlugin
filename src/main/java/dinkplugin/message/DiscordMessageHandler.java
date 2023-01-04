@@ -91,7 +91,11 @@ public class DiscordMessageHandler {
         if (mBody.getAccountType() == null)
             mBody = mBody.withAccountType(client.getAccountType());
 
-        mBody = injectContent(mBody, sendImage);
+        if (config.discordRichEmbeds()) {
+            mBody = injectContent(mBody, sendImage);
+        } else {
+            mBody = mBody.withContent(mBody.getText());
+        }
 
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
@@ -194,7 +198,7 @@ public class DiscordMessageHandler {
                 .author(author)
                 .color(Utils.PINK)
                 .title(type.getTitle())
-                .description(body.getContent())
+                .description(body.getText())
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(type.getThumbnail()))
                 .fields(extra != null ? extra.getFields() : Collections.emptyList())

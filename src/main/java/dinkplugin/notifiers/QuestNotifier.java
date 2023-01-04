@@ -42,7 +42,7 @@ public class QuestNotifier extends BaseNotifier {
         );
 
         createMessage(config.questSendImage(), NotificationBody.builder()
-            .content(notifyMessage)
+            .text(notifyMessage)
             .extra(new QuestNotificationData(parsed))
             .type(NotificationType.QUEST)
             .build());

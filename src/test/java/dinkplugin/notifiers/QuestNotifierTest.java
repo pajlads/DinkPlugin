@@ -49,7 +49,7 @@ class QuestNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has completed: Dragon Slayer")
+                .text(PLAYER_NAME + " has completed: Dragon Slayer")
                 .extra(new QuestNotificationData("Dragon Slayer"))
                 .type(NotificationType.QUEST)
                 .build()

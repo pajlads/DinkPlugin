@@ -38,7 +38,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " got a pet")
+                .text(PLAYER_NAME + " got a pet")
                 .type(NotificationType.PET)
                 .build()
         );
@@ -57,7 +57,7 @@ class PetNotifierTest extends MockedNotifierTest {
             "https://example.com",
             false,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " got a pet")
+                .text(PLAYER_NAME + " got a pet")
                 .type(NotificationType.PET)
                 .build()
         );

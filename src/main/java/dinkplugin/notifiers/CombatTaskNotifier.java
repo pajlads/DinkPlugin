@@ -49,7 +49,7 @@ public class CombatTaskNotifier extends BaseNotifier {
 
         createMessage(config.combatTaskSendImage(), NotificationBody.<CombatAchievementData>builder()
             .type(NotificationType.COMBAT_ACHIEVEMENT)
-            .content(message)
+            .text(message)
             .playerName(player)
             .extra(new CombatAchievementData(tier, task))
             .build());

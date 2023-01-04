@@ -131,7 +131,7 @@ public class DeathNotifier extends BaseNotifier {
         );
 
         createMessage(config.deathSendImage(), NotificationBody.builder()
-            .content(notifyMessage)
+            .text(notifyMessage)
             .extra(extra)
             .embeds(keptItemEmbeds)
             .type(NotificationType.DEATH)

@@ -30,11 +30,13 @@ public class NotificationBody<T extends Fieldable> {
     @Nullable
     private T extra;
     @NotNull
-    private transient String content;
+    private transient String text;
 
     /*
      * Discord fields
      */
+    @Nullable
+    private String content;
     private String username;
     private boolean tts;
     private @SerializedName("avatar_url") String avatarUrl;

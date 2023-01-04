@@ -93,7 +93,7 @@ public class DiaryNotifier extends BaseNotifier {
 
         createMessage(config.diarySendImage(), NotificationBody.builder()
             .type(NotificationType.ACHIEVEMENT_DIARY)
-            .content(message)
+            .text(message)
             .extra(new DiaryNotificationData(area, difficulty, total))
             .playerName(player)
             .build());

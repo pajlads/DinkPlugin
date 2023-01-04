@@ -133,7 +133,7 @@ public class LootNotifier extends BaseNotifier {
             );
             createMessage(screenshot,
                 NotificationBody.builder()
-                    .content(notifyMessage)
+                    .text(notifyMessage)
                     .embeds(embeds)
                     .extra(new LootNotificationData(serializedItems, dropper))
                     .type(NotificationType.LOOT)

@@ -80,7 +80,7 @@ class ClueNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(String.format("%s has completed a %s clue, for a total of %d. They obtained: %s", PLAYER_NAME, "medium", 1312, "1 x Ruby (" + RUBY_PRICE + ")"))
+                .text(String.format("%s has completed a %s clue, for a total of %d. They obtained: %s", PLAYER_NAME, "medium", 1312, "1 x Ruby (" + RUBY_PRICE + ")"))
                 .extra(new ClueNotificationData("medium", 1312, Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"))))
                 .type(NotificationType.CLUE)
                 .build()

@@ -80,6 +80,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.maxRetries()).thenReturn(0);
         when(config.baseRetryDelay()).thenReturn(2000);
         when(config.imageWriteTimeout()).thenReturn(30_000);
+        when(config.discordRichEmbeds()).thenReturn(true);
 
         // make okhttp send message blocking
         when(messageHandler.isAsync()).thenReturn(false);

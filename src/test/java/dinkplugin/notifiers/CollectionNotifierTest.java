@@ -41,7 +41,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(String.format("%s has added %s to their collection", PLAYER_NAME, item))
+                .text(String.format("%s has added %s to their collection", PLAYER_NAME, item))
                 .extra(new CollectionNotificationData(item))
                 .type(NotificationType.COLLECTION)
                 .build()

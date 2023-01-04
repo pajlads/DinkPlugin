@@ -118,7 +118,7 @@ public class ClueNotifier extends BaseNotifier {
             );
             createMessage(screenshot,
                 NotificationBody.builder()
-                    .content(notifyMessage)
+                    .text(notifyMessage)
                     .extra(new ClueNotificationData(clueType, Integer.parseInt(clueCount), itemStacks))
                     .type(NotificationType.CLUE)
                     .embeds(embeds)

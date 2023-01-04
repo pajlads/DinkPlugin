@@ -60,7 +60,7 @@ public class SpeedrunNotifier extends BaseNotifier {
         );
 
         createMessage(config.speedrunSendImage(), NotificationBody.builder()
-            .content(notifyMessage)
+            .text(notifyMessage)
             .extra(new SpeedrunNotificationData(questName, bestTime.toString(), currentTime.toString()))
             .type(NotificationType.SPEEDRUN)
             .build());

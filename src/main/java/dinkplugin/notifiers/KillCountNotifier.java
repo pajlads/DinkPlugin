@@ -89,7 +89,7 @@ public class KillCountNotifier extends BaseNotifier {
         // Prepare body
         NotificationBody.NotificationBodyBuilder<BossNotificationData> body =
             NotificationBody.<BossNotificationData>builder()
-                .content(content)
+                .text(content)
                 .extra(data)
                 .playerName(player)
                 .type(NotificationType.KILL_COUNT);

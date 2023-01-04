@@ -144,6 +144,17 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "discordRichEmbeds",
+        name = "Use Rich Embeds",
+        description = "Whether Discord's rich embed format should be used for webhooks",
+        position = 1003,
+        section = advancedSection
+    )
+    default boolean discordRichEmbeds() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +

@@ -32,7 +32,7 @@ public class PetNotifier extends BaseNotifier {
             .replace("%USERNAME%", Utils.getPlayerName(client));
 
         createMessage(config.petSendImage(), NotificationBody.builder()
-            .content(notifyMessage)
+            .text(notifyMessage)
             .type(NotificationType.PET)
             .build());
     }
