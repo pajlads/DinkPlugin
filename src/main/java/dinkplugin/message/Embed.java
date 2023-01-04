@@ -19,7 +19,6 @@ public class Embed {
 
     String title;
     String description;
-    String url;
     Author author;
     @JsonAdapter(ColorAdapter.class)
     Color color;

@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 @Builder
 public class Author {
     @NotNull String name;
-    @Nullable String url;
     @Nullable
     @SerializedName("icon_url")
     String iconUrl;
