@@ -14,6 +14,9 @@ import java.util.List;
 @Value
 @Builder
 public class Embed {
+    public static final int MAX_DESCRIPTION_LENGTH = 4096;
+    public static final int MAX_FOOTER_LENGTH = 2048;
+
     String title;
     String description;
     String url;

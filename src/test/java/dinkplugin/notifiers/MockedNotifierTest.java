@@ -81,6 +81,8 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.baseRetryDelay()).thenReturn(2000);
         when(config.imageWriteTimeout()).thenReturn(30_000);
         when(config.discordRichEmbeds()).thenReturn(!"false".equalsIgnoreCase(System.getenv("TEST_WEBHOOK_RICH")));
+        when(config.embedFooterText()).thenReturn("Powered by Dink");
+        when(config.embedFooterIcon()).thenReturn("https://github.com/pajlads/DinkPlugin/raw/master/icon.png");
 
         // make okhttp send message blocking
         when(messageHandler.isAsync()).thenReturn(false);

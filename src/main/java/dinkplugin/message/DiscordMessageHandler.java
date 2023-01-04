@@ -41,11 +41,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class DiscordMessageHandler {
-    private static final Footer FOOTER = Footer.builder()
-        .text("Powered by Dink")
-        .iconUrl("https://github.com/pajlads/DinkPlugin/raw/master/icon.png")
-        .build();
-
     private final Gson gson;
     private final Client client;
     private final DrawManager drawManager;
@@ -92,7 +87,7 @@ public class DiscordMessageHandler {
             mBody = mBody.withAccountType(client.getAccountType());
 
         if (config.discordRichEmbeds()) {
-            mBody = injectContent(mBody, sendImage);
+            mBody = injectContent(mBody, sendImage, config.embedFooterText(), config.embedFooterIcon());
         } else {
             mBody = mBody.withContent(mBody.getText());
         }
@@ -185,25 +180,31 @@ public class DiscordMessageHandler {
         return true;
     }
 
-    private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot) {
+    private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, String footerText, String footerIcon) {
         NotificationType type = body.getType();
         Fieldable extra = body.getExtra();
+
         Author author = Author.builder()
             .name(body.getPlayerName())
             .iconUrl(Utils.getChatBadge(body.getAccountType()))
             .build();
+        Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()
+            .text(StringUtils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
+            .iconUrl(StringUtils.isBlank(footerIcon) ? null : footerIcon)
+            .build();
+
         List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
         embeds.add(0,
             Embed.builder()
                 .author(author)
                 .color(Utils.PINK)
                 .title(type.getTitle())
-                .description(body.getText())
+                .description(StringUtils.truncate(body.getText(), Embed.MAX_DESCRIPTION_LENGTH))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(type.getThumbnail()))
                 .fields(extra != null ? extra.getFields() : Collections.emptyList())
-                .footer(FOOTER)
-                .timestamp(Instant.now())
+                .footer(footer)
+                .timestamp(footer != null ? Instant.now() : null)
                 .build()
         );
         return body.withEmbeds(embeds);
