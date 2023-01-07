@@ -35,7 +35,7 @@ public class NotificationBody<T extends Fieldable> {
      */
     @Nullable
     @SerializedName("content")
-    String computedDiscordContent; // this should be set by DiscordMessageHandler, not notifiers
+    String computedDiscordContent; // this should be set by DiscordMessageHandler (when richDiscordEmbeds is disabled), not notifiers
     @Singular
     List<Embed> embeds;
 
