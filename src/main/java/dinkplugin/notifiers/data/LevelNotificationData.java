@@ -16,7 +16,7 @@ public class LevelNotificationData extends NotificationData {
 
     @Override
     public List<Field> getFields() {
-        if (levelledSkills.values().stream().anyMatch(lvl -> lvl >= 99)) {
+        if (levelledSkills.values().stream().anyMatch(lvl -> lvl == 99)) {
             return Collections.singletonList(
                 new Field(
                     "Total 99+ Skills",
