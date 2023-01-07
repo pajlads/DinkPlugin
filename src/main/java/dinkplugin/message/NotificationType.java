@@ -22,6 +22,14 @@ public enum NotificationType {
     ACHIEVEMENT_DIARY("Achievement Diary", "achievementDiaryImage.png", WIKI_IMG_URL + "Achievement_Diaries_icon.png");
 
     private final String title;
+
+    /**
+     * Name of the screenshot file
+     */
     private final String screenshot;
+
+    /**
+     * Link to the notifier icon
+     */
     private final String thumbnail;
 }
