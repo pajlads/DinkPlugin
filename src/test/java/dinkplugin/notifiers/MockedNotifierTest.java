@@ -5,12 +5,14 @@ import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.MockedTestBase;
 import dinkplugin.message.DiscordMessageHandler;
+import dinkplugin.util.BlockingClientThread;
 import dinkplugin.util.TestImageUtil;
 import net.runelite.api.Client;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.Player;
 import net.runelite.api.WorldType;
 import net.runelite.api.vars.AccountType;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.http.api.RuneLiteAPI;
@@ -39,6 +41,9 @@ abstract class MockedNotifierTest extends MockedTestBase {
 
     @Bind
     protected Client client = Mockito.mock(Client.class);
+
+    @Bind
+    protected ClientThread clientThread = Mockito.spy(new BlockingClientThread());
 
     @Mock
     protected Player localPlayer;
