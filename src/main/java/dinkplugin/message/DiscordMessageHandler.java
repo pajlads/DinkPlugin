@@ -126,7 +126,7 @@ public class DiscordMessageHandler {
         urls.forEach(url -> sendMessage(url, reqBodyBuilder, 0));
     }
 
-    @SneakyThrows
+    @SneakyThrows // for InterruptedException from CountDownLatch
     private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody, int attempt) {
         CountDownLatch latch = isAsync() ? null : new CountDownLatch(1);
         Request request = new Request.Builder()
@@ -178,6 +178,11 @@ public class DiscordMessageHandler {
 
     @VisibleForTesting
     public boolean isAsync() {
+        // This is modified to return false in MockedNotifierTest via Mockito Spy.
+        // For test cases that trigger a http request, JUnit can terminate the unit test
+        // before the OkHttp thread pool has completed the POST.
+        // So, this indicates whether CountDownLatch should be used in sendMessage
+        // to make the http request effectively blocking (i.e., prevents early exit).
         return true;
     }
 

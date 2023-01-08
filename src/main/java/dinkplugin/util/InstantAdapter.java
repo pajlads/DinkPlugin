@@ -8,6 +8,13 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Serialized and deserializes {@link Instant} instances
+ * from their equivalent ISO-8601 string representation.
+ * <p>
+ * Discord requires this string format, rather than epoch milliseconds
+ * that the default RuneLite Gson instance would produce.
+ */
 public class InstantAdapter extends TypeAdapter<Instant> {
     @Override
     public void write(JsonWriter out, Instant instant) throws IOException {

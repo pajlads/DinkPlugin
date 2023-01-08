@@ -7,6 +7,13 @@ import com.google.gson.stream.JsonWriter;
 import java.awt.Color;
 import java.io.IOException;
 
+/**
+ * Serializes and deserializes {@link Color} instances
+ * from their decimal representation.
+ * <p>
+ * Discord requires this decimal format, rather than a hex string
+ * that the default RuneLite GSON instance would produce.
+ */
 public class ColorAdapter extends TypeAdapter<Color> {
     @Override
     public void write(JsonWriter out, Color color) throws IOException {
