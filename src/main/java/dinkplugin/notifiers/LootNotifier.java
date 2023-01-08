@@ -14,6 +14,7 @@ import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
@@ -34,6 +35,9 @@ public class LootNotifier extends BaseNotifier {
 
     @Inject
     private ItemManager itemManager;
+
+    @Inject
+    private ClientThread clientThread;
 
     @Override
     public boolean isEnabled() {
@@ -72,27 +76,29 @@ public class LootNotifier extends BaseNotifier {
 
         // special case: runelite client & loot tracker do not handle unsired loot at the time of writing
         if (event.getGroupId() == WidgetID.DIALOG_SPRITE_GROUP_ID) {
-            Widget textWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
-            if (textWidget != null && StringUtils.containsIgnoreCase(textWidget.getText(), "The Font consumes the Unsired")) {
-                Widget spriteWidget = firstWithItem(WidgetInfo.DIALOG_SPRITE, WidgetInfo.DIALOG_SPRITE_SPRITE, WidgetInfo.DIALOG_SPRITE_TEXT);
-                if (hasItem(spriteWidget)) {
-                    ItemStack item = new ItemStack(
-                        spriteWidget.getItemId(),
-                        Math.max(spriteWidget.getItemQuantity(), 1),
-                        client.getLocalPlayer().getLocalLocation()
-                    );
-                    this.handleNotify(Collections.singletonList(item), "The Font of Consumption");
-                } else {
-                    Widget widget = client.getWidget(WidgetInfo.DIALOG_SPRITE);
-                    log.warn(
-                        "Failed to locate widget with item for Unsired loot. Children: {} - Nested: {} - Sprite: {} - Model: {}",
-                        widget != null && widget.getDynamicChildren() != null ? widget.getDynamicChildren().length : -1,
-                        widget != null && widget.getNestedChildren() != null ? widget.getNestedChildren().length : -1,
-                        widget != null ? widget.getSpriteId() : -1,
-                        widget != null ? widget.getModelId() : -1
-                    );
+            clientThread.invokeAtTickEnd(() -> {
+                Widget textWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
+                if (textWidget != null && StringUtils.containsIgnoreCase(textWidget.getText(), "The Font consumes the Unsired")) {
+                    Widget spriteWidget = firstWithItem(WidgetInfo.DIALOG_SPRITE, WidgetInfo.DIALOG_SPRITE_SPRITE, WidgetInfo.DIALOG_SPRITE_TEXT);
+                    if (hasItem(spriteWidget)) {
+                        ItemStack item = new ItemStack(
+                            spriteWidget.getItemId(),
+                            Math.max(spriteWidget.getItemQuantity(), 1),
+                            client.getLocalPlayer().getLocalLocation()
+                        );
+                        this.handleNotify(Collections.singletonList(item), "The Font of Consumption");
+                    } else {
+                        Widget widget = client.getWidget(WidgetInfo.DIALOG_SPRITE);
+                        log.warn(
+                            "Failed to locate widget with item for Unsired loot. Children: {} - Nested: {} - Sprite: {} - Model: {}",
+                            widget != null && widget.getDynamicChildren() != null ? widget.getDynamicChildren().length : -1,
+                            widget != null && widget.getNestedChildren() != null ? widget.getNestedChildren().length : -1,
+                            widget != null ? widget.getSpriteId() : -1,
+                            widget != null ? widget.getModelId() : -1
+                        );
+                    }
                 }
-            }
+            });
         }
     }
 
