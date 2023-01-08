@@ -13,7 +13,7 @@ import java.time.format.DateTimeParseException;
  * from their equivalent ISO-8601 string representation.
  * <p>
  * Discord requires this string format, rather than epoch milliseconds
- * that the default RuneLite Gson instance would produce.
+ * that the default RuneLite GSON instance would produce.
  */
 public class InstantAdapter extends TypeAdapter<Instant> {
     @Override
