@@ -157,7 +157,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "embedFooterText",
         name = "Embed Footer Text",
-        description = "The text in the footer of rich embed webhook messages",
+        description = "The text in the footer of rich embed webhook messages. If empty, no footer will be sent",
         position = 1004,
         section = advancedSection
     )
@@ -168,7 +168,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "embedFooterIcon",
         name = "Embed Footer Icon",
-        description = "The URL for the footer icon image of rich embed webhooks",
+        description = "The URL for the footer icon image of rich embed webhooks. Requires footer text to not be empty",
         position = 1005,
         section = advancedSection
     )
