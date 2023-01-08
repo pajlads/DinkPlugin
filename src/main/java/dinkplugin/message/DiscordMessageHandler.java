@@ -3,6 +3,7 @@ package dinkplugin.message;
 import com.google.gson.Gson;
 import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
+import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.Utils;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -182,7 +183,7 @@ public class DiscordMessageHandler {
 
     private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, String footerText, String footerIcon) {
         NotificationType type = body.getType();
-        Fieldable extra = body.getExtra();
+        NotificationData extra = body.getExtra();
 
         Author author = Author.builder()
             .name(body.getPlayerName())

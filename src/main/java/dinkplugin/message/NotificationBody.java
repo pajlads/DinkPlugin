@@ -1,6 +1,7 @@
 package dinkplugin.message;
 
 import com.google.gson.annotations.SerializedName;
+import dinkplugin.notifiers.data.NotificationData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
@@ -16,7 +17,7 @@ import java.util.List;
 @With
 @Builder
 @AllArgsConstructor
-public class NotificationBody<T extends Fieldable> {
+public class NotificationBody<T extends NotificationData> {
 
     /*
      * Dink fields
