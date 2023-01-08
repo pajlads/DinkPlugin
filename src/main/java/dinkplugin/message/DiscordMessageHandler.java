@@ -6,7 +6,6 @@ import dinkplugin.DinkPluginConfig;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.Utils;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.ui.DrawManager;
@@ -126,64 +125,56 @@ public class DiscordMessageHandler {
         urls.forEach(url -> sendMessage(url, reqBodyBuilder, 0));
     }
 
-    @SneakyThrows // for InterruptedException from CountDownLatch
     private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody, int attempt) {
-        CountDownLatch latch = isAsync() ? null : new CountDownLatch(1);
-        Request request = new Request.Builder()
-            .url(url)
-            .post(requestBody.build())
-            .build();
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                log.trace(String.format("Failed to send webhook message to %s on attempt %d", url, attempt), e);
+        executor.execute(() -> {
+            CountDownLatch latch = new CountDownLatch(1);
+            Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody.build())
+                .build();
+            httpClient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    log.trace(String.format("Failed to send webhook message to %s on attempt %d", url, attempt), e);
 
-                if (attempt == 0) {
-                    log.warn("There was an error sending the webhook message", e);
-                }
-
-                int maxRetries = config.maxRetries();
-                if (attempt < maxRetries) {
-                    long baseDelay = config.baseRetryDelay();
-                    if (baseDelay > 0) {
-                        long delay = baseDelay * (1L << Math.min(attempt, 16)); // exponential backoff
-                        executor.schedule(() -> sendMessage(url, requestBody, attempt + 1), delay, TimeUnit.MILLISECONDS);
-                        log.debug("Scheduled webhook message for retry in {} milliseconds", delay);
-                    } else {
-                        log.debug("Skipping retry attempts for failed webhook since base delay is not positive");
+                    if (attempt == 0) {
+                        log.warn("There was an error sending the webhook message", e);
                     }
-                } else if (maxRetries > 0) {
-                    log.warn("Exhausted retry attempts when sending the webhook message", e);
-                } else {
-                    log.debug("Skipping retry attempts for failed webhook since max retries is not positive");
+
+                    int maxRetries = config.maxRetries();
+                    if (attempt < maxRetries) {
+                        long baseDelay = config.baseRetryDelay();
+                        if (baseDelay > 0) {
+                            long delay = baseDelay * (1L << Math.min(attempt, 16)); // exponential backoff
+                            executor.schedule(() -> sendMessage(url, requestBody, attempt + 1), delay, TimeUnit.MILLISECONDS);
+                            log.debug("Scheduled webhook message for retry in {} milliseconds", delay);
+                        } else {
+                            log.debug("Skipping retry attempts for failed webhook since base delay is not positive");
+                        }
+                    } else if (maxRetries > 0) {
+                        log.warn("Exhausted retry attempts when sending the webhook message", e);
+                    } else {
+                        log.debug("Skipping retry attempts for failed webhook since max retries is not positive");
+                    }
+
+                    latch.countDown();
                 }
 
-                if (latch != null)
-                    latch.countDown();
-            }
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) {
+                    log.trace("Successfully sent webhook message to {} after {} attempts", url, attempt + 1);
+                    response.close();
 
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) {
-                log.trace("Successfully sent webhook message to {} after {} attempts", url, attempt + 1);
-                response.close();
-
-                if (latch != null)
                     latch.countDown();
+                }
+            });
+
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                log.warn("Failed to await webhook post completion", e);
             }
         });
-
-        if (latch != null)
-            latch.await();
-    }
-
-    @VisibleForTesting
-    public boolean isAsync() {
-        // This is modified to return false in MockedNotifierTest via Mockito Spy.
-        // For test cases that trigger a http request, JUnit can terminate the unit test
-        // before the OkHttp thread pool has completed the POST.
-        // So, this indicates whether CountDownLatch should be used in sendMessage
-        // to make the http request effectively blocking (i.e., prevents early exit).
-        return true;
     }
 
     private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, String footerText, String footerIcon) {
