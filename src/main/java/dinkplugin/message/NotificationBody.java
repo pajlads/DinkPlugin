@@ -34,9 +34,15 @@ public class NotificationBody<T extends NotificationData> {
     /*
      * Discord fields
      */
+    /**
+     * Filled in with the text of the notifier (e.g., {@link NotificationBody#getText()} is "Forsen has levelled Attack to 100")
+     *
+     * This is done by the {@link DiscordMessageHandler#createMessage()} if richDiscordEmbeds is disabled.
+     */
     @Nullable
     @SerializedName("content")
-    String computedDiscordContent; // this should be set by DiscordMessageHandler (when richDiscordEmbeds is disabled), not notifiers
+    String computedDiscordContent;
+
     @Builder.Default
     List<Embed> embeds = new LinkedList<>();
 
