@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.util.ItemUtils;
@@ -101,7 +102,7 @@ public class LootNotifier extends BaseNotifier {
 
         Collection<ItemStack> reduced = ItemUtils.reduceItemStack(items);
         List<SerializedItemStack> serializedItems = new ArrayList<>(reduced.size());
-        List<NotificationBody.Embed> embeds = new ArrayList<>(icons ? reduced.size() : 0);
+        List<Embed> embeds = new ArrayList<>(icons ? reduced.size() : 0);
 
         StringBuilder lootMessage = new StringBuilder();
         long totalStackValue = 0;
@@ -117,7 +118,7 @@ public class LootNotifier extends BaseNotifier {
                 sendMessage = true;
                 if (lootMessage.length() > 0) lootMessage.append("\n");
                 lootMessage.append(String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice)));
-                if (icons) embeds.add(new NotificationBody.Embed(new NotificationBody.UrlEmbed(ItemUtils.getItemImageUrl(itemId))));
+                if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(itemId)));
             }
             serializedItems.add(new SerializedItemStack(itemId, quantity, price, itemComposition.getName()));
             totalStackValue += totalPrice;
@@ -132,10 +133,9 @@ public class LootNotifier extends BaseNotifier {
             );
             createMessage(screenshot,
                 NotificationBody.builder()
-                    .content(notifyMessage)
+                    .text(notifyMessage)
                     .embeds(embeds)
                     .extra(new LootNotificationData(serializedItems, dropper))
-                    .screenshotFile("lootImage.png")
                     .type(NotificationType.LOOT)
                     .build()
             );

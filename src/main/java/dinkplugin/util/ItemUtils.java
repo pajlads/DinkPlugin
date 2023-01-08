@@ -1,7 +1,7 @@
 package dinkplugin.util;
 
 import com.google.common.collect.ImmutableSet;
-import dinkplugin.message.NotificationBody;
+import dinkplugin.message.Embed;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
@@ -11,6 +11,7 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
+import net.runelite.client.util.QuantityFormatter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -108,12 +109,15 @@ public class ItemUtils {
         return String.format("https://chisel.weirdgloop.org/static/img/osrs-npc/%d_128.png", npcId);
     }
 
-    public List<NotificationBody.Embed> buildEmbeds(int[] itemIds) {
+    public List<Embed> buildEmbeds(int[] itemIds) {
         return Arrays.stream(itemIds)
             .mapToObj(ItemUtils::getItemImageUrl)
-            .map(NotificationBody.UrlEmbed::new)
-            .map(NotificationBody.Embed::new)
+            .map(Embed::ofImage)
             .collect(Collectors.toList());
+    }
+
+    public String formatGold(long amount) {
+        return String.format("```ldif\n%s gp\n```", QuantityFormatter.quantityToStackSize(amount));
     }
 
 }

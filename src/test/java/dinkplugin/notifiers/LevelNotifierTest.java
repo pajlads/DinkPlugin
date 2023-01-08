@@ -53,7 +53,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has levelled Agility to 5")
+                .text(PLAYER_NAME + " has levelled Agility to 5")
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5), ImmutableMap.of("Agility", 5, "Attack", 99, "Hunter", 4)))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -73,7 +73,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has levelled Attack to 100")
+                .text(PLAYER_NAME + " has levelled Attack to 100")
                 .extra(new LevelNotificationData(ImmutableMap.of("Attack", 100), ImmutableMap.of("Agility", 1, "Attack", 100, "Hunter", 4)))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -94,7 +94,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has levelled Agility to 5 and Attack to 100")
+                .text(PLAYER_NAME + " has levelled Agility to 5 and Attack to 100")
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Attack", 100), ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 4)))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -116,7 +116,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has levelled Agility to 5, Attack to 100, and Hunter to 5")
+                .text(PLAYER_NAME + " has levelled Agility to 5, Attack to 100, and Hunter to 5")
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5), ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5)))
                 .type(NotificationType.LEVEL)
                 .build()

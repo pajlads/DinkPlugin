@@ -144,6 +144,39 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "discordRichEmbeds",
+        name = "Use Rich Embeds",
+        description = "Whether Discord's rich embed format should be used for webhooks",
+        position = 1003,
+        section = advancedSection
+    )
+    default boolean discordRichEmbeds() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "embedFooterText",
+        name = "Embed Footer Text",
+        description = "The text in the footer of rich embed webhook messages. If empty, no footer will be sent",
+        position = 1004,
+        section = advancedSection
+    )
+    default String embedFooterText() {
+        return "Powered by Dink";
+    }
+
+    @ConfigItem(
+        keyName = "embedFooterIcon",
+        name = "Embed Footer Icon",
+        description = "The URL for the footer icon image of rich embed webhooks. Requires footer text to not be empty",
+        position = 1005,
+        section = advancedSection
+    )
+    default String embedFooterIcon() {
+        return "https://github.com/pajlads/DinkPlugin/raw/master/icon.png";
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +

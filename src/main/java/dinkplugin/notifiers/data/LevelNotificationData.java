@@ -1,11 +1,13 @@
 package dinkplugin.notifiers.data;
 
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.util.Map;
 
 @Value
-public class LevelNotificationData {
+@EqualsAndHashCode(callSuper = false)
+public class LevelNotificationData extends NotificationData {
     Map<String, Integer> levelledSkills;
     Map<String, Integer> allSkills;
 }

@@ -3,8 +3,10 @@ package dinkplugin.message;
 import com.google.gson.Gson;
 import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
+import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.Utils;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.ui.DrawManager;
@@ -21,12 +23,18 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -42,6 +50,7 @@ public class DiscordMessageHandler {
     private final ScheduledExecutorService executor;
 
     @Inject
+    @VisibleForTesting
     public DiscordMessageHandler(Gson gson, Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor) {
         this.gson = gson;
         this.client = client;
@@ -63,7 +72,7 @@ public class DiscordMessageHandler {
             .build();
     }
 
-    public <T> void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<T> mBody) {
+    public void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<?> mBody) {
         if (StringUtils.isBlank(webhookUrl)) return;
 
         Collection<HttpUrl> urlList = Arrays.stream(StringUtils.split(webhookUrl, '\n'))
@@ -73,26 +82,36 @@ public class DiscordMessageHandler {
         if (urlList.isEmpty()) return;
 
         if (mBody.getPlayerName() == null)
-            mBody.setPlayerName(Utils.getPlayerName(client));
+            mBody = mBody.withPlayerName(Utils.getPlayerName(client));
+
+        if (mBody.getAccountType() == null)
+            mBody = mBody.withAccountType(client.getAccountType());
+
+        if (config.discordRichEmbeds()) {
+            mBody = injectContent(mBody, sendImage, config.embedFooterText(), config.embedFooterIcon());
+        } else {
+            mBody = mBody.withComputedDiscordContent(mBody.getText());
+        }
 
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("payload_json", gson.toJson(mBody));
 
         if (sendImage) {
+            String screenshotFile = mBody.getType().getScreenshot();
             drawManager.requestNextFrameListener(image -> {
                 try {
                     byte[] imageBytes = Utils.convertImageToByteArray(ImageUtil.bufferedImageFromImage(image));
 
                     reqBodyBuilder.addFormDataPart(
                         "file",
-                        mBody.getScreenshotFile(),
+                        screenshotFile,
                         RequestBody.create(
                             MediaType.parse("image/png"),
                             imageBytes
                         )
                     );
-                } catch (IOException e) {
+                } catch (Exception e) {
                     log.warn("There was an error creating bytes from captured image", e);
                 } finally {
                     sendToMultiple(urlList, reqBodyBuilder);
@@ -107,7 +126,9 @@ public class DiscordMessageHandler {
         urls.forEach(url -> sendMessage(url, reqBodyBuilder, 0));
     }
 
+    @SneakyThrows // for InterruptedException from CountDownLatch
     private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody, int attempt) {
+        CountDownLatch latch = isAsync() ? null : new CountDownLatch(1);
         Request request = new Request.Builder()
             .url(url)
             .post(requestBody.build())
@@ -136,13 +157,62 @@ public class DiscordMessageHandler {
                 } else {
                     log.debug("Skipping retry attempts for failed webhook since max retries is not positive");
                 }
+
+                if (latch != null)
+                    latch.countDown();
             }
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) {
                 log.trace("Successfully sent webhook message to {} after {} attempts", url, attempt + 1);
                 response.close();
+
+                if (latch != null)
+                    latch.countDown();
             }
         });
+
+        if (latch != null)
+            latch.await();
+    }
+
+    @VisibleForTesting
+    public boolean isAsync() {
+        // This is modified to return false in MockedNotifierTest via Mockito Spy.
+        // For test cases that trigger a http request, JUnit can terminate the unit test
+        // before the OkHttp thread pool has completed the POST.
+        // So, this indicates whether CountDownLatch should be used in sendMessage
+        // to make the http request effectively blocking (i.e., prevents early exit).
+        return true;
+    }
+
+    private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, String footerText, String footerIcon) {
+        NotificationType type = body.getType();
+        NotificationData extra = body.getExtra();
+
+        Author author = Author.builder()
+            .name(body.getPlayerName())
+            .iconUrl(Utils.getChatBadge(body.getAccountType()))
+            .build();
+        Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()
+            .text(StringUtils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
+            .iconUrl(StringUtils.isBlank(footerIcon) ? null : footerIcon)
+            .build();
+
+        List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
+        embeds.add(0,
+            Embed.builder()
+                .author(author)
+                .color(Utils.PINK)
+                .title(type.getTitle())
+                .description(StringUtils.truncate(body.getText(), Embed.MAX_DESCRIPTION_LENGTH))
+                .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
+                .thumbnail(new Embed.UrlEmbed(type.getThumbnail()))
+                .fields(extra != null ? extra.getFields() : Collections.emptyList())
+                .footer(footer)
+                .timestamp(footer != null ? Instant.now() : null)
+                .build()
+        );
+        return body.withEmbeds(embeds);
     }
 }

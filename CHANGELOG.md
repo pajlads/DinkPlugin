@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Major: Use Discord rich embed format for webhooks. This is technically a possible breaking change for users that target non-Discord webhook servers; these users can revert to the old notification format by disabling the `Use Rich Embeds` setting in the `Advanced` section. (#110)
+- Dev: Allow unit tests to post to an actual webhook server. (#110)
+
 ## 1.1.3
 
 - Minor: Add personal best time message to kill count notifier. (#106)

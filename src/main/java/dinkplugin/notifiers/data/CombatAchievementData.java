@@ -1,10 +1,12 @@
 package dinkplugin.notifiers.data;
 
 import dinkplugin.domain.CombatAchievementTier;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 @Value
-public class CombatAchievementData {
+@EqualsAndHashCode(callSuper = false)
+public class CombatAchievementData extends NotificationData {
     CombatAchievementTier tier;
     String task;
 }

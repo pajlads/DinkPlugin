@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
@@ -85,7 +86,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
+                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
                 .extra(new DeathNotificationData(0L, false, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
@@ -120,17 +121,17 @@ class DeathNotifierTest extends MockedNotifierTest {
         List<SerializedItemStack> lost = Collections.singletonList(
             new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")
         );
-        List<NotificationBody.Embed> embeds = Arrays.asList(
-            new NotificationBody.Embed(new NotificationBody.UrlEmbed("https://static.runelite.net/cache/item/icon/" + ItemID.RUBY + ".png")),
-            new NotificationBody.Embed(new NotificationBody.UrlEmbed("https://static.runelite.net/cache/item/icon/" + ItemID.SHARK + ".png")),
-            new NotificationBody.Embed(new NotificationBody.UrlEmbed("https://static.runelite.net/cache/item/icon/" + ItemID.OPAL + ".png")),
-            new NotificationBody.Embed(new NotificationBody.UrlEmbed("https://static.runelite.net/cache/item/icon/" + ItemID.COAL + ".png"))
+        List<Embed> embeds = Arrays.asList(
+            Embed.ofImage("https://static.runelite.net/cache/item/icon/" + ItemID.RUBY + ".png"),
+            Embed.ofImage("https://static.runelite.net/cache/item/icon/" + ItemID.SHARK + ".png"),
+            Embed.ofImage("https://static.runelite.net/cache/item/icon/" + ItemID.OPAL + ".png"),
+            Embed.ofImage("https://static.runelite.net/cache/item/icon/" + ItemID.COAL + ".png")
         );
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE))
+                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE))
                 .extra(new DeathNotificationData((long) TUNA_PRICE, false, null, kept, lost))
                 .type(NotificationType.DEATH)
                 .embeds(embeds)
@@ -155,7 +156,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
+                .text(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
                 .extra(new DeathNotificationData(0L, true, pker, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
@@ -182,7 +183,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
+                .text(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
                 .extra(new DeathNotificationData(0L, true, pker, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
@@ -206,7 +207,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
+                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
                 .extra(new DeathNotificationData(0L, false, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()

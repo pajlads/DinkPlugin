@@ -67,7 +67,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .content(String.format("%s has beat their PB of %s with a time of %s", PLAYER_NAME, QUEST_NAME, latest))
+                .text(String.format("%s has beat their PB of %s with a time of %s", PLAYER_NAME, QUEST_NAME, latest))
                 .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString()))
                 .type(NotificationType.SPEEDRUN)
                 .build()

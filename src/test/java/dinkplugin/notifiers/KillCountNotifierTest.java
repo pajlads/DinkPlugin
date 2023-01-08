@@ -4,6 +4,7 @@ import dinkplugin.util.TimeUtils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
+import net.runelite.api.NPC;
 import net.runelite.http.api.RuneLiteAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
         // init client mocks
         when(client.getVarbitValue(TimeUtils.ENABLE_PRECISE_TIMING)).thenReturn(1);
+        when(client.getCachedNPCs()).thenReturn(new NPC[0]);
     }
 
     @Test
@@ -52,7 +54,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
         // check notification
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
-            .content(PLAYER_NAME + " has defeated King Black Dragon with a completion count of 420")
+            .text(PLAYER_NAME + " has defeated King Black Dragon with a completion count of 420")
             .extra(new BossNotificationData("King Black Dragon", 420, gameMessage, null, null))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
@@ -83,7 +85,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has defeated King Black Dragon with a completion count of 1")
+                .text(PLAYER_NAME + " has defeated King Black Dragon with a completion count of 1")
                 .extra(new BossNotificationData("King Black Dragon", 1, gameMessage, null, null))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
@@ -135,7 +137,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
         // check notification
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
-            .content(PLAYER_NAME + " has defeated Zulrah with a new personal best time of 00:56.50 and a completion count of 12")
+            .text(PLAYER_NAME + " has defeated Zulrah with a new personal best time of 00:56.50 and a completion count of 12")
             .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(56).plusMillis(500), true))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
@@ -166,7 +168,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has defeated Zulrah with a new personal best time of 01:00:56.50 and a completion count of 1")
+                .text(PLAYER_NAME + " has defeated Zulrah with a new personal best time of 01:00:56.50 and a completion count of 1")
                 .extra(new BossNotificationData("Zulrah", 1, gameMessage, Duration.ofHours(1).plusSeconds(56).plusMillis(500), true))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
@@ -188,7 +190,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
         // check notification
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
-            .content(PLAYER_NAME + " has defeated Zulrah with a new personal best time of 00:56 and a completion count of 13")
+            .text(PLAYER_NAME + " has defeated Zulrah with a new personal best time of 00:56 and a completion count of 13")
             .extra(new BossNotificationData("Zulrah", 13, gameMessage, Duration.ofSeconds(56), true))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
@@ -219,7 +221,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has defeated Chambers of Xeric with a new personal best time of 36:04.20 and a completion count of 125")
+                .text(PLAYER_NAME + " has defeated Chambers of Xeric with a new personal best time of 36:04.20 and a completion count of 125")
                 .extra(new BossNotificationData("Chambers of Xeric", 125, gameMessage, Duration.ofMinutes(36).plusSeconds(4).plusMillis(200), true))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
@@ -244,7 +246,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has defeated Chambers of Xeric with a completion count of 150")
+                .text(PLAYER_NAME + " has defeated Chambers of Xeric with a completion count of 150")
                 .extra(new BossNotificationData("Chambers of Xeric", 150, gameMessage, Duration.ofMinutes(46).plusSeconds(31).plusMillis(800), false))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
@@ -268,7 +270,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has defeated Crystalline Hunllef with a new personal best time of 10:25.00 and a completion count of 10")
+                .text(PLAYER_NAME + " has defeated Crystalline Hunllef with a new personal best time of 10:25.00 and a completion count of 10")
                 .extra(new BossNotificationData("Crystalline Hunllef", 10, gameMessage, Duration.ofMinutes(10).plusSeconds(25), true))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
@@ -292,7 +294,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has defeated Tempoross with a new personal best time of 06:30.00 and a completion count of 69")
+                .text(PLAYER_NAME + " has defeated Tempoross with a new personal best time of 06:30.00 and a completion count of 69")
                 .extra(new BossNotificationData("Tempoross", 69, gameMessage, Duration.ofMinutes(6).plusSeconds(30), true))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
@@ -316,7 +318,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has defeated Tombs of Amascut: Expert Mode with a new personal best time of 25:00.00 and a completion count of 8")
+                .text(PLAYER_NAME + " has defeated Tombs of Amascut: Expert Mode with a new personal best time of 25:00.00 and a completion count of 8")
                 .extra(new BossNotificationData("Tombs of Amascut: Expert Mode", 8, gameMessage, Duration.ofMinutes(25), true))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
@@ -340,7 +342,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
-                .content(PLAYER_NAME + " has defeated Zulrah with a completion count of 12")
+                .text(PLAYER_NAME + " has defeated Zulrah with a completion count of 12")
                 .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(59).plusMillis(300), false))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)

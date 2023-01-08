@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.message.Embed;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.util.Utils;
@@ -88,10 +89,9 @@ public class KillCountNotifier extends BaseNotifier {
         // Prepare body
         NotificationBody.NotificationBodyBuilder<BossNotificationData> body =
             NotificationBody.<BossNotificationData>builder()
-                .content(content)
+                .text(content)
                 .extra(data)
                 .playerName(player)
-                .screenshotFile("killCountImage.png")
                 .type(NotificationType.KILL_COUNT);
 
         // Add embed if not screenshotting
@@ -103,8 +103,7 @@ public class KillCountNotifier extends BaseNotifier {
                 .findAny()
                 .map(NPC::getId)
                 .map(ItemUtils::getNpcImageUrl)
-                .map(NotificationBody.UrlEmbed::new)
-                .map(NotificationBody.Embed::new)
+                .map(Embed::ofImage)
                 .map(Collections::singletonList)
                 .ifPresent(body::embeds);
 
