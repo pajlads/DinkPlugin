@@ -4,7 +4,6 @@ import com.google.gson.annotations.JsonAdapter;
 import dinkplugin.util.ColorAdapter;
 import dinkplugin.util.InstantAdapter;
 import lombok.Builder;
-import lombok.Singular;
 import lombok.Value;
 
 import java.awt.Color;
@@ -74,7 +73,6 @@ public class Embed {
      *
      * @see <a href="https://birdie0.github.io/discord-webhooks-guide/structure/embed/fields.html">Example</a>
      */
-    @Singular
     List<Field> fields;
 
     /**
