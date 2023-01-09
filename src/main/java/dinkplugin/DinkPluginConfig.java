@@ -179,7 +179,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "rsnDenyList",
         name = "RSN Deny List",
-        description = "Prevent notifications from the following comma-separated player names",
+        description = "Prevent notifications from the following player names (One name per line)",
         position = 1006,
         section = advancedSection
     )
