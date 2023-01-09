@@ -13,6 +13,7 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.events.ConfigChanged;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -45,7 +46,8 @@ public class SettingsManager {
         return !nameDenyList.contains(name.toLowerCase());
     }
 
-    void init() {
+    @VisibleForTesting
+    public void init() {
         setNameAllowList(config.nameAllowList());
         setNameDenyList(config.nameDenyList());
     }
