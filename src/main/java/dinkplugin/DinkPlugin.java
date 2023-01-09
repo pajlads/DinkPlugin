@@ -78,6 +78,10 @@ public class DinkPlugin extends Plugin {
     @Override
     protected void shutDown() {
         log.info("Shutting down Dink");
+        this.resetNotifiers();
+    }
+
+    void resetNotifiers() {
         clueNotifier.reset();
         diaryNotifier.reset();
         levelNotifier.reset();

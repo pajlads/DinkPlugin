@@ -113,6 +113,9 @@ public class SettingsManager {
             .map(String::toLowerCase)
             .forEach(nameDenyList::add);
         log.debug("Updated RSN Deny List to: {}", nameDenyList);
+
+        if (plugin != null)
+            plugin.resetNotifiers();
     }
 
     private static boolean isCollectionLogInvalid(int varbitValue) {
