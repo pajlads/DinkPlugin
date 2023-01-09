@@ -177,21 +177,10 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "rsnAllowList",
-        name = "RSN Allow List",
-        description = "Only allow notifications from the following comma-separated player names",
-        position = 1006,
-        section = advancedSection
-    )
-    default String nameAllowList() {
-        return "";
-    }
-
-    @ConfigItem(
         keyName = "rsnDenyList",
         name = "RSN Deny List",
         description = "Prevent notifications from the following comma-separated player names",
-        position = 1007,
+        position = 1006,
         section = advancedSection
     )
     default String nameDenyList() {

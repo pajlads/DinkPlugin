@@ -29,7 +29,6 @@ public class SettingsManager {
     private static final String CONFIG_GROUP = "dinkplugin";
     private static final Pattern DELIM = Pattern.compile("[,;\\n]");
 
-    private final Collection<String> nameAllowList = new HashSet<>();
     private final Collection<String> nameDenyList = new HashSet<>();
 
     private final Client client;
@@ -39,16 +38,11 @@ public class SettingsManager {
 
     @Synchronized
     public boolean testUsername(String name) {
-        if (name == null)
-            return false;
-        if (!nameAllowList.isEmpty())
-            return nameAllowList.contains(name.toLowerCase());
-        return !nameDenyList.contains(name.toLowerCase());
+        return name != null && !nameDenyList.contains(name.toLowerCase());
     }
 
     @VisibleForTesting
     public void init() {
-        setNameAllowList(config.nameAllowList());
         setNameDenyList(config.nameDenyList());
     }
 
@@ -59,11 +53,6 @@ public class SettingsManager {
 
         String key = event.getKey();
         String value = event.getNewValue();
-
-        if ("rsnAllowList".equals(key)) {
-            setNameAllowList(value);
-            return;
-        }
 
         if ("rsnDenyList".equals(key)) {
             setNameDenyList(value);
@@ -115,15 +104,6 @@ public class SettingsManager {
         return DELIM.splitAsStream(value)
             .map(String::trim)
             .filter(StringUtils::isNotEmpty);
-    }
-
-    @Synchronized
-    private void setNameAllowList(String configValue) {
-        nameAllowList.clear();
-        readDelimited(configValue)
-            .map(String::toLowerCase)
-            .forEach(nameAllowList::add);
-        log.debug("Updated RSN Allow List to: {}", nameAllowList);
     }
 
     @Synchronized

@@ -108,51 +108,6 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
     }
 
     @Test
-    void testNotifyAllowList() {
-        // configure allow list
-        when(config.nameAllowList()).thenReturn(PLAYER_NAME);
-        settingsManager.init();
-
-        // mock widget
-        String latest = "1:15.30";
-        Widget time = mock(Widget.class);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
-        when(time.getText()).thenReturn(latest);
-
-        // fire fake event
-        notifier.onWidgetLoaded(event());
-
-        // check notification message
-        verify(messageHandler).createMessage(
-            PRIMARY_WEBHOOK_URL,
-            false,
-            NotificationBody.builder()
-                .text(String.format("%s has beat their PB of %s with a time of %s", PLAYER_NAME, QUEST_NAME, latest))
-                .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString()))
-                .type(NotificationType.SPEEDRUN)
-                .build()
-        );
-    }
-
-    @Test
-    void testIgnoreAllowList() {
-        // configure allow list to block notification
-        when(config.nameAllowList()).thenReturn("pajlads");
-        settingsManager.init();
-
-        // mock widget
-        Widget time = mock(Widget.class);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
-        when(time.getText()).thenReturn("1:15.30");
-
-        // fire fake event
-        notifier.onWidgetLoaded(event());
-
-        // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
-    }
-
-    @Test
     void testNotifyDenyList() {
         // configure irrelevant deny list
         when(config.nameDenyList()).thenReturn("pajlads");
