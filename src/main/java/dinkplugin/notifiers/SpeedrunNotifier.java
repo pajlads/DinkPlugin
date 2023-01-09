@@ -23,7 +23,8 @@ public class SpeedrunNotifier extends BaseNotifier {
 
     @Override
     public boolean isEnabled() {
-        return config.notifySpeedrun(); // intentionally doesn't call super
+        // intentionally doesn't call super as WorldUtils.isIgnoredWorld includes speedrunning
+        return config.notifySpeedrun() && settingsManager.testUsername(client.getLocalPlayer().getName());
     }
 
     @Override
