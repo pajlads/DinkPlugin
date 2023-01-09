@@ -17,7 +17,6 @@ public class BlockingExecutor implements ScheduledExecutorService {
     private final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
 
     @Override
-    @SneakyThrows
     public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
         return schedule(() -> {
             command.run();
