@@ -25,7 +25,7 @@ public abstract class BaseNotifier {
     private DiscordMessageHandler messageHandler;
 
     public boolean isEnabled() {
-        return !WorldUtils.isIgnoredWorld(client.getWorldType()) && settingsManager.testUsername(client.getLocalPlayer().getName());
+        return !WorldUtils.isIgnoredWorld(client.getWorldType()) && settingsManager.isNamePermitted(client.getLocalPlayer().getName());
     }
 
     protected abstract String getWebhookUrl();

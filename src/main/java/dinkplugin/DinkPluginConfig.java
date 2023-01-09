@@ -177,13 +177,13 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "rsnDenyList",
-        name = "RSN Deny List",
+        keyName = "ignoredNames",
+        name = "Ignored RSNs",
         description = "Prevent notifications from the following player names (One name per line)",
         position = 1006,
         section = advancedSection
     )
-    default String nameDenyList() {
+    default String ignoredNames() {
         return "";
     }
 

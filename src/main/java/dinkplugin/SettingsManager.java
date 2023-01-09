@@ -29,21 +29,27 @@ public class SettingsManager {
     private static final String CONFIG_GROUP = "dinkplugin";
     private static final Pattern DELIM = Pattern.compile("[,;\\n]");
 
-    private final Collection<String> nameDenyList = new HashSet<>();
+    private final Collection<String> ignoredNames = new HashSet<>();
 
     private final Client client;
     private final ClientThread clientThread;
     private final DinkPlugin plugin;
     private final DinkPluginConfig config;
 
+    /**
+     * Check whether a username is not on the configured ignore list.
+     *
+     * @param name the local player's name
+     * @return whether notifications for this player should be sent
+     */
     @Synchronized
-    public boolean testUsername(String name) {
-        return name != null && !nameDenyList.contains(name.toLowerCase());
+    public boolean isNamePermitted(String name) {
+        return name != null && !ignoredNames.contains(name.toLowerCase());
     }
 
     @VisibleForTesting
     public void init() {
-        setNameDenyList(config.nameDenyList());
+        setIgnoredNames(config.ignoredNames());
     }
 
     void onConfigChanged(ConfigChanged event) {
@@ -54,8 +60,8 @@ public class SettingsManager {
         String key = event.getKey();
         String value = event.getNewValue();
 
-        if ("rsnDenyList".equals(key)) {
-            setNameDenyList(value);
+        if ("ignoredNames".equals(key)) {
+            setIgnoredNames(value);
             return;
         }
 
@@ -107,12 +113,12 @@ public class SettingsManager {
     }
 
     @Synchronized
-    private void setNameDenyList(String configValue) {
-        nameDenyList.clear();
+    private void setIgnoredNames(String configValue) {
+        ignoredNames.clear();
         readDelimited(configValue)
             .map(String::toLowerCase)
-            .forEach(nameDenyList::add);
-        log.debug("Updated RSN Deny List to: {}", nameDenyList);
+            .forEach(ignoredNames::add);
+        log.debug("Updated RSN Deny List to: {}", ignoredNames);
 
         if (plugin != null)
             plugin.resetNotifiers();
