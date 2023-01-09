@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPluginConfig;
+import dinkplugin.SettingsManager;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.util.WorldUtils;
@@ -15,13 +16,16 @@ public abstract class BaseNotifier {
     protected DinkPluginConfig config;
 
     @Inject
+    protected SettingsManager settingsManager;
+
+    @Inject
     protected Client client;
 
     @Inject
     private DiscordMessageHandler messageHandler;
 
     public boolean isEnabled() {
-        return !WorldUtils.isIgnoredWorld(client.getWorldType());
+        return !WorldUtils.isIgnoredWorld(client.getWorldType()) && settingsManager.testUsername(client.getLocalPlayer().getName());
     }
 
     protected abstract String getWebhookUrl();
