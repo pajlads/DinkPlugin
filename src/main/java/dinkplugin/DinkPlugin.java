@@ -53,7 +53,7 @@ public class DinkPlugin extends Plugin {
 
     private @Inject ChatMessageManager chatManager;
 
-    private @Inject SettingsValidator validator;
+    private @Inject SettingsManager settingsManager;
 
     private @Inject CollectionNotifier collectionNotifier;
     private @Inject PetNotifier petNotifier;
@@ -71,12 +71,17 @@ public class DinkPlugin extends Plugin {
     @Override
     protected void startUp() {
         log.info("Started up Dink");
+        settingsManager.init();
         levelNotifier.initLevels();
     }
 
     @Override
     protected void shutDown() {
         log.info("Shutting down Dink");
+        this.resetNotifiers();
+    }
+
+    void resetNotifiers() {
         clueNotifier.reset();
         diaryNotifier.reset();
         levelNotifier.reset();
@@ -91,7 +96,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onConfigChanged(ConfigChanged event) {
-        validator.onConfigChanged(event);
+        settingsManager.onConfigChanged(event);
     }
 
     @Subscribe
@@ -165,7 +170,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onVarbitChanged(VarbitChanged event) {
-        validator.onVarbitChanged(event);
+        settingsManager.onVarbitChanged(event);
         diaryNotifier.onVarbitChanged(event);
     }
 
