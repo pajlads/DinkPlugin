@@ -7,6 +7,7 @@ import dinkplugin.MockedTestBase;
 import dinkplugin.SettingsManager;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.util.BlockingClientThread;
+import dinkplugin.util.BlockingExecutor;
 import dinkplugin.util.TestImageUtil;
 import net.runelite.api.Client;
 import net.runelite.api.ItemComposition;
@@ -23,7 +24,6 @@ import org.mockito.Mockito;
 
 import java.awt.Image;
 import java.util.EnumSet;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
@@ -59,7 +59,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
     protected OkHttpClient httpClient = new OkHttpClient();
 
     @Bind
-    protected ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    protected ScheduledExecutorService executor = new BlockingExecutor();
 
     @Bind
     protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(client, null, null, config));
@@ -92,9 +92,6 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.discordRichEmbeds()).thenReturn(!"false".equalsIgnoreCase(System.getenv("TEST_WEBHOOK_RICH")));
         when(config.embedFooterText()).thenReturn("Powered by Dink");
         when(config.embedFooterIcon()).thenReturn("https://github.com/pajlads/DinkPlugin/raw/master/icon.png");
-
-        // make okhttp send message blocking
-        when(messageHandler.isAsync()).thenReturn(false);
     }
 
     protected void mockItem(ItemManager manager, int id, int price, String name) {

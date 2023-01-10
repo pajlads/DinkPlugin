@@ -6,13 +6,10 @@ import dinkplugin.DinkPluginConfig;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.Utils;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.ImageUtil;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -27,14 +24,12 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -126,16 +121,21 @@ public class DiscordMessageHandler {
         urls.forEach(url -> sendMessage(url, reqBodyBuilder, 0));
     }
 
-    @SneakyThrows // for InterruptedException from CountDownLatch
     private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody, int attempt) {
-        CountDownLatch latch = isAsync() ? null : new CountDownLatch(1);
-        Request request = new Request.Builder()
-            .url(url)
-            .post(requestBody.build())
-            .build();
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+        executor.execute(() -> {
+            Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody.build())
+                .build();
+
+            try (Response response = httpClient.newCall(request).execute()) {
+                if (response.isSuccessful()) {
+                    log.trace("Successfully sent webhook message to {} after {} attempts", url, attempt + 1);
+                } else {
+                    String body = response.body() != null ? response.body().string() : null;
+                    throw new RuntimeException(String.format("Received unsuccessful http response: %d - %s - %s", response.code(), response.message(), body));
+                }
+            } catch (Exception e) {
                 log.trace(String.format("Failed to send webhook message to %s on attempt %d", url, attempt), e);
 
                 if (attempt == 0) {
@@ -157,33 +157,8 @@ public class DiscordMessageHandler {
                 } else {
                     log.debug("Skipping retry attempts for failed webhook since max retries is not positive");
                 }
-
-                if (latch != null)
-                    latch.countDown();
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) {
-                log.trace("Successfully sent webhook message to {} after {} attempts", url, attempt + 1);
-                response.close();
-
-                if (latch != null)
-                    latch.countDown();
             }
         });
-
-        if (latch != null)
-            latch.await();
-    }
-
-    @VisibleForTesting
-    public boolean isAsync() {
-        // This is modified to return false in MockedNotifierTest via Mockito Spy.
-        // For test cases that trigger a http request, JUnit can terminate the unit test
-        // before the OkHttp thread pool has completed the POST.
-        // So, this indicates whether CountDownLatch should be used in sendMessage
-        // to make the http request effectively blocking (i.e., prevents early exit).
-        return true;
     }
 
     private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, String footerText, String footerIcon) {
