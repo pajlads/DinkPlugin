@@ -84,4 +84,37 @@ class PetNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
+    @Test
+    void testNotifyIrrelevantNameIgnore() {
+        // ignore notifications for an irrelevant player
+        when(config.ignoredNames()).thenReturn("xqc");
+        settingsManager.init();
+
+        // send fake message
+        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(PLAYER_NAME + " got a pet")
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
+    void testIgnoredPlayerName() {
+        // ignore notifications for our player name
+        when(config.ignoredNames()).thenReturn(PLAYER_NAME);
+        settingsManager.init();
+
+        // send fake message
+        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
 }

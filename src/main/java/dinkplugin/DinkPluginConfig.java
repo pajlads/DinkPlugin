@@ -177,6 +177,17 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "ignoredNames",
+        name = "Ignored RSNs",
+        description = "Prevent notifications from the following player names (One name per line)",
+        position = 1006,
+        section = advancedSection
+    )
+    default String ignoredNames() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +

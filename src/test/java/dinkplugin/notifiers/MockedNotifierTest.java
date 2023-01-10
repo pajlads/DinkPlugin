@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.MockedTestBase;
+import dinkplugin.SettingsManager;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.util.TestImageUtil;
 import net.runelite.api.Client;
@@ -54,6 +55,9 @@ abstract class MockedNotifierTest extends MockedTestBase {
 
     @Bind
     protected ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+
+    @Bind
+    protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(client, null, null, config));
 
     @Bind
     protected DiscordMessageHandler messageHandler = Mockito.spy(new DiscordMessageHandler(gson, client, drawManager, httpClient, config, executor));
