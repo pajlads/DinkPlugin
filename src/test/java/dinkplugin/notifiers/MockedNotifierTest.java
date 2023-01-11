@@ -2,6 +2,7 @@ package dinkplugin.notifiers;
 
 import com.google.gson.Gson;
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.MockedTestBase;
 import dinkplugin.SettingsManager;
@@ -15,6 +16,7 @@ import net.runelite.api.Player;
 import net.runelite.api.WorldType;
 import net.runelite.api.vars.AccountType;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.http.api.RuneLiteAPI;
@@ -62,7 +64,16 @@ abstract class MockedNotifierTest extends MockedTestBase {
     protected ScheduledExecutorService executor = new BlockingExecutor();
 
     @Bind
-    protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(client, null, null, config));
+    protected ChatMessageManager chatManager = Mockito.mock(ChatMessageManager.class);
+
+    @Bind
+    protected ItemManager itemManager = Mockito.mock(ItemManager.class);
+
+    @Bind
+    protected DinkPlugin plugin = Mockito.spy(DinkPlugin.class);
+
+    @Bind
+    protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(client, clientThread, plugin, config));
 
     @Bind
     protected DiscordMessageHandler messageHandler = Mockito.spy(new DiscordMessageHandler(gson, client, drawManager, httpClient, config, executor));
@@ -94,11 +105,11 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.embedFooterIcon()).thenReturn("https://github.com/pajlads/DinkPlugin/raw/master/icon.png");
     }
 
-    protected void mockItem(ItemManager manager, int id, int price, String name) {
-        when(manager.getItemPrice(id)).thenReturn(price);
+    protected void mockItem(int id, int price, String name) {
+        when(itemManager.getItemPrice(id)).thenReturn(price);
         ItemComposition item = mock(ItemComposition.class);
         when(item.getName()).thenReturn(name);
-        when(manager.getItemComposition(id)).thenReturn(item);
+        when(itemManager.getItemComposition(id)).thenReturn(item);
     }
 
 }

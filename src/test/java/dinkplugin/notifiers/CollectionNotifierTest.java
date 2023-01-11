@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.CollectionNotificationData;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 class CollectionNotifierTest extends MockedNotifierTest {
 
+    @Bind
     @InjectMocks
     CollectionNotifier notifier;
 

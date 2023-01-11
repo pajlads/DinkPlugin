@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -16,6 +17,7 @@ import static org.mockito.Mockito.when;
 
 class CombatTaskNotifierTest extends MockedNotifierTest {
 
+    @Bind
     @InjectMocks
     CombatTaskNotifier notifier;
 
