@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 class KillCountNotifierTest extends MockedNotifierTest {
 
+    @Bind
     @InjectMocks
     KillCountNotifier notifier;
 

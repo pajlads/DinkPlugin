@@ -17,11 +17,9 @@ import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
-import net.runelite.client.game.ItemManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,9 +41,6 @@ class DeathNotifierTest extends MockedNotifierTest {
     private static final int TUNA_PRICE = 100;
 
     @Bind
-    @Mock
-    ItemManager itemManager;
-
     @InjectMocks
     DeathNotifier notifier;
 
@@ -69,17 +64,17 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(localPlayer.getWorldLocation()).thenReturn(location);
 
         // init item mocks
-        mockItem(itemManager, ItemID.RUBY, RUBY_PRICE, "Ruby");
-        mockItem(itemManager, ItemID.SHARK, SHARK_PRICE, "Shark");
-        mockItem(itemManager, ItemID.OPAL, OPAL_PRICE, "Opal");
-        mockItem(itemManager, ItemID.COAL, COAL_PRICE, "Coal");
-        mockItem(itemManager, ItemID.TUNA, TUNA_PRICE, "Tuna");
+        mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
+        mockItem(ItemID.SHARK, SHARK_PRICE, "Shark");
+        mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
+        mockItem(ItemID.COAL, COAL_PRICE, "Coal");
+        mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
     }
 
     @Test
     void testNotifyEmpty() {
         // fire event
-        notifier.onActorDeath(new ActorDeath(localPlayer));
+        plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // verify notification
         verify(messageHandler).createMessage(
@@ -109,7 +104,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(inv.getItems()).thenReturn(items);
 
         // fire event
-        notifier.onActorDeath(new ActorDeath(localPlayer));
+        plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // verify notification
         List<SerializedItemStack> kept = Arrays.asList(
@@ -149,7 +144,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(client.getPlayers()).thenReturn(Arrays.asList(mock(Player.class), mock(Player.class), other, mock(Player.class)));
 
         // fire event
-        notifier.onActorDeath(new ActorDeath(localPlayer));
+        plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // verify notification
         verify(messageHandler).createMessage(
@@ -174,9 +169,9 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(localPlayer.getCombatLevel()).thenReturn(50);
 
         // fire events
-        notifier.onInteraction(new InteractingChanged(other, localPlayer));
-        notifier.onInteraction(new InteractingChanged(localPlayer, other));
-        notifier.onActorDeath(new ActorDeath(localPlayer));
+        plugin.onInteractingChanged(new InteractingChanged(other, localPlayer));
+        plugin.onInteractingChanged(new InteractingChanged(localPlayer, other));
+        plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // verify notification
         verify(messageHandler).createMessage(
@@ -200,7 +195,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(client.getVarbitValue(Varbits.IN_WILDERNESS)).thenReturn(0);
 
         // fire event
-        notifier.onActorDeath(new ActorDeath(localPlayer));
+        plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // verify non-PK notification
         verify(messageHandler).createMessage(
@@ -220,7 +215,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         Player other = mock(Player.class);
 
         // fire event
-        notifier.onActorDeath(new ActorDeath(other));
+        plugin.onActorDeath(new ActorDeath(other));
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -233,7 +228,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(client.getVarpValue(WorldUtils.CASTLE_WARS_COUNTDOWN)).thenReturn(10);
 
         // fire event
-        notifier.onActorDeath(new ActorDeath(localPlayer));
+        plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -245,7 +240,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(config.notifyDeath()).thenReturn(false);
 
         // fire event
-        notifier.onActorDeath(new ActorDeath(localPlayer));
+        plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());

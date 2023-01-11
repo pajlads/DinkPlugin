@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 class PetNotifierTest extends MockedNotifierTest {
 
+    @Bind
     @InjectMocks
     PetNotifier notifier;
 

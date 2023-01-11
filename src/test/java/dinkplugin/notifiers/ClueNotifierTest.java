@@ -10,11 +10,9 @@ import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.game.ItemManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 import java.util.Collections;
 
@@ -31,9 +29,6 @@ class ClueNotifierTest extends MockedNotifierTest {
     private static final int TUNA_PRICE = 100;
 
     @Bind
-    @Mock
-    ItemManager itemManager;
-
     @InjectMocks
     ClueNotifier notifier;
 
@@ -50,8 +45,8 @@ class ClueNotifierTest extends MockedNotifierTest {
         when(config.clueNotifyMessage()).thenReturn("%USERNAME% has completed a %CLUE% clue, for a total of %COUNT%. They obtained: %LOOT%");
 
         // init item mocks
-        mockItem(itemManager, ItemID.RUBY, RUBY_PRICE, "Ruby");
-        mockItem(itemManager, ItemID.TUNA, TUNA_PRICE, "Tuna");
+        mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
+        mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
     }
 
     @Test
@@ -73,7 +68,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         // fire widget event
         WidgetLoaded event = new WidgetLoaded();
         event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
-        notifier.onWidgetLoaded(event);
+        plugin.onWidgetLoaded(event);
 
         // verify notification message
         verify(messageHandler).createMessage(
@@ -106,7 +101,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         // fire widget event
         WidgetLoaded event = new WidgetLoaded();
         event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
-        notifier.onWidgetLoaded(event);
+        plugin.onWidgetLoaded(event);
 
         // ensure no notification was fired
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -134,7 +129,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         // fire widget event
         WidgetLoaded event = new WidgetLoaded();
         event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
-        notifier.onWidgetLoaded(event);
+        plugin.onWidgetLoaded(event);
 
         // ensure no notification was fired
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());

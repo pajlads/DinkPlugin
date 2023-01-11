@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.QuestNotificationData;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 class QuestNotifierTest extends MockedNotifierTest {
 
+    @Bind
     @InjectMocks
     QuestNotifier notifier;
 
@@ -42,7 +44,7 @@ class QuestNotifierTest extends MockedNotifierTest {
         when(questWidget.getText()).thenReturn("You have completed the Dragon Slayer quest!");
 
         // send event
-        notifier.onWidgetLoaded(event(QUEST_COMPLETED_GROUP_ID));
+        plugin.onWidgetLoaded(event(QUEST_COMPLETED_GROUP_ID));
 
         // verify notification
         verify(messageHandler).createMessage(
@@ -59,7 +61,7 @@ class QuestNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnore() {
         // send unrelated event
-        notifier.onWidgetLoaded(event(-1));
+        plugin.onWidgetLoaded(event(-1));
 
         // verify no message
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -76,7 +78,7 @@ class QuestNotifierTest extends MockedNotifierTest {
         when(questWidget.getText()).thenReturn("You have completed the Dragon Slayer quest!");
 
         // send event
-        notifier.onWidgetLoaded(event(QUEST_COMPLETED_GROUP_ID));
+        plugin.onWidgetLoaded(event(QUEST_COMPLETED_GROUP_ID));
 
         // verify no message
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
