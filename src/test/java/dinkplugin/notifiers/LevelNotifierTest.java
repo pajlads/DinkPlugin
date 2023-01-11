@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.LevelNotificationData;
@@ -20,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 class LevelNotifierTest extends MockedNotifierTest {
 
+    @Bind
     @InjectMocks
     LevelNotifier notifier;
 

@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.LootNotificationData;
@@ -15,7 +14,6 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
-import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
@@ -23,7 +21,6 @@ import net.runelite.http.api.loottracker.LootRecordType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,10 +38,6 @@ class LootNotifierTest extends MockedNotifierTest {
     private static final int OPAL_PRICE = 600;
     private static final int TUNA_PRICE = 100;
     private static final String LOOTED_NAME = "Rasmus";
-
-    @Bind
-    @Mock
-    ItemManager itemManager;
 
     @InjectMocks
     LootNotifier notifier;
@@ -67,9 +60,9 @@ class LootNotifierTest extends MockedNotifierTest {
         when(localPlayer.getWorldLocation()).thenReturn(location);
 
         // init item mocks
-        mockItem(itemManager, ItemID.RUBY, RUBY_PRICE, "Ruby");
-        mockItem(itemManager, ItemID.OPAL, OPAL_PRICE, "Opal");
-        mockItem(itemManager, ItemID.TUNA, TUNA_PRICE, "Tuna");
+        mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
+        mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
+        mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
     }
 
     @Test
@@ -243,7 +236,7 @@ class LootNotifierTest extends MockedNotifierTest {
         when(spriteWidget.getItemId()).thenReturn(ItemID.ABYSSAL_WHIP);
         when(client.getWidget(WidgetInfo.DIALOG_SPRITE)).thenReturn(spriteWidget);
         final int whipPrice = 1_500_000;
-        mockItem(itemManager, ItemID.ABYSSAL_WHIP, whipPrice, "Abyssal Whip");
+        mockItem(ItemID.ABYSSAL_WHIP, whipPrice, "Abyssal Whip");
 
         Widget textWidget = mock(Widget.class);
         when(textWidget.getText()).thenReturn("The Font consumes the Unsired and returns you a reward.");

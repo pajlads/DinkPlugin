@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("MagicConstant")
 class DiaryNotifierTest extends MockedNotifierTest {
 
+    @Bind
     @InjectMocks
     DiaryNotifier notifier;
 

@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -17,11 +16,9 @@ import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
-import net.runelite.client.game.ItemManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,10 +38,6 @@ class DeathNotifierTest extends MockedNotifierTest {
     private static final int OPAL_PRICE = 600;
     private static final int COAL_PRICE = 200;
     private static final int TUNA_PRICE = 100;
-
-    @Bind
-    @Mock
-    ItemManager itemManager;
 
     @InjectMocks
     DeathNotifier notifier;
@@ -69,11 +62,11 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(localPlayer.getWorldLocation()).thenReturn(location);
 
         // init item mocks
-        mockItem(itemManager, ItemID.RUBY, RUBY_PRICE, "Ruby");
-        mockItem(itemManager, ItemID.SHARK, SHARK_PRICE, "Shark");
-        mockItem(itemManager, ItemID.OPAL, OPAL_PRICE, "Opal");
-        mockItem(itemManager, ItemID.COAL, COAL_PRICE, "Coal");
-        mockItem(itemManager, ItemID.TUNA, TUNA_PRICE, "Tuna");
+        mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
+        mockItem(ItemID.SHARK, SHARK_PRICE, "Shark");
+        mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
+        mockItem(ItemID.COAL, COAL_PRICE, "Coal");
+        mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
     }
 
     @Test

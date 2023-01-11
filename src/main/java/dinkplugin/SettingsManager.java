@@ -120,8 +120,8 @@ public class SettingsManager {
             .forEach(ignoredNames::add);
         log.debug("Updated RSN Deny List to: {}", ignoredNames);
 
-        if (plugin != null)
-            plugin.resetNotifiers();
+        // clear any outdated notifier state
+        plugin.resetNotifiers();
     }
 
     private static boolean isCollectionLogInvalid(int varbitValue) {

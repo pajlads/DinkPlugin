@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.SpeedrunNotificationData;
@@ -26,6 +27,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
 
     private static final String QUEST_NAME = "Cook's Assistant";
 
+    @Bind
     @InjectMocks
     SpeedrunNotifier notifier;
 
