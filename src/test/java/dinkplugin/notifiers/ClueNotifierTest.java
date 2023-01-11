@@ -68,7 +68,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         // fire widget event
         WidgetLoaded event = new WidgetLoaded();
         event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
-        notifier.onWidgetLoaded(event);
+        plugin.onWidgetLoaded(event);
 
         // verify notification message
         verify(messageHandler).createMessage(
@@ -101,7 +101,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         // fire widget event
         WidgetLoaded event = new WidgetLoaded();
         event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
-        notifier.onWidgetLoaded(event);
+        plugin.onWidgetLoaded(event);
 
         // ensure no notification was fired
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -129,7 +129,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         // fire widget event
         WidgetLoaded event = new WidgetLoaded();
         event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
-        notifier.onWidgetLoaded(event);
+        plugin.onWidgetLoaded(event);
 
         // ensure no notification was fired
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());

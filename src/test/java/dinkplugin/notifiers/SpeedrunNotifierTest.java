@@ -62,7 +62,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
-        notifier.onWidgetLoaded(event());
+        plugin.onWidgetLoaded(event());
 
         // check notification message
         verify(messageHandler).createMessage(
@@ -86,7 +86,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
-        notifier.onWidgetLoaded(event());
+        plugin.onWidgetLoaded(event());
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -103,7 +103,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         when(time.getText()).thenReturn("1:15.30");
 
         // fire fake event
-        notifier.onWidgetLoaded(event());
+        plugin.onWidgetLoaded(event());
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -122,7 +122,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
-        notifier.onWidgetLoaded(event());
+        plugin.onWidgetLoaded(event());
 
         // check notification message
         verify(messageHandler).createMessage(
@@ -148,7 +148,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         when(time.getText()).thenReturn("1:15.30");
 
         // fire fake event
-        notifier.onWidgetLoaded(event());
+        plugin.onWidgetLoaded(event());
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());

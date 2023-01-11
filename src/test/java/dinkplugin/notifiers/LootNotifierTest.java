@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.LootNotificationData;
@@ -39,6 +40,7 @@ class LootNotifierTest extends MockedNotifierTest {
     private static final int TUNA_PRICE = 100;
     private static final String LOOTED_NAME = "Rasmus";
 
+    @Bind
     @InjectMocks
     LootNotifier notifier;
 
@@ -74,7 +76,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // fire event
         NpcLootReceived event = new NpcLootReceived(npc, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)));
-        notifier.onNpcLootReceived(event);
+        plugin.onNpcLootReceived(event);
 
         // verify notification message
         verify(messageHandler).createMessage(
@@ -96,7 +98,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // fire event
         NpcLootReceived event = new NpcLootReceived(npc, Collections.singletonList(new ItemStack(ItemID.TUNA, 1, null)));
-        notifier.onNpcLootReceived(event);
+        plugin.onNpcLootReceived(event);
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -106,7 +108,7 @@ class LootNotifierTest extends MockedNotifierTest {
     void testNotifyPickpocket() {
         // fire event
         LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), RUBY_PRICE);
-        notifier.onLootReceived(event);
+        plugin.onLootReceived(event);
 
         // verify notification message
         verify(messageHandler).createMessage(
@@ -124,7 +126,7 @@ class LootNotifierTest extends MockedNotifierTest {
     void testIgnorePickpocket() {
         // fire event
         LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.TUNA, 1, null)), TUNA_PRICE);
-        notifier.onLootReceived(event);
+        plugin.onLootReceived(event);
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -138,7 +140,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // fire event
         PlayerLootReceived event = new PlayerLootReceived(player, Arrays.asList(new ItemStack(ItemID.RUBY, 1, null), new ItemStack(ItemID.TUNA, 1, null)));
-        notifier.onPlayerLootReceived(event);
+        plugin.onPlayerLootReceived(event);
 
         // verify notification message
         verify(messageHandler).createMessage(
@@ -161,7 +163,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // fire event
         PlayerLootReceived event = new PlayerLootReceived(player, Arrays.asList(new ItemStack(ItemID.RUBY, 1, null), new ItemStack(ItemID.TUNA, 1, null)));
-        notifier.onPlayerLootReceived(event);
+        plugin.onPlayerLootReceived(event);
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -182,7 +184,7 @@ class LootNotifierTest extends MockedNotifierTest {
             ),
             total
         );
-        notifier.onLootReceived(event);
+        plugin.onLootReceived(event);
 
         // verify notification message
         String loot = String.format("1 x Ruby (%d)\n1 x Opal (%d)", RUBY_PRICE, OPAL_PRICE);
@@ -214,7 +216,7 @@ class LootNotifierTest extends MockedNotifierTest {
             ),
             total
         );
-        notifier.onLootReceived(event);
+        plugin.onLootReceived(event);
 
         // verify notification message
         String loot = String.format("5 x Tuna (%d)", 5 * TUNA_PRICE);
@@ -245,7 +247,7 @@ class LootNotifierTest extends MockedNotifierTest {
         // fire event
         WidgetLoaded event = new WidgetLoaded();
         event.setGroupId(WidgetID.DIALOG_SPRITE_GROUP_ID);
-        notifier.onWidgetLoaded(event);
+        plugin.onWidgetLoaded(event);
 
         // verify notification message
         String source = "The Font of Consumption";
@@ -277,7 +279,7 @@ class LootNotifierTest extends MockedNotifierTest {
             ),
             total
         );
-        notifier.onLootReceived(event);
+        plugin.onLootReceived(event);
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -290,7 +292,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // fire event
         LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), RUBY_PRICE);
-        notifier.onLootReceived(event);
+        plugin.onLootReceived(event);
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());

@@ -37,15 +37,15 @@ class LevelNotifierTest extends MockedNotifierTest {
         when(config.levelNotifyMessage()).thenReturn("%USERNAME% has levelled %SKILL%");
 
         // init base level
-        notifier.onStatChanged(new StatChanged(Skill.AGILITY, 0, 1, 1));
-        notifier.onStatChanged(new StatChanged(Skill.ATTACK, 14_000_000, 99, 99));
-        notifier.onStatChanged(new StatChanged(Skill.HUNTER, 300, 4, 4));
+        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 0, 1, 1));
+        plugin.onStatChanged(new StatChanged(Skill.ATTACK, 14_000_000, 99, 99));
+        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 300, 4, 4));
     }
 
     @Test
     void testNotify() {
         // fire skill event
-        notifier.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
+        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -65,7 +65,7 @@ class LevelNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyVirtual() {
         // fire skill event
-        notifier.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
+        plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -85,8 +85,8 @@ class LevelNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyTwo() {
         // fire skill events
-        notifier.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
-        notifier.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
+        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
+        plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -106,9 +106,9 @@ class LevelNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyMany() {
         // fire skill events
-        notifier.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
-        notifier.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
-        notifier.onStatChanged(new StatChanged(Skill.HUNTER, 400, 5, 5));
+        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
+        plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
+        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 400, 5, 5));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -128,7 +128,7 @@ class LevelNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreInterval() {
         // fire skill event
-        notifier.onStatChanged(new StatChanged(Skill.AGILITY, 100, 2, 2));
+        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 100, 2, 2));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -143,7 +143,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         when(config.notifyLevel()).thenReturn(false);
 
         // fire skill event
-        notifier.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
+        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());

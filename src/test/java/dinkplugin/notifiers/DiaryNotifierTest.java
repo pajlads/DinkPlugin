@@ -53,7 +53,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
         // trigger diary completion
         int id = Varbits.DIARY_DESERT_ELITE;
-        notifier.onVarbitChanged(event(id, 1));
+        plugin.onVarbitChanged(event(id, 1));
 
         // verify notification message
         verify(messageHandler).createMessage(
@@ -79,7 +79,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
         // trigger diary started
         int id = Varbits.DIARY_KARAMJA_HARD;
-        notifier.onVarbitChanged(event(id, 2));
+        plugin.onVarbitChanged(event(id, 2));
 
         // verify notification message
         verify(messageHandler).createMessage(
@@ -104,7 +104,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
         // trigger diary started
         int id = Varbits.DIARY_KARAMJA_HARD;
-        notifier.onVarbitChanged(event(id, 1));
+        plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -120,7 +120,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
         // trigger varbit event
         int id = Varbits.DIARY_DESERT_ELITE;
-        notifier.onVarbitChanged(event(id, 1));
+        plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -130,7 +130,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
     void testIgnoreUninitialized() {
         // trigger varbit event
         int id = Varbits.DIARY_DESERT_ELITE;
-        notifier.onVarbitChanged(event(id, 1));
+        plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -146,7 +146,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
         // trigger varbit event
         int id = Varbits.DIARY_FALADOR_EASY;
-        notifier.onVarbitChanged(event(id, 1));
+        plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -165,7 +165,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
 
         // trigger diary completion
         int id = Varbits.DIARY_DESERT_ELITE;
-        notifier.onVarbitChanged(event(id, 1));
+        plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
