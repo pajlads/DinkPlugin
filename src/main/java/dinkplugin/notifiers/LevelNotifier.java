@@ -116,7 +116,7 @@ public class LevelNotifier extends BaseNotifier {
 
         createMessage(config.levelSendImage(), NotificationBody.builder()
             .text(fullNotification)
-            .extra(new LevelNotificationData(lSkills, currentLevels))
+            .extra(new LevelNotificationData(lSkills, new HashMap<>(currentLevels)))
             .type(NotificationType.LEVEL)
             .build());
     }
