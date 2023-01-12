@@ -173,6 +173,9 @@ public class DiscordMessageHandler {
             .text(StringUtils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
             .iconUrl(StringUtils.isBlank(footerIcon) ? null : footerIcon)
             .build();
+        String thumbnail = body.getThumbnailUrl() != null
+            ? body.getThumbnailUrl()
+            : type.getThumbnail();
 
         List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
         embeds.add(0,
@@ -182,7 +185,7 @@ public class DiscordMessageHandler {
                 .title(type.getTitle())
                 .description(StringUtils.truncate(body.getText(), Embed.MAX_DESCRIPTION_LENGTH))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
-                .thumbnail(new Embed.UrlEmbed(type.getThumbnail()))
+                .thumbnail(new Embed.UrlEmbed(thumbnail))
                 .fields(extra != null ? extra.getFields() : Collections.emptyList())
                 .footer(footer)
                 .timestamp(footer != null ? Instant.now() : null)

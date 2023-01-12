@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import dinkplugin.notifiers.data.NotificationData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.With;
 import net.runelite.api.vars.AccountType;
@@ -30,6 +31,9 @@ public class NotificationBody<T extends NotificationData> {
     T extra;
     @NotNull
     transient String text;
+    @Nullable
+    @EqualsAndHashCode.Exclude
+    transient String thumbnailUrl;
 
     /*
      * Discord fields

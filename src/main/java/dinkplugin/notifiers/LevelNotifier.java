@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,10 +115,17 @@ public class LevelNotifier extends BaseNotifier {
             new String[] { Utils.getPlayerName(client), skillMessage.toString() }
         );
 
+        String thumbnail = lSkills.entrySet().stream()
+            .max(Comparator.comparingInt(Map.Entry::getValue))
+            .map(Map.Entry::getKey)
+            .map(LevelNotifier::getSkillIcon)
+            .orElse(null);
+
         createMessage(config.levelSendImage(), NotificationBody.builder()
             .text(fullNotification)
             .extra(new LevelNotificationData(lSkills, currentLevels))
             .type(NotificationType.LEVEL)
+            .thumbnailUrl(thumbnail)
             .build());
     }
 
@@ -128,5 +136,9 @@ public class LevelNotifier extends BaseNotifier {
         return interval <= 1
             || level == 99
             || level % interval == 0;
+    }
+
+    private static String getSkillIcon(String skillName) {
+        return Utils.WIKI_IMG_BASE_URL + skillName + "_icon.png";
     }
 }

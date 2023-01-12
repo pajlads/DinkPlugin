@@ -15,7 +15,7 @@ public enum NotificationType {
     LOOT("Loot Drop", "lootImage.png", WIKI_IMG_BASE_URL + "Rare_drop_table.png"),
     PET("Pet Obtained", "petImage.png", WIKI_IMG_BASE_URL + "Call_follower.png"),
     QUEST("Quest Completed", "questImage.png", WIKI_IMG_BASE_URL + "Quest_point_icon.png"),
-    SLAYER("Slayer Task", "slayerImage.png", WIKI_IMG_BASE_URL + "Slayer_icon.png"),
+    SLAYER("Slayer Task", "slayerImage.png", WIKI_IMG_BASE_URL + "Slayer_helmet_(i).png"),
     SPEEDRUN("Quest Speedrunning", "speedrunImage.png", WIKI_IMG_BASE_URL + "Giant_stopwatch.png"),
     KILL_COUNT("Completion Count", "killCountImage.png", WIKI_IMG_BASE_URL + "Enchanted_gem.png"),
     COMBAT_ACHIEVEMENT("Combat Achievement", "combatTaskImage.png", WIKI_IMG_BASE_URL + "Combat_achievements.png"),
