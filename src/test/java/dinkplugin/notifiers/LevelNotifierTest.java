@@ -86,7 +86,7 @@ class LevelNotifierTest extends MockedNotifierTest {
     void testNotifyTwo() {
         // fire skill events
         plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
-        plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
+        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 14_000_000, 99, 99));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -96,8 +96,8 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Agility to 5 and Attack to 100")
-                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Attack", 100), ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 4)))
+                .text(PLAYER_NAME + " has levelled Agility to 5 and Attack to 99")
+                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Hunter", 99), ImmutableMap.of("Agility", 5, "Attack", 99, "Hunter", 99)))
                 .type(NotificationType.LEVEL)
                 .build()
         );

@@ -19,7 +19,7 @@ public class LevelNotificationData extends NotificationData {
         if (levelledSkills.containsValue(99)) {
             return Collections.singletonList(
                 new Field(
-                    "Total 99+ Skills",
+                    "Total Number of Skills at Level 99+",
                     String.format("```\n%d\n```", allSkills.values().stream().filter(lvl -> lvl >= 99).count())
                 )
             );
