@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Use relevant skill icon for level up notification embeds. (#119)
+
 ## 1.2.0
 
 - Major: Use Discord rich embed format for webhooks. This is technically a possible breaking change for users that target non-Discord webhook servers; these users can revert to the old notification format by disabling the `Use Rich Embeds` setting in the `Advanced` section. (#110)
