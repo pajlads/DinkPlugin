@@ -31,9 +31,6 @@ public class NotificationBody<T extends NotificationData> {
     T extra;
     @NotNull
     transient String text;
-    @Nullable
-    @EqualsAndHashCode.Exclude
-    transient String thumbnailUrl;
 
     /*
      * Discord fields
@@ -47,6 +44,14 @@ public class NotificationBody<T extends NotificationData> {
     @Nullable
     @SerializedName("content")
     String computedDiscordContent;
+
+    /**
+     * An optional thumbnail to override that of {@link NotificationType#getThumbnail}
+     * within the embed constructed by {@link DiscordMessageHandler#createMessage}
+     */
+    @Nullable
+    @EqualsAndHashCode.Exclude
+    transient String thumbnailUrl;
 
     @Builder.Default
     List<Embed> embeds = new LinkedList<>();
