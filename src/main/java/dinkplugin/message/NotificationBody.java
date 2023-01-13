@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import dinkplugin.notifiers.data.NotificationData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.With;
 import net.runelite.api.vars.AccountType;
@@ -43,6 +44,14 @@ public class NotificationBody<T extends NotificationData> {
     @Nullable
     @SerializedName("content")
     String computedDiscordContent;
+
+    /**
+     * An optional thumbnail to override that of {@link NotificationType#getThumbnail}
+     * within the embed constructed by {@link DiscordMessageHandler#createMessage}
+     */
+    @Nullable
+    @EqualsAndHashCode.Exclude
+    transient String thumbnailUrl;
 
     @Builder.Default
     List<Embed> embeds = new LinkedList<>();
