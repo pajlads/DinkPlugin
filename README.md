@@ -3,6 +3,18 @@
 This is a fork of Universal Discord Notifier. It doesn't strictly stick to the Discord webhook format, it has a bunch of
 added metadata that allows the webhook server to analyze messages or even generate its own.
 
+
+- [Death](#death)
+- [Collection](#collection)
+- [Level](#level)
+- [Loot](#loot)
+- [Slayer](#slayer)
+- [Quests](#quests)
+- [Clue Scrolls](#clue-scrolls)
+- [Kill Count](#kill-count)
+- [Combat Achievements](#combat-achievements)
+- [Achievement Diaries](#achievement-diary)
+
 ## Other Setup
 
 As the collection notification uses the chat message to determine when a collection log item has been added, these
@@ -13,16 +25,17 @@ in `Settings > All Settings > Chat > Collection log - New addition notification`
 
 ---
 
-## Config Options
+## Notifier Configuration
 
 Most of the config options are self-explanatory. But the notification messages for each notification type also
 contain some words that will be replaced with in-game values.
 
-#### All messages:
+### All messages:
 
 `%USERNAME%` will be replaced with the username of the player.
 
-JSON:
+<details>
+  <summary>JSON Example:</summary>
 
 ```json5
 {
@@ -33,16 +46,19 @@ JSON:
   "embeds": []
 }
 ```
+</details>
 
 The examples below omit `embeds` and `playerName` keys because they are always the same.
 
-#### Death:
+### Death: 
 
 `%VALUELOST%` will be replaced with the price of the items you lost. If you died in PvP, `%PKER%` will be replaced with the name of your killer.
 
 **Note**: If *Distinguish PvP deaths* is disabled, the message content will be the non-PvP version.
 
-JSON for non-PvP death:
+<details>
+  <summary>JSON for non-PvP death:</summary>
+
 ```json5
 {
   "content": "%USERNAME% has died...",
@@ -62,8 +78,11 @@ JSON for non-PvP death:
   "type": "DEATH"
 }
 ```
+</details>
 
-JSON for PvP scenarios:
+<details>
+  <summary>JSON for PvP scenarios:</summary>
+
 ```json5
 {
   "content": "%USERNAME% has just been PKed by %PKER% for %VALUELOST% gp...",
@@ -84,12 +103,14 @@ JSON for PvP scenarios:
   "type": "DEATH"
 }
 ```
+</details>
 
-#### Collection:
+### Collection:
 
 `%ITEM%` will be replaced with the item that was dropped for the collection log.
 
-JSON:
+<details>
+  <summary>JSON for Collection Notifications:</summary>
 
 ```json5
 {
@@ -100,12 +121,14 @@ JSON:
   "type": "COLLECTION"
 }
 ```
+</details>
 
-#### Level:
+### Level:
 
 `%SKILL%` will be replaced with the skill name and level that was achieved
 
-JSON:
+<details>
+  <summary>JSON for Levelups:</summary>
 
 ```json5
 {
@@ -124,14 +147,18 @@ JSON:
   "type": "LEVEL"
 }
 ```
+</details>
 
-#### Loot:
+### Loot:
 
 `%LOOT%` will be replaced with a list of the loot and value of said loot
 
 `%TOTAL_VALUE%` will be replaced with the total value of the looted items
 
 `%SOURCE%` will be replace with the source that dropped or gave the loot
+
+<details>
+  <summary>JSON for Loot Notifications:</summary>
 
 ```json5
 {
@@ -153,14 +180,18 @@ JSON:
   "type": "LOOT"
 }
 ```
+</details>
 
-#### Slayer:
+### Slayer:
 
 `%TASK%` will be replaced with the task that you have completed. E.g. `50 monkeys`
 
 `%TASKCOUNT%` will be replaced with the number of tasks that you have completed.
 
 `%POINTS%` will be replaced with the number of points you obtained from the task
+
+<details>
+  <summary>JSON for Slayer Notifications:</summary>
 
 ```json5
 {
@@ -173,10 +204,14 @@ JSON:
   "type": "SLAYER"
 }
 ```
+</details>
 
-#### Quests:
+### Quests:
 
 `%QUEST%` will be replaced with the name of the quest completed
+
+<details>
+  <summary>JSON for Quest Notifications:</summary>
 
 ```json5
 {
@@ -187,8 +222,9 @@ JSON:
   "type": "QUEST"
 }
 ```
+</details>
 
-#### Clue Scrolls:
+### Clue Scrolls:
 
 `%CLUE%` will be replaced with the type of clue (beginner, easy, etc...)
 
@@ -197,6 +233,9 @@ JSON:
 `%TOTAL_VALUE%` will be replaced with the total value of the items from the reward casket
 
 `%COUNT%` will be replaced by the number of times that you have completed that tier of clue scrolls
+
+<details>
+  <summary>JSON for Clue Notifications:</summary>
 
 ```json5
 {
@@ -219,12 +258,16 @@ JSON:
   "type": "CLUE"
 }
 ```
+</details>
 
-#### Kill Count:
+### Kill Count:
 
 `%BOSS%` will be replaced with the boss name (be it the NPC, raid, etc.)
 
 `%COUNT%` will be replaced with the kill count (or, generically: completion count)
+
+<details>
+  <summary>JSON for Kill Count Notifications:</summary>
 
 ```json5
 {
@@ -237,12 +280,16 @@ JSON:
   "type": "KILL_COUNT"
 }
 ```
+</details>
 
-#### Combat Achievements:
+### Combat Achievements:
 
 `%TIER%` will be replaced with the combat achievement tier (e.g., Easy, Hard, Grandmaster)
 
 `%TASK%` will be replaced with the name of the combat task (e.g., Peach Conjurer)
+
+<details>
+  <summary>JSON for Combat Achievement Notifications:</summary>
 
 ```json5
 {
@@ -254,14 +301,18 @@ JSON:
   "type": "COMBAT_ACHIEVEMENT"
 }
 ```
+</details>
 
-#### Achievement Diary:
+### Achievement Diary:
 
 `%AREA%` will be replaced with the geographic area of the achievement diary tasks (e.g., Varrock)
 
 `%DIFFICULTY%` will be replaced with the level of the achievement diary (e.g., Elite)
 
 `%TOTAL%` will be replaced with the total number of achievement diaries completed across all locations and difficulties
+
+<details>
+  <summary>JSON for Achievement Diary Notifications:</summary>
 
 ```json5
 {
@@ -274,6 +325,7 @@ JSON:
   "type": "ACHIEVEMENT_DIARY"
 }
 ```
+</details>
 
 ## Credits
 
