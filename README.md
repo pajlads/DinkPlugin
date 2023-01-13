@@ -18,7 +18,7 @@ in `Settings > All Settings > Chat > Collection log - New addition notification`
 Most of the config options are self-explanatory. But the notification messages for each notification type also
 contain some words that will be replaced with in-game values.
 
-#### All messages:
+### All messages:
 
 `%USERNAME%` will be replaced with the username of the player.
 
@@ -38,7 +38,7 @@ contain some words that will be replaced with in-game values.
 
 The examples below omit `embeds` and `playerName` keys because they are always the same.
 
-#### Death:
+### Death:
 
 `%VALUELOST%` will be replaced with the price of the items you lost. If you died in PvP, `%PKER%` will be replaced with the name of your killer.
 
@@ -93,7 +93,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 ```
 </details>
 
-#### Collection:
+### Collection:
 
 `%ITEM%` will be replaced with the item that was dropped for the collection log.
 
@@ -111,7 +111,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 ```
 </details>
 
-#### Level:
+### Level:
 
 `%SKILL%` will be replaced with the skill name and level that was achieved
 
@@ -137,7 +137,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 ```
 </details>
 
-#### Loot:
+### Loot:
 
 `%LOOT%` will be replaced with a list of the loot and value of said loot
 
@@ -170,7 +170,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 ```
 </details>
 
-#### Slayer:
+### Slayer:
 
 `%TASK%` will be replaced with the task that you have completed. E.g. `50 monkeys`
 
@@ -194,7 +194,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 ```
 </details>
 
-#### Quests:
+### Quests:
 
 `%QUEST%` will be replaced with the name of the quest completed
 
@@ -212,7 +212,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 ```
 </details>
 
-#### Clue Scrolls:
+### Clue Scrolls:
 
 `%CLUE%` will be replaced with the type of clue (beginner, easy, etc...)
 
@@ -248,7 +248,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 ```
 </details>
 
-#### Kill Count:
+### Kill Count:
 
 `%BOSS%` will be replaced with the boss name (be it the NPC, raid, etc.)
 
@@ -270,7 +270,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 ```
 </details>
 
-#### Combat Achievements:
+### Combat Achievements:
 
 `%TIER%` will be replaced with the combat achievement tier (e.g., Easy, Hard, Grandmaster)
 
@@ -291,7 +291,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 ```
 </details>
 
-#### Achievement Diary:
+### Achievement Diary:
 
 `%AREA%` will be replaced with the geographic area of the achievement diary tasks (e.g., Varrock)
 
