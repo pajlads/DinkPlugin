@@ -33,6 +33,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         // init config mocks
         when(config.notifyLevel()).thenReturn(true);
         when(config.levelSendImage()).thenReturn(false);
+        when(config.levelNotifyVirtual()).thenReturn(true);
         when(config.levelInterval()).thenReturn(5);
         when(config.levelNotifyMessage()).thenReturn("%USERNAME% has levelled %SKILL%");
 
