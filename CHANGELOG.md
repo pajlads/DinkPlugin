@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Minor: Use relevant skill icon for level up notification embeds. (#119)
+- Minor: Update embed icons for level up and slayer task notifications. (#119)
 
 ## 1.2.0
 
