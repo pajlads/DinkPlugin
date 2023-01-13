@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add setting to skip virtual level notifications. (#122)
 - Minor: Update the README to be less confusing to users. (#123)
 - Minor: Update embed icons for level up and slayer task notifications. (#119)
 
