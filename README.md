@@ -13,7 +13,7 @@ in `Settings > All Settings > Chat > Collection log - New addition notification`
 
 ---
 
-## Config Options
+## Notifier Configuration
 
 Most of the config options are self-explanatory. But the notification messages for each notification type also
 contain some words that will be replaced with in-game values.
