@@ -33,6 +33,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         // init config mocks
         when(config.notifyLevel()).thenReturn(true);
         when(config.levelSendImage()).thenReturn(false);
+        when(config.levelNotifyVirtual()).thenReturn(true);
         when(config.levelInterval()).thenReturn(5);
         when(config.levelNotifyMessage()).thenReturn("%USERNAME% has levelled %SKILL%");
 
@@ -129,6 +130,21 @@ class LevelNotifierTest extends MockedNotifierTest {
     void testIgnoreInterval() {
         // fire skill event
         plugin.onStatChanged(new StatChanged(Skill.AGILITY, 100, 2, 2));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreVirtual() {
+        // update config mock
+        when(config.levelNotifyVirtual()).thenReturn(false);
+
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
