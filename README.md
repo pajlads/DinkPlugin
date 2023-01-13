@@ -301,6 +301,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 
 <details>
   <summary>JSON for Achievement Diary Notifications:</summary>
+
 ```json5
 {
   "content": "%USERNAME% has completed the %DIFFICULTY% %AREA% Achievement Diary, for a total of %TOTAL% diaries completed",
