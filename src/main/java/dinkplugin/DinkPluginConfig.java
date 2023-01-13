@@ -420,10 +420,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "levelNotifyVirtual",
+        name = "Notify on Virtual Levels",
+        description = "Whether notifications should be fired beyond level 99",
+        position = 22,
+        section = levelSection
+    )
+    default boolean levelNotifyVirtual() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "levelInterval",
         name = "Notify Interval",
         description = "Interval between when a notification should be sent",
-        position = 22,
+        position = 23,
         section = levelSection
     )
     default int levelInterval() {
@@ -434,7 +445,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "levelMinValue",
         name = "Minimum Skill Level",
         description = "The minimum skill level required to send a notification. Useful for filtering out low-level notifications",
-        position = 23,
+        position = 24,
         section = levelSection
     )
     default int levelMinValue() {
@@ -445,7 +456,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "levelNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username and %SKILL% to insert the levelled skill(s)",
-        position = 24,
+        position = 25,
         section = levelSection
     )
     default String levelNotifyMessage() {
