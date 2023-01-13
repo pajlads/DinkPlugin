@@ -3,6 +3,18 @@
 This is a fork of Universal Discord Notifier. It doesn't strictly stick to the Discord webhook format, it has a bunch of
 added metadata that allows the webhook server to analyze messages or even generate its own.
 
+
+- [Death](#death)
+- [Collection](#collection)
+- [Level](#level)
+- [Loot](#loot)
+- [Slayer](#slayer)
+- [Quests](#quests)
+- [Clue Scrolls](#clue-scrolls)
+- [Kill Count](#kill-count)
+- [Combat Achievements](#combat-achievements)
+- [Achievement Diaries](#achievement-diary)
+
 ## Other Setup
 
 As the collection notification uses the chat message to determine when a collection log item has been added, these
@@ -38,7 +50,7 @@ contain some words that will be replaced with in-game values.
 
 The examples below omit `embeds` and `playerName` keys because they are always the same.
 
-### Death:
+### Death: 
 
 `%VALUELOST%` will be replaced with the price of the items you lost. If you died in PvP, `%PKER%` will be replaced with the name of your killer.
 
