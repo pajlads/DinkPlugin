@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Update the README to be less confusing to users. (#123)
 - Minor: Update embed icons for level up and slayer task notifications. (#119)
 
 ## 1.2.0
