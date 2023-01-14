@@ -110,7 +110,7 @@ public class SettingsManager {
             if (client.getGameState() != GameState.LOGGED_IN)
                 return false;
 
-            if (queuedTicks.getAndIncrement() < 2)
+            if (queuedTicks.getAndIncrement() < 4)
                 return false;
 
             if (config.notifyCombatTask() && isRepeatPopupInvalid(client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP))) {
