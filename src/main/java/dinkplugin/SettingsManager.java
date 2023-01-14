@@ -19,6 +19,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -30,6 +32,9 @@ public class SettingsManager {
     private static final Pattern DELIM = Pattern.compile("[,;\\n]");
 
     private final Collection<String> ignoredNames = new HashSet<>();
+
+    private final AtomicBoolean varbitCheckQueued = new AtomicBoolean();
+    private final AtomicInteger queuedTicks = new AtomicInteger();
 
     private final Client client;
     private final ClientThread clientThread;
@@ -89,12 +94,37 @@ public class SettingsManager {
         int value = event.getValue();
 
         if (event.getVarbitId() == CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP && isRepeatPopupInvalid(value) && config.notifyCombatTask()) {
-            warnForGameSetting(CombatTaskNotifier.REPEAT_WARNING);
+            queueVarbitCheck();
         }
 
         if (event.getVarbitId() == Varbits.COLLECTION_LOG_NOTIFICATION && isCollectionLogInvalid(value) && config.notifyCollectionLog()) {
-            warnForGameSetting(CollectionNotifier.ADDITION_WARNING);
+            queueVarbitCheck();
         }
+    }
+
+    private void queueVarbitCheck() {
+        if (varbitCheckQueued.getAndSet(true))
+            return;
+
+        clientThread.invokeLater(() -> {
+            if (client.getGameState() != GameState.LOGGED_IN)
+                return false;
+
+            if (queuedTicks.getAndIncrement() < 2)
+                return false;
+
+            if (config.notifyCombatTask() && isRepeatPopupInvalid(client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP))) {
+                warnForGameSetting(CombatTaskNotifier.REPEAT_WARNING);
+            }
+
+            if (config.notifyCollectionLog() && isCollectionLogInvalid(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION))) {
+                warnForGameSetting(CollectionNotifier.ADDITION_WARNING);
+            }
+
+            varbitCheckQueued.lazySet(false);
+            queuedTicks.lazySet(0);
+            return true;
+        });
     }
 
     private void warnForGameSetting(String message) {
