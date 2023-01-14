@@ -16,7 +16,7 @@ public enum PlayerLookupService {
     public String playerUrl(String playerName) {
         switch (this) {
             case OSRS_HISCORE:
-                return "https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal.ws?user1=" + playerName;
+                return "https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1=" + playerName;
             case WISEOLDMAN:
                 return "https://wiseoldman.net/players/" + playerName;
             case CRYSTAL_MATH_LABS:
