@@ -79,6 +79,9 @@ public class DiscordMessageHandler {
         if (mBody.getPlayerName() == null)
             mBody = mBody.withPlayerName(Utils.getPlayerName(client));
 
+        if (mBody.getPlayerUrl() == null)
+            mBody = mBody.withPlayerUrl(config.playerLookupService().playerUrl(mBody.getPlayerName()));
+
         if (mBody.getAccountType() == null)
             mBody = mBody.withAccountType(client.getAccountType());
 
@@ -167,6 +170,7 @@ public class DiscordMessageHandler {
 
         Author author = Author.builder()
             .name(body.getPlayerName())
+            .url(body.getPlayerUrl())
             .iconUrl(Utils.getChatBadge(body.getAccountType()))
             .build();
         Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()
