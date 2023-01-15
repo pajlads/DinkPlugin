@@ -26,8 +26,6 @@ public class NotificationBody<T extends NotificationData> {
     @NotNull
     NotificationType type;
     String playerName;
-    @Nullable
-    String playerUrl;
     AccountType accountType;
     @Nullable
     T extra;

@@ -190,8 +190,8 @@ public interface DinkPluginConfig extends Config {
 
     @ConfigItem(
         keyName = "playerLookupService",
-        name = "Player lookup service",
-        description = "The service used to lookup a players name, in Discord embeds",
+        name = "Player Lookup Service",
+        description = "The service used to lookup a players account, to make their name clickable in Discord embeds",
         position = 1007,
         section = advancedSection
     )

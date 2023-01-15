@@ -3,6 +3,7 @@ package dinkplugin.message;
 import com.google.gson.Gson;
 import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
+import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.Utils;
 import lombok.NonNull;
@@ -78,9 +79,6 @@ public class DiscordMessageHandler {
 
         if (mBody.getPlayerName() == null)
             mBody = mBody.withPlayerName(Utils.getPlayerName(client));
-
-        if (mBody.getPlayerUrl() == null)
-            mBody = mBody.withPlayerUrl(config.playerLookupService().playerUrl(mBody.getPlayerName()));
 
         if (mBody.getAccountType() == null)
             mBody = mBody.withAccountType(client.getAccountType());
@@ -164,13 +162,14 @@ public class DiscordMessageHandler {
         });
     }
 
-    private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, String footerText, String footerIcon) {
+    private NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, String footerText, String footerIcon) {
         NotificationType type = body.getType();
         NotificationData extra = body.getExtra();
+        PlayerLookupService playerLookupService = config.playerLookupService();
 
         Author author = Author.builder()
             .name(body.getPlayerName())
-            .url(body.getPlayerUrl())
+            .url(playerLookupService.getPlayerUrl(body.getPlayerName()))
             .iconUrl(Utils.getChatBadge(body.getAccountType()))
             .build();
         Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()

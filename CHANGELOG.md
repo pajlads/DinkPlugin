@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Made player names in Discord notifications link to a player profile page. This feature can be customized to different providers such as WiseOldMan & CrystalMathLabs in the Advanced menu. (#126)
 - Minor: Add setting to skip virtual level notifications. (#122)
 - Minor: Update the README to be less confusing to users. (#123)
 - Minor: Update embed icons for level up and slayer task notifications. (#119)

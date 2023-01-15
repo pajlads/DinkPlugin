@@ -4,8 +4,8 @@ public enum PlayerLookupService {
     NONE("None"),
     OSRS_HISCORE("OSRS HiScore"),
     CRYSTAL_MATH_LABS("Crystal Math Labs"),
-    TEMPLEOSRS("Temple OSRS"),
-    WISEOLDMAN("Wise Old Man");
+    TEMPLE_OSRS("Temple OSRS"),
+    WISE_OLD_MAN("Wise Old Man");
 
     private final String name;
 
@@ -13,15 +13,15 @@ public enum PlayerLookupService {
         this.name = name;
     }
 
-    public String playerUrl(String playerName) {
+    public String getPlayerUrl(String playerName) {
         switch (this) {
             case OSRS_HISCORE:
                 return "https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1=" + playerName;
-            case WISEOLDMAN:
+            case WISE_OLD_MAN:
                 return "https://wiseoldman.net/players/" + playerName;
             case CRYSTAL_MATH_LABS:
                 return "https://crystalmathlabs.com/track.php?player=" + playerName;
-            case TEMPLEOSRS:
+            case TEMPLE_OSRS:
                 return "https://templeosrs.com/player/overview.php?player=" + playerName;
             case NONE:
             default:
