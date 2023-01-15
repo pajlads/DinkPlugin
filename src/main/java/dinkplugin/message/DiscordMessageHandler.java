@@ -84,7 +84,7 @@ public class DiscordMessageHandler {
             mBody = mBody.withAccountType(client.getAccountType());
 
         if (config.discordRichEmbeds()) {
-            mBody = injectContent(mBody, sendImage, config.embedFooterText(), config.embedFooterIcon());
+            mBody = injectContent(mBody, sendImage, config);
         } else {
             mBody = mBody.withComputedDiscordContent(mBody.getText());
         }
@@ -162,9 +162,11 @@ public class DiscordMessageHandler {
         });
     }
 
-    private NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, String footerText, String footerIcon) {
+    private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, DinkPluginConfig config) {
         NotificationType type = body.getType();
         NotificationData extra = body.getExtra();
+        String footerText = config.embedFooterText();
+        String footerIcon = config.embedFooterIcon();
         PlayerLookupService playerLookupService = config.playerLookupService();
 
         Author author = Author.builder()
