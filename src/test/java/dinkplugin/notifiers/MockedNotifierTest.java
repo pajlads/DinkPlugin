@@ -6,6 +6,7 @@ import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.MockedTestBase;
 import dinkplugin.SettingsManager;
+import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.util.BlockingClientThread;
 import dinkplugin.util.BlockingExecutor;
@@ -103,6 +104,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.discordRichEmbeds()).thenReturn(!"false".equalsIgnoreCase(System.getenv("TEST_WEBHOOK_RICH")));
         when(config.embedFooterText()).thenReturn("Powered by Dink");
         when(config.embedFooterIcon()).thenReturn("https://github.com/pajlads/DinkPlugin/raw/master/icon.png");
+        when(config.playerLookupService()).thenReturn(PlayerLookupService.OSRS_HISCORE);
     }
 
     protected void mockItem(int id, int price, String name) {

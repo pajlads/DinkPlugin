@@ -2,6 +2,7 @@ package dinkplugin;
 
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.CombatAchievementTier;
+import dinkplugin.domain.PlayerLookupService;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -185,6 +186,17 @@ public interface DinkPluginConfig extends Config {
     )
     default String ignoredNames() {
         return "";
+    }
+
+    @ConfigItem(
+        keyName = "playerLookupService",
+        name = "Player Lookup Service",
+        description = "The service used to lookup a players account, to make their name clickable in Discord embeds",
+        position = 1007,
+        section = advancedSection
+    )
+    default PlayerLookupService playerLookupService() {
+        return PlayerLookupService.OSRS_HISCORE;
     }
 
     @ConfigItem(
