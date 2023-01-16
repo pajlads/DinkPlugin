@@ -51,15 +51,13 @@ public class ItemSearcher {
 
     @Inject
     void init() {
-        queryNamesById()
-            .thenAcceptAsync(this::merge)
-            .thenAcceptBothAsync(
-                queryNotedItemIds(),
-                (unused, notedIds) -> itemIdByName.values().removeIf(notedIds::contains)
-            );
+        queryNamesById().thenAcceptBothAsync(
+            queryNotedItemIds().exceptionally(throwable -> Collections.emptySet()),
+            this::merge
+        );
     }
 
-    private void merge(Map<String, String> namesById) {
+    private void merge(Map<String, String> namesById, Set<Integer> notedIds) {
         namesById.forEach((idStr, name) -> {
             int id;
             try {
@@ -69,7 +67,8 @@ public class ItemSearcher {
                 return;
             }
 
-            itemIdByName.put(name, id);
+            if (!notedIds.contains(id))
+                itemIdByName.put(name, id);
         });
     }
 
