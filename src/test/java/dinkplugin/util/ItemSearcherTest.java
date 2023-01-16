@@ -29,7 +29,7 @@ class ItemSearcherTest extends MockedTestBase {
     @Test
     void test() {
         // Wait for http calls to complete
-        verify(itemSearcher, timeout(10_000).atLeastOnce()).merge(any(), any());
+        verify(itemSearcher, timeout(30_000).atLeastOnce()).merge(any(), any());
 
         // Ensure correct item mappings are populated
         assertEquals(ItemID.JAR_OF_MIASMA, itemSearcher.findItemId("Jar of miasma"));

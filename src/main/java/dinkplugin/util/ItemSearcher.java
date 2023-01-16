@@ -46,12 +46,6 @@ public class ItemSearcher {
         return itemIdByName.get(name);
     }
 
-    @Nullable
-    public String getItemImageUrl(String itemName) {
-        Integer itemId = findItemId(itemName);
-        return itemId != null ? ItemUtils.getItemImageUrl(itemId) : null;
-    }
-
     @Inject
     void init() {
         queryNamesById().thenAcceptBothAsync(

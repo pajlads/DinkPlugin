@@ -3,6 +3,7 @@ package dinkplugin.notifiers;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.util.ItemSearcher;
+import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.CollectionNotificationData;
 import org.apache.commons.lang3.StringUtils;
@@ -46,10 +47,11 @@ public class CollectionNotifier extends BaseNotifier {
             new String[] { Utils.getPlayerName(client), itemName }
         );
 
+        Integer itemId = itemSearcher.findItemId(itemName);
         createMessage(config.collectionSendImage(), NotificationBody.builder()
             .text(notifyMessage)
-            .thumbnailUrl(itemSearcher.getItemImageUrl(itemName))
-            .extra(new CollectionNotificationData(itemName))
+            .thumbnailUrl(itemId != null ? ItemUtils.getItemImageUrl(itemId) : null)
+            .extra(new CollectionNotificationData(itemName, itemId))
             .type(NotificationType.COLLECTION)
             .build());
     }

@@ -7,4 +7,5 @@ import lombok.Value;
 @EqualsAndHashCode(callSuper = false)
 public class CollectionNotificationData extends NotificationData {
     String itemName;
+    Integer itemId;
 }

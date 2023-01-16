@@ -52,7 +52,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has added %s to their collection", PLAYER_NAME, item))
-                .extra(new CollectionNotificationData(item))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
