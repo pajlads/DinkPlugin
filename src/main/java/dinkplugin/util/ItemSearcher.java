@@ -26,28 +26,53 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+/**
+ * This thread-safe singleton holds a mapping of item names to their item id, using the RuneLite API.
+ * <p>
+ * Unlike {@link net.runelite.client.game.ItemManager#search(String)}, this mapping supports untradable items.
+ */
 @Slf4j
 @Singleton
 public class ItemSearcher {
-    private final Map<String, Integer> itemIdByName = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, Integer> itemIdByName = Collections.synchronizedMap(new HashMap<>(16384));
     private @Inject OkHttpClient httpClient;
     private @Inject Gson gson;
 
+    /**
+     * @param name the exact in-game name of an item
+     * @return the id associated with the item name, or null if not found
+     */
     @Nullable
-    public Integer findItemId(String name) {
+    public Integer findItemId(@NotNull String name) {
         return itemIdByName.get(name);
     }
 
+    /**
+     * Begins the initialization process for {@link #itemIdByName}
+     * by querying item names and noted item ids from the RuneLite API,
+     * before passing them to {@link #populate(Map, Set)}
+     *
+     * @implNote This operation does not block the current thread,
+     * by utilizing OkHttp's thread pool and Java's Fork-Join common pool.
+     */
     @Inject
     void init() {
         queryNamesById().thenAcceptBothAsync(
             queryNotedItemIds().exceptionally(throwable -> Collections.emptySet()),
-            this::merge
+            this::populate
         );
     }
 
+    /**
+     * Populates {@link #itemIdByName} with the inverted mappings of {@code namesById},
+     * while skipping noted items specified in {@code notedIds}.
+     *
+     * @param namesById a mapping of item id's to the corresponding in-game name
+     * @param notedIds  the id's of noted items
+     * @implNote When multiple non-noted item id's have the same in-game name, only the earliest id is saved
+     */
     @VisibleForTesting
-    void merge(Map<String, String> namesById, Set<Integer> notedIds) {
+    void populate(@NotNull Map<String, String> namesById, @NotNull Set<Integer> notedIds) {
         namesById.forEach((idStr, name) -> {
             int id;
             try {
@@ -64,10 +89,16 @@ public class ItemSearcher {
         log.debug("Completed initialization of item cache with {} entries", itemIdByName.size());
     }
 
+    /**
+     * @return a mapping of item ids to their in-game names, provided by the RuneLite API
+     */
     private CompletableFuture<Map<String, String>> queryNamesById() {
         return queryCache("names.json");
     }
 
+    /**
+     * @return a set of id's of noted items, provided by the RuneLite API
+     */
     private CompletableFuture<Set<Integer>> queryNotedItemIds() {
         return queryCache("notes.json").thenApply(items ->
             items.keySet().stream()
@@ -84,6 +115,10 @@ public class ItemSearcher {
         );
     }
 
+    /**
+     * @param fileName the name of the file to query from RuneLite's cache
+     * @return the cache response as a mapping of strings, wrapped in a future
+     */
     private CompletableFuture<Map<String, String>> queryCache(@NotNull String fileName) {
         CompletableFuture<Map<String, String>> future = new CompletableFuture<>();
 
