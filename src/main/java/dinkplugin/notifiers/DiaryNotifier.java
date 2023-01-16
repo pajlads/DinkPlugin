@@ -74,7 +74,11 @@ public class DiaryNotifier extends BaseNotifier {
 
         int value = event.getValue();
         Integer previous = diaryCompletionById.get(id);
-        if (previous == null || value < previous) {
+        if (previous == null) {
+            log.warn("Resetting since {} {} diary was not initialized with a valid value; received new value of {}", diary.getRight(), diary.getLeft(), value);
+            reset();
+        } else if (value < previous) {
+            log.info("Resetting since it appears {} {} diary has lost progress from {}; received new value of {}", diary.getRight(), diary.getLeft(), previous, value);
             reset();
         } else if (value > previous) {
             diaryCompletionById.put(id, value);
