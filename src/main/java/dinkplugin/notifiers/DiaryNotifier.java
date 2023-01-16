@@ -51,9 +51,9 @@ public class DiaryNotifier extends BaseNotifier {
 
             if (initDelayTicks <= 0)
                 this.initCompleted();
-        } else if (diaryCompletionById.isEmpty() && isEnabled()) {
+        } else if (diaryCompletionById.isEmpty() && super.isEnabled()) {
             // mark diary completions to be initialized later
-            this.initDelayTicks = 8;
+            this.initDelayTicks = 4;
         }
     }
 
