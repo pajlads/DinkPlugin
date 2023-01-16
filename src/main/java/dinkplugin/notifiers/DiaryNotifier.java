@@ -140,8 +140,12 @@ public class DiaryNotifier extends BaseNotifier {
     }
 
     private static boolean isComplete(int id, int value) {
-        // Karamja special case: 0 = not started, 1 = started, 2 = completed tasks
-        // otherwise: 0 = not started, 1 = completed
-        return id == 3578 || id == 3599 || id == 3611 ? value > 1 : value > 0;
+        if (id == 3578 || id == 3599 || id == 3611) {
+            // Karamja special case (except Elite): 0 = not started, 1 = started, 2 = completed tasks
+            return value > 1;
+        } else {
+            // otherwise: 0 = not started, 1 = completed
+            return value > 0;
+        }
     }
 }
