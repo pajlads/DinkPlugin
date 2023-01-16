@@ -5,6 +5,7 @@ import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DiaryNotificationData;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 import static dinkplugin.domain.AchievementDiary.DIARIES;
 
+@Slf4j
 @Singleton
 public class DiaryNotifier extends BaseNotifier {
     private final Map<Integer, Integer> diaryCompletionById = new HashMap<>();
@@ -62,8 +64,13 @@ public class DiaryNotifier extends BaseNotifier {
         if (id < 0) return;
         Pair<String, AchievementDiary.Difficulty> diary = DIARIES.get(id);
         if (diary == null) return;
-        if (diaryCompletionById.isEmpty()) return;
         if (!super.isEnabled()) return;
+        if (diaryCompletionById.isEmpty()) {
+            if (client.getGameState() == GameState.LOGGED_IN && isComplete(id, event.getValue())) {
+                log.info("Skipping {} {} diary completion that occurred before map initialization", diary.getRight(), diary.getLeft());
+            }
+            return;
+        }
 
         int value = event.getValue();
         Integer previous = diaryCompletionById.get(id);
@@ -72,8 +79,9 @@ public class DiaryNotifier extends BaseNotifier {
         } else if (value > previous) {
             diaryCompletionById.put(id, value);
 
-            if (value < 2 && (id == 3578 || id == 3599 || id == 3611)) {
-                // Karamja special case: 0 = not started, 1 = started, 2 = completed tasks
+            if (!isComplete(id, value)) {
+                // Karamja special case
+                log.info("Skipping {} {} diary start (not a completion)", diary.getRight(), diary.getLeft());
                 return;
             }
 
@@ -129,5 +137,11 @@ public class DiaryNotifier extends BaseNotifier {
                 diaryCompletionById.put(id, value);
             }
         }
+    }
+
+    private static boolean isComplete(int id, int value) {
+        // Karamja special case: 0 = not started, 1 = started, 2 = completed tasks
+        // otherwise: 0 = not started, 1 = completed
+        return id == 3578 || id == 3599 || id == 3611 ? value > 1 : value > 0;
     }
 }
