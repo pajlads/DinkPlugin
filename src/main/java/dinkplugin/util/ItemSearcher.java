@@ -70,6 +70,8 @@ public class ItemSearcher {
             if (!notedIds.contains(id))
                 itemIdByName.put(name, id);
         });
+
+        log.debug("Completed initialization of item cache with {} entries", itemIdByName.size());
     }
 
     private CompletableFuture<Map<String, String>> queryNamesById() {
