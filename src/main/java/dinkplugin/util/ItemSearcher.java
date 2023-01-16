@@ -12,6 +12,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -59,7 +60,8 @@ public class ItemSearcher {
         );
     }
 
-    private void merge(Map<String, String> namesById, Set<Integer> notedIds) {
+    @VisibleForTesting
+    void merge(Map<String, String> namesById, Set<Integer> notedIds) {
         namesById.forEach((idStr, name) -> {
             int id;
             try {
