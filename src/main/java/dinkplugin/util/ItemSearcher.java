@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,7 +45,7 @@ public class ItemSearcher {
     @Nullable
     @SneakyThrows
     public Integer findItemId(String name) {
-        latch.await();
+        latch.await(5, TimeUnit.SECONDS);
         return itemIdByName.get(name);
     }
 
