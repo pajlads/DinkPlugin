@@ -18,7 +18,7 @@ public class CollectionNotifier extends BaseNotifier {
     public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
 
     @Inject
-    public ItemSearcher itemSearcher;
+    private ItemSearcher itemSearcher;
 
     @Override
     public boolean isEnabled() {
