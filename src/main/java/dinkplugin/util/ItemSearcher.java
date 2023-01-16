@@ -68,7 +68,7 @@ public class ItemSearcher {
             }
 
             if (!notedIds.contains(id))
-                itemIdByName.put(name, id);
+                itemIdByName.putIfAbsent(name, id);
         });
 
         log.debug("Completed initialization of item cache with {} entries", itemIdByName.size());
