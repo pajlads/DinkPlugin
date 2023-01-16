@@ -9,7 +9,7 @@ import net.runelite.api.ItemID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Spy;
+import org.mockito.Mock;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -24,7 +24,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
     CollectionNotifier notifier;
 
     @Bind
-    @Spy
+    @Mock
     ItemSearcher itemSearcher;
 
     @Override

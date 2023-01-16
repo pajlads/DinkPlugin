@@ -3,7 +3,6 @@ package dinkplugin.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -30,18 +29,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class ItemSearcher {
-
-    private static final String RUNELITE_ITEM_CACHE = "https://static.runelite.net/cache/item/";
+    private static final String ITEM_CACHE_BASE_URL = "https://static.runelite.net/cache/item/";
     private final Map<String, Integer> itemIdByName = Collections.synchronizedMap(new HashMap<>());
-
-    @Inject
-    private OkHttpClient httpClient;
-
-    @Inject
-    private Gson gson;
+    private @Inject OkHttpClient httpClient;
+    private @Inject Gson gson;
 
     @Nullable
-    @SneakyThrows
     public Integer findItemId(String name) {
         return itemIdByName.get(name);
     }
@@ -96,7 +89,7 @@ public class ItemSearcher {
         CompletableFuture<Map<String, String>> future = new CompletableFuture<>();
 
         Request request = new Request.Builder()
-            .url(RUNELITE_ITEM_CACHE + fileName)
+            .url(ITEM_CACHE_BASE_URL + fileName)
             .build();
 
         httpClient.newCall(request).enqueue(new Callback() {
@@ -124,5 +117,4 @@ public class ItemSearcher {
 
         return future;
     }
-
 }
