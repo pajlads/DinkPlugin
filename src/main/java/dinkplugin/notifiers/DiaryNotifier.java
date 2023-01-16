@@ -123,12 +123,8 @@ public class DiaryNotifier extends BaseNotifier {
         for (Map.Entry<Integer, Integer> entry : diaryCompletionById.entrySet()) {
             int id = entry.getKey();
             int value = entry.getValue();
-            if (value <= 0) continue;
-
-            if (id != 3578 && id != 3599 && id != 3611) {
+            if (isComplete(id, value)) {
                 n++;
-            } else if (value > 1) {
-                n++; // Karamja special case
             }
         }
 
