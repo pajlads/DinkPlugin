@@ -3,6 +3,7 @@ package dinkplugin.util;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,6 +33,7 @@ public class ItemSearcher {
 
     private static final String RUNELITE_ITEM_CACHE = "https://static.runelite.net/cache/item/";
     private final Map<String, Integer> itemIdByName = Collections.synchronizedMap(new HashMap<>());
+    private final CountDownLatch latch = new CountDownLatch(1);
 
     @Inject
     private OkHttpClient httpClient;
@@ -39,7 +42,9 @@ public class ItemSearcher {
     private Gson gson;
 
     @Nullable
+    @SneakyThrows
     public Integer findItemId(String name) {
+        latch.await();
         return itemIdByName.get(name);
     }
 
@@ -72,6 +77,7 @@ public class ItemSearcher {
         });
 
         log.debug("Completed initialization of item cache with {} entries", itemIdByName.size());
+        latch.countDown();
     }
 
     private CompletableFuture<Map<String, String>> queryNamesById() {
