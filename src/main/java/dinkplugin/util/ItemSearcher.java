@@ -74,16 +74,36 @@ public class ItemSearcher {
     }
 
     private CompletableFuture<Map<String, String>> queryNamesById() {
+        return queryCache("names.json");
+    }
+
+    private CompletableFuture<Set<Integer>> queryNotedItemIds() {
+        return queryCache("notes.json").thenApply(items ->
+            items.keySet().stream()
+                .map(id -> {
+                    try {
+                        return Integer.parseInt(id);
+                    } catch (NumberFormatException e) {
+                        log.warn("Failed to parse noted item id: {}", id);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet())
+        );
+    }
+
+    private CompletableFuture<Map<String, String>> queryCache(@NotNull String fileName) {
         CompletableFuture<Map<String, String>> future = new CompletableFuture<>();
 
         Request request = new Request.Builder()
-            .url(RUNELITE_ITEM_CACHE + "names.json")
+            .url(RUNELITE_ITEM_CACHE + fileName)
             .build();
 
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                log.error("Failed to query item names", e);
+                log.error("Failed to query " + fileName, e);
                 future.completeExceptionally(e);
             }
 
@@ -95,51 +115,7 @@ public class ItemSearcher {
                     Map<String, String> items = gson.fromJson(reader, type);
                     future.complete(items);
                 } catch (JsonParseException e) {
-                    log.error("Failed to parse item names", e);
-                    future.completeExceptionally(e);
-                } finally {
-                    response.close();
-                }
-            }
-        });
-
-        return future;
-    }
-
-    private CompletableFuture<Set<Integer>> queryNotedItemIds() {
-        CompletableFuture<Set<Integer>> future = new CompletableFuture<>();
-
-        Request request = new Request.Builder()
-            .url(RUNELITE_ITEM_CACHE + "notes.json")
-            .build();
-
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                log.warn("Failed to query noted items", e);
-                future.completeExceptionally(e);
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                assert response.body() != null;
-                try (Reader reader = response.body().charStream()) {
-                    Type type = new TypeToken<Map<String, String>>() {}.getType();
-                    Map<String, String> items = gson.fromJson(reader, type);
-                    Set<Integer> ids = items.keySet().stream()
-                        .map(id -> {
-                            try {
-                                return Integer.parseInt(id);
-                            } catch (NumberFormatException e) {
-                                log.warn("Failed to parse noted item id: {}", id);
-                                return null;
-                            }
-                        })
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toSet());
-                    future.complete(ids);
-                } catch (JsonParseException e) {
-                    log.warn("Failed to parse noted items", e);
+                    log.error("Failed to parse " + fileName, e);
                     future.completeExceptionally(e);
                 } finally {
                     response.close();
