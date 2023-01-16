@@ -56,10 +56,15 @@ public class ItemSearcher {
 
     @Inject
     void init() {
-        queryNamesById().thenAcceptBothAsync(
-            queryNotedItemIds().exceptionally(throwable -> Collections.emptySet()),
-            this::merge
-        );
+        queryNamesById()
+            .thenAcceptBothAsync(
+                queryNotedItemIds().exceptionally(throwable -> Collections.emptySet()),
+                this::merge
+            )
+            .exceptionally(e -> {
+                latch.countDown();
+                return null;
+            });
     }
 
     private void merge(Map<String, String> namesById, Set<Integer> notedIds) {
