@@ -79,14 +79,16 @@ public class DiaryNotifier extends BaseNotifier {
         } else if (value > previous) {
             diaryCompletionById.put(id, value);
 
-            if (!isComplete(id, value)) {
+            if (isComplete(id, value)) {
+                if (checkDifficulty(diary.getRight())) {
+                    handle(diary.getLeft(), diary.getRight());
+                } else {
+                    log.debug("Skipping {} {} diary due to low difficulty", diary.getRight(), diary.getLeft());
+                }
+            } else {
                 // Karamja special case
                 log.info("Skipping {} {} diary start (not a completion with value {})", diary.getRight(), diary.getLeft(), value);
-                return;
             }
-
-            if (checkDifficulty(diary.getRight()))
-                handle(diary.getLeft(), diary.getRight());
         }
     }
 
