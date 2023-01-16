@@ -81,7 +81,7 @@ public class DiaryNotifier extends BaseNotifier {
 
             if (!isComplete(id, value)) {
                 // Karamja special case
-                log.info("Skipping {} {} diary start (not a completion)", diary.getRight(), diary.getLeft());
+                log.info("Skipping {} {} diary start (not a completion with value {})", diary.getRight(), diary.getLeft(), value);
                 return;
             }
 
