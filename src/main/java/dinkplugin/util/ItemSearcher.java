@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class ItemSearcher {
-    private static final String ITEM_CACHE_BASE_URL = "https://static.runelite.net/cache/item/";
     private final Map<String, Integer> itemIdByName = Collections.synchronizedMap(new HashMap<>());
     private @Inject OkHttpClient httpClient;
     private @Inject Gson gson;
@@ -89,7 +88,7 @@ public class ItemSearcher {
         CompletableFuture<Map<String, String>> future = new CompletableFuture<>();
 
         Request request = new Request.Builder()
-            .url(ITEM_CACHE_BASE_URL + fileName)
+            .url(ItemUtils.ITEM_CACHE_BASE_URL + fileName)
             .build();
 
         httpClient.newCall(request).enqueue(new Callback() {
