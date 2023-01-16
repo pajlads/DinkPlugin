@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -34,7 +32,6 @@ public class ItemSearcher {
 
     private static final String RUNELITE_ITEM_CACHE = "https://static.runelite.net/cache/item/";
     private final Map<String, Integer> itemIdByName = Collections.synchronizedMap(new HashMap<>());
-    private final CountDownLatch latch = new CountDownLatch(1);
 
     @Inject
     private OkHttpClient httpClient;
@@ -45,7 +42,6 @@ public class ItemSearcher {
     @Nullable
     @SneakyThrows
     public Integer findItemId(String name) {
-        latch.await(5, TimeUnit.SECONDS);
         return itemIdByName.get(name);
     }
 
@@ -57,15 +53,10 @@ public class ItemSearcher {
 
     @Inject
     void init() {
-        queryNamesById()
-            .thenAcceptBothAsync(
-                queryNotedItemIds().exceptionally(throwable -> Collections.emptySet()),
-                this::merge
-            )
-            .exceptionally(e -> {
-                latch.countDown();
-                return null;
-            });
+        queryNamesById().thenAcceptBothAsync(
+            queryNotedItemIds().exceptionally(throwable -> Collections.emptySet()),
+            this::merge
+        );
     }
 
     private void merge(Map<String, String> namesById, Set<Integer> notedIds) {
@@ -83,7 +74,6 @@ public class ItemSearcher {
         });
 
         log.debug("Completed initialization of item cache with {} entries", itemIdByName.size());
-        latch.countDown();
     }
 
     private CompletableFuture<Map<String, String>> queryNamesById() {
