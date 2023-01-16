@@ -41,7 +41,9 @@ class CollectionNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         String item = "Seercull";
+        int price = 23_000;
         when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
+        when(itemManager.getItemPrice(ItemID.SEERCULL)).thenReturn(price);
 
         // send fake message
         notifier.onChatMessage("New item added to your collection log: " + item);
@@ -52,7 +54,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has added %s to their collection", PLAYER_NAME, item))
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price))
                 .type(NotificationType.COLLECTION)
                 .build()
         );

@@ -6,6 +6,7 @@ import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.CollectionNotificationData;
+import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -17,6 +18,9 @@ public class CollectionNotifier extends BaseNotifier {
     @VisibleForTesting
     static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
+
+    @Inject
+    private ItemManager itemManager;
 
     @Inject
     private ItemSearcher itemSearcher;
@@ -48,10 +52,11 @@ public class CollectionNotifier extends BaseNotifier {
         );
 
         Integer itemId = itemSearcher.findItemId(itemName);
+        Long price = itemId != null ? ItemUtils.getPrice(itemManager, itemId) : null;
         createMessage(config.collectionSendImage(), NotificationBody.builder()
             .text(notifyMessage)
             .thumbnailUrl(itemId != null ? ItemUtils.getItemImageUrl(itemId) : null)
-            .extra(new CollectionNotificationData(itemName, itemId))
+            .extra(new CollectionNotificationData(itemName, itemId, price))
             .type(NotificationType.COLLECTION)
             .build());
     }

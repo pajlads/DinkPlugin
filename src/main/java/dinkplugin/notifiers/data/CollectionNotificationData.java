@@ -15,4 +15,7 @@ public class CollectionNotificationData extends NotificationData {
     @Nullable
     Integer itemId;
 
+    @Nullable
+    Long price;
+
 }
