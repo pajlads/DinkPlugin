@@ -17,14 +17,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 /**
  * This thread-safe singleton holds a mapping of item names to their item id, using the RuneLite API.
@@ -72,16 +69,8 @@ public class ItemSearcher {
      * @implNote When multiple non-noted item id's have the same in-game name, only the earliest id is saved
      */
     @VisibleForTesting
-    void populate(@NotNull Map<String, String> namesById, @NotNull Set<Integer> notedIds) {
-        namesById.forEach((idStr, name) -> {
-            int id;
-            try {
-                id = Integer.parseInt(idStr);
-            } catch (NumberFormatException e) {
-                log.warn("Failed to parse item id for {}: {}", name, idStr);
-                return;
-            }
-
+    void populate(@NotNull Map<Integer, String> namesById, @NotNull Set<Integer> notedIds) {
+        namesById.forEach((id, name) -> {
             if (!notedIds.contains(id))
                 itemIdByName.putIfAbsent(name, id);
         });
@@ -92,35 +81,25 @@ public class ItemSearcher {
     /**
      * @return a mapping of item ids to their in-game names, provided by the RuneLite API
      */
-    private CompletableFuture<Map<String, String>> queryNamesById() {
-        return queryCache("names.json");
+    private CompletableFuture<Map<Integer, String>> queryNamesById() {
+        return queryCache("names.json", new TypeToken<Map<Integer, String>>() {});
     }
 
     /**
      * @return a set of id's of noted items, provided by the RuneLite API
      */
     private CompletableFuture<Set<Integer>> queryNotedItemIds() {
-        return queryCache("notes.json").thenApply(items ->
-            items.keySet().stream()
-                .map(id -> {
-                    try {
-                        return Integer.parseInt(id);
-                    } catch (NumberFormatException e) {
-                        log.warn("Failed to parse noted item id: {}", id);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet())
-        );
+        return queryCache("notes.json", new TypeToken<Map<Integer, Integer>>() {})
+            .thenApply(Map::keySet);
     }
 
     /**
      * @param fileName the name of the file to query from RuneLite's cache
-     * @return the cache response as a mapping of strings, wrapped in a future
+     * @param type     a type token that indicates how the json response should be parsed
+     * @return the transformed cache response, wrapped in a future
      */
-    private CompletableFuture<Map<String, String>> queryCache(@NotNull String fileName) {
-        CompletableFuture<Map<String, String>> future = new CompletableFuture<>();
+    private <T> CompletableFuture<T> queryCache(@NotNull String fileName, @NotNull TypeToken<T> type) {
+        CompletableFuture<T> future = new CompletableFuture<>();
 
         Request request = new Request.Builder()
             .url(ItemUtils.ITEM_CACHE_BASE_URL + fileName)
@@ -137,9 +116,8 @@ public class ItemSearcher {
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 assert response.body() != null;
                 try (Reader reader = response.body().charStream()) {
-                    Type type = new TypeToken<Map<String, String>>() {}.getType();
-                    Map<String, String> items = gson.fromJson(reader, type);
-                    future.complete(items);
+                    T result = gson.fromJson(reader, type.getType());
+                    future.complete(result);
                 } catch (JsonParseException e) {
                     log.error("Failed to parse " + fileName, e);
                     future.completeExceptionally(e);
