@@ -1,22 +1,15 @@
 package dinkplugin.util;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,10 +47,18 @@ public class ItemSearcher {
      */
     @Inject
     void init() {
-        queryNamesById().thenAcceptBothAsync(
-            queryNotedItemIds().exceptionally(throwable -> Collections.emptySet()),
-            this::populate
-        );
+        queryNamesById()
+            .thenAcceptBothAsync(
+                queryNotedItemIds().exceptionally(e -> {
+                    log.error("Failed to read noted items", e);
+                    return Collections.emptySet();
+                }),
+                this::populate
+            )
+            .exceptionally(e -> {
+                log.error("Failed to read item names", e);
+                return null;
+            });
     }
 
     /**
@@ -99,34 +100,6 @@ public class ItemSearcher {
      * @return the transformed cache response, wrapped in a future
      */
     private <T> CompletableFuture<T> queryCache(@NotNull String fileName, @NotNull TypeToken<T> type) {
-        CompletableFuture<T> future = new CompletableFuture<>();
-
-        Request request = new Request.Builder()
-            .url(ItemUtils.ITEM_CACHE_BASE_URL + fileName)
-            .build();
-
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                log.error("Failed to query " + fileName, e);
-                future.completeExceptionally(e);
-            }
-
-            @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                assert response.body() != null;
-                try (Reader reader = response.body().charStream()) {
-                    T result = gson.fromJson(reader, type.getType());
-                    future.complete(result);
-                } catch (JsonParseException e) {
-                    log.error("Failed to parse " + fileName, e);
-                    future.completeExceptionally(e);
-                } finally {
-                    response.close();
-                }
-            }
-        });
-
-        return future;
+        return Utils.readJson(httpClient, gson, ItemUtils.ITEM_CACHE_BASE_URL + fileName, type);
     }
 }
