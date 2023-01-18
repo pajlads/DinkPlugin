@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include all lost items in extra death notification data. (#132)
 - Minor: Reduce ticks to initialize diary notifier and improve logging for edge cases. (#129)
 - Minor: Made Collection Log notifications display the icon of the obtained item. (#128)
 - Minor: Made player names in Discord notifications link to a player profile page. This feature can be customized to different providers such as WiseOldMan & CrystalMathLabs in the Advanced menu. (#126)
