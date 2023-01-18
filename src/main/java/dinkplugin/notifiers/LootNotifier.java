@@ -9,7 +9,6 @@ import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ItemComposition;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
@@ -115,18 +114,15 @@ public class LootNotifier extends BaseNotifier {
         boolean sendMessage = false;
 
         for (ItemStack item : reduced) {
-            int itemId = item.getId();
-            int quantity = item.getQuantity();
-            int price = itemManager.getItemPrice(itemId);
-            long totalPrice = (long) price * quantity;
-            ItemComposition itemComposition = itemManager.getItemComposition(itemId);
+            SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
+            long totalPrice = stack.getTotalPrice();
             if (totalPrice >= minValue) {
                 sendMessage = true;
                 if (lootMessage.length() > 0) lootMessage.append("\n");
-                lootMessage.append(String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice)));
-                if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(itemId)));
+                lootMessage.append(String.format("%d x %s (%s)", item.getQuantity(), stack.getName(), QuantityFormatter.quantityToStackSize(totalPrice)));
+                if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
             }
-            serializedItems.add(new SerializedItemStack(itemId, quantity, price, itemComposition.getName()));
+            serializedItems.add(stack);
             totalStackValue += totalPrice;
         }
 
