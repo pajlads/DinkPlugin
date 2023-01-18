@@ -13,6 +13,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.util.QuantityFormatter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,12 +28,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.runelite.api.ItemID.*;
-import static net.runelite.api.ItemID.TWISTED_BRONZE_TROPHY;
-import static net.runelite.api.ItemID.TWISTED_DRAGON_TROPHY;
-import static net.runelite.api.ItemID.TWISTED_IRON_TROPHY;
-import static net.runelite.api.ItemID.TWISTED_MITHRIL_TROPHY;
-import static net.runelite.api.ItemID.TWISTED_RUNE_TROPHY;
-import static net.runelite.api.ItemID.TWISTED_STEEL_TROPHY;
 
 @UtilityClass
 public class ItemUtils {
@@ -64,9 +59,19 @@ public class ItemUtils {
         return NEVER_KEPT_ITEMS.contains(itemId);
     }
 
-    public long getPrice(ItemManager itemManager, int itemId) {
+    public long getPrice(@NotNull ItemManager itemManager, int itemId) {
+        return getPrice(itemManager, itemId, null);
+    }
+
+    private int getPrice(@NotNull ItemManager itemManager, int itemId, @Nullable ItemComposition item) {
+        // GE price sourced from wiki with anti-manipulation massaging by runelite
         int price = itemManager.getItemPrice(itemId);
-        return price > 0 ? price : itemManager.getItemComposition(itemId).getPrice();
+        if (price <= 0) {
+            // fallback: store price
+            ItemComposition ic = item != null ? item : itemManager.getItemComposition(itemId);
+            price = ic.getPrice();
+        }
+        return price;
     }
 
     public Collection<Item> getItems(Client client) {
@@ -96,10 +101,12 @@ public class ItemUtils {
     }
 
     public SerializedItemStack stackFromItem(ItemManager itemManager, Item item) {
-        int id = item.getId();
-        int quantity = item.getQuantity();
-        int price = itemManager.getItemPrice(id);
+        return stackFromItem(itemManager, item.getId(), item.getQuantity());
+    }
+
+    public SerializedItemStack stackFromItem(ItemManager itemManager, int id, int quantity) {
         ItemComposition composition = itemManager.getItemComposition(id);
+        int price = getPrice(itemManager, id, composition);
         return new SerializedItemStack(id, quantity, price, composition.getName());
     }
 
