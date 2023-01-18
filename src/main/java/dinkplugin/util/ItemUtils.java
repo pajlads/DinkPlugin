@@ -28,12 +28,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.runelite.api.ItemID.*;
-import static net.runelite.api.ItemID.TWISTED_BRONZE_TROPHY;
-import static net.runelite.api.ItemID.TWISTED_DRAGON_TROPHY;
-import static net.runelite.api.ItemID.TWISTED_IRON_TROPHY;
-import static net.runelite.api.ItemID.TWISTED_MITHRIL_TROPHY;
-import static net.runelite.api.ItemID.TWISTED_RUNE_TROPHY;
-import static net.runelite.api.ItemID.TWISTED_STEEL_TROPHY;
 
 @UtilityClass
 public class ItemUtils {
