@@ -63,10 +63,12 @@ public class ItemUtils {
         return getPrice(itemManager, itemId, null);
     }
 
-    private int getPrice(@NotNull ItemManager manager, int itemId, @Nullable ItemComposition item) {
-        int price = manager.getItemPrice(itemId);
+    private int getPrice(@NotNull ItemManager itemManager, int itemId, @Nullable ItemComposition item) {
+        // GE price sourced from wiki with anti-manipulation massaging by runelite
+        int price = itemManager.getItemPrice(itemId);
         if (price <= 0) {
-            ItemComposition ic = item != null ? item : manager.getItemComposition(itemId);
+            // fallback: store price
+            ItemComposition ic = item != null ? item : itemManager.getItemComposition(itemId);
             price = ic.getPrice();
         }
         return price;
