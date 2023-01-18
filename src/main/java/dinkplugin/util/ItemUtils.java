@@ -13,6 +13,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.util.QuantityFormatter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,9 +63,17 @@ public class ItemUtils {
         return NEVER_KEPT_ITEMS.contains(itemId);
     }
 
-    public long getPrice(ItemManager itemManager, int itemId) {
-        int price = itemManager.getItemPrice(itemId);
-        return price > 0 ? price : itemManager.getItemComposition(itemId).getPrice();
+    public long getPrice(@NotNull ItemManager itemManager, int itemId) {
+        return getPrice(itemManager, itemId, null);
+    }
+
+    private int getPrice(@NotNull ItemManager manager, int itemId, @Nullable ItemComposition item) {
+        int price = manager.getItemPrice(itemId);
+        if (price <= 0) {
+            ItemComposition ic = item != null ? item : manager.getItemComposition(itemId);
+            price = ic.getPrice();
+        }
+        return price;
     }
 
     public Collection<Item> getItems(Client client) {
@@ -98,8 +107,8 @@ public class ItemUtils {
     }
 
     public SerializedItemStack stackFromItem(ItemManager itemManager, int id, int quantity) {
-        int price = (int) getPrice(itemManager, id);
         ItemComposition composition = itemManager.getItemComposition(id);
+        int price = getPrice(itemManager, id, composition);
         return new SerializedItemStack(id, quantity, price, composition.getName());
     }
 
