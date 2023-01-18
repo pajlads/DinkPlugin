@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add embed field on a max level up indicating total 99+ skills. (#115)
 - Minor: Include all lost items in extra death notification data. (#132)
 - Minor: Reduce ticks to initialize diary notifier and improve logging for edge cases. (#129)
 - Minor: Made Collection Log notifications display the icon of the obtained item. (#128)
