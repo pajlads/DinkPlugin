@@ -27,12 +27,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -97,18 +94,8 @@ public class DeathNotifier extends BaseNotifier {
 
         String notifyMessage = buildMessage(pker, losePrice);
 
-        int[] topLostItemIds = lostItems.stream()
-            .map(Pair::getLeft)
-            .mapToInt(Item::getId)
-            .distinct()
-            .limit(3)
-            .toArray();
-
-        List<SerializedItemStack> topLostStacks = getTopLostStacks(itemManager, lostItems, topLostItemIds);
-        List<SerializedItemStack> keptStacks = keptItems.stream()
-            .map(Pair::getKey)
-            .map(item -> ItemUtils.stackFromItem(itemManager, item))
-            .collect(Collectors.toList());
+        List<SerializedItemStack> lostStacks = getStacks(itemManager, lostItems, true);
+        List<SerializedItemStack> keptStacks = getStacks(itemManager, keptItems, false);
         List<Embed> keptItemEmbeds;
         if (config.deathEmbedKeptItems()) {
             keptItemEmbeds = ItemUtils.buildEmbeds(
@@ -127,7 +114,7 @@ public class DeathNotifier extends BaseNotifier {
             pker != null,
             pker != null ? pker.getName() : null,
             keptStacks,
-            topLostStacks
+            lostStacks
         );
 
         createMessage(config.deathSendImage(), NotificationBody.builder()
@@ -252,20 +239,21 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     /**
-     * Converts the top lost item id array to the associated item stacks,
-     * while reflecting the cumulative item quantity across inventory slots.
+     * Converts {@code pricedItems} into {@link SerializedItemStack} with optional reduction
+     * (to reflect the cumulative item quantity across inventory slots).
      *
-     * @param itemManager    {@link ItemManager}
-     * @param lostItems      the items that would be lost on death
-     * @param topLostItemIds a distinct set of the most valuable item id's that are being lost
-     * @return the reduced {@link SerializedItemStack}'s associated with topLostItemIds
+     * @param itemManager {@link ItemManager}
+     * @param pricedItems the items to be converted into {@link SerializedItemStack}
+     * @param reduce      whether multiple stacks of the same item should be aggregated to a single stack
+     * @return the (optionally reduced) {@link SerializedItemStack}'s associated with {@code pricedItems}
      */
     @NotNull
-    private static List<SerializedItemStack> getTopLostStacks(ItemManager itemManager, List<Pair<Item, Long>> lostItems, int[] topLostItemIds) {
-        Map<Integer, Item> reducedLostItems = ItemUtils.reduceItems(lostItems.stream().map(Pair::getLeft).collect(Collectors.toList()));
-        return Arrays.stream(topLostItemIds)
-            .mapToObj(reducedLostItems::get)
-            .filter(Objects::nonNull)
+    private static List<SerializedItemStack> getStacks(ItemManager itemManager, List<Pair<Item, Long>> pricedItems, boolean reduce) {
+        Collection<Item> items = pricedItems.stream().map(Pair::getLeft).collect(Collectors.toList());
+        if (reduce) {
+            items = ItemUtils.reduceItems(items).values();
+        }
+        return items.stream()
             .map(item -> ItemUtils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
     }
