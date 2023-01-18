@@ -116,7 +116,9 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 {
   "content": "%USERNAME% has added %ITEM% to their collection",
   "extra": {
-    "itemName": "%ITEM%"
+    "itemName": "Zamorak chaps",
+    "itemId": 10372,
+    "price": 500812
   },
   "type": "COLLECTION"
 }
