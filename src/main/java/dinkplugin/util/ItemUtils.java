@@ -32,6 +32,8 @@ import static net.runelite.api.ItemID.*;
 @UtilityClass
 public class ItemUtils {
 
+    final String ITEM_CACHE_BASE_URL = "https://static.runelite.net/cache/item/";
+
     private final Set<Integer> NEVER_KEPT_ITEMS = ImmutableSet.of(
         CLUE_BOX, LOOTING_BAG,
         AMULET_OF_THE_DAMNED, AMULET_OF_THE_DAMNED_FULL,
@@ -107,7 +109,7 @@ public class ItemUtils {
     }
 
     public String getItemImageUrl(int itemId) {
-        return "https://static.runelite.net/cache/item/icon/" + itemId + ".png";
+        return ITEM_CACHE_BASE_URL + "icon/" + itemId + ".png";
     }
 
     public String getNpcImageUrl(int npcId) {

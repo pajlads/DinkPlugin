@@ -5,6 +5,7 @@ import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DiaryNotificationData;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 import static dinkplugin.domain.AchievementDiary.DIARIES;
 
+@Slf4j
 @Singleton
 public class DiaryNotifier extends BaseNotifier {
     private final Map<Integer, Integer> diaryCompletionById = new HashMap<>();
@@ -51,9 +53,9 @@ public class DiaryNotifier extends BaseNotifier {
 
             if (initDelayTicks <= 0)
                 this.initCompleted();
-        } else if (diaryCompletionById.isEmpty() && isEnabled()) {
+        } else if (diaryCompletionById.isEmpty() && super.isEnabled()) {
             // mark diary completions to be initialized later
-            this.initDelayTicks = 8;
+            this.initDelayTicks = 4;
         }
     }
 
@@ -62,23 +64,38 @@ public class DiaryNotifier extends BaseNotifier {
         if (id < 0) return;
         Pair<String, AchievementDiary.Difficulty> diary = DIARIES.get(id);
         if (diary == null) return;
-        if (diaryCompletionById.isEmpty()) return;
         if (!super.isEnabled()) return;
+        if (diaryCompletionById.isEmpty()) {
+            if (client.getGameState() == GameState.LOGGED_IN && isComplete(id, event.getValue())) {
+                // this log only occurs in exceptional circumstances (i.e., completion within seconds of logging in or enabling the plugin)
+                log.info("Skipping {} {} diary completion that occurred before map initialization", diary.getRight(), diary.getLeft());
+            }
+            return;
+        }
 
         int value = event.getValue();
         Integer previous = diaryCompletionById.get(id);
-        if (previous == null || value < previous) {
+        if (previous == null) {
+            // this log should not occur, barring a jagex oddity
+            log.warn("Resetting since {} {} diary was not initialized with a valid value; received new value of {}", diary.getRight(), diary.getLeft(), value);
+            reset();
+        } else if (value < previous) {
+            // this log should not occur, barring a jagex/runelite oddity
+            log.info("Resetting since it appears {} {} diary has lost progress from {}; received new value of {}", diary.getRight(), diary.getLeft(), previous, value);
             reset();
         } else if (value > previous) {
             diaryCompletionById.put(id, value);
 
-            if (value < 2 && (id == 3578 || id == 3599 || id == 3611)) {
-                // Karamja special case: 0 = not started, 1 = started, 2 = completed tasks
-                return;
+            if (isComplete(id, value)) {
+                if (checkDifficulty(diary.getRight())) {
+                    handle(diary.getLeft(), diary.getRight());
+                } else {
+                    log.debug("Skipping {} {} diary due to low difficulty", diary.getRight(), diary.getLeft());
+                }
+            } else {
+                // Karamja special case
+                log.info("Skipping {} {} diary start (not a completion with value {})", diary.getRight(), diary.getLeft(), value);
             }
-
-            if (checkDifficulty(diary.getRight()))
-                handle(diary.getLeft(), diary.getRight());
         }
     }
 
@@ -109,12 +126,8 @@ public class DiaryNotifier extends BaseNotifier {
         for (Map.Entry<Integer, Integer> entry : diaryCompletionById.entrySet()) {
             int id = entry.getKey();
             int value = entry.getValue();
-            if (value <= 0) continue;
-
-            if (id != 3578 && id != 3599 && id != 3611) {
+            if (isComplete(id, value)) {
                 n++;
-            } else if (value > 1) {
-                n++; // Karamja special case
             }
         }
 
@@ -128,6 +141,16 @@ public class DiaryNotifier extends BaseNotifier {
             if (value >= 0) {
                 diaryCompletionById.put(id, value);
             }
+        }
+    }
+
+    private static boolean isComplete(int id, int value) {
+        if (id == 3578 || id == 3599 || id == 3611) {
+            // Karamja special case (except Elite): 0 = not started, 1 = started, 2 = completed tasks
+            return value > 1;
+        } else {
+            // otherwise: 0 = not started, 1 = completed
+            return value > 0;
         }
     }
 }
