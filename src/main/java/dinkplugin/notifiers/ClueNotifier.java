@@ -100,7 +100,7 @@ public class ClueNotifier extends BaseNotifier {
         clueItems.forEach((itemId, quantity) -> {
             if (lootMessage.length() > 0) lootMessage.append('\n');
 
-            int price = itemManager.getItemPrice(itemId);
+            int price = (int) ItemUtils.getPrice(itemManager, itemId);
             ItemComposition itemComposition = itemManager.getItemComposition(itemId);
             SerializedItemStack stack = new SerializedItemStack(itemId, quantity, price, itemComposition.getName());
 

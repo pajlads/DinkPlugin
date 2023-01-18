@@ -117,8 +117,8 @@ public class LootNotifier extends BaseNotifier {
         for (ItemStack item : reduced) {
             int itemId = item.getId();
             int quantity = item.getQuantity();
-            int price = itemManager.getItemPrice(itemId);
-            long totalPrice = (long) price * quantity;
+            long price = ItemUtils.getPrice(itemManager, itemId);
+            long totalPrice = price * quantity;
             ItemComposition itemComposition = itemManager.getItemComposition(itemId);
             if (totalPrice >= minValue) {
                 sendMessage = true;
@@ -126,7 +126,7 @@ public class LootNotifier extends BaseNotifier {
                 lootMessage.append(String.format("%s x %s (%s)", quantity, itemComposition.getName(), QuantityFormatter.quantityToStackSize(totalPrice)));
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(itemId)));
             }
-            serializedItems.add(new SerializedItemStack(itemId, quantity, price, itemComposition.getName()));
+            serializedItems.add(new SerializedItemStack(itemId, quantity, (int) price, itemComposition.getName()));
             totalStackValue += totalPrice;
         }
 
