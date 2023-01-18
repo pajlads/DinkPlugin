@@ -67,6 +67,7 @@ public class DiaryNotifier extends BaseNotifier {
         if (!super.isEnabled()) return;
         if (diaryCompletionById.isEmpty()) {
             if (client.getGameState() == GameState.LOGGED_IN && isComplete(id, event.getValue())) {
+                // this log only occurs in exceptional circumstances (i.e., completion within seconds of logging in or enabling the plugin)
                 log.info("Skipping {} {} diary completion that occurred before map initialization", diary.getRight(), diary.getLeft());
             }
             return;
@@ -75,9 +76,11 @@ public class DiaryNotifier extends BaseNotifier {
         int value = event.getValue();
         Integer previous = diaryCompletionById.get(id);
         if (previous == null) {
+            // this log should not occur, barring a jagex oddity
             log.warn("Resetting since {} {} diary was not initialized with a valid value; received new value of {}", diary.getRight(), diary.getLeft(), value);
             reset();
         } else if (value < previous) {
+            // this log should not occur, barring a jagex/runelite oddity
             log.info("Resetting since it appears {} {} diary has lost progress from {}; received new value of {}", diary.getRight(), diary.getLeft(), previous, value);
             reset();
         } else if (value > previous) {
