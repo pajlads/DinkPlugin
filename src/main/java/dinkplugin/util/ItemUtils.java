@@ -94,9 +94,11 @@ public class ItemUtils {
     }
 
     public SerializedItemStack stackFromItem(ItemManager itemManager, Item item) {
-        int id = item.getId();
-        int quantity = item.getQuantity();
-        int price = itemManager.getItemPrice(id);
+        return stackFromItem(itemManager, item.getId(), item.getQuantity());
+    }
+
+    public SerializedItemStack stackFromItem(ItemManager itemManager, int id, int quantity) {
+        int price = (int) getPrice(itemManager, id);
         ItemComposition composition = itemManager.getItemComposition(id);
         return new SerializedItemStack(id, quantity, price, composition.getName());
     }
