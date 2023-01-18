@@ -26,4 +26,10 @@ public class Author {
     @Nullable
     @SerializedName("icon_url")
     String iconUrl;
+
+    /**
+     * Makes name a href and opens a browser with the url when clicked
+     */
+    @Nullable
+    String url;
 }

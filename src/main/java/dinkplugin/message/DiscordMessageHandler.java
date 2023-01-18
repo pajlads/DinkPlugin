@@ -3,6 +3,7 @@ package dinkplugin.message;
 import com.google.gson.Gson;
 import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
+import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.Utils;
 import lombok.NonNull;
@@ -83,7 +84,7 @@ public class DiscordMessageHandler {
             mBody = mBody.withAccountType(client.getAccountType());
 
         if (config.discordRichEmbeds()) {
-            mBody = injectContent(mBody, sendImage, config.embedFooterText(), config.embedFooterIcon());
+            mBody = injectContent(mBody, sendImage, config);
         } else {
             mBody = mBody.withComputedDiscordContent(mBody.getText());
         }
@@ -161,18 +162,25 @@ public class DiscordMessageHandler {
         });
     }
 
-    private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, String footerText, String footerIcon) {
+    private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, DinkPluginConfig config) {
         NotificationType type = body.getType();
         NotificationData extra = body.getExtra();
+        String footerText = config.embedFooterText();
+        String footerIcon = config.embedFooterIcon();
+        PlayerLookupService playerLookupService = config.playerLookupService();
 
         Author author = Author.builder()
             .name(body.getPlayerName())
+            .url(playerLookupService.getPlayerUrl(body.getPlayerName()))
             .iconUrl(Utils.getChatBadge(body.getAccountType()))
             .build();
         Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()
             .text(StringUtils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
             .iconUrl(StringUtils.isBlank(footerIcon) ? null : footerIcon)
             .build();
+        String thumbnail = body.getThumbnailUrl() != null
+            ? body.getThumbnailUrl()
+            : type.getThumbnail();
 
         List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
         embeds.add(0,
@@ -182,7 +190,7 @@ public class DiscordMessageHandler {
                 .title(type.getTitle())
                 .description(StringUtils.truncate(body.getText(), Embed.MAX_DESCRIPTION_LENGTH))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
-                .thumbnail(new Embed.UrlEmbed(type.getThumbnail()))
+                .thumbnail(new Embed.UrlEmbed(thumbnail))
                 .fields(extra != null ? extra.getFields() : Collections.emptyList())
                 .footer(footer)
                 .timestamp(footer != null ? Instant.now() : null)

@@ -4,9 +4,12 @@ import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.CollectionNotificationData;
+import dinkplugin.util.ItemSearcher;
+import net.runelite.api.ItemID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -19,6 +22,10 @@ class CollectionNotifierTest extends MockedNotifierTest {
     @Bind
     @InjectMocks
     CollectionNotifier notifier;
+
+    @Bind
+    @Mock
+    ItemSearcher itemSearcher;
 
     @Override
     @BeforeEach
@@ -34,6 +41,9 @@ class CollectionNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         String item = "Seercull";
+        int price = 23_000;
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
+        when(itemManager.getItemPrice(ItemID.SEERCULL)).thenReturn(price);
 
         // send fake message
         notifier.onChatMessage("New item added to your collection log: " + item);
@@ -44,7 +54,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has added %s to their collection", PLAYER_NAME, item))
-                .extra(new CollectionNotificationData(item))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price))
                 .type(NotificationType.COLLECTION)
                 .build()
         );

@@ -1,5 +1,16 @@
 ## Unreleased
 
+- Minor: Include all lost items in extra death notification data. (#132)
+- Minor: Reduce ticks to initialize diary notifier and improve logging for edge cases. (#129)
+- Minor: Made Collection Log notifications display the icon of the obtained item. (#128)
+- Minor: Made player names in Discord notifications link to a player profile page. This feature can be customized to different providers such as WiseOldMan & CrystalMathLabs in the Advanced menu. (#126)
+- Minor: Add setting to skip virtual level notifications. (#122)
+- Minor: Update the README to be less confusing to users. (#123)
+- Minor: Update embed icons for level up and slayer task notifications. (#119)
+- Bugfix: Improve item price lookup for clue and loot notifiers so that coins are not worthless. (#131)
+
+## 1.2.0
+
 - Major: Use Discord rich embed format for webhooks. This is technically a possible breaking change for users that target non-Discord webhook servers; these users can revert to the old notification format by disabling the `Use Rich Embeds` setting in the `Advanced` section. (#110)
 - Minor: Add configurable player name ignore list for notifications. (#114)
 - Bugfix: Read unsired sprite dialog at end of game tick. This is still experimental for wider testing. (#112)

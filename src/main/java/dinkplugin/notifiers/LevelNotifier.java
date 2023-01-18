@@ -107,6 +107,7 @@ public class LevelNotifier extends BaseNotifier {
             index++;
         }
 
+        String thumbnail = levelledSkills.size() == 1 ? getSkillIcon(levelledSkills.get(0)) : null;
         levelledSkills.clear();
         String fullNotification = StringUtils.replaceEach(
             config.levelNotifyMessage(),
@@ -118,15 +119,22 @@ public class LevelNotifier extends BaseNotifier {
             .text(fullNotification)
             .extra(new LevelNotificationData(lSkills, new HashMap<>(currentLevels)))
             .type(NotificationType.LEVEL)
+            .thumbnailUrl(thumbnail)
             .build());
     }
 
     private boolean checkLevelInterval(int level) {
         if (level < config.levelMinValue())
             return false;
+        if (level > 99 && !config.levelNotifyVirtual())
+            return false;
         int interval = config.levelInterval();
         return interval <= 1
             || level == 99
             || level % interval == 0;
+    }
+
+    private static String getSkillIcon(String skillName) {
+        return Utils.WIKI_IMG_BASE_URL + skillName + "_icon.png";
     }
 }

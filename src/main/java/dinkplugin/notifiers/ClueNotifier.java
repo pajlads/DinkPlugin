@@ -7,7 +7,6 @@ import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.ClueNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
-import net.runelite.api.ItemComposition;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
@@ -99,11 +98,7 @@ public class ClueNotifier extends BaseNotifier {
 
         clueItems.forEach((itemId, quantity) -> {
             if (lootMessage.length() > 0) lootMessage.append('\n');
-
-            int price = itemManager.getItemPrice(itemId);
-            ItemComposition itemComposition = itemManager.getItemComposition(itemId);
-            SerializedItemStack stack = new SerializedItemStack(itemId, quantity, price, itemComposition.getName());
-
+            SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, itemId, quantity);
             totalPrice.addAndGet(stack.getTotalPrice());
             itemStacks.add(stack);
             lootMessage.append(getItemMessage(stack, embeds));
