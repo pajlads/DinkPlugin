@@ -27,6 +27,17 @@ in `Settings > All Settings > Chat > Collection log - New addition notification`
 
 ![img.png](img.png)
 
+## Advanced Features
+
+* Multiple webhook urls are supported; simply place each on a separate line
+* Each notifier can send webhook messages to separate "override" urls
+* Screenshots can be individually configured for each notifier
+* The plugin can skip notifications if the current player name is on the user-configured RSN ignore list
+* Users can choose whether their webhook messages are sent in Discord's rich embed format or a traditional format
+* The player name in Discord rich embeds can be linked to various tracking services (from HiScores to Wise Old Man)
+* Discord rich embed footers can be customized with user-specified text and image url
+* When network issues occur, Dink can make repeated attempts to send the webhook (with exponential backoff)
+
 ---
 
 ## Notifier Configuration
