@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.domain.ClueTier;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -7,6 +8,7 @@ import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.ClueNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
@@ -26,6 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Singleton
 public class ClueNotifier extends BaseNotifier {
     private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
@@ -50,9 +53,12 @@ public class ClueNotifier extends BaseNotifier {
         if (isEnabled()) {
             Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(chatMessage);
             if (clueMatcher.find()) {
-                // game message always occurs before widget load; save this data
-                this.clueCount = clueMatcher.group("scrollCount");
-                this.clueType = clueMatcher.group("scrollType");
+                String tier = clueMatcher.group("scrollType");
+                if (checkClueTier(tier)) {
+                    // game message always occurs before widget load; save this data
+                    this.clueCount = clueMatcher.group("scrollCount");
+                    this.clueType = tier;
+                }
             }
         }
     }
@@ -128,6 +134,15 @@ public class ClueNotifier extends BaseNotifier {
         if (config.clueShowItems())
             embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
         return String.format("%s x %s (%s)", item.getQuantity(), item.getName(), QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
+    }
+
+    private boolean checkClueTier(String clueType) {
+        ClueTier tier = ClueTier.parse(clueType);
+        if (tier == null) {
+            log.warn("Failed to parse clue tier: {}", clueType);
+            return true; // permissive approach
+        }
+        return tier.ordinal() >= config.clueMinTier().ordinal();
     }
 
     public void reset() {

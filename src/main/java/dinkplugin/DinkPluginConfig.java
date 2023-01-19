@@ -1,6 +1,7 @@
 package dinkplugin;
 
 import dinkplugin.domain.AchievementDiary;
+import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.domain.PlayerLookupService;
 import net.runelite.client.config.Config;
@@ -731,7 +732,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "clueShowItems",
         name = "Show Item Icons",
-        description = "Show item icons gained from the clue",
+        description = "Show item icons gained from the clue as embeds",
         position = 72,
         section = clueSection
     )
@@ -740,10 +741,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "clueMinTier",
+        name = "Min Tier",
+        description = "The minimum tier of the clue scroll for a notification to be sent",
+        position = 73,
+        section = clueSection
+    )
+    default ClueTier clueMinTier() {
+        return ClueTier.BEGINNER;
+    }
+
+    @ConfigItem(
         keyName = "clueMinValue",
         name = "Min Value",
         description = "The minimum value of the combined items for a notification to be sent",
-        position = 73,
+        position = 74,
         section = clueSection
     )
     default int clueMinValue() {
@@ -754,7 +766,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "clueImageMinValue",
         name = "Screenshot Min Value",
         description = "The minimum combined value of the items to send a screenshot. Must have 'Send Image' enabled",
-        position = 74,
+        position = 75,
         section = clueSection
     )
     default int clueImageMinValue() {
@@ -765,7 +777,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "clueNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook. Use %USERNAME% to insert your username, %CLUE% to insert the clue type, %LOOT% to show the loot obtained and %COUNT% to insert how many of those clue types you have completed",
-        position = 75,
+        position = 76,
         section = clueSection
     )
     default String clueNotifyMessage() {
