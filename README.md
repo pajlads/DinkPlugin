@@ -17,6 +17,7 @@ This project was forked from UniversalDiscordNotifier, but has more features, re
 - [Combat Achievements](#combat-achievements): Send a webhook message upon completing a combat task (with customizable tier threshold)
 - [Achievement Diaries](#achievement-diary): Send a webhook message upon completing an achievement diary (with customizable difficulty threshold)
 - [Pet](#pet): Send a webhook message upon receiving a pet
+- [Speedrunning](#speedrunning): Send a webhook message upon completing a quest speedrun (with special configuration for personal best times)
 
 ## Other Setup
 
@@ -341,6 +342,46 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 {
   "content": "%USERNAME% has a funny feeling they are being followed",
   "type": "PET"
+}
+```
+</details>
+
+### Speedrunning:
+
+`%QUEST%` will be replaced with the name of the quest (e.g., Cook's Assistant)
+
+`%TIME%` will be replaced with the time for the latest run
+
+`%BEST%` will be replaced with the personal best time for this quest (note: only if the run was not a PB)
+
+<details>
+  <summary>JSON for Personal Best Speedrun Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has just beat their personal best in a speedrun of %QUEST% with a time of %TIME%",
+  "extra": {
+    "questName": "Cook's Assistant",
+    "personalBest": "1:13.20",
+    "currentTime": "1:13.20"
+  },
+  "type": "SPEEDRUN"
+}
+```
+</details>
+
+<details>
+  <summary>JSON for Normal Speedrun Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has just finished a speedrun of %QUEST% with a time of %TIME% (their PB is %BEST%)",
+  "extra": {
+    "questName": "Cook's Assistant",
+    "personalBest": "1:13.20",
+    "currentTime": "1:22.20"
+  },
+  "type": "SPEEDRUN"
 }
 ```
 </details>
