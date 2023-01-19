@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.domain.ClueTier;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.ClueNotificationData;
@@ -41,6 +42,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         when(config.notifyClue()).thenReturn(true);
         when(config.clueSendImage()).thenReturn(false);
         when(config.clueShowItems()).thenReturn(false);
+        when(config.clueMinTier()).thenReturn(ClueTier.BEGINNER);
         when(config.clueMinValue()).thenReturn(500);
         when(config.clueNotifyMessage()).thenReturn("%USERNAME% has completed a %CLUE% clue, for a total of %COUNT%. They obtained: %LOOT%");
 
