@@ -29,6 +29,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -175,18 +176,26 @@ public class DeathNotifier extends BaseNotifier {
 
         Actor lastTarget = this.lastTarget.get();
         if (lastTarget != null && !lastTarget.isDead() && lastTarget.getInteracting() == localPlayer) {
-            if (lastTarget instanceof Player)
-                return (Player) lastTarget;
-            else
+            if (lastTarget instanceof Player) {
+                Player last = (Player) lastTarget;
+                if (!last.isClanMember() && !last.isFriend() && !last.isFriendsChatMember())
+                    return last;
+            } else
                 return null; // we likely died to this NPC rather than a player
         }
 
-        for (Player other : client.getPlayers()) {
-            if (other.getInteracting() == localPlayer) {
-                return other;
-            }
-        }
-        return null;
+        // find another player interacting with us (that is preferably not a friend or clan member)
+        return client.getPlayers().stream()
+            .filter(other -> other.getInteracting() == localPlayer)
+            .min(
+                Comparator.comparing(Player::isDead) // prefer alive
+                    .thenComparing(Player::isClanMember) // prefer not in clan
+                    .thenComparing(Player::isFriend) // prefer not friend
+                    .thenComparing(Player::isFriendsChatMember) // prefer not fc
+                    .thenComparingInt(p -> Math.abs(localPlayer.getCombatLevel() - p.getCombatLevel())) // prefer similar level
+                    .thenComparing(p -> p.getOverheadIcon() == null) // prefer skulled
+            )
+            .orElse(null);
     }
 
     /**

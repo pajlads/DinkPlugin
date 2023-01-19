@@ -10,6 +10,7 @@
 - Minor: Add setting to skip virtual level notifications. (#122)
 - Minor: Update the README to be less confusing to users. (#123, #136)
 - Minor: Update embed icons for level up and slayer task notifications. (#119)
+- Bugfix: Improve PKer identification in death notifier using characteristics such as clan. (#137)
 - Bugfix: Improve item price lookup for clue and loot notifiers so that coins are not worthless. (#131)
 
 ## 1.2.0
