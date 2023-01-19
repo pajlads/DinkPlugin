@@ -1,19 +1,23 @@
 # Dink
 
-This is a fork of Universal Discord Notifier. It doesn't strictly stick to the Discord webhook format, it has a bunch of
-added metadata that allows the webhook server to analyze messages or even generate its own.
+Dink sends webhook messages upon noteworthy in-game events.
+While Dink supports the Discord webhook format (with rich embeds and optional screenshots), it also includes additional metadata that allows custom webhook servers to analyze messages or even generate their own messages.
+This project was forked from UniversalDiscordNotifier, but has more features, reliability, configurability, testing, and maintainer activity. 
 
+## Notifiers
 
-- [Death](#death)
-- [Collection](#collection)
-- [Level](#level)
-- [Loot](#loot)
-- [Slayer](#slayer)
-- [Quests](#quests)
-- [Clue Scrolls](#clue-scrolls)
-- [Kill Count](#kill-count)
-- [Combat Achievements](#combat-achievements)
-- [Achievement Diaries](#achievement-diary)
+- [Death](#death): Send a webhook message upon dying (with special configuration for PK deaths)
+- [Collection](#collection): Send a webhook message upon adding an item to your collection log
+- [Level](#level): Send a webhook message upon leveling up a skill (with support for virtual levels)
+- [Loot](#loot): Send a webhook message upon receiving valuable loot
+- [Slayer](#slayer): Send a webhook message upon completing a slayer task (with a customizable point threshold)
+- [Quests](#quests): Send a webhook message upon completing a quest
+- [Clue Scrolls](#clue-scrolls): Send a webhook message upon solving a clue scroll (with customizable tier/value thresholds)
+- [Kill Count](#kill-count): Send a webhook message upon defeating a boss (with special configuration for personal best times)
+- [Combat Achievements](#combat-achievements): Send a webhook message upon completing a combat task (with customizable tier threshold)
+- [Achievement Diaries](#achievement-diary): Send a webhook message upon completing an achievement diary (with customizable difficulty threshold)
+- [Pet](#pet): Send a webhook message upon receiving a pet
+- [Speedrunning](#speedrunning): Send a webhook message upon completing a quest speedrun (with special configuration for personal best times)
 
 ## Other Setup
 
@@ -22,6 +26,17 @@ messages need to be enabled in game. You can find this option
 in `Settings > All Settings > Chat > Collection log - New addition notification`
 
 ![img.png](img.png)
+
+## Advanced Features
+
+* Multiple webhook urls are supported; simply place each on a separate line
+* Each notifier can send webhook messages to separate "override" urls
+* Screenshots can be individually configured for each notifier
+* The plugin can skip notifications if the current player name is on the user-configured RSN ignore list
+* Users can choose whether their webhook messages are sent in Discord's rich embed format or a traditional format
+* The player name in Discord rich embeds can be linked to various tracking services (from HiScores to Wise Old Man)
+* Discord rich embed footers can be customized with user-specified text and image url
+* When network issues occur, Dink can make repeated attempts to send the webhook (with exponential backoff)
 
 ---
 
@@ -325,6 +340,59 @@ The examples below omit `embeds` and `playerName` keys because they are always t
     "total": 36
   },
   "type": "ACHIEVEMENT_DIARY"
+}
+```
+</details>
+
+### Pet:
+
+<details>
+  <summary>JSON for Pet Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has a funny feeling they are being followed",
+  "type": "PET"
+}
+```
+</details>
+
+### Speedrunning:
+
+`%QUEST%` will be replaced with the name of the quest (e.g., Cook's Assistant)
+
+`%TIME%` will be replaced with the time for the latest run
+
+`%BEST%` will be replaced with the personal best time for this quest (note: only if the run was not a PB)
+
+<details>
+  <summary>JSON for Personal Best Speedrun Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has just beat their personal best in a speedrun of %QUEST% with a time of %TIME%",
+  "extra": {
+    "questName": "Cook's Assistant",
+    "personalBest": "1:13.20",
+    "currentTime": "1:13.20"
+  },
+  "type": "SPEEDRUN"
+}
+```
+</details>
+
+<details>
+  <summary>JSON for Normal Speedrun Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has just finished a speedrun of %QUEST% with a time of %TIME% (their PB is %BEST%)",
+  "extra": {
+    "questName": "Cook's Assistant",
+    "personalBest": "1:13.20",
+    "currentTime": "1:22.20"
+  },
+  "type": "SPEEDRUN"
 }
 ```
 </details>
