@@ -42,7 +42,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         when(config.notifyClue()).thenReturn(true);
         when(config.clueSendImage()).thenReturn(false);
         when(config.clueShowItems()).thenReturn(false);
-        when(config.clueMinTier()).thenReturn(ClueTier.BEGINNER);
+        when(config.clueMinTier()).thenReturn(ClueTier.MEDIUM);
         when(config.clueMinValue()).thenReturn(500);
         when(config.clueNotifyMessage()).thenReturn("%USERNAME% has completed a %CLUE% clue, for a total of %COUNT%. They obtained: %LOOT%");
 
@@ -82,6 +82,31 @@ class ClueNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.CLUE)
                 .build()
         );
+    }
+
+    @Test
+    void testIgnoreTier() {
+        // fire chat event
+        notifier.onChatMessage("You have completed 1312 beginner Treasure Trails.");
+
+        // mock widgets
+        Widget widget = mock(Widget.class);
+        when(client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
+
+        Widget child = mock(Widget.class);
+        when(child.getItemQuantity()).thenReturn(1);
+        when(child.getItemId()).thenReturn(ItemID.RUBY);
+
+        Widget[] children = { child };
+        when(widget.getChildren()).thenReturn(children);
+
+        // fire widget event
+        WidgetLoaded event = new WidgetLoaded();
+        event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
+        plugin.onWidgetLoaded(event);
+
+        // ensure no notification was fired
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
