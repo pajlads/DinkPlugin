@@ -1,19 +1,21 @@
 # Dink
 
-This is a fork of Universal Discord Notifier. It doesn't strictly stick to the Discord webhook format, it has a bunch of
-added metadata that allows the webhook server to analyze messages or even generate its own.
+Dink sends webhook messages upon noteworthy in-game events.
+While Dink supports the Discord webhook format (with rich embeds), it also includes additional metadata that allows custom webhook servers to analyze messages or even generate their own messages.
+This project was forked from UniversalDiscordNotifier, but has more features, reliability, configurability, testing, and maintainer activity. 
 
+## Notifiers
 
-- [Death](#death)
-- [Collection](#collection)
-- [Level](#level)
-- [Loot](#loot)
-- [Slayer](#slayer)
-- [Quests](#quests)
-- [Clue Scrolls](#clue-scrolls)
-- [Kill Count](#kill-count)
-- [Combat Achievements](#combat-achievements)
-- [Achievement Diaries](#achievement-diary)
+- [Death](#death): Send a webhook message upon dying (with special configuration for PK deaths)
+- [Collection](#collection): Send a webhook message upon adding an item to your collection log
+- [Level](#level): Send a webhook message upon leveling up a skill (with support for virtual levels)
+- [Loot](#loot): Send a webhook message upon receiving valuable loot
+- [Slayer](#slayer): Send a webhook message upon completing a slayer task (with a customizable point threshold)
+- [Quests](#quests): Send a webhook message upon completing a quest
+- [Clue Scrolls](#clue-scrolls): Send a webhook message upon solving a clue scroll (with customizable tier/value thresholds)
+- [Kill Count](#kill-count): Send a webhook message upon defeating a boss (with special configuration for personal best times)
+- [Combat Achievements](#combat-achievements): Send a webhook message upon completing a combat task (with customizable tier threshold)
+- [Achievement Diaries](#achievement-diary): Send a webhook message upon completing an achievement diary (with customizable difficulty threshold)
 
 ## Other Setup
 
