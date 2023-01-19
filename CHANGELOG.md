@@ -6,7 +6,7 @@
 - Minor: Made Collection Log notifications display the icon of the obtained item. (#128)
 - Minor: Made player names in Discord notifications link to a player profile page. This feature can be customized to different providers such as WiseOldMan & CrystalMathLabs in the Advanced menu. (#126)
 - Minor: Add setting to skip virtual level notifications. (#122)
-- Minor: Update the README to be less confusing to users. (#123)
+- Minor: Update the README to be less confusing to users. (#123, #136)
 - Minor: Update embed icons for level up and slayer task notifications. (#119)
 - Bugfix: Improve item price lookup for clue and loot notifiers so that coins are not worthless. (#131)
 
