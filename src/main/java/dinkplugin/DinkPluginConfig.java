@@ -732,7 +732,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "clueMinTier",
         name = "Min Tier",
-        description = "The minimum tier of the clue scroll for a notification ot be sent",
+        description = "The minimum tier of the clue scroll for a notification to be sent",
         position = 73,
         section = clueSection
     )
