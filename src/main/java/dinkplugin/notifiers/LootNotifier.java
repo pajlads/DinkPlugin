@@ -66,6 +66,11 @@ public class LootNotifier extends BaseNotifier {
 
         // only consider non-NPC and non-PK loot
         if (lootReceived.getType() == LootRecordType.EVENT || lootReceived.getType() == LootRecordType.PICKPOCKET) {
+            if (!config.lootIncludeClueScrolls() && StringUtils.startsWithIgnoreCase(lootReceived.getName(), "Clue Scroll")) {
+                // skip clue scroll loot, depending on config
+                return;
+            }
+
             this.handleNotify(lootReceived.getItems(), lootReceived.getName());
         }
     }

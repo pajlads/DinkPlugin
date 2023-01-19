@@ -55,6 +55,7 @@ class LootNotifierTest extends MockedNotifierTest {
         when(config.lootIcons()).thenReturn(false);
         when(config.minLootValue()).thenReturn(500);
         when(config.includePlayerLoot()).thenReturn(true);
+        when(config.lootIncludeClueScrolls()).thenReturn(true);
         when(config.lootNotifyMessage()).thenReturn("%USERNAME% has looted: %LOOT% from %SOURCE% for %TOTAL_VALUE% gp");
 
         // init client mocks
@@ -107,7 +108,7 @@ class LootNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyPickpocket() {
         // fire event
-        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), RUBY_PRICE);
+        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), 1);
         plugin.onLootReceived(event);
 
         // verify notification message
@@ -125,7 +126,39 @@ class LootNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnorePickpocket() {
         // fire event
-        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.TUNA, 1, null)), TUNA_PRICE);
+        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.TUNA, 1, null)), 1);
+        plugin.onLootReceived(event);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testNotifyClue() {
+        // fire event
+        String source = "Clue Scroll (Medium)";
+        LootReceived event = new LootReceived(source, -1, LootRecordType.EVENT, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), 1);
+        plugin.onLootReceived(event);
+
+        // verify notification message
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(String.format("%s has looted: %s from %s for %d gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", source, RUBY_PRICE))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), source))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    @Test
+    void testIgnoreClue() {
+        // update config mock
+        when(config.lootIncludeClueScrolls()).thenReturn(false);
+
+        // fire event
+        LootReceived event = new LootReceived("Clue Scroll (Medium)", -1, LootRecordType.EVENT, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), 1);
         plugin.onLootReceived(event);
 
         // ensure no notification
@@ -182,7 +215,7 @@ class LootNotifierTest extends MockedNotifierTest {
                 new ItemStack(ItemID.OPAL, 1, null),
                 new ItemStack(ItemID.TUNA, 1, null)
             ),
-            total
+            3
         );
         plugin.onLootReceived(event);
 
@@ -214,7 +247,7 @@ class LootNotifierTest extends MockedNotifierTest {
                 new ItemStack(ItemID.TUNA, 1, null),
                 new ItemStack(ItemID.TUNA, 1, null)
             ),
-            total
+            5
         );
         plugin.onLootReceived(event);
 
@@ -266,7 +299,6 @@ class LootNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreRepeated() {
         // fire event
-        int total = TUNA_PRICE * 4;
         LootReceived event = new LootReceived(
             LOOTED_NAME,
             99,
@@ -277,7 +309,7 @@ class LootNotifierTest extends MockedNotifierTest {
                 new ItemStack(ItemID.TUNA, 1, null),
                 new ItemStack(ItemID.TUNA, 1, null)
             ),
-            total
+            4
         );
         plugin.onLootReceived(event);
 
@@ -291,7 +323,7 @@ class LootNotifierTest extends MockedNotifierTest {
         when(config.notifyLoot()).thenReturn(false);
 
         // fire event
-        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), RUBY_PRICE);
+        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), 1);
         plugin.onLootReceived(event);
 
         // ensure no notification

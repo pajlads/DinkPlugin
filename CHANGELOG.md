@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add setting to ignore clue scrolls for loot notifications. (#135)
 - Minor: Add setting to skip notifications for low tier clue scrolls. (#134)
 - Minor: Add embed field on a max level up indicating total 99+ skills. (#115)
 - Minor: Include all lost items in extra death notification data. (#132)
