@@ -16,6 +16,7 @@ This project was forked from UniversalDiscordNotifier, but has more features, re
 - [Kill Count](#kill-count): Send a webhook message upon defeating a boss (with special configuration for personal best times)
 - [Combat Achievements](#combat-achievements): Send a webhook message upon completing a combat task (with customizable tier threshold)
 - [Achievement Diaries](#achievement-diary): Send a webhook message upon completing an achievement diary (with customizable difficulty threshold)
+- [Pet](#pet): Send a webhook message upon receiving a pet
 
 ## Other Setup
 
@@ -327,6 +328,19 @@ The examples below omit `embeds` and `playerName` keys because they are always t
     "total": 36
   },
   "type": "ACHIEVEMENT_DIARY"
+}
+```
+</details>
+
+### Pet:
+
+<details>
+  <summary>JSON for Pet Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has a funny feeling they are being followed",
+  "type": "PET"
 }
 ```
 </details>
