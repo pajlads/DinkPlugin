@@ -20,6 +20,6 @@ public class Field {
     @Nullable Boolean inline;
 
     public Field(String name, String value) {
-        this(name, value, null);
+        this(name, value, true);
     }
 }

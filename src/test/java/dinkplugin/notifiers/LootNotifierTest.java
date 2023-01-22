@@ -70,13 +70,16 @@ class LootNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyNpc() {
+        // relax config
+        when(config.minLootValue()).thenReturn(50);
+
         // prepare mocks
         NPC npc = mock(NPC.class);
-        String name = "Rasmus";
+        String name = "Tyras guard";
         when(npc.getName()).thenReturn(name);
 
         // fire event
-        NpcLootReceived event = new NpcLootReceived(npc, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)));
+        NpcLootReceived event = new NpcLootReceived(npc, Collections.singletonList(new ItemStack(ItemID.TUNA, 1, null)));
         plugin.onNpcLootReceived(event);
 
         // verify notification message
@@ -84,8 +87,8 @@ class LootNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has looted: %s from %s for %d gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", name, RUBY_PRICE))
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), name))
+                .text(String.format("%s has looted: %s from %s for %d gp", PLAYER_NAME, "1 x Tuna (" + TUNA_PRICE + ")", name, TUNA_PRICE))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), name, 0.0234375))
                 .type(NotificationType.LOOT)
                 .build()
         );

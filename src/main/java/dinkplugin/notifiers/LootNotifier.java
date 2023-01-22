@@ -4,6 +4,7 @@ import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.util.NpcDropTable;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
@@ -22,12 +23,15 @@ import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalDouble;
 
 @Slf4j
 public class LootNotifier extends BaseNotifier {
@@ -37,6 +41,9 @@ public class LootNotifier extends BaseNotifier {
 
     @Inject
     private ClientThread clientThread;
+
+    @Inject
+    private NpcDropTable npcDropTable;
 
     @Override
     public boolean isEnabled() {
@@ -49,8 +56,16 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void onNpcLootReceived(NpcLootReceived event) {
-        if (isEnabled())
-            this.handleNotify(event.getItems(), event.getNpc().getName());
+        if (isEnabled()) {
+            String name = event.getNpc().getName();
+            OptionalDouble rarest = event.getItems().stream()
+                .map(i -> npcDropTable.getRarity(name, i.getId(), i.getQuantity()))
+                .filter(OptionalDouble::isPresent)
+                .mapToDouble(OptionalDouble::getAsDouble)
+                .min();
+
+            this.handleNotify(event.getItems(), name, rarest.isPresent() ? rarest.getAsDouble() : null);
+        }
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
@@ -58,7 +73,7 @@ public class LootNotifier extends BaseNotifier {
             return;
 
         if (config.includePlayerLoot() && isEnabled())
-            this.handleNotify(event.getItems(), event.getPlayer().getName());
+            this.handleNotify(event.getItems(), event.getPlayer().getName(), null);
     }
 
     public void onLootReceived(LootReceived lootReceived) {
@@ -71,7 +86,7 @@ public class LootNotifier extends BaseNotifier {
                 return;
             }
 
-            this.handleNotify(lootReceived.getItems(), lootReceived.getName());
+            this.handleNotify(lootReceived.getItems(), lootReceived.getName(), null);
         }
     }
 
@@ -90,7 +105,7 @@ public class LootNotifier extends BaseNotifier {
                             Math.max(spriteWidget.getItemQuantity(), 1),
                             client.getLocalPlayer().getLocalLocation()
                         );
-                        this.handleNotify(Collections.singletonList(item), "The Font of Consumption");
+                        this.handleNotify(Collections.singletonList(item), "The Font of Consumption", null);
                     } else {
                         Widget widget = client.getWidget(WidgetInfo.DIALOG_SPRITE);
                         log.warn(
@@ -106,7 +121,7 @@ public class LootNotifier extends BaseNotifier {
         }
     }
 
-    private void handleNotify(Collection<ItemStack> items, String dropper) {
+    private void handleNotify(@NotNull Collection<ItemStack> items, @NotNull String dropper, @Nullable Double rarity) {
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
 
@@ -142,7 +157,7 @@ public class LootNotifier extends BaseNotifier {
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
-                    .extra(new LootNotificationData(serializedItems, dropper))
+                    .extra(new LootNotificationData(serializedItems, dropper, rarity))
                     .type(NotificationType.LOOT)
                     .build()
             );
