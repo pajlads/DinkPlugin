@@ -8,8 +8,6 @@ import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,26 +34,11 @@ public class LootNotificationData extends NotificationData {
     public List<Field> getFields() {
         List<Field> fields = new LinkedList<>();
 
-        fields.add(
-            new Field(
-                "Total Value",
-                ItemUtils.formatGold(items.stream().mapToLong(SerializedItemStack::getTotalPrice).sum())
-            )
-        );
+        long sum = items.stream().mapToLong(SerializedItemStack::getTotalPrice).sum();
+        fields.add(new Field("Total Value", ItemUtils.formatGold(sum)));
 
         if (rarity != null) {
-            fields.add(
-                new Field(
-                    "Rarity",
-                    String.format(
-                        "```sql\n1 in %.1f (%s%%)\n```",
-                        1 / rarity,
-                        new BigDecimal(rarity * 100)
-                            .round(new MathContext(3))
-                            .toPlainString()
-                    )
-                )
-            );
+            fields.add(new Field("Rarity", ItemUtils.formatRarity(rarity)));
         }
 
         return fields;

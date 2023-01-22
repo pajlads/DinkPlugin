@@ -15,6 +15,8 @@ import net.runelite.client.util.QuantityFormatter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -127,6 +129,16 @@ public class ItemUtils {
 
     public String formatGold(long amount) {
         return String.format("```ldif\n%s gp\n```", QuantityFormatter.quantityToStackSize(amount));
+    }
+
+    public String formatRarity(double rarity) {
+        return String.format(
+            "```sql\n1 in %.1f (%s%%)\n```",
+            1 / rarity,
+            new BigDecimal(rarity * 100)
+                .round(new MathContext(3))
+                .toPlainString()
+        );
     }
 
 }
