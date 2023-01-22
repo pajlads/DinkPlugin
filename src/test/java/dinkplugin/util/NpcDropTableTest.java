@@ -56,14 +56,14 @@ class NpcDropTableTest extends MockedTestBase {
     void testRange() {
         OptionalDouble rarity = dropTable.getRarity("Bree", ItemID.COINS, 1469);
         assertTrue(rarity.isPresent());
-        assertEquals(1 / 130.1, rarity.getAsDouble(), DELTA);
+        assertEquals(124.0 / 16129, rarity.getAsDouble(), DELTA);
     }
 
     @Test
     void testRangeRepeated() {
         OptionalDouble rarity = dropTable.getRarity("Bree", ItemID.COINS, 1312);
         assertTrue(rarity.isPresent());
-        assertEquals(1 / 2.048 + 1 / 169.3, rarity.getAsDouble(), DELTA);
+        assertEquals(62.0 / 127 + 9.0 / 1524, rarity.getAsDouble(), DELTA);
     }
 
 }
