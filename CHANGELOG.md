@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Escape player names for use in embed author url. (#143)
+
 ## 1.2.1
 
 - Minor: Add setting to ignore clue scrolls for loot notifications. (#135)
