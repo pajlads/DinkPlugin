@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.2.2
+
 - Bugfix: Fix embed author url breaking notifications when the player has a space in their name. (#143)
 
 ## 1.2.1
