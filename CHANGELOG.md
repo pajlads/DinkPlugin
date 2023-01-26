@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Fix embed author url breaking notifications when the player has a space in their name. (#143)
+
 ## 1.2.1
 
 - Minor: Add setting to ignore clue scrolls for loot notifications. (#135)

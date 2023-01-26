@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 
 abstract class MockedNotifierTest extends MockedTestBase {
 
-    protected static final String PLAYER_NAME = "dank";
+    protected static final String PLAYER_NAME = "dank dank";
     protected static final String PRIMARY_WEBHOOK_URL = System.getenv("TEST_WEBHOOK_URL");
 
     @Bind
