@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Bugfix: Escape player names for use in embed author url. (#143)
+- Bugfix: Fix embed author url breaking notifications when the player has a space in their name. (#143)
 
 ## 1.2.1
 
