@@ -1,5 +1,7 @@
 package dinkplugin.domain;
 
+import com.google.common.net.UrlEscapers;
+
 public enum PlayerLookupService {
     NONE("None"),
     OSRS_HISCORE("OSRS HiScore"),
@@ -14,15 +16,16 @@ public enum PlayerLookupService {
     }
 
     public String getPlayerUrl(String playerName) {
+        String escapedName = UrlEscapers.urlPathSegmentEscaper().escape(playerName);
         switch (this) {
             case OSRS_HISCORE:
-                return "https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1=" + playerName;
+                return "https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1=" + escapedName;
             case WISE_OLD_MAN:
-                return "https://wiseoldman.net/players/" + playerName;
+                return "https://wiseoldman.net/players/" + escapedName;
             case CRYSTAL_MATH_LABS:
-                return "https://crystalmathlabs.com/track.php?player=" + playerName;
+                return "https://crystalmathlabs.com/track.php?player=" + escapedName;
             case TEMPLE_OSRS:
-                return "https://templeosrs.com/player/overview.php?player=" + playerName;
+                return "https://templeosrs.com/player/overview.php?player=" + escapedName;
             case NONE:
             default:
                 return null;
