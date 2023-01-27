@@ -87,7 +87,7 @@ public class LootNotifier extends BaseNotifier {
                     if (hasItem(spriteWidget)) {
                         ItemStack item = new ItemStack(
                             spriteWidget.getItemId(),
-                            Math.max(spriteWidget.getItemQuantity(), 1),
+                            1,
                             client.getLocalPlayer().getLocalLocation()
                         );
                         this.handleNotify(Collections.singletonList(item), "The Font of Consumption");
