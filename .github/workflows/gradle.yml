@@ -60,6 +60,10 @@ jobs:
           body: |
             This release should only be used if testing one of the features that have not made it to the plugin hub yet.
 
+            Note: To use this build, you must run from terminal (or command prompt): `java -ea -jar dinkplugin-1.x.x-all.jar` (be sure to specify the correct version and path to the file). Also, very recent java versions may require [additional VM options](https://github.com/runelite/runelite/wiki/Building-with-IntelliJ-IDEA#jdks-16).
+
+            Latest Change:
+
             ${{ github.event.head_commit.message }}
           prerelease: true
           name: Nightly Release
