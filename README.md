@@ -352,9 +352,14 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 ```json5
 {
   "content": "%USERNAME% has a funny feeling they are being followed",
+  "extra": {
+    "petName": "Ikkle hydra"
+  },
   "type": "PET"
 }
 ```
+
+Note: `petName` is only included if the game sent it to your chat channel.
 </details>
 
 ### Speedrunning:
