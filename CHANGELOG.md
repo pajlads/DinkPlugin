@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Major: Add Barbarian Assault Gambling notifications. (#150)
 - Bugfix: Report correct item quantity from unsired loot. (#147)
 
 ## 1.2.2
