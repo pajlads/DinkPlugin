@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MatchersTest {
@@ -169,6 +170,36 @@ class MatchersTest {
                 Arguments.of("Your completed Tombs of Amascut: Entry Mode count is: 7", Pair.of("Tombs of Amascut: Entry Mode", 7)),
                 Arguments.of("Your completed Tombs of Amascut count is: 101", Pair.of("Tombs of Amascut", 101)),
                 Arguments.of("Your completed Tombs of Amascut: Expert Mode count is: 3", Pair.of("Tombs of Amascut: Expert Mode", 3))
+            );
+        }
+    }
+
+    @ParameterizedTest(name = "Gamble message should trigger {0}")
+    @ArgumentsSource(GambleProvider.class)
+    void gambleRegexFindsMatch(String message, GambleNotifier.ParsedData data) {
+        assertEquals(data, GambleNotifier.parse(message));
+    }
+
+    @ParameterizedTest(name = "Gamble message should not trigger {0}")
+    @ValueSource(
+        strings = {
+            "Coal (x 150)! Low level gamble count: 14.",
+            "Rune full helm! Medium level gamble count: 3.",
+            "High level gamble count: 100."
+        }
+    )
+    void gambleRegexDoesNotMatch(String message) {
+        assertNull(GambleNotifier.parse(message));
+    }
+
+    private static class GambleProvider implements ArgumentsProvider {
+        @Override
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+            return Stream.of(
+                Arguments.of("Magic seed! High level gamble count: 1.", new GambleNotifier.ParsedData("Magic seed", 1, null, 1)),
+                Arguments.of("Limpwurt root (x 37)! High level gamble count: 65.", new GambleNotifier.ParsedData("Limpwurt root", 37, null, 65)),
+                Arguments.of("Farseer helm! Clue scroll (elite)! High level gamble count: 774.", new GambleNotifier.ParsedData("Farseer helm", 1, "Clue scroll (elite)", 774)),
+                Arguments.of("Law rune (x 270)! Clue scroll (elite)! High level gamble count: 1762.", new GambleNotifier.ParsedData("Law rune", 270, "Clue scroll (elite)", 1762))
             );
         }
     }

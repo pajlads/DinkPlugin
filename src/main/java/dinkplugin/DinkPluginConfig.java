@@ -8,6 +8,7 @@ import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.Range;
 
 @ConfigGroup("dinkplugin")
 public interface DinkPluginConfig extends Config {
@@ -103,6 +104,13 @@ public interface DinkPluginConfig extends Config {
         position = 110
     )
     String diarySection = "Achievement Diary";
+
+    @ConfigSection(
+        name = "BA Gambles",
+        description = "Settings for notifying when you receive high gambles from Barbarian Assault",
+        position = 120
+    )
+    String gambleSection = "BA Gambles";
 
     @ConfigSection(
         name = "Advanced",
@@ -340,6 +348,17 @@ public interface DinkPluginConfig extends Config {
         section = webhookSection
     )
     default String diaryWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "gambleWebhook",
+        name = "BA Gamble Webhook Override",
+        description = "If non-empty, BA gamble messages are sent to this URL, instead of the primary URL",
+        position = -7,
+        section = webhookSection
+    )
+    default String gambleWebhook() {
         return "";
     }
 
@@ -1004,4 +1023,70 @@ public interface DinkPluginConfig extends Config {
         return "%USERNAME% has completed the %DIFFICULTY% %AREA% Achievement Diary, for a total of %TOTAL% diaries completed";
     }
 
+    @ConfigItem(
+        keyName = "gambleEnabled",
+        name = "Enable BA Gamble",
+        description = "Enable notifications for BA gambles",
+        position = 120,
+        section = gambleSection
+    )
+    default boolean notifyGamble() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "gambleSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 121,
+        section = gambleSection
+    )
+    default boolean gambleSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "gambleInterval",
+        name = "Notify Interval",
+        description = "Interval between when a notification should be sent",
+        position = 122,
+        section = gambleSection
+    )
+    @Range(min = 1)
+    default int gambleInterval() {
+        return 100;
+    }
+
+    @ConfigItem(
+        keyName = "gambleRareLoot",
+        name = "Rare Loot",
+        description = "Sends a notification upon receiving a dragon chainbody or med helm from a gamble",
+        position = 123,
+        section = gambleSection
+    )
+    default boolean gambleRareLoot() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "gambleNotifMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook every gamble interval. Use %USERNAME% to insert your username, %COUNT% to insert gamble count, %LOOT% to insert loot",
+        position = 124,
+        section = gambleSection
+    )
+    default String gambleNotifyMessage() {
+        return "%USERNAME% has reached %COUNT% high gambles";
+    }
+
+    @ConfigItem(
+        keyName = "gambleRareNotifMessage",
+        name = "Rare Item Notification Message",
+        description = "The message to be sent through the webhook for rare loot. Use %USERNAME% to insert your username, %COUNT% to insert gamble count, %LOOT% to insert loot",
+        position = 125,
+        section = gambleSection
+    )
+    default String gambleRareNotifyMessage() {
+        return "%USERNAME% has received loot: %LOOT% at gamble count %COUNT%";
+    }
 }

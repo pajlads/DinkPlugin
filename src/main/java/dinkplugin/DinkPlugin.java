@@ -6,6 +6,7 @@ import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.DeathNotifier;
 import dinkplugin.notifiers.DiaryNotifier;
+import dinkplugin.notifiers.GambleNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.LevelNotifier;
 import dinkplugin.notifiers.LootNotifier;
@@ -46,7 +47,7 @@ import javax.inject.Inject;
     name = "Dink",
     description = "A notifier for sending webhooks to Discord or other custom destinations",
     tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun",
-        "diary", "combat achievements", "combat task" }
+        "diary", "combat achievements", "combat task", "barbarian assault", "high level gambles" }
 )
 public class DinkPlugin extends Plugin {
     public static final String USER_AGENT = RuneLite.USER_AGENT + " (Dink/1.x)";
@@ -67,6 +68,7 @@ public class DinkPlugin extends Plugin {
     private @Inject KillCountNotifier killCountNotifier;
     private @Inject CombatTaskNotifier combatTaskNotifier;
     private @Inject DiaryNotifier diaryNotifier;
+    private @Inject GambleNotifier gambleNotifier;
 
     @Override
     protected void startUp() {
@@ -140,6 +142,10 @@ public class DinkPlugin extends Plugin {
 
         if (msgType == ChatMessageType.FRIENDSCHATNOTIFICATION) {
             killCountNotifier.onFriendsChatNotification(chatMessage);
+        }
+
+        if (msgType == ChatMessageType.MESBOX) {
+            gambleNotifier.onMesBoxNotification(chatMessage);
         }
     }
 

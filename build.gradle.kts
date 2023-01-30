@@ -21,7 +21,7 @@ dependencies {
     // this version of annotations is verified by runelite
     compileOnly(group = "org.jetbrains", name = "annotations", version = "23.0.0")
 
-    val runeLiteVersion = "latest.release"
+    val runeLiteVersion = "1.9.9-SNAPSHOT" // todo revert
     compileOnly(group = "net.runelite", name = "client", version = runeLiteVersion)
     testImplementation(group = "net.runelite", name = "client", version = runeLiteVersion)
     testImplementation(group = "net.runelite", name = "jshell", version = runeLiteVersion)
@@ -39,7 +39,7 @@ dependencies {
 }
 
 group = "dinkplugin"
-version = "1.2.2"
+version = "1.2.3"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
