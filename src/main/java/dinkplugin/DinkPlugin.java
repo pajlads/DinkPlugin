@@ -138,6 +138,7 @@ public class DinkPlugin extends Plugin {
             clueNotifier.onChatMessage(chatMessage);
             killCountNotifier.onGameMessage(chatMessage);
             combatTaskNotifier.onGameMessage(chatMessage);
+            return;
         }
 
         if (Utils.CLAN_NOTIFICATIONS.contains(msgType)) {

@@ -44,13 +44,15 @@ public class PetNotifier extends BaseNotifier {
     }
 
     public void onClanNotification(String message) {
-        if (petName != null) {
-            Matcher matcher = CLAN_REGEX.matcher(message);
-            if (matcher.find()) {
-                String user = matcher.group("user").trim();
-                if (user.equals(Utils.getPlayerName(client))) {
-                    this.petName = matcher.group("pet");
-                }
+        // Clan message can only come after the normal pet message
+        if (petName == null)
+            return;
+
+        Matcher matcher = CLAN_REGEX.matcher(message);
+        if (matcher.find()) {
+            String user = matcher.group("user").trim();
+            if (user.equals(Utils.getPlayerName(client))) {
+                this.petName = matcher.group("pet");
             }
         }
     }
@@ -75,7 +77,7 @@ public class PetNotifier extends BaseNotifier {
             .map(ItemUtils::getItemImageUrl)
             .orElse(null);
 
-        PetNotificationData extra = StringUtils.isNotEmpty(petName) ? new PetNotificationData(petName) : null;
+        PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null));
 
         createMessage(config.petSendImage(), NotificationBody.builder()
             .extra(extra)
