@@ -19,7 +19,9 @@ import java.util.regex.Pattern;
 public class PetNotifier extends BaseNotifier {
     @VisibleForTesting
     static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
-    private static final Pattern CLAN_REGEX = Pattern.compile("\\b(?<user>[\\w\\s]+) (?:has a funny feeling like .+ followed|feels something weird sneaking into .+ backpack): (?<pet>.+) at\\s");
+
+    @VisibleForTesting
+    static final Pattern CLAN_REGEX = Pattern.compile("\\b(?<user>[\\w\\s]+) (?:has a funny feeling like .+ followed|feels something weird sneaking into .+ backpack): (?<pet>.+) at\\s");
 
     @Inject
     private ItemSearcher itemSearcher;
