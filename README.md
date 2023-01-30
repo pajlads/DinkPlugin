@@ -359,7 +359,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 }
 ```
 
-Note: `petName` is only included if the game sent it to your chat channel.
+Note: `petName` is only included if the game sent it to your chat via clan notifications.
 </details>
 
 ### Speedrunning:
