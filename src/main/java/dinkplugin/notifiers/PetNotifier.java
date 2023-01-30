@@ -23,6 +23,8 @@ public class PetNotifier extends BaseNotifier {
     @VisibleForTesting
     static final Pattern CLAN_REGEX = Pattern.compile("\\b(?<user>[\\w\\s]+) (?:has a funny feeling like .+ followed|feels something weird sneaking into .+ backpack): (?<pet>.+) at\\s");
 
+    private static final String PRIMED_NAME = "";
+
     @Inject
     private ItemSearcher itemSearcher;
 
@@ -41,13 +43,13 @@ public class PetNotifier extends BaseNotifier {
     public void onChatMessage(String chatMessage) {
         if (petName == null && isEnabled() && PET_REGEX.matcher(chatMessage).matches()) {
             // Prime the notifier to trigger next tick
-            this.petName = "";
+            this.petName = PRIMED_NAME;
         }
     }
 
     public void onClanNotification(String message) {
         // Clan message can only come after the normal pet message
-        if (petName == null)
+        if (!PRIMED_NAME.equals(petName))
             return;
 
         Matcher matcher = CLAN_REGEX.matcher(message);
