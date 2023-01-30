@@ -3,6 +3,7 @@ package dinkplugin.util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.experimental.UtilityClass;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
@@ -24,6 +25,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -32,8 +36,28 @@ public class Utils {
 
     public static final String WIKI_IMG_BASE_URL = "https://oldschool.runescape.wiki/images/";
 
+    public final Set<ChatMessageType> CLAN_NOTIFICATIONS = Collections.unmodifiableSet(
+        EnumSet.of(
+            ChatMessageType.FRIENDSCHATNOTIFICATION,
+            ChatMessageType.CLAN_MESSAGE,
+            ChatMessageType.CLAN_GUEST_MESSAGE,
+            ChatMessageType.CLAN_GIM_MESSAGE
+        )
+    );
+
     public final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
     public final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
+
+    /**
+     * Converts text into "upper case first" form, as is used by OSRS for item names.
+     *
+     * @param text the string to be transformed
+     * @return the text with only the first character capitalized
+     */
+    public String ucFirst(@NotNull String text) {
+        if (text.length() < 2) return text.toUpperCase();
+        return Character.toUpperCase(text.charAt(0)) + text.substring(1).toLowerCase();
+    }
 
     public boolean isSettingsOpen(@NotNull Client client) {
         Widget widget = client.getWidget(WidgetInfo.SETTINGS_INIT);

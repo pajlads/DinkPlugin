@@ -82,6 +82,7 @@ public class DinkPlugin extends Plugin {
     }
 
     void resetNotifiers() {
+        petNotifier.reset();
         clueNotifier.reset();
         diaryNotifier.reset();
         levelNotifier.reset();
@@ -117,6 +118,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick event) {
+        petNotifier.onTick();
         clueNotifier.onTick();
         slayerNotifier.onTick();
         levelNotifier.onTick();
@@ -138,7 +140,8 @@ public class DinkPlugin extends Plugin {
             combatTaskNotifier.onGameMessage(chatMessage);
         }
 
-        if (msgType == ChatMessageType.FRIENDSCHATNOTIFICATION) {
+        if (Utils.CLAN_NOTIFICATIONS.contains(msgType)) {
+            petNotifier.onClanNotification(chatMessage);
             killCountNotifier.onFriendsChatNotification(chatMessage);
         }
     }
