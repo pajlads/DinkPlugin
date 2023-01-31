@@ -41,7 +41,7 @@ public class PetNotifier extends BaseNotifier {
     }
 
     public void onChatMessage(String chatMessage) {
-        if (petName == null && isEnabled() && PET_REGEX.matcher(chatMessage).matches()) {
+        if (isEnabled() && PET_REGEX.matcher(chatMessage).matches()) {
             // Prime the notifier to trigger next tick
             this.petName = PRIMED_NAME;
         }
