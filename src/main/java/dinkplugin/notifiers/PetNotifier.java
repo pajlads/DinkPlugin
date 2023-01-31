@@ -48,9 +48,10 @@ public class PetNotifier extends BaseNotifier {
     }
 
     public void onClanNotification(String message) {
-        // Clan message can only come after the normal pet message
-        if (!PRIMED_NAME.equals(petName))
+        if (!PRIMED_NAME.equals(petName)) {
+            // We have not received the normal message about a pet drop, so this clan message cannot be relevant to us
             return;
+        }
 
         Matcher matcher = CLAN_REGEX.matcher(message);
         if (matcher.find()) {
