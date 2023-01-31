@@ -370,7 +370,8 @@ public interface DinkPluginConfig extends Config {
         keyName = "collectionNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
-            "Use %USERNAME% to insert your username and %ITEM% for the item",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %ITEM% for the item",
         position = 3,
         section = collectionSection
     )
@@ -472,7 +473,8 @@ public interface DinkPluginConfig extends Config {
         keyName = "levelNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
-            "Use %USERNAME% to insert your username and %SKILL% to insert the levelled skill(s)",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %SKILL% to insert the levelled skill(s)",
         position = 25,
         section = levelSection
     )
@@ -562,8 +564,9 @@ public interface DinkPluginConfig extends Config {
         keyName = "lootNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
-            "Use %USERNAME% to insert your username,<br/>" +
-            "%LOOT% to insert the loot and %SOURCE% to show the source of the loot",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %LOOT% to insert the loot<br/>" +
+            "Use %SOURCE% to show the source of the loot",
         position = 37,
         section = lootSection
     )
@@ -608,8 +611,8 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
-            "Use %USERNAME% to insert your username, <br/>" +
-            "%VALUELOST% to insert the GE value of the stuff you lost",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %VALUELOST% to insert the GE value of the stuff you lost",
         position = 43,
         section = deathSection
     )
@@ -632,8 +635,9 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpMessage",
         name = "PvP notification message",
         description = "The message to be sent through the webhook.<br/>" +
-            "Use %PKER% to insert the killer, %USERNAME% to insert your username,<br/>" +
-            "%VALUELOST% to insert the GE value of the stuff you lost",
+            "Use %PKER% to insert the killer<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %VALUELOST% to insert the GE value of the stuff you lost",
         position = 45,
         section = deathSection
     )
@@ -678,9 +682,10 @@ public interface DinkPluginConfig extends Config {
         keyName = "slayerNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
-            "Use %USERNAME% to insert your username, %TASK% to insert your task,<br/>" +
-            "%POINTS% to show how many points you obtained and<br/>" +
-            "%TASKCOUNT% to show how many tasks you have completed.",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %TASK% to insert your task<br/>" +
+            "Use %POINTS% to show how many points you obtained<br/>" +
+            "Use %TASKCOUNT% to show how many tasks you have completed",
         position = 53,
         section = slayerSection
     )
@@ -714,7 +719,8 @@ public interface DinkPluginConfig extends Config {
         keyName = "questNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
-        "Use %USERNAME% to insert your username and %QUEST% to insert the quest that you completed",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %QUEST% to insert the quest that you completed",
         position = 62,
         section = questSection
     )
@@ -792,8 +798,10 @@ public interface DinkPluginConfig extends Config {
         keyName = "clueNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/> +" +
-            "Use %USERNAME% to insert your username, %CLUE% to insert the clue type,<br/>" +
-            "%LOOT% to show the loot obtained and %COUNT% to insert how many of those clue types you have completed",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %CLUE% to insert the clue type<br/>" +
+            "Use %LOOT% to show the loot obtained<br/>" +
+            "Use %COUNT% to insert how many of those clue types you have completed",
         position = 76,
         section = clueSection
     )
@@ -920,9 +928,9 @@ public interface DinkPluginConfig extends Config {
         keyName = "killCountMessage",
         name = "Notification Message",
         description = "The message to be sent to the webhook.<br/>" +
-            "Use %USERNAME% to insert your username,<br/>" +
-            "%BOSS% to insert the NPC name,<br/>" +
-            "%COUNT% to insert the kill count",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %BOSS% to insert the NPC name<br/>" +
+            "Use %COUNT% to insert the kill count",
         position = 95,
         section = killCountSection
     )
@@ -935,9 +943,9 @@ public interface DinkPluginConfig extends Config {
         name = "PB Notification Message",
         description = "The message to be sent to the webhook upon a personal best time.<br/>" +
             "Use %USERNAME% to insert your username,<br/>" +
-            "%BOSS% to insert the NPC name,<br/>" +
-            "%COUNT% to insert the kill count,<br/>" +
-            "%TIME% to insert the completion time",
+            "Use %BOSS% to insert the NPC name<br/>" +
+            "Use %COUNT% to insert the kill count<br/>" +
+            "Use %TIME% to insert the completion time",
         position = 96,
         section = killCountSection
     )
@@ -982,9 +990,9 @@ public interface DinkPluginConfig extends Config {
         keyName = "combatTaskMessage",
         name = "Notification Message",
         description = "The message to be sent to the webhook.<br/>" +
-            "Use %USERNAME% to insert your username,<br/>" +
-            "%TIER% to insert the task tier,<br/>" +
-            "%TASK% to insert the task name",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %TIER% to insert the task tier<br/>" +
+            "Use %TASK% to insert the task name",
         position = 103,
         section = combatTaskSection
     )
@@ -1029,10 +1037,10 @@ public interface DinkPluginConfig extends Config {
         keyName = "diaryMessage",
         name = "Notification Message",
         description = "The message to be sent to the webhook.<br/>" +
-            "Use %USERNAME% to insert your username,<br/>" +
-            "%DIFFICULTY% to insert the diary difficulty,<br/>" +
-            "%AREA% to insert the diary area,<br/>" +
-            "%TOTAL% to insert the total diaries completed",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %DIFFICULTY% to insert the diary difficulty<br/>" +
+            "Use %AREA% to insert the diary area<br/>" +
+            "Use %TOTAL% to insert the total diaries completed",
         position = 113,
         section = diarySection
     )
