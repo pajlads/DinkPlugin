@@ -107,7 +107,7 @@ public interface DinkPluginConfig extends Config {
 
     @ConfigSection(
         name = "BA Gambles",
-        description = "Settings for notifying when you receive high gambles from Barbarian Assault",
+        description = "Settings for notifying when you gamble at Barbarian Assault",
         position = 120
     )
     String gambleSection = "BA Gambles";
@@ -1060,7 +1060,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "gambleRareLoot",
         name = "Rare Loot",
-        description = "Sends a notification upon receiving a dragon chainbody or med helm from a gamble",
+        description = "Always send a notification upon receiving a dragon chainbody or med helm from a gamble",
         position = 123,
         section = gambleSection
     )
@@ -1087,6 +1087,6 @@ public interface DinkPluginConfig extends Config {
         section = gambleSection
     )
     default String gambleRareNotifyMessage() {
-        return "%USERNAME% has received loot: %LOOT% at gamble count %COUNT%";
+        return "%USERNAME% has received rare loot at gamble count %COUNT%: \n\n%LOOT%";
     }
 }

@@ -9,5 +9,5 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 public class GambleNotificationData extends NotificationData {
     int gambleCount;
-    List<SerializedItemStack> loot;
+    List<SerializedItemStack> items;
 }

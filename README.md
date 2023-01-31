@@ -415,12 +415,9 @@ The examples below omit `embeds` and `playerName` keys because they are always t
     "gambleCount": 500,
     "items": [
       {
-        // type of this object is SerializedItemStack
-
         "id": 3122,
         "quantity": 1,
         "priceEach": 35500,
-        // priceEach is the GE price of the item
         "name": "Granite shield"
       }
     ]

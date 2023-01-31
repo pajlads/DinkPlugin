@@ -42,7 +42,7 @@ public class GambleNotifierTest extends MockedNotifierTest {
         when(config.gambleInterval()).thenReturn(10);
         when(config.gambleRareLoot()).thenReturn(true);
         when(config.gambleNotifyMessage()).thenReturn("%USERNAME% has reached %COUNT% high gambles");
-        when(config.gambleRareNotifyMessage()).thenReturn("%USERNAME% has received loot: %LOOT% at gamble count %COUNT%");
+        when(config.gambleRareNotifyMessage()).thenReturn("%USERNAME% has received rare loot at gamble count %COUNT%: \n\n%LOOT%");
 
         mockItem(ItemID.GRANITE_HELM, GRANITE_HELM_PRICE, "Granite helm");
         mockItem(ItemID.DRAGON_CHAINBODY, DRAGON_CHAINBODY_PRICE, "Dragon chainbody");
@@ -79,7 +79,7 @@ public class GambleNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has received loot: dragon chainbody at gamble count 11")
+                .text(PLAYER_NAME + " has received rare loot at gamble count 11: \n\n1 x Dragon chainbody (150K)")
                 .extra(new GambleNotificationData(11, Collections.singletonList(new SerializedItemStack(ItemID.DRAGON_CHAINBODY, 1, DRAGON_CHAINBODY_PRICE, "Dragon chainbody"))))
                 .type(NotificationType.BARBARIAN_ASSAULT_GAMBLE)
                 .build()

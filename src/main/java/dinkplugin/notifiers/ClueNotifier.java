@@ -133,7 +133,7 @@ public class ClueNotifier extends BaseNotifier {
     private String getItemMessage(SerializedItemStack item, Collection<Embed> embeds) {
         if (config.clueShowItems())
             embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
-        return String.format("%s x %s (%s)", item.getQuantity(), item.getName(), QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
+        return ItemUtils.formatStack(item);
     }
 
     private boolean checkClueTier(String clueType) {
