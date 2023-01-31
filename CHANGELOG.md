@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Cleanup setting tool-tips that were too long to read. (#151)
 - Bugfix: Report correct item quantity from unsired loot. (#147)
 
 ## 1.2.2
