@@ -1026,7 +1026,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "gambleEnabled",
         name = "Enable BA Gamble",
-        description = "Enable notifications for Barbarian Assault gambles",
+        description = "Enable notifications for Barbarian Assault high level gambles",
         position = 120,
         section = gambleSection
     )

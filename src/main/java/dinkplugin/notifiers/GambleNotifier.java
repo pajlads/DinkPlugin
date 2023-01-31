@@ -82,7 +82,7 @@ public class GambleNotifier extends BaseNotifier {
             .build());
     }
 
-    private String lootSummary(List<SerializedItemStack> items) {
+    private static String lootSummary(List<SerializedItemStack> items) {
         return items.stream().map(ItemUtils::formatStack).collect(Collectors.joining("\n"));
     }
 
