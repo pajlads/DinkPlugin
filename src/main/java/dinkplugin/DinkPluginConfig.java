@@ -786,7 +786,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "clueImageMinValue",
         name = "Screenshot Min Value",
-        description = "The minimum combined value of the items to send a screenshot. Must have 'Send Image' enabled",
+        description = "The minimum combined value of the items to send a screenshot.<br/>" +
+            "Must have 'Send Image' enabled",
         position = 75,
         section = clueSection
     )
@@ -797,7 +798,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "clueNotifMessage",
         name = "Notification Message",
-        description = "The message to be sent through the webhook.<br/> +" +
+        description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %CLUE% to insert the clue type<br/>" +
             "Use %LOOT% to show the loot obtained<br/>" +
@@ -845,7 +846,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "speedrunPBMessage",
         name = "PB message",
-        description = "The message to be sent through the webhook.<br/> +" +
+        description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/> +" +
             "Use %QUEST% to insert the quest name<br/>" +
             "Use %TIME% to insert your new time",
