@@ -18,7 +18,7 @@ This project was forked from UniversalDiscordNotifier, but has more features, re
 - [Achievement Diaries](#achievement-diary): Send a webhook message upon completing an achievement diary (with customizable difficulty threshold)
 - [Pet](#pet): Send a webhook message upon receiving a pet
 - [Speedrunning](#speedrunning): Send a webhook message upon completing a quest speedrun (with special configuration for personal best times)
-- [BA Gambles](#ba-gambles): Sends a webhook message upon receiving high-level gambles from Barbarian Assault
+- [BA Gambles](#ba-gambles): Sends a webhook message upon receiving high level gambles from Barbarian Assault
 
 ## Other Setup
 
