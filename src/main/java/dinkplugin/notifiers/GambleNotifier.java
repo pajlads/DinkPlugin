@@ -32,7 +32,8 @@ public class GambleNotifier extends BaseNotifier {
     // itemName (x quantity)![ tertiaryReward!] gc: n
     private static final Pattern GAMBLE_REGEX = Pattern.compile("^(.+?)!\\s*(.+!)?\\s+High level gamble count: (\\d+).*");
     private static final Pattern ITEM_QUANTITY_REGEX = Pattern.compile("^(.+?)\\(x (\\d+)\\)$");
-    private static final Collection<String> RARE_LOOT = ImmutableSet.of("dragon chainbody", "dragon med helm");
+    // penance pet is not actually present in dialog message, but it's here in case it's ever added
+    private static final Collection<String> RARE_LOOT = ImmutableSet.of("dragon chainbody", "dragon med helm", "pet penance queen");
 
     @Inject
     private ItemSearcher itemSearcher;
