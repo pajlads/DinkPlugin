@@ -845,9 +845,10 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "speedrunPBMessage",
         name = "PB message",
-        description = "%USERNAME% to insert your username,<br/> +" +
-            "%QUEST% to insert the quest name,<br/>" +
-            "%TIME% to insert your new time",
+        description = "The message to be sent through the webhook.<br/> +" +
+            "Use %USERNAME% to insert your username<br/> +" +
+            "Use %QUEST% to insert the quest name<br/>" +
+            "Use %TIME% to insert your new time",
         position = 83,
         section = speedrunSection
     )
@@ -858,10 +859,11 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "speedrunMessage",
         name = "Notification message",
-        description = "%USERNAME% to insert your username,<br/>" +
-            "%QUEST% to insert the quest name,<br/>" +
-            "%TIME% to insert your new time,<br/>" +
-            "%BEST% to insert your PB",
+        description = "The message to be sent through the webhook.<br/> +" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %QUEST% to insert the quest name<br/>" +
+            "Use %TIME% to insert your new time<br/>" +
+            "Use %BEST% to insert your PB",
         position = 84,
         section = speedrunSection
     )
