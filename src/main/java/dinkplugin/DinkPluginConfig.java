@@ -1026,7 +1026,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "gambleEnabled",
         name = "Enable BA Gamble",
-        description = "Enable notifications for BA gambles",
+        description = "Enable notifications for Barbarian Assault gambles",
         position = 120,
         section = gambleSection
     )
@@ -1059,7 +1059,7 @@ public interface DinkPluginConfig extends Config {
 
     @ConfigItem(
         keyName = "gambleRareLoot",
-        name = "Rare Loot",
+        name = "Always notify for rare loot",
         description = "Always send a notification upon receiving a dragon chainbody or med helm from a gamble",
         position = 123,
         section = gambleSection
@@ -1081,7 +1081,7 @@ public interface DinkPluginConfig extends Config {
 
     @ConfigItem(
         keyName = "gambleRareNotifMessage",
-        name = "Rare Item Notification Message",
+        name = "Rare Loot Notification Message",
         description = "The message to be sent through the webhook for rare loot. Use %USERNAME% to insert your username, %COUNT% to insert gamble count, %LOOT% to insert loot",
         position = 125,
         section = gambleSection

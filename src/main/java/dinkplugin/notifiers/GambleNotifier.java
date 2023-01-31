@@ -122,6 +122,7 @@ public class GambleNotifier extends BaseNotifier {
         @NonNull
         String itemName;
         int itemQuantity;
+        // https://oldschool.runescape.wiki/w/Barbarian_Assault/Rewards#Tertiary_High_Gamble_Rewards
         @Nullable
         String tertiaryItem;
         int gambleCount;

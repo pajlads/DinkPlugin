@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.when;
 public class GambleNotifierTest extends MockedNotifierTest {
     private static final int GRANITE_HELM_PRICE = 29_000;
     private static final int DRAGON_CHAINBODY_PRICE = 150_000;
+    private static final int ELITE_CLUE_PRICE = 0;
 
     @Bind
     @InjectMocks
@@ -46,8 +48,10 @@ public class GambleNotifierTest extends MockedNotifierTest {
 
         mockItem(ItemID.GRANITE_HELM, GRANITE_HELM_PRICE, "Granite helm");
         mockItem(ItemID.DRAGON_CHAINBODY, DRAGON_CHAINBODY_PRICE, "Dragon chainbody");
+        mockItem(ItemID.CLUE_SCROLL_ELITE, ELITE_CLUE_PRICE, "Clue scroll (elite)");
         when(itemSearcher.findItemId("Granite helm")).thenReturn(ItemID.GRANITE_HELM);
         when(itemSearcher.findItemId("Dragon chainbody")).thenReturn(ItemID.DRAGON_CHAINBODY);
+        when(itemSearcher.findItemId("Clue scroll (elite)")).thenReturn(ItemID.CLUE_SCROLL_ELITE);
     }
 
     @Test
@@ -60,6 +64,24 @@ public class GambleNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(PLAYER_NAME + " has reached 20 high gambles")
                 .extra(new GambleNotificationData(20, Collections.singletonList(new SerializedItemStack(ItemID.GRANITE_HELM, 1, GRANITE_HELM_PRICE, "Granite helm"))))
+                .type(NotificationType.BARBARIAN_ASSAULT_GAMBLE)
+                .build()
+        );
+    }
+
+    @Test
+    void testTertiaryLoot() {
+        notifier.onMesBoxNotification("Granite helm! Clue scroll (elite)! High level gamble count: 10.");
+
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .text(PLAYER_NAME + " has reached 10 high gambles")
+                .extra(new GambleNotificationData(10, Arrays.asList(
+                    new SerializedItemStack(ItemID.GRANITE_HELM, 1, GRANITE_HELM_PRICE, "Granite helm"),
+                    new SerializedItemStack(ItemID.CLUE_SCROLL_ELITE, 1, ELITE_CLUE_PRICE, "Clue scroll (elite)")
+                )))
                 .type(NotificationType.BARBARIAN_ASSAULT_GAMBLE)
                 .build()
         );
