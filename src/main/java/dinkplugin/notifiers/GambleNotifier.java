@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -27,7 +26,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-@Singleton
 public class GambleNotifier extends BaseNotifier {
     // itemName (x quantity)![ tertiaryReward!] gc: n
     private static final Pattern GAMBLE_REGEX = Pattern.compile("^(.+?)!\\s*(.+!)?\\s+High level gamble count: (\\d+).*");
