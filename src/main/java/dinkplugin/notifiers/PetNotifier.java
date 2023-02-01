@@ -7,6 +7,8 @@ import dinkplugin.notifiers.data.PetNotificationData;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
+import lombok.AccessLevel;
+import lombok.Setter;
 import net.runelite.api.annotations.Varbit;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -44,6 +46,7 @@ public class PetNotifier extends BaseNotifier {
     @Inject
     private ItemSearcher itemSearcher;
 
+    @Setter(AccessLevel.PRIVATE)
     private String petName = null;
 
     @Override
@@ -64,18 +67,9 @@ public class PetNotifier extends BaseNotifier {
                     this.petName = PRIMED_NAME;
                 }
             } else if (PRIMED_NAME.equals(petName)) {
-                Matcher matcher = Optional.of(UNTRADEABLE_REGEX.matcher(chatMessage))
-                    .filter(Matcher::find)
-                    .orElseGet(() -> {
-                        Matcher m = COLLECTION_LOG_REGEX.matcher(chatMessage);
-                        return m.find() ? m : null;
-                    });
-                if (matcher != null) {
-                    String item = matcher.group(1);
-                    if (item.startsWith("Pet ") || PET_NAMES.contains(Utils.ucFirst(item))) {
-                        this.petName = item;
-                    }
-                }
+                parseItemFromGameMessage(chatMessage)
+                    .filter(item -> item.startsWith("Pet ") || PET_NAMES.contains(Utils.ucFirst(item)))
+                    .ifPresent(this::setPetName);
             } else {
                 // ignore; we already know the pet name
             }
@@ -129,7 +123,23 @@ public class PetNotifier extends BaseNotifier {
         reset();
     }
 
+    private static Optional<String> parseItemFromGameMessage(String message) {
+        Matcher untradeableMatcher = UNTRADEABLE_REGEX.matcher(message);
+        if (untradeableMatcher.find()) {
+            return Optional.of(untradeableMatcher.group(1));
+        }
+
+        Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(message);
+        if (collectionMatcher.find()) {
+            return Optional.of(collectionMatcher.group("itemName"));
+        }
+
+        return Optional.empty();
+    }
+
     static {
+        // Note: We don't explicitly list out names that have the "Pet " prefix
+        // since they are matched by filter(item -> item.startsWith("Pet ")) above
         PET_NAMES = ImmutableSet.of(
             "Abyssal orphan",
             "Abyssal protector",
@@ -138,7 +148,6 @@ public class PetNotifier extends BaseNotifier {
             "Beaver",
             "Bloodhound",
             "Callisto cub",
-            "Cat",
             "Chompy chick",
             "Giant squirrel",
             "Hellcat",
@@ -148,10 +157,10 @@ public class PetNotifier extends BaseNotifier {
             "Ikkle hydra",
             "Jal-nib-rek",
             "Kalphite princess",
-            "Muphin",
             "Lil' creator",
             "Lil' zik",
             "Little nightmare",
+            "Muphin",
             "Nexling",
             "Noon",
             "Olmlet",
@@ -166,7 +175,6 @@ public class PetNotifier extends BaseNotifier {
             "Sraracha",
             "Tangleroot",
             "Tiny tempor",
-            "Toy cat",
             "Tumeken's guardian",
             "Tzrek-jad",
             "Venenatis spiderling",

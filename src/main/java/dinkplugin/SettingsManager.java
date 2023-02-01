@@ -87,8 +87,7 @@ public class SettingsManager {
 
             if ("petEnabled".equals(key) && "true".equals(value)) {
                 clientThread.invokeLater(() -> {
-                    int both = client.getVarbitValue(PetNotifier.LOOT_DROP_NOTIFICATIONS) & client.getVarbitValue(PetNotifier.UNTRADEABLE_LOOT_DROPS);
-                    if (isUntradeableLootInvalid(both)) {
+                    if (isPetLootInvalid(client.getVarbitValue(PetNotifier.UNTRADEABLE_LOOT_DROPS)) || isPetLootInvalid(client.getVarbitValue(PetNotifier.LOOT_DROP_NOTIFICATIONS))) {
                         plugin.addChatWarning(PetNotifier.UNTRADEABLE_WARNING);
                     }
                 });
@@ -108,7 +107,7 @@ public class SettingsManager {
             warnForGameSetting(CollectionNotifier.ADDITION_WARNING);
         }
 
-        if ((id == PetNotifier.LOOT_DROP_NOTIFICATIONS || id == PetNotifier.UNTRADEABLE_LOOT_DROPS) && isUntradeableLootInvalid(value) && config.notifyPet()) {
+        if ((id == PetNotifier.LOOT_DROP_NOTIFICATIONS || id == PetNotifier.UNTRADEABLE_LOOT_DROPS) && isPetLootInvalid(value) && config.notifyPet()) {
             warnForGameSetting(PetNotifier.UNTRADEABLE_WARNING);
         }
     }
@@ -150,7 +149,7 @@ public class SettingsManager {
         return varbitValue > 0;
     }
 
-    private static boolean isUntradeableLootInvalid(int varbitValue) {
+    private static boolean isPetLootInvalid(int varbitValue) {
         // LOOT_DROP_NOTIFICATIONS and UNTRADEABLE_LOOT_DROPS must both be set to 1 for reliable pet name parsing
         return varbitValue < 1;
     }
