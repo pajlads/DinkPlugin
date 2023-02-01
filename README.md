@@ -21,10 +21,11 @@ This project was forked from UniversalDiscordNotifier, but has more features, re
 
 ## Other Setup
 
-Some notifiers require in-game settings to be enabled that send chat messages upon certain events (so these events can serve as triggers for webhook notifications).
+Some notifiers require in-game settings to be configured to send chat messages upon certain events (so these events can serve as triggers for webhook notifications).
 
-* Collection notifier requires `Settings > All Settings > Chat > Collection log - New addition notification`
-* Pet notifier recommends `Settings > All Settings > Chat > Untradeable loot notifications` (which requires `Settings > All Settings > Chat > Loot drop notifications`) in order to determine the name of the pet
+* Collection notifier requires `Settings > All Settings > Chat > Collection log - New addition notification` to be enabled
+* Pet notifier recommends `Settings > All Settings > Chat > Untradeable loot notifications` to be enabled (which requires `Settings > All Settings > Chat > Loot drop notifications`) in order to determine the name of the pet
+* For Kill Count notifier, ensure you do *not* enable `Settings > All Settings > Chat > Filter out boss kill-count with spam-filter` (note: this setting is already disabled by default by Jagex)
 
 ### Example
 
