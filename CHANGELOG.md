@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Minor: Cleanup setting tooltips that stretched too wide, making them difficult to read. (#151)
+- Minor: Clean up setting tooltips that stretched too wide, making them difficult to read. (#151)
 - Bugfix: Report correct item quantity from unsired loot. (#147)
 
 ## 1.2.2
