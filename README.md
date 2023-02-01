@@ -21,9 +21,12 @@ This project was forked from UniversalDiscordNotifier, but has more features, re
 
 ## Other Setup
 
-As the collection notification uses the chat message to determine when a collection log item has been added, these
-messages need to be enabled in game. You can find this option
-in `Settings > All Settings > Chat > Collection log - New addition notification`
+Some notifiers require in-game settings to be enabled that send chat messages upon certain events (so these events can serve as triggers for webhook notifications).
+
+* Collection notifier requires `Settings > All Settings > Chat > Collection log - New addition notification`
+* Pet notifier recommends `Settings > All Settings > Chat > Untradeable loot notifications` (which requires `Settings > All Settings > Chat > Loot drop notifications`) in order to determine the name of the pet
+
+### Example
 
 ![img.png](img.png)
 
