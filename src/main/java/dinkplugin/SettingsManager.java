@@ -2,6 +2,7 @@ package dinkplugin;
 
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
+import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.util.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
@@ -66,6 +67,15 @@ public class SettingsManager {
         }
 
         if (client.getGameState() == GameState.LOGGED_IN) {
+            if ("killCountEnabled".equals(key) && "true".equals(value)) {
+                clientThread.invokeLater(() -> {
+                    if (isKillCountFilterInvalid(client.getVarbitValue(KillCountNotifier.KILL_COUNT_SPAM_FILTER))) {
+                        plugin.addChatWarning(KillCountNotifier.SPAM_WARNING);
+                    }
+                });
+                return;
+            }
+
             if ("combatTaskEnabled".equals(key) && "true".equals(value)) {
                 clientThread.invokeLater(() -> {
                     if (isRepeatPopupInvalid(client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP))) {
@@ -87,6 +97,10 @@ public class SettingsManager {
 
     void onVarbitChanged(VarbitChanged event) {
         int value = event.getValue();
+
+        if (event.getVarbitId() == KillCountNotifier.KILL_COUNT_SPAM_FILTER && isKillCountFilterInvalid(value) && config.notifyKillCount()) {
+            warnForGameSetting(KillCountNotifier.SPAM_WARNING);
+        }
 
         if (event.getVarbitId() == CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP && isRepeatPopupInvalid(value) && config.notifyCombatTask()) {
             warnForGameSetting(CombatTaskNotifier.REPEAT_WARNING);
@@ -122,6 +136,11 @@ public class SettingsManager {
 
         // clear any outdated notifier state
         plugin.resetNotifiers();
+    }
+
+    private static boolean isKillCountFilterInvalid(int varbitValue) {
+        // spam filter must be disabled for kill count chat message
+        return varbitValue > 0;
     }
 
     private static boolean isCollectionLogInvalid(int varbitValue) {
