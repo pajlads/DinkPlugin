@@ -101,31 +101,6 @@ class MatchersTest {
         }
     }
 
-    @ParameterizedTest(name = "Pet message should trigger {0}")
-    @ValueSource(
-        strings = {
-            "You have a funny feeling like you're being followed.",
-            "You have a funny feeling like you would have been followed...",
-            "You feel something weird sneaking into your backpack."
-        }
-    )
-    void petRegexFindsMatch(String message) {
-        Matcher matcher = PetNotifier.PET_REGEX.matcher(message);
-        assertTrue(matcher.find());
-    }
-
-    @ParameterizedTest(name = "Pet message should not trigger {0}")
-    @ValueSource(
-        strings = {
-            "Forsen: forsen",
-            "You feel like you forgot to turn the stove off"
-        }
-    )
-    void petRegexDoesNotMatch(String message) {
-        Matcher matcher = PetNotifier.PET_REGEX.matcher(message);
-        assertFalse(matcher.find());
-    }
-
     @ParameterizedTest(name = "Kill count message should trigger on: {0}")
     @ArgumentsSource(KillCountProvider.class)
     void killCountRegexFindsMatch(String message, Pair<String, Integer> expected) {

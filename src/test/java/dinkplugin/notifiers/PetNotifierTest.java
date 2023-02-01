@@ -3,9 +3,14 @@ package dinkplugin.notifiers;
 import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.notifiers.data.PetNotificationData;
+import dinkplugin.util.ItemSearcher;
+import dinkplugin.util.ItemUtils;
+import net.runelite.api.ItemID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -18,6 +23,10 @@ class PetNotifierTest extends MockedNotifierTest {
     @Bind
     @InjectMocks
     PetNotifier notifier;
+
+    @Bind
+    @Mock
+    ItemSearcher itemSearcher;
 
     @Override
     @BeforeEach
@@ -34,13 +43,47 @@ class PetNotifierTest extends MockedNotifierTest {
     void testNotify() {
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        notifier.onTick();
 
         // verify handled
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
+                .extra(new PetNotificationData(null))
                 .text(PLAYER_NAME + " got a pet")
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyClan() {
+        String petName = "TzRek-Jad";
+        int itemId = ItemID.TZREKJAD;
+
+        // prepare mocks
+        when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);
+
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you're being followed.");
+        notifier.onClanNotification(
+            String.format(
+                "[ClanName] %s has a funny feeling like he would have been followed: %s at 50 killcount",
+                PLAYER_NAME,
+                petName
+            )
+        );
+        notifier.onTick();
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(petName))
+                .text(PLAYER_NAME + " got a pet")
+                .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
                 .build()
         );
@@ -53,12 +96,14 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        notifier.onTick();
 
         // verify handled at override url
         verify(messageHandler).createMessage(
             "https://example.com",
             false,
             NotificationBody.builder()
+                .extra(new PetNotificationData(null))
                 .text(PLAYER_NAME + " got a pet")
                 .type(NotificationType.PET)
                 .build()
@@ -69,6 +114,7 @@ class PetNotifierTest extends MockedNotifierTest {
     void testIgnore() {
         // send non-pet message
         notifier.onChatMessage("You feel Forsen's warmth behind you.");
+        notifier.onTick();
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -81,6 +127,7 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        notifier.onTick();
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -94,12 +141,14 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        notifier.onTick();
 
         // verify handled
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
+                .extra(new PetNotificationData(null))
                 .text(PLAYER_NAME + " got a pet")
                 .type(NotificationType.PET)
                 .build()
@@ -114,6 +163,7 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        notifier.onTick();
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());

@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Major: Add Barbarian Assault high level gambling notifications. (#150)
+- Minor: Include pet name in rich embeds and notification metadata if the user has clan notifications on. (#149)
 - Bugfix: Report correct item quantity from unsired loot. (#147)
 
 ## 1.2.2

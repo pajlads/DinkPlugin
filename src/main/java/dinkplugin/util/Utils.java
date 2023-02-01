@@ -35,6 +35,17 @@ public class Utils {
     public final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
     public final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
 
+    /**
+     * Converts text into "upper case first" form, as is used by OSRS for item names.
+     *
+     * @param text the string to be transformed
+     * @return the text with only the first character capitalized
+     */
+    public String ucFirst(@NotNull String text) {
+        if (text.length() < 2) return text.toUpperCase();
+        return Character.toUpperCase(text.charAt(0)) + text.substring(1).toLowerCase();
+    }
+
     public boolean isSettingsOpen(@NotNull Client client) {
         Widget widget = client.getWidget(WidgetInfo.SETTINGS_INIT);
         return widget != null && !widget.isSelfHidden();
