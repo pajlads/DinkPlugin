@@ -82,6 +82,7 @@ public class DinkPlugin extends Plugin {
     }
 
     void resetNotifiers() {
+        petNotifier.reset();
         clueNotifier.reset();
         diaryNotifier.reset();
         levelNotifier.reset();
@@ -117,6 +118,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick event) {
+        petNotifier.onTick();
         clueNotifier.onTick();
         slayerNotifier.onTick();
         levelNotifier.onTick();
@@ -126,20 +128,30 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onChatMessage(ChatMessage message) {
-        ChatMessageType msgType = message.getType();
         String chatMessage = Text.removeTags(message.getMessage().replace("<br>", "\n")).replace('\u00A0', ' ').trim();
+        switch (message.getType()) {
+            case GAMEMESSAGE:
+                collectionNotifier.onChatMessage(chatMessage);
+                petNotifier.onChatMessage(chatMessage);
+                slayerNotifier.onChatMessage(chatMessage);
+                clueNotifier.onChatMessage(chatMessage);
+                killCountNotifier.onGameMessage(chatMessage);
+                combatTaskNotifier.onGameMessage(chatMessage);
+                break;
 
-        if (msgType == ChatMessageType.GAMEMESSAGE) {
-            collectionNotifier.onChatMessage(chatMessage);
-            petNotifier.onChatMessage(chatMessage);
-            slayerNotifier.onChatMessage(chatMessage);
-            clueNotifier.onChatMessage(chatMessage);
-            killCountNotifier.onGameMessage(chatMessage);
-            combatTaskNotifier.onGameMessage(chatMessage);
-        }
+            case FRIENDSCHATNOTIFICATION:
+                killCountNotifier.onFriendsChatNotification(chatMessage);
+                // intentional fallthrough to clan notifications
 
-        if (msgType == ChatMessageType.FRIENDSCHATNOTIFICATION) {
-            killCountNotifier.onFriendsChatNotification(chatMessage);
+            case CLAN_MESSAGE:
+            case CLAN_GUEST_MESSAGE:
+            case CLAN_GIM_MESSAGE:
+                petNotifier.onClanNotification(chatMessage);
+                break;
+
+            default:
+                // do nothing
+                break;
         }
     }
 

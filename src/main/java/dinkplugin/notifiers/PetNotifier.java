@@ -1,15 +1,53 @@
 package dinkplugin.notifiers;
 
+import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.notifiers.data.PetNotificationData;
+import dinkplugin.util.ItemSearcher;
+import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
+import lombok.AccessLevel;
+import lombok.Setter;
+import net.runelite.api.annotations.Varbit;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static dinkplugin.notifiers.CollectionNotifier.COLLECTION_LOG_REGEX;
+
+@Singleton
 public class PetNotifier extends BaseNotifier {
+
+    @Varbit
+    public static final int LOOT_DROP_NOTIFICATIONS = 5399;
+
+    @Varbit
+    public static final int UNTRADEABLE_LOOT_DROPS = 5402;
+
+    public static final String UNTRADEABLE_WARNING = "Pet Notifier cannot reliably identify pet names unless you enable the game setting: Untradeable loot notifications";
+
     @VisibleForTesting
     static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
+
+    @VisibleForTesting
+    static final Pattern CLAN_REGEX = Pattern.compile("\\b(?<user>[\\w\\s]+) (?:has a funny feeling like .+ followed|feels something weird sneaking into .+ backpack): (?<pet>.+) at\\s");
+
+    private static final Pattern UNTRADEABLE_REGEX = Pattern.compile("Untradeable drop: (.+)");
+    private static final Set<String> PET_NAMES;
+    private static final String PRIMED_NAME = "";
+
+    @Inject
+    private ItemSearcher itemSearcher;
+
+    @Setter(AccessLevel.PRIVATE)
+    private String petName = null;
 
     @Override
     public boolean isEnabled() {
@@ -22,18 +60,127 @@ public class PetNotifier extends BaseNotifier {
     }
 
     public void onChatMessage(String chatMessage) {
-        if (isEnabled() && PET_REGEX.matcher(chatMessage).matches()) {
-            this.handleNotify();
+        if (isEnabled()) {
+            if (petName == null) {
+                if (PET_REGEX.matcher(chatMessage).matches()) {
+                    // Prime the notifier to trigger next tick
+                    this.petName = PRIMED_NAME;
+                }
+            } else if (PRIMED_NAME.equals(petName)) {
+                parseItemFromGameMessage(chatMessage)
+                    .filter(item -> item.startsWith("Pet ") || PET_NAMES.contains(Utils.ucFirst(item)))
+                    .ifPresent(this::setPetName);
+            } else {
+                // ignore; we already know the pet name
+            }
         }
+    }
+
+    public void onClanNotification(String message) {
+        if (!PRIMED_NAME.equals(petName)) {
+            // We have not received the normal message about a pet drop, so this clan message cannot be relevant to us
+            return;
+        }
+
+        Matcher matcher = CLAN_REGEX.matcher(message);
+        if (matcher.find()) {
+            String user = matcher.group("user").trim();
+            if (user.equals(Utils.getPlayerName(client))) {
+                this.petName = matcher.group("pet");
+            }
+        }
+    }
+
+    public void onTick() {
+        if (petName != null)
+            this.handleNotify();
+    }
+
+    public void reset() {
+        this.petName = null;
     }
 
     private void handleNotify() {
         String notifyMessage = config.petNotifyMessage()
             .replace("%USERNAME%", Utils.getPlayerName(client));
 
+        String thumbnail = Optional.ofNullable(petName)
+            .filter(s -> !s.isEmpty())
+            .map(Utils::ucFirst)
+            .map(itemSearcher::findItemId)
+            .map(ItemUtils::getItemImageUrl)
+            .orElse(null);
+
+        PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null));
+
         createMessage(config.petSendImage(), NotificationBody.builder()
+            .extra(extra)
             .text(notifyMessage)
+            .thumbnailUrl(thumbnail)
             .type(NotificationType.PET)
             .build());
+
+        reset();
+    }
+
+    private static Optional<String> parseItemFromGameMessage(String message) {
+        Matcher untradeableMatcher = UNTRADEABLE_REGEX.matcher(message);
+        if (untradeableMatcher.find()) {
+            return Optional.of(untradeableMatcher.group(1));
+        }
+
+        Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(message);
+        if (collectionMatcher.find()) {
+            return Optional.of(collectionMatcher.group("itemName"));
+        }
+
+        return Optional.empty();
+    }
+
+    static {
+        // Note: We don't explicitly list out names that have the "Pet " prefix
+        // since they are matched by filter(item -> item.startsWith("Pet ")) above
+        PET_NAMES = ImmutableSet.of(
+            "Abyssal orphan",
+            "Abyssal protector",
+            "Baby chinchompa",
+            "Baby mole",
+            "Beaver",
+            "Bloodhound",
+            "Callisto cub",
+            "Chompy chick",
+            "Giant squirrel",
+            "Hellcat",
+            "Hellpuppy",
+            "Herbi",
+            "Heron",
+            "Ikkle hydra",
+            "Jal-nib-rek",
+            "Kalphite princess",
+            "Lil' creator",
+            "Lil' zik",
+            "Little nightmare",
+            "Muphin",
+            "Nexling",
+            "Noon",
+            "Olmlet",
+            "Phoenix",
+            "Prince black dragon",
+            "Rift guardian",
+            "Rock golem",
+            "Rocky",
+            "Scorpia's offspring",
+            "Skotos",
+            "Smolcano",
+            "Sraracha",
+            "Tangleroot",
+            "Tiny tempor",
+            "Tumeken's guardian",
+            "Tzrek-jad",
+            "Venenatis spiderling",
+            "Vet'ion jr.",
+            "Vorki",
+            "Youngllef"
+        );
     }
 }

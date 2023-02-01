@@ -21,9 +21,13 @@ This project was forked from UniversalDiscordNotifier, but has more features, re
 
 ## Other Setup
 
-As the collection notification uses the chat message to determine when a collection log item has been added, these
-messages need to be enabled in game. You can find this option
-in `Settings > All Settings > Chat > Collection log - New addition notification`
+Some notifiers require in-game settings to be configured to send chat messages upon certain events (so these events can serve as triggers for webhook notifications).
+
+* Collection notifier requires `Settings > All Settings > Chat > Collection log - New addition notification` to be enabled
+* Pet notifier recommends `Settings > All Settings > Chat > Untradeable loot notifications` to be enabled (which requires `Settings > All Settings > Chat > Loot drop notifications`) in order to determine the name of the pet
+* For Kill Count notifier, ensure you do *not* enable `Settings > All Settings > Chat > Filter out boss kill-count with spam-filter` (note: this setting is already disabled by default by Jagex)
+
+### Example
 
 ![img.png](img.png)
 
@@ -352,9 +356,14 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 ```json5
 {
   "content": "%USERNAME% has a funny feeling they are being followed",
+  "extra": {
+    "petName": "Ikkle hydra"
+  },
   "type": "PET"
 }
 ```
+
+Note: `petName` is only included if the game sent it to your chat via untradeable drop or collection log or clan notifications.
 </details>
 
 ### Speedrunning:
