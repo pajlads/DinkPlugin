@@ -1,7 +1,7 @@
 ## Unreleased
 
 - Minor: Add warning when in-game kill count chat spam filter is enabled. (#154)
-- Minor: Include pet name in rich embeds and notification metadata if the user has clan notifications on. (#149)
+- Minor: Include pet name in webhooks when available in chat via clan, collection log, or untradeable drop notifications. (#149, #153)
 - Bugfix: Report correct item quantity from unsired loot. (#147)
 
 ## 1.2.2
