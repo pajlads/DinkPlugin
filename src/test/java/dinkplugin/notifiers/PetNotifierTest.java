@@ -110,6 +110,29 @@ class PetNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyUntradeableNotARealPet() {
+        String petName = "Forsen";
+        int itemId = ItemID.TZREKJAD;
+
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you're being followed.");
+        notifier.onChatMessage("Untradeable drop: " + petName);
+        notifier.onTick();
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(null))
+                .text(PLAYER_NAME + " got a pet")
+                .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyClan() {
         String petName = "TzRek-Jad";
         int itemId = ItemID.TZREKJAD;
