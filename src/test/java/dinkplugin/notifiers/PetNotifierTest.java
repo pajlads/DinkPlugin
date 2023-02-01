@@ -58,6 +58,114 @@ class PetNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyCollection() {
+        String petName = "TzRek-Jad";
+        int itemId = ItemID.TZREKJAD;
+
+        // prepare mocks
+        when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);
+
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you're being followed.");
+        notifier.onChatMessage("New item added to your collection log: " + petName);
+        notifier.onTick();
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(petName))
+                .text(PLAYER_NAME + " got a pet")
+                .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyUntradeable() {
+        String petName = "TzRek-Jad";
+        int itemId = ItemID.TZREKJAD;
+
+        // prepare mocks
+        when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);
+
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you're being followed.");
+        notifier.onChatMessage("Untradeable drop: " + petName);
+        notifier.onTick();
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(petName))
+                .text(PLAYER_NAME + " got a pet")
+                .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyUntradeableNotARealPet() {
+        String petName = "Forsen";
+        int itemId = ItemID.TZREKJAD;
+
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you're being followed.");
+        notifier.onChatMessage("Untradeable drop: " + petName);
+        notifier.onTick();
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(null))
+                .text(PLAYER_NAME + " got a pet")
+                .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyMultipleSameName() {
+        String petName = "TzRek-Jad";
+        int itemId = ItemID.TZREKJAD;
+
+        // prepare mocks
+        when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);
+
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you're being followed.");
+        notifier.onChatMessage("Untradeable drop: " + petName);
+        notifier.onClanNotification(
+            String.format(
+                "[ClanName] %s has a funny feeling like he would have been followed: %s at 50 killcount",
+                PLAYER_NAME,
+                petName
+            )
+        );
+        notifier.onTick();
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(petName))
+                .text(PLAYER_NAME + " got a pet")
+                .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyClan() {
         String petName = "TzRek-Jad";
         int itemId = ItemID.TZREKJAD;

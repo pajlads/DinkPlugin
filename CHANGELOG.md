@@ -1,7 +1,9 @@
 ## Unreleased
 
 - Major: Add Barbarian Assault high level gambling notifications. (#150)
-- Minor: Include pet name in rich embeds and notification metadata if the user has clan notifications on. (#149)
+- Minor: Clean up setting tooltips that stretched too wide, making them difficult to read. (#151)
+- Minor: Add warning when in-game kill count chat spam filter is enabled. (#154)
+- Minor: Include pet name in webhooks when available in chat via clan, collection log, or untradeable drop notifications. (#149, #153)
 - Bugfix: Report correct item quantity from unsired loot. (#147)
 
 ## 1.2.2

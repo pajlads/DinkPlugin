@@ -2,6 +2,8 @@ package dinkplugin;
 
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
+import dinkplugin.notifiers.KillCountNotifier;
+import dinkplugin.notifiers.PetNotifier;
 import dinkplugin.util.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
@@ -66,6 +68,15 @@ public class SettingsManager {
         }
 
         if (client.getGameState() == GameState.LOGGED_IN) {
+            if ("killCountEnabled".equals(key) && "true".equals(value)) {
+                clientThread.invokeLater(() -> {
+                    if (isKillCountFilterInvalid(client.getVarbitValue(KillCountNotifier.KILL_COUNT_SPAM_FILTER))) {
+                        plugin.addChatWarning(KillCountNotifier.SPAM_WARNING);
+                    }
+                });
+                return;
+            }
+
             if ("combatTaskEnabled".equals(key) && "true".equals(value)) {
                 clientThread.invokeLater(() -> {
                     if (isRepeatPopupInvalid(client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP))) {
@@ -81,19 +92,37 @@ public class SettingsManager {
                         plugin.addChatWarning(CollectionNotifier.ADDITION_WARNING);
                     }
                 });
+                return;
+            }
+
+            if ("petEnabled".equals(key) && "true".equals(value)) {
+                clientThread.invokeLater(() -> {
+                    if (isPetLootInvalid(client.getVarbitValue(PetNotifier.UNTRADEABLE_LOOT_DROPS)) || isPetLootInvalid(client.getVarbitValue(PetNotifier.LOOT_DROP_NOTIFICATIONS))) {
+                        plugin.addChatWarning(PetNotifier.UNTRADEABLE_WARNING);
+                    }
+                });
             }
         }
     }
 
     void onVarbitChanged(VarbitChanged event) {
+        int id = event.getVarbitId();
         int value = event.getValue();
 
-        if (event.getVarbitId() == CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP && isRepeatPopupInvalid(value) && config.notifyCombatTask()) {
+        if (id == KillCountNotifier.KILL_COUNT_SPAM_FILTER && isKillCountFilterInvalid(value) && config.notifyKillCount()) {
+            warnForGameSetting(KillCountNotifier.SPAM_WARNING);
+        }
+
+        if (id == CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP && isRepeatPopupInvalid(value) && config.notifyCombatTask()) {
             warnForGameSetting(CombatTaskNotifier.REPEAT_WARNING);
         }
 
-        if (event.getVarbitId() == Varbits.COLLECTION_LOG_NOTIFICATION && isCollectionLogInvalid(value) && config.notifyCollectionLog()) {
+        if (id == Varbits.COLLECTION_LOG_NOTIFICATION && isCollectionLogInvalid(value) && config.notifyCollectionLog()) {
             warnForGameSetting(CollectionNotifier.ADDITION_WARNING);
+        }
+
+        if ((id == PetNotifier.LOOT_DROP_NOTIFICATIONS || id == PetNotifier.UNTRADEABLE_LOOT_DROPS) && isPetLootInvalid(value) && config.notifyPet()) {
+            warnForGameSetting(PetNotifier.UNTRADEABLE_WARNING);
         }
     }
 
@@ -124,6 +153,11 @@ public class SettingsManager {
         plugin.resetNotifiers();
     }
 
+    private static boolean isKillCountFilterInvalid(int varbitValue) {
+        // spam filter must be disabled for kill count chat message
+        return varbitValue > 0;
+    }
+
     private static boolean isCollectionLogInvalid(int varbitValue) {
         // we require chat notification for collection log notifier
         return varbitValue != 1 && varbitValue != 3;
@@ -132,5 +166,10 @@ public class SettingsManager {
     private static boolean isRepeatPopupInvalid(int varbitValue) {
         // we discourage repeat notifications for combat task notifier if unintentional
         return varbitValue > 0;
+    }
+
+    private static boolean isPetLootInvalid(int varbitValue) {
+        // LOOT_DROP_NOTIFICATIONS and UNTRADEABLE_LOOT_DROPS must both be set to 1 for reliable pet name parsing
+        return varbitValue < 1;
     }
 }
