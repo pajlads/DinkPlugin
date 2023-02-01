@@ -1118,7 +1118,10 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "gambleNotifMessage",
         name = "Notification Message",
-        description = "The message to be sent through the webhook every gamble interval. Use %USERNAME% to insert your username, %COUNT% to insert gamble count, %LOOT% to insert loot",
+        description = "The message to be sent through the webhook every gamble interval.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %COUNT% to insert the gamble count<br/>" +
+            "Use %LOOT% to insert the loot",
         position = 124,
         section = gambleSection
     )
@@ -1129,7 +1132,10 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "gambleRareNotifMessage",
         name = "Rare Loot Notification Message",
-        description = "The message to be sent through the webhook for rare loot. Use %USERNAME% to insert your username, %COUNT% to insert gamble count, %LOOT% to insert loot",
+        description = "The message to be sent through the webhook for rare loot.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %COUNT% to insert the gamble count<br/>" +
+            "Use %LOOT% to insert the loot",
         position = 125,
         section = gambleSection
     )
