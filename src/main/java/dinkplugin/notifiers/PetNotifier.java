@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.PetNotificationData;
@@ -12,17 +13,23 @@ import org.jetbrains.annotations.VisibleForTesting;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static dinkplugin.notifiers.CollectionNotifier.COLLECTION_LOG_REGEX;
+
 @Singleton
 public class PetNotifier extends BaseNotifier {
+
     @VisibleForTesting
     static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
 
     @VisibleForTesting
     static final Pattern CLAN_REGEX = Pattern.compile("\\b(?<user>[\\w\\s]+) (?:has a funny feeling like .+ followed|feels something weird sneaking into .+ backpack): (?<pet>.+) at\\s");
 
+    private static final Pattern UNTRADEABLE_REGEX = Pattern.compile("Untradeable drop: (.+)");
+    private static final Set<String> PET_NAMES;
     private static final String PRIMED_NAME = "";
 
     @Inject
@@ -41,9 +48,28 @@ public class PetNotifier extends BaseNotifier {
     }
 
     public void onChatMessage(String chatMessage) {
-        if (isEnabled() && PET_REGEX.matcher(chatMessage).matches()) {
-            // Prime the notifier to trigger next tick
-            this.petName = PRIMED_NAME;
+        if (isEnabled()) {
+            if (petName == null) {
+                if (PET_REGEX.matcher(chatMessage).matches()) {
+                    // Prime the notifier to trigger next tick
+                    this.petName = PRIMED_NAME;
+                }
+            } else if (PRIMED_NAME.equals(petName)) {
+                Matcher matcher = Optional.of(UNTRADEABLE_REGEX.matcher(chatMessage))
+                    .filter(Matcher::find)
+                    .orElseGet(() -> {
+                        Matcher m = COLLECTION_LOG_REGEX.matcher(chatMessage);
+                        return m.find() ? m : null;
+                    });
+                if (matcher != null) {
+                    String item = matcher.group(1);
+                    if (item.startsWith("Pet ") || PET_NAMES.contains(Utils.ucFirst(item))) {
+                        this.petName = item;
+                    }
+                }
+            } else {
+                // ignore; we already know the pet name
+            }
         }
     }
 
@@ -92,5 +118,52 @@ public class PetNotifier extends BaseNotifier {
             .build());
 
         reset();
+    }
+
+    static {
+        PET_NAMES = ImmutableSet.of(
+            "Abyssal orphan",
+            "Abyssal protector",
+            "Baby chinchompa",
+            "Baby mole",
+            "Beaver",
+            "Bloodhound",
+            "Callisto cub",
+            "Cat",
+            "Chompy chick",
+            "Giant squirrel",
+            "Hellcat",
+            "Hellpuppy",
+            "Herbi",
+            "Heron",
+            "Ikkle hydra",
+            "Jal-nib-rek",
+            "Kalphite princess",
+            "Muphin",
+            "Lil' creator",
+            "Lil' zik",
+            "Little nightmare",
+            "Nexling",
+            "Noon",
+            "Olmlet",
+            "Phoenix",
+            "Prince black dragon",
+            "Rift guardian",
+            "Rock golem",
+            "Rocky",
+            "Scorpia's offspring",
+            "Skotos",
+            "Smolcano",
+            "Sraracha",
+            "Tangleroot",
+            "Tiny tempor",
+            "Toy cat",
+            "Tumeken's guardian",
+            "Tzrek-jad",
+            "Venenatis spiderling",
+            "Vet'ion jr.",
+            "Vorki",
+            "Youngllef"
+        );
     }
 }
