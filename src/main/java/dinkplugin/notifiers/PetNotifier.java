@@ -7,6 +7,7 @@ import dinkplugin.notifiers.data.PetNotificationData;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
+import net.runelite.api.annotations.Varbit;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -21,6 +22,14 @@ import static dinkplugin.notifiers.CollectionNotifier.COLLECTION_LOG_REGEX;
 
 @Singleton
 public class PetNotifier extends BaseNotifier {
+
+    @Varbit
+    public static final int LOOT_DROP_NOTIFICATIONS = 5399;
+
+    @Varbit
+    public static final int UNTRADEABLE_LOOT_DROPS = 5402;
+
+    public static final String UNTRADEABLE_WARNING = "Pet Notifier cannot reliably identify pet names unless you enable the game setting: Untradeable loot notifications";
 
     @VisibleForTesting
     static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
