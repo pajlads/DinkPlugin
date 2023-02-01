@@ -151,13 +151,13 @@ public class DinkPlugin extends Plugin {
                 petNotifier.onClanNotification(chatMessage);
                 break;
 
+            case MESBOX:
+                gambleNotifier.onMesBoxNotification(chatMessage);
+                break;
+
             default:
                 // do nothing
                 break;
-        }
-
-        if (msgType == ChatMessageType.MESBOX) {
-            gambleNotifier.onMesBoxNotification(chatMessage);
         }
     }
 
