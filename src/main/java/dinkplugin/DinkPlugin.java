@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.InteractingChanged;
@@ -40,6 +41,7 @@ import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
+import java.awt.Color;
 
 @Slf4j
 @PluginDescriptor(
@@ -93,6 +95,11 @@ public class DinkPlugin extends Plugin {
     @Provides
     DinkPluginConfig provideConfig(ConfigManager configManager) {
         return configManager.getConfig(DinkPluginConfig.class);
+    }
+
+    @Subscribe
+    public void onCommandExecuted(CommandExecuted event) {
+        settingsManager.onCommand(event);
     }
 
     @Subscribe
@@ -194,11 +201,19 @@ public class DinkPlugin extends Plugin {
         lootNotifier.onWidgetLoaded(event);
     }
 
+    public void addChatSuccess(String message) {
+        addChatMessage("Success", Utils.GREEN, message);
+    }
+
     public void addChatWarning(String message) {
+        addChatMessage("Warning", Utils.RED, message);
+    }
+
+    private void addChatMessage(String category, Color color, String message) {
         String formatted = String.format("[%s] %s: %s",
             ColorUtil.wrapWithColorTag(getName(), Utils.PINK),
-            "Warning",
-            ColorUtil.wrapWithColorTag(message, Utils.RED)
+            category,
+            ColorUtil.wrapWithColorTag(message, color)
         );
 
         chatManager.queue(

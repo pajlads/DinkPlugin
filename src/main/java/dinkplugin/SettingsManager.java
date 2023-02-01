@@ -1,5 +1,7 @@
 package dinkplugin;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
@@ -11,8 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -21,7 +25,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -33,10 +43,12 @@ public class SettingsManager {
 
     private final Collection<String> ignoredNames = new HashSet<>();
 
+    private final Gson gson;
     private final Client client;
     private final ClientThread clientThread;
     private final DinkPlugin plugin;
     private final DinkPluginConfig config;
+    private final ConfigManager configManager;
 
     /**
      * Check whether a username is not on the configured ignore list.
@@ -52,6 +64,15 @@ public class SettingsManager {
     @VisibleForTesting
     public void init() {
         setIgnoredNames(config.ignoredNames());
+    }
+
+    void onCommand(CommandExecuted event) {
+        String cmd = event.getCommand();
+        if ("dinkimport".equalsIgnoreCase(cmd)) {
+            importConfig();
+        } else if ("dinkexport".equalsIgnoreCase(cmd)) {
+            exportConfig();
+        }
     }
 
     void onConfigChanged(ConfigChanged event) {
@@ -134,7 +155,7 @@ public class SettingsManager {
         }
     }
 
-    private Stream<String> readDelimited(String value) {
+    private static Stream<String> readDelimited(String value) {
         if (value == null) return Stream.empty();
         return DELIM.splitAsStream(value)
             .map(String::trim)
@@ -156,6 +177,114 @@ public class SettingsManager {
     private static boolean isKillCountFilterInvalid(int varbitValue) {
         // spam filter must be disabled for kill count chat message
         return varbitValue > 0;
+    }
+
+    @Synchronized
+    private void exportConfig() {
+        String prefix = CONFIG_GROUP + '.';
+        Map<String, String> configMap = configManager.getConfigurationKeys(prefix)
+            .stream()
+            .map(prop -> prop.substring(prefix.length()))
+            .collect(Collectors.toMap(Function.identity(), key -> configManager.getConfiguration(CONFIG_GROUP, key)));
+        Utils.copyToClipboard(gson.toJson(configMap))
+            .thenRun(() -> plugin.addChatSuccess("Copied current configuration to clipboard"))
+            .exceptionally(e -> {
+                plugin.addChatWarning("Failed to copy config to clipboard");
+                return null;
+            });
+    }
+
+    @Synchronized
+    private void importConfig() {
+        Utils.readClipboard()
+            .thenApplyAsync(json -> {
+                if (json != null) {
+                    try {
+                        return gson.<Map<String, String>>fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
+                    } catch (Exception e) {
+                        String warning = "Failed to parse config on clipboard";
+                        log.warn(warning + ": " + json, e);
+                        plugin.addChatWarning(warning);
+                        return null;
+                    }
+                } else {
+                    plugin.addChatWarning("Clipboard was empty");
+                    return null;
+                }
+            })
+            .thenAcceptAsync(this::handleImport)
+            .exceptionally(e -> {
+                plugin.addChatWarning("Failed to read clipboard");
+                return null;
+            });
+    }
+
+    @Synchronized
+    private void handleImport(Map<String, String> map) {
+        if (map == null) return;
+
+        Collection<String> oldPrimary = readDelimited(config.primaryWebhook()).collect(Collectors.toCollection(LinkedHashSet::new));
+        AtomicInteger numUpdated = new AtomicInteger();
+        map.forEach((key, value) -> {
+            String prevValue = configManager.getConfiguration(CONFIG_GROUP, key);
+            String newValue;
+
+            if ("discordWebhook".equals(key)) {
+                Collection<String> newPrimary = new LinkedHashSet<>(oldPrimary);
+                readDelimited(value).forEach(newPrimary::add);
+
+                if (newPrimary.size() > oldPrimary.size()) {
+                    newValue = String.join("\n", newPrimary);
+                } else {
+                    newValue = null;
+                }
+            } else if (key.endsWith("Webhook")) {
+                Collection<String> overrides = readDelimited(prevValue).collect(Collectors.toCollection(LinkedHashSet::new));
+                if (overrides.isEmpty()) {
+                    overrides.addAll(oldPrimary);
+                }
+
+                long added = readDelimited(value)
+                    .map(overrides::add)
+                    .filter(Boolean::booleanValue)
+                    .count();
+
+                if (added > 0) {
+                    newValue = String.join("\n", overrides);
+                } else {
+                    newValue = null;
+                }
+            } else if ("ignoredNames".equals(key)) {
+                Collection<String> ignored = readDelimited(config.ignoredNames()).collect(Collectors.toCollection(LinkedHashSet::new));
+                readDelimited(value).forEach(ignored::add);
+
+                if (ignored.size() > this.ignoredNames.size()) {
+                    newValue = String.join("\n", ignored);
+                } else {
+                    newValue = null;
+                }
+            } else {
+                if (Objects.equals(value, prevValue)) {
+                    newValue = null;
+                } else {
+                    newValue = value;
+                }
+            }
+
+            if (newValue != null) {
+                configManager.setConfiguration(CONFIG_GROUP, key, newValue);
+                numUpdated.incrementAndGet();
+            }
+        });
+
+        plugin.addChatSuccess(
+            String.format(
+                "Updated %d config settings (from %d total specified in import). " +
+                    "Please restart the client for these changes to be reflected in the config panel.",
+                numUpdated.get(),
+                map.size()
+            )
+        );
     }
 
     private static boolean isCollectionLogInvalid(int varbitValue) {

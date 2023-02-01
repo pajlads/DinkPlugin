@@ -74,7 +74,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
     protected DinkPlugin plugin = Mockito.spy(DinkPlugin.class);
 
     @Bind
-    protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(client, clientThread, plugin, config));
+    protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(gson, client, clientThread, plugin, config, null));
 
     @Bind
     protected DiscordMessageHandler messageHandler = Mockito.spy(new DiscordMessageHandler(gson, client, drawManager, httpClient, config, executor));
