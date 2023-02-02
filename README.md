@@ -60,6 +60,8 @@ This import can replace all of your notifier settings (but URL lists will be com
 
 After an import, do restart your game client so the updated configuration is reflected in the plugin settings panel.
 
+Note: there is no undo button for this command, so consider making a backup of your current `~/.runelite/settings.properties` file before doing `::dinkimport`.
+
 ---
 
 ## Notifier Configuration
