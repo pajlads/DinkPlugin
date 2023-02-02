@@ -198,17 +198,17 @@ public class SettingsManager {
     private void importConfig() {
         Utils.readClipboard()
             .thenApplyAsync(json -> {
-                if (json != null) {
-                    try {
-                        return gson.<Map<String, String>>fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
-                    } catch (Exception e) {
-                        String warning = "Failed to parse config from clipboard";
-                        log.warn(warning, e);
-                        plugin.addChatWarning(warning);
-                        return null;
-                    }
-                } else {
+                if (json == null) {
                     plugin.addChatWarning("Clipboard was empty");
+                    return null;
+                }
+
+                try {
+                    return gson.<Map<String, String>>fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
+                } catch (Exception e) {
+                    String warning = "Failed to parse config from clipboard";
+                    log.warn(warning, e);
+                    plugin.addChatWarning(warning);
                     return null;
                 }
             })
