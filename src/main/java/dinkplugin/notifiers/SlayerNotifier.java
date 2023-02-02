@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Singleton;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,8 +19,8 @@ public class SlayerNotifier extends BaseNotifier {
     static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
     private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>\\d+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
 
-    private String slayerTask = "";
-    private int badTicks = 0; // used to prevent notifs from using stale data
+    private volatile String slayerTask = "";
+    private final AtomicInteger badTicks = new AtomicInteger(); // used to prevent notifs from using stale data
 
     @Override
     public boolean isEnabled() {
@@ -79,10 +80,10 @@ public class SlayerNotifier extends BaseNotifier {
     public void onTick() {
         // Track how many ticks occur where we only have partial slayer data
         if (!slayerTask.isEmpty())
-            badTicks++;
+            badTicks.getAndIncrement();
 
         // Clear data if 2 ticks pass with only partial parsing
-        if (badTicks > 1)
+        if (badTicks.get() > 1)
             reset();
     }
 
@@ -111,6 +112,6 @@ public class SlayerNotifier extends BaseNotifier {
 
     public void reset() {
         slayerTask = "";
-        badTicks = 0;
+        badTicks.set(0);
     }
 }

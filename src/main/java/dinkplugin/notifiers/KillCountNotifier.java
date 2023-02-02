@@ -38,7 +38,7 @@ public class KillCountNotifier extends BaseNotifier {
     private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>\\d+)\\b");
     private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(.\\d+)?)\\.?", Pattern.CASE_INSENSITIVE);
 
-    private BossNotificationData data;
+    private volatile BossNotificationData data = null;
 
     @Override
     public boolean isEnabled() {
