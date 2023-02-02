@@ -1,5 +1,6 @@
 package dinkplugin;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dinkplugin.notifiers.CollectionNotifier;
@@ -40,6 +41,7 @@ import java.util.stream.Stream;
 public class SettingsManager {
     private static final String CONFIG_GROUP = "dinkplugin";
     private static final Pattern DELIM = Pattern.compile("[,;\\n]");
+    private static final Collection<String> WEBHOOK_CONFIG_KEYS;
 
     private final Collection<String> ignoredNames = new HashSet<>();
 
@@ -228,7 +230,7 @@ public class SettingsManager {
             String prevValue = configManager.getConfiguration(CONFIG_GROUP, key);
             String newValue;
 
-            if (key.endsWith("Webhook") || "ignoredNames".equals(key)) {
+            if (WEBHOOK_CONFIG_KEYS.contains(key) || "ignoredNames".equals(key)) {
                 Collection<String> lines = readDelimited(prevValue).collect(Collectors.toCollection(LinkedHashSet::new));
 
                 long added = readDelimited(value)
@@ -278,5 +280,24 @@ public class SettingsManager {
     private static boolean isPetLootInvalid(int varbitValue) {
         // LOOT_DROP_NOTIFICATIONS and UNTRADEABLE_LOOT_DROPS must both be set to 1 for reliable pet name parsing
         return varbitValue < 1;
+    }
+
+    static {
+        WEBHOOK_CONFIG_KEYS = ImmutableSet.of(
+            "discordWebhook",
+            "collectionWebhook",
+            "petWebhook",
+            "levelWebhook",
+            "lootWebhook",
+            "deathWebhook",
+            "slayerWebhook",
+            "questWebhook",
+            "clueWebhook",
+            "speedrunWebhook",
+            "killCountWebhook",
+            "combatTaskWebhook",
+            "diaryWebhook",
+            "gambleWebhook"
+        );
     }
 }
