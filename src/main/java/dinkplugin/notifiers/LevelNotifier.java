@@ -2,8 +2,8 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
-import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.LevelNotificationData;
+import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
@@ -13,19 +13,20 @@ import net.runelite.api.events.StatChanged;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Singleton
 public class LevelNotifier extends BaseNotifier {
-
-    private final List<String> levelledSkills = new ArrayList<>();
-    private final Map<String, Integer> currentLevels = new HashMap<>();
-    private boolean sendMessage = false;
-    private int ticksWaited = 0;
+    private final List<String> levelledSkills = new CopyOnWriteArrayList<>();
+    private final Map<String, Integer> currentLevels = new ConcurrentHashMap<>();
+    private final AtomicInteger ticksWaited = new AtomicInteger();
+    private volatile boolean sendMessage = false;
 
     @Override
     protected String getWebhookUrl() {
@@ -44,6 +45,8 @@ public class LevelNotifier extends BaseNotifier {
     public void reset() {
         currentLevels.clear();
         levelledSkills.clear();
+        ticksWaited.set(0);
+        sendMessage = false;
     }
 
     public void onTick() {
@@ -55,10 +58,10 @@ public class LevelNotifier extends BaseNotifier {
             return;
         }
 
-        ticksWaited++;
+        int ticks = ticksWaited.incrementAndGet();
         // We wait a couple extra ticks so we can ensure that we process all the levels of the previous tick
-        if (ticksWaited > 2) {
-            ticksWaited = 0;
+        if (ticks > 2) {
+            ticksWaited.set(0);
             attemptNotify();
         }
     }
