@@ -280,7 +280,7 @@ public class SettingsManager {
         plugin.addChatSuccess(
             String.format(
                 "Updated %d config settings (from %d total specified in import). " +
-                    "Please restart the client for these changes to be reflected in the config panel.",
+                    "Please close and open the plugin settings panel for these changes to be visually reflected.",
                 numUpdated.get(),
                 map.size()
             )
