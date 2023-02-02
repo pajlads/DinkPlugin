@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,9 +33,9 @@ import java.util.regex.Pattern;
 @Singleton
 public class ClueNotifier extends BaseNotifier {
     private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
-    private String clueCount = "";
-    private String clueType = "";
-    private int badTicks = 0; // used to prevent notifs from using stale data
+    private final AtomicInteger badTicks = new AtomicInteger(); // used to prevent notifs from using stale data
+    private volatile String clueCount = "";
+    private volatile String clueType = "";
 
     @Inject
     private ItemManager itemManager;
@@ -89,10 +90,10 @@ public class ClueNotifier extends BaseNotifier {
     public void onTick() {
         // Track how many ticks occur where we only have partial clue data
         if (!clueType.isEmpty())
-            badTicks++;
+            badTicks.getAndIncrement();
 
         // Clear data if 2 ticks pass with only partial parsing (both events should occur within same tick)
-        if (badTicks > 1)
+        if (badTicks.get() > 1)
             reset();
     }
 
@@ -148,6 +149,6 @@ public class ClueNotifier extends BaseNotifier {
     public void reset() {
         this.clueCount = "";
         this.clueType = "";
-        this.badTicks = 0;
+        this.badTicks.set(0);
     }
 }

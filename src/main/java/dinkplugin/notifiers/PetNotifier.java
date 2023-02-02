@@ -47,7 +47,7 @@ public class PetNotifier extends BaseNotifier {
     private ItemSearcher itemSearcher;
 
     @Setter(AccessLevel.PRIVATE)
-    private String petName = null;
+    private volatile String petName = null;
 
     @Override
     public boolean isEnabled() {

@@ -13,16 +13,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Singleton;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static dinkplugin.domain.AchievementDiary.DIARIES;
 
 @Slf4j
 @Singleton
 public class DiaryNotifier extends BaseNotifier {
-    private final Map<Integer, Integer> diaryCompletionById = new HashMap<>();
-    private int initDelayTicks = 0;
+    private final Map<Integer, Integer> diaryCompletionById = Collections.synchronizedMap(new HashMap<>());
+    private final AtomicInteger initDelayTicks = new AtomicInteger();
 
     @Override
     public boolean isEnabled() {
@@ -36,7 +38,7 @@ public class DiaryNotifier extends BaseNotifier {
 
     public void reset() {
         this.diaryCompletionById.clear();
-        this.initDelayTicks = 0;
+        this.initDelayTicks.set(0);
     }
 
     public void onGameState(GameStateChanged event) {
@@ -48,14 +50,14 @@ public class DiaryNotifier extends BaseNotifier {
         if (client.getGameState() != GameState.LOGGED_IN)
             return;
 
-        if (initDelayTicks > 0) {
-            initDelayTicks--;
-
-            if (initDelayTicks <= 0)
+        int ticks = initDelayTicks.getAndUpdate(i -> Math.max(i - 1, 0));
+        if (ticks > 0) {
+            if (ticks == 1) {
                 this.initCompleted();
+            }
         } else if (diaryCompletionById.isEmpty() && super.isEnabled()) {
             // mark diary completions to be initialized later
-            this.initDelayTicks = 4;
+            this.initDelayTicks.set(4);
         }
     }
 
@@ -142,6 +144,7 @@ public class DiaryNotifier extends BaseNotifier {
                 diaryCompletionById.put(id, value);
             }
         }
+        log.debug("Finished initializing current diary completions: {} out of {}", getTotalCompleted(), diaryCompletionById.size());
     }
 
     private static boolean isComplete(int id, int value) {
