@@ -1,10 +1,10 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.util.Utils;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DiaryNotificationData;
+import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
@@ -13,9 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Singleton;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static dinkplugin.domain.AchievementDiary.DIARIES;
@@ -23,7 +22,7 @@ import static dinkplugin.domain.AchievementDiary.DIARIES;
 @Slf4j
 @Singleton
 public class DiaryNotifier extends BaseNotifier {
-    private final Map<Integer, Integer> diaryCompletionById = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Integer, Integer> diaryCompletionById = new ConcurrentHashMap<>();
     private final AtomicInteger initDelayTicks = new AtomicInteger();
 
     @Override

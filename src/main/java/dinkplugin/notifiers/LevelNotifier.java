@@ -2,8 +2,8 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
-import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.LevelNotificationData;
+import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
@@ -13,19 +13,18 @@ import net.runelite.api.events.StatChanged;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Singleton
 public class LevelNotifier extends BaseNotifier {
-
-    private final List<String> levelledSkills = Collections.synchronizedList(new ArrayList<>());
-    private final Map<String, Integer> currentLevels = Collections.synchronizedMap(new HashMap<>());
+    private final List<String> levelledSkills = new CopyOnWriteArrayList<>();
+    private final Map<String, Integer> currentLevels = new ConcurrentHashMap<>();
     private final AtomicInteger ticksWaited = new AtomicInteger();
     private volatile boolean sendMessage = false;
 
