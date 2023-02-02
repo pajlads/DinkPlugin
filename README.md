@@ -61,7 +61,7 @@ This import can replace all of your notifier settings (but URL lists will be com
 
 After an import, if the dink plugin settings panel was open, simply close and open it for the updated configuration to be reflected in the user interface.
 
-Note: there is no undo button for this command, so consider making a backup of your current `~/.runelite/settings.properties` file before doing `::dinkimport`.
+Note: There is no undo button for this command, so consider making a backup of your current `~/.runelite/settings.properties` file before doing `::dinkimport`.
 
 ---
 
