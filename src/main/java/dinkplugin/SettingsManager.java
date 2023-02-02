@@ -202,7 +202,7 @@ public class SettingsManager {
                     try {
                         return gson.<Map<String, String>>fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
                     } catch (Exception e) {
-                        String warning = "Failed to parse config on clipboard";
+                        String warning = "Failed to parse config from clipboard";
                         log.warn(warning + ": " + json, e);
                         plugin.addChatWarning(warning);
                         return null;
