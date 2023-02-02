@@ -198,7 +198,7 @@ public class SettingsManager {
     private void importConfig() {
         Utils.readClipboard()
             .thenApplyAsync(json -> {
-                if (json == null) {
+                if (json == null || json.isEmpty()) {
                     plugin.addChatWarning("Clipboard was empty");
                     return null;
                 }
