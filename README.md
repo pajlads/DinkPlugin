@@ -42,6 +42,24 @@ Some notifiers require in-game settings to be configured to send chat messages u
 * Discord rich embed footers can be customized with user-specified text and image url
 * When network issues occur, Dink can make repeated attempts to send the webhook (with exponential backoff)
 
+## Chat Commands
+
+### Export Current Configuration via `::dinkexport`
+
+Dink allows you to export your current plugin configuration to the clipboard via the `::dinkexport` chat command.
+
+This export includes *every* setting from individual notifiers to the webhook URLs.
+
+You can share this produced JSON to friends who want to send similarly configured messages to the same webhook URLs.
+
+### Import Configuration via `::dinkimport`
+
+With the output of the above command (`::dinkexport`) copied to your clipboard, you can merge these settings with your own via the `::dinkimport` chat command.
+
+This import can replace all of your notifier settings (but URL lists will be combined).
+
+After an import, do restart your game client so the updated configuration is reflected in the plugin settings panel.
+
 ---
 
 ## Notifier Configuration
