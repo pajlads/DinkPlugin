@@ -228,25 +228,16 @@ public class SettingsManager {
             String prevValue = configManager.getConfiguration(CONFIG_GROUP, key);
             String newValue;
 
-            if (key.endsWith("Webhook")) {
-                Collection<String> urls = readDelimited(prevValue).collect(Collectors.toCollection(LinkedHashSet::new));
+            if (key.endsWith("Webhook") || "ignoredNames".equals(key)) {
+                Collection<String> lines = readDelimited(prevValue).collect(Collectors.toCollection(LinkedHashSet::new));
 
                 long added = readDelimited(value)
-                    .map(urls::add)
+                    .map(lines::add)
                     .filter(Boolean::booleanValue)
                     .count();
 
                 if (added > 0) {
-                    newValue = String.join("\n", urls);
-                } else {
-                    newValue = null;
-                }
-            } else if ("ignoredNames".equals(key)) {
-                Collection<String> ignored = readDelimited(config.ignoredNames()).collect(Collectors.toCollection(LinkedHashSet::new));
-                readDelimited(value).forEach(ignored::add);
-
-                if (ignored.size() > this.ignoredNames.size()) {
-                    newValue = String.join("\n", ignored);
+                    newValue = String.join("\n", lines);
                 } else {
                     newValue = null;
                 }
