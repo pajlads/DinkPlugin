@@ -143,7 +143,7 @@ public class DiaryNotifier extends BaseNotifier {
                 diaryCompletionById.put(id, value);
             }
         }
-        log.debug("Finished initializing current diary completions: {} out of {}", getTotalCompleted(), diaryCompletionById.size());
+        log.info("Finished initializing current diary completions: {} out of {}", getTotalCompleted(), diaryCompletionById.size());
     }
 
     private static boolean isComplete(int id, int value) {
