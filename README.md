@@ -57,11 +57,16 @@ You can share this produced JSON to friends who want to send similarly configure
 
 With the output of the above command (`::dinkexport`) copied to your clipboard, you can merge these settings with your own via the `::dinkimport` chat command.
 
-This import can replace all of your notifier settings (but URL lists will be combined).
+This import can replace all of your notifier settings.
+However, webhook URL lists and ignored RSNs will be combined, rather than outright replaced.
+If you would like all settings overwritten rather than merged during import, simply press the `Reset` button at the bottom of the plugin settings panel to clear out all settings (including URLs) before running `::dinkimport`.
 
 After an import, if the dink plugin settings panel was open, simply close and open it for the updated configuration to be reflected in the user interface.
 
 Note: There is no undo button for this command, so consider making a backup of your current Dink configuration by using the `::dinkexport` command explained above and saving that to a file on your computer.
+
+Warning: If you import override URLs for a notifier, this will result in the plugin no longer sending messages from that notifier to your old primary URLs.
+As such, you can manually add your primary URLs to the newly populated override URL boxes so that notifications are still sent to the old primary URLs.
 
 ---
 
