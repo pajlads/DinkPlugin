@@ -21,7 +21,7 @@ dependencies {
     // this version of annotations is verified by runelite
     compileOnly(group = "org.jetbrains", name = "annotations", version = "23.0.0")
 
-    val runeLiteVersion = "1.9.9-SNAPSHOT" // todo revert
+    val runeLiteVersion = "latest.release"
     compileOnly(group = "net.runelite", name = "client", version = runeLiteVersion)
     testImplementation(group = "net.runelite", name = "client", version = runeLiteVersion)
     testImplementation(group = "net.runelite", name = "jshell", version = runeLiteVersion)
