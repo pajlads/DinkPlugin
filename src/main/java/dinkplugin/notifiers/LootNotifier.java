@@ -3,10 +3,10 @@ package dinkplugin.notifiers;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
-import dinkplugin.util.ItemUtils;
-import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.ItemUtils;
+import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.events.WidgetLoaded;
@@ -124,7 +124,7 @@ public class LootNotifier extends BaseNotifier {
             if (totalPrice >= minValue) {
                 sendMessage = true;
                 if (lootMessage.length() > 0) lootMessage.append("\n");
-                lootMessage.append(String.format("%d x %s (%s)", item.getQuantity(), stack.getName(), QuantityFormatter.quantityToStackSize(totalPrice)));
+                lootMessage.append(ItemUtils.formatStack(stack));
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
             }
             serializedItems.add(stack);

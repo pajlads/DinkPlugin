@@ -19,7 +19,8 @@ public enum NotificationType {
     SPEEDRUN("Quest Speedrunning", "speedrunImage.png", WIKI_IMG_BASE_URL + "Giant_stopwatch.png"),
     KILL_COUNT("Completion Count", "killCountImage.png", WIKI_IMG_BASE_URL + "Enchanted_gem.png"),
     COMBAT_ACHIEVEMENT("Combat Achievement", "combatTaskImage.png", WIKI_IMG_BASE_URL + "Combat_achievements.png"),
-    ACHIEVEMENT_DIARY("Achievement Diary", "achievementDiaryImage.png", WIKI_IMG_BASE_URL + "Achievement_Diaries_icon.png");
+    ACHIEVEMENT_DIARY("Achievement Diary", "achievementDiaryImage.png", WIKI_IMG_BASE_URL + "Achievement_Diaries_icon.png"),
+    BARBARIAN_ASSAULT_GAMBLE("Barbarian Assault Gamble", "baGambleImage.png", WIKI_IMG_BASE_URL + "Barbarian_Assault_logo.jpg");
 
     private final String title;
 

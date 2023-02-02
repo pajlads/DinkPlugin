@@ -97,7 +97,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Agility to 5 and Attack to 99")
+                .text(PLAYER_NAME + " has levelled Agility to 5 and Hunter to 99")
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Hunter", 99), ImmutableMap.of("Agility", 5, "Attack", 99, "Hunter", 99)))
                 .type(NotificationType.LEVEL)
                 .build()
