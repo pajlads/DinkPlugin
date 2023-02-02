@@ -110,6 +110,10 @@ public class ItemUtils {
         return new SerializedItemStack(id, quantity, price, composition.getName());
     }
 
+    public String formatStack(SerializedItemStack item) {
+        return String.format("%d x %s (%s)", item.getQuantity(), item.getName(), QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
+    }
+
     public String getItemImageUrl(int itemId) {
         return ITEM_CACHE_BASE_URL + "icon/" + itemId + ".png";
     }

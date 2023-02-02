@@ -30,6 +30,7 @@ public class NotificationBody<T extends NotificationData> {
     @Nullable
     T extra;
     @NotNull
+    @EqualsAndHashCode.Include
     transient String text;
 
     /*
