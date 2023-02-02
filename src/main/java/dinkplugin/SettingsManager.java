@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -226,13 +227,16 @@ public class SettingsManager {
         if (map == null) return;
 
         AtomicInteger numUpdated = new AtomicInteger();
+        Collection<String> mergedConfigs = new TreeSet<>();
         map.forEach((key, value) -> {
             String prevValue = configManager.getConfiguration(CONFIG_GROUP, key);
             String newValue;
 
             if (WEBHOOK_CONFIG_KEYS.contains(key) || "ignoredNames".equals(key)) {
+                // special case: multi-line configs that should be merged (rather than replaced)
                 Collection<String> lines = readDelimited(prevValue).collect(Collectors.toCollection(LinkedHashSet::new));
 
+                int oldCount = lines.size();
                 long added = readDelimited(value)
                     .map(lines::add)
                     .filter(Boolean::booleanValue)
@@ -240,6 +244,10 @@ public class SettingsManager {
 
                 if (added > 0) {
                     newValue = String.join("\n", lines);
+
+                    if (oldCount == 0) {
+                        mergedConfigs.add(key);
+                    }
                 } else {
                     newValue = null;
                 }
@@ -265,6 +273,10 @@ public class SettingsManager {
                 map.size()
             )
         );
+
+        if (!mergedConfigs.isEmpty()) {
+            plugin.addChatSuccess("The following settings were merged (rather than being overwritten): " + String.join(", ", mergedConfigs));
+        }
     }
 
     private static boolean isCollectionLogInvalid(int varbitValue) {
