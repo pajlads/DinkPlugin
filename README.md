@@ -18,6 +18,7 @@ This project was forked from UniversalDiscordNotifier, but has more features, re
 - [Achievement Diaries](#achievement-diary): Send a webhook message upon completing an achievement diary (with customizable difficulty threshold)
 - [Pet](#pet): Send a webhook message upon receiving a pet
 - [Speedrunning](#speedrunning): Send a webhook message upon completing a quest speedrun (with special configuration for personal best times)
+- [BA Gambles](#ba-gambles): Sends a webhook message upon receiving high level gambles from Barbarian Assault
 
 ## Other Setup
 
@@ -422,6 +423,35 @@ Note: `petName` is only included if the game sent it to your chat via untradeabl
     "currentTime": "1:22.20"
   },
   "type": "SPEEDRUN"
+}
+```
+</details>
+
+### BA Gambles:
+
+`%COUNT%` will be replaced with the high level gamble count
+
+`%LOOT%` will be replaced with the loot received from the gamble 
+(by default, this is included only in rare loot notifications)
+
+<details>
+  <summary>JSON for BA Gambles Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has reached %COUNT% high gambles",
+  "extra": {
+    "gambleCount": 500,
+    "items": [
+      {
+        "id": 3122,
+        "quantity": 1,
+        "priceEach": 35500,
+        "name": "Granite shield"
+      }
+    ]
+  },
+  "type": "BARBARIAN_ASSAULT_GAMBLE"
 }
 ```
 </details>
