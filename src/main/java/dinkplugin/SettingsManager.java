@@ -223,34 +223,21 @@ public class SettingsManager {
     private void handleImport(Map<String, String> map) {
         if (map == null) return;
 
-        Collection<String> oldPrimary = readDelimited(config.primaryWebhook()).collect(Collectors.toCollection(LinkedHashSet::new));
         AtomicInteger numUpdated = new AtomicInteger();
         map.forEach((key, value) -> {
             String prevValue = configManager.getConfiguration(CONFIG_GROUP, key);
             String newValue;
 
-            if ("discordWebhook".equals(key)) {
-                Collection<String> newPrimary = new LinkedHashSet<>(oldPrimary);
-                readDelimited(value).forEach(newPrimary::add);
-
-                if (newPrimary.size() > oldPrimary.size()) {
-                    newValue = String.join("\n", newPrimary);
-                } else {
-                    newValue = null;
-                }
-            } else if (key.endsWith("Webhook")) {
-                Collection<String> overrides = readDelimited(prevValue).collect(Collectors.toCollection(LinkedHashSet::new));
-                if (overrides.isEmpty()) {
-                    overrides.addAll(oldPrimary);
-                }
+            if (key.endsWith("Webhook")) {
+                Collection<String> urls = readDelimited(prevValue).collect(Collectors.toCollection(LinkedHashSet::new));
 
                 long added = readDelimited(value)
-                    .map(overrides::add)
+                    .map(urls::add)
                     .filter(Boolean::booleanValue)
                     .count();
 
                 if (added > 0) {
-                    newValue = String.join("\n", overrides);
+                    newValue = String.join("\n", urls);
                 } else {
                     newValue = null;
                 }
