@@ -17,7 +17,6 @@ import net.runelite.api.Varbits;
 import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
-import net.runelite.client.config.ConfigItemDescriptor;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +25,9 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -46,7 +47,7 @@ public class SettingsManager {
     private static final Collection<String> WEBHOOK_CONFIG_KEYS;
 
     private final Collection<String> ignoredNames = new HashSet<>();
-    private final Collection<String> allowedConfigKeys = new HashSet<>();
+    private final Map<String, Type> configValueTypes = new HashMap<>();
 
     private final Gson gson;
     private final Client client;
@@ -69,12 +70,8 @@ public class SettingsManager {
     @VisibleForTesting
     public void init() {
         setIgnoredNames(config.ignoredNames());
-        allowedConfigKeys.addAll(
-            configManager.getConfigDescriptor(config).getItems()
-                .stream()
-                .map(ConfigItemDescriptor::key)
-                .collect(Collectors.toSet())
-        );
+        configManager.getConfigDescriptor(config).getItems()
+            .forEach(item -> configValueTypes.put(item.key(), item.getType()));
     }
 
     void onCommand(CommandExecuted event) {
@@ -196,7 +193,7 @@ public class SettingsManager {
         Map<String, String> configMap = configManager.getConfigurationKeys(prefix)
             .stream()
             .map(prop -> prop.substring(prefix.length()))
-            .filter(allowedConfigKeys::contains)
+            .filter(configValueTypes::containsKey)
             .map(key -> Pair.of(key, configManager.getConfiguration(CONFIG_GROUP, key)))
             .filter(pair -> !(WEBHOOK_CONFIG_KEYS.contains(pair.getKey()) && StringUtils.isBlank(pair.getValue())))
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
@@ -240,7 +237,8 @@ public class SettingsManager {
         AtomicInteger numUpdated = new AtomicInteger();
         Collection<String> mergedConfigs = new TreeSet<>();
         map.forEach((key, value) -> {
-            if (!allowedConfigKeys.contains(key)) {
+            Type valueType = configValueTypes.get(key);
+            if (valueType == null) {
                 log.debug("Encountered unrecognized config mapping during import: {} = {}", key, value);
                 return;
             }
