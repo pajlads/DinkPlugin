@@ -141,8 +141,10 @@ public class DiaryNotifier extends BaseNotifier {
     }
 
     private void handle(String area, AchievementDiary.Difficulty difficulty) {
-        if (cooldownTicks.getAndSet(2) > 0)
+        if (cooldownTicks.getAndSet(2) > 0) {
+            log.debug("Skipping diary completion during cooldown: {} {}", difficulty, area);
             return;
+        }
 
         int total = getTotalCompleted();
         String player = Utils.getPlayerName(client);
