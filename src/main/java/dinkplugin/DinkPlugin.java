@@ -152,6 +152,7 @@ public class DinkPlugin extends Plugin {
                 break;
 
             case MESBOX:
+                diaryNotifier.onMessageBox(chatMessage);
                 gambleNotifier.onMesBoxNotification(chatMessage);
                 break;
 
