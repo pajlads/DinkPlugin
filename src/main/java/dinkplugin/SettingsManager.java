@@ -190,13 +190,24 @@ public class SettingsManager {
     @Synchronized
     private void exportConfig() {
         String prefix = CONFIG_GROUP + '.';
-        Map<String, String> configMap = configManager.getConfigurationKeys(prefix)
+        Map<String, Object> configMap = configManager.getConfigurationKeys(prefix)
             .stream()
             .map(prop -> prop.substring(prefix.length()))
-            .filter(configValueTypes::containsKey)
-            .map(key -> Pair.of(key, configManager.getConfiguration(CONFIG_GROUP, key)))
-            .filter(pair -> !(WEBHOOK_CONFIG_KEYS.contains(pair.getKey()) && StringUtils.isBlank(pair.getValue())))
+            .map(key -> Pair.of(key, configValueTypes.get(key)))
+            .filter(pair -> pair.getValue() != null)
+            .map(pair -> Pair.of(pair.getKey(), configManager.getConfiguration(CONFIG_GROUP, pair.getKey(), pair.getValue())))
+            .filter(pair -> {
+                // only serialize webhook urls if they are not blank
+                if (WEBHOOK_CONFIG_KEYS.contains(pair.getKey())) {
+                    Object value = pair.getValue();
+                    return value instanceof String && StringUtils.isNotBlank((String) value);
+                }
+
+                // always serialize everything else
+                return true;
+            })
             .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+
         Utils.copyToClipboard(gson.toJson(configMap))
             .thenRun(() -> plugin.addChatSuccess("Copied current configuration to clipboard"))
             .exceptionally(e -> {
