@@ -9,6 +9,7 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
+import net.runelite.client.config.Units;
 
 @ConfigGroup("dinkplugin")
 public interface DinkPluginConfig extends Config {
@@ -138,6 +139,7 @@ public interface DinkPluginConfig extends Config {
         position = 1001,
         section = advancedSection
     )
+    @Units(Units.MILLISECONDS)
     default int baseRetryDelay() {
         return 2000;
     }
@@ -149,6 +151,7 @@ public interface DinkPluginConfig extends Config {
         position = 1002,
         section = advancedSection
     )
+    @Units(Units.SECONDS)
     default int imageWriteTimeout() {
         return 30; // elevated from okhttp default of 10
     }
