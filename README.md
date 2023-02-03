@@ -65,7 +65,7 @@ After an import, if the dink plugin settings panel was open, simply close and op
 
 Note: There is no undo button for this command, so consider making a backup of your current Dink configuration by using the `::dinkexport` command explained above and saving that to a file on your computer.
 
-Warning: If you import override URLs for a notifier, this will result in the plugin no longer sending messages from that notifier to your old primary URLs.
+Warning: If you import override URLs for a notifier (that previously did not have any overrides), this will result in the plugin no longer sending messages from that notifier to your old primary URLs.
 As such, you can manually add your primary URLs to the newly populated override URL boxes so that notifications are still sent to the old primary URLs.
 
 ---
