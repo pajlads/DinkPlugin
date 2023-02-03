@@ -14,6 +14,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Singleton;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -81,8 +82,17 @@ public class DiaryNotifier extends BaseNotifier {
             }
 
             String area = matcher.group("area");
-            boolean found = DIARIES.values().stream().anyMatch(pair -> difficulty == pair.getRight() && pair.getLeft().equals(area));
-            if (found) {
+            Optional<Integer> found = DIARIES.entrySet().stream()
+                .filter(e -> e.getValue().getRight() == difficulty && e.getValue().getLeft().equals(area))
+                .map(Map.Entry::getKey)
+                .findAny();
+            if (found.isPresent()) {
+                int varbitId = found.get();
+                if (isComplete(varbitId, 2)) {
+                    diaryCompletionById.put(varbitId, 2);
+                } else {
+                    diaryCompletionById.put(varbitId, 1);
+                }
                 handle(area, difficulty);
             } else {
                 log.warn("Failed to match diary area: {}", area);
