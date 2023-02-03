@@ -20,6 +20,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
@@ -31,7 +32,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -188,7 +188,9 @@ public class SettingsManager {
         Map<String, String> configMap = configManager.getConfigurationKeys(prefix)
             .stream()
             .map(prop -> prop.substring(prefix.length()))
-            .collect(Collectors.toMap(Function.identity(), key -> configManager.getConfiguration(CONFIG_GROUP, key)));
+            .map(key -> Pair.of(key, configManager.getConfiguration(CONFIG_GROUP, key)))
+            .filter(pair -> !(WEBHOOK_CONFIG_KEYS.contains(pair.getKey()) && StringUtils.isBlank(pair.getValue())))
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
         Utils.copyToClipboard(gson.toJson(configMap))
             .thenRun(() -> plugin.addChatSuccess("Copied current configuration to clipboard"))
             .exceptionally(e -> {
