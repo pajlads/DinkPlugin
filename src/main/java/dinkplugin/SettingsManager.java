@@ -19,12 +19,16 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.util.ColorUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
@@ -226,7 +230,7 @@ public class SettingsManager {
                 }
 
                 try {
-                    return gson.<Map<String, String>>fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
+                    return gson.<Map<String, Object>>fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
                 } catch (Exception e) {
                     String warning = "Failed to parse config from clipboard";
                     log.warn(warning, e);
@@ -242,27 +246,40 @@ public class SettingsManager {
     }
 
     @Synchronized
-    private void handleImport(Map<String, String> map) {
+    private void handleImport(Map<String, Object> map) {
         if (map == null) return;
 
         AtomicInteger numUpdated = new AtomicInteger();
         Collection<String> mergedConfigs = new TreeSet<>();
-        map.forEach((key, value) -> {
+        map.forEach((key, rawValue) -> {
             Type valueType = configValueTypes.get(key);
             if (valueType == null) {
-                log.debug("Encountered unrecognized config mapping during import: {} = {}", key, value);
+                log.debug("Encountered unrecognized config mapping during import: {} = {}", key, rawValue);
                 return;
             }
 
-            String prevValue = configManager.getConfiguration(CONFIG_GROUP, key);
-            String newValue;
+            if (rawValue == null) {
+                log.debug("Encountered null value for config key: {}", key);
+                return;
+            }
+
+            Object value = convertTypeFromJson(valueType, rawValue);
+            if (value == null) {
+                log.debug("Encountered config value with incorrect type: {} = {}", key, rawValue);
+                return;
+            }
+
+            Object prevValue = configManager.getConfiguration(CONFIG_GROUP, key, valueType);
+            Object newValue;
 
             if (WEBHOOK_CONFIG_KEYS.contains(key) || "ignoredNames".equals(key)) {
                 // special case: multi-line configs that should be merged (rather than replaced)
-                Collection<String> lines = readDelimited(prevValue).collect(Collectors.toCollection(LinkedHashSet::new));
+                assert prevValue == null || prevValue instanceof String;
+                Collection<String> lines = readDelimited((String) prevValue).collect(Collectors.toCollection(LinkedHashSet::new));
 
                 int oldCount = lines.size();
-                long added = readDelimited(value)
+                assert value instanceof String;
+                long added = readDelimited((String) value)
                     .map(lines::add)
                     .filter(Boolean::booleanValue)
                     .count();
@@ -318,6 +335,57 @@ public class SettingsManager {
     private static boolean isPetLootInvalid(int varbitValue) {
         // LOOT_DROP_NOTIFICATIONS and UNTRADEABLE_LOOT_DROPS must both be set to 1 for reliable pet name parsing
         return varbitValue < 1;
+    }
+
+    @Nullable
+    private static Object convertTypeFromJson(@NotNull Type type, @NotNull Object in) {
+        if (in instanceof Boolean)
+            return type == boolean.class || type == Boolean.class ? in : null;
+
+        if (in instanceof Number) {
+            Number n = (Number) in;
+
+            if (type == int.class || type == Integer.class)
+                return n.intValue();
+
+            if (type == long.class || type == Long.class)
+                return n.longValue();
+
+            if (type == float.class || type == Float.class)
+                return n.floatValue();
+
+            if (type == double.class || type == Double.class)
+                return n.doubleValue();
+
+            if (type == byte.class || type == Byte.class)
+                return n.byteValue();
+
+            if (type == short.class || type == Short.class)
+                return n.shortValue();
+
+            return null;
+        }
+
+        if (in instanceof String) {
+            String s = (String) in;
+
+            if (type == String.class)
+                return s;
+
+            if (type == Color.class)
+                return ColorUtil.fromString(s);
+
+            if (type instanceof Class && ((Class<?>) type).isEnum()) {
+                try {
+                    // noinspection unchecked,rawtypes
+                    return Enum.valueOf((Class<? extends Enum>) type, s);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+
+        return null;
     }
 
     static {
