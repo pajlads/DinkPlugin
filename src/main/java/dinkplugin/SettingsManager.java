@@ -181,6 +181,7 @@ public class SettingsManager {
             .map(key -> Pair.of(key, configValueTypes.get(key)))
             .filter(pair -> pair.getValue() != null)
             .map(pair -> Pair.of(pair.getKey(), configManager.getConfiguration(CONFIG_GROUP, pair.getKey(), pair.getValue())))
+            .filter(pair -> pair.getValue() != null)
             .filter(pair -> {
                 // only serialize webhook urls if they are not blank
                 if (WEBHOOK_CONFIG_KEYS.contains(pair.getKey())) {
