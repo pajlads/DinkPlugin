@@ -88,10 +88,10 @@ public class DiaryNotifier extends BaseNotifier {
                 .findAny();
             if (found.isPresent()) {
                 int varbitId = found.get();
-                if (isComplete(varbitId, 2)) {
-                    diaryCompletionById.put(varbitId, 2);
-                } else {
+                if (isComplete(varbitId, 1)) {
                     diaryCompletionById.put(varbitId, 1);
+                } else {
+                    diaryCompletionById.put(varbitId, 2);
                 }
                 handle(area, difficulty);
             } else {
