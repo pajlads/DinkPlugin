@@ -14,16 +14,21 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Singleton;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static dinkplugin.domain.AchievementDiary.DIARIES;
 
 @Slf4j
 @Singleton
 public class DiaryNotifier extends BaseNotifier {
+    private static final Pattern COMPLETION_REGEX = Pattern.compile("Congratulations! You have completed all of the (?<difficulty>.+) tasks in the (?<area>.+) area");
     private final Map<Integer, Integer> diaryCompletionById = new ConcurrentHashMap<>();
     private final AtomicInteger initDelayTicks = new AtomicInteger();
+    private final AtomicInteger cooldownTicks = new AtomicInteger();
 
     @Override
     public boolean isEnabled() {
@@ -38,6 +43,7 @@ public class DiaryNotifier extends BaseNotifier {
     public void reset() {
         this.diaryCompletionById.clear();
         this.initDelayTicks.set(0);
+        this.cooldownTicks.set(0);
     }
 
     public void onGameState(GameStateChanged event) {
@@ -49,6 +55,7 @@ public class DiaryNotifier extends BaseNotifier {
         if (client.getGameState() != GameState.LOGGED_IN)
             return;
 
+        cooldownTicks.getAndUpdate(i -> Math.max(i - 1, 0));
         int ticks = initDelayTicks.getAndUpdate(i -> Math.max(i - 1, 0));
         if (ticks > 0) {
             if (ticks == 1) {
@@ -57,6 +64,39 @@ public class DiaryNotifier extends BaseNotifier {
         } else if (diaryCompletionById.size() < DIARIES.size() && super.isEnabled()) {
             // mark diary completions to be initialized later
             this.initDelayTicks.set(4);
+        }
+    }
+
+    public void onMessageBox(String message) {
+        if (!isEnabled()) return;
+
+        Matcher matcher = COMPLETION_REGEX.matcher(message);
+        if (matcher.find()) {
+            String difficultyStr = matcher.group("difficulty");
+            AchievementDiary.Difficulty difficulty;
+            try {
+                difficulty = AchievementDiary.Difficulty.valueOf(difficultyStr.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                log.warn("Failed to match diary difficulty: {}", difficultyStr);
+                return;
+            }
+
+            String area = matcher.group("area");
+            Optional<Integer> found = DIARIES.entrySet().stream()
+                .filter(e -> e.getValue().getRight() == difficulty && e.getValue().getLeft().equals(area))
+                .map(Map.Entry::getKey)
+                .findAny();
+            if (found.isPresent()) {
+                int varbitId = found.get();
+                if (isComplete(varbitId, 1)) {
+                    diaryCompletionById.put(varbitId, 1);
+                } else {
+                    diaryCompletionById.put(varbitId, 2);
+                }
+                handle(area, difficulty);
+            } else {
+                log.warn("Failed to match diary area: {}", area);
+            }
         }
     }
 
@@ -101,6 +141,11 @@ public class DiaryNotifier extends BaseNotifier {
     }
 
     private void handle(String area, AchievementDiary.Difficulty difficulty) {
+        if (cooldownTicks.getAndSet(2) > 0) {
+            log.debug("Skipping diary completion during cooldown: {} {}", difficulty, area);
+            return;
+        }
+
         int total = getTotalCompleted();
         String player = Utils.getPlayerName(client);
         String message = StringUtils.replaceEach(
