@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Major: Add Barbarian Assault high level gambling notifications. (#150)
+- Minor: Make time units of advanced settings more obvious in the user interface. (#158)
 - Minor: Clean up setting tooltips that stretched too wide, making them difficult to read. (#151)
 - Minor: Add warning when in-game kill count chat spam filter is enabled. (#154)
 - Minor: Include pet name in webhooks when available in chat via clan, collection log, or untradeable drop notifications. (#149, #153)
