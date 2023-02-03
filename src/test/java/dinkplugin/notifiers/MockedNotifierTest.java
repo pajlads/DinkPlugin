@@ -18,6 +18,8 @@ import net.runelite.api.WorldType;
 import net.runelite.api.vars.AccountType;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
+import net.runelite.client.config.ConfigDescriptor;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.http.api.RuneLiteAPI;
@@ -26,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.awt.Image;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -74,7 +77,10 @@ abstract class MockedNotifierTest extends MockedTestBase {
     protected DinkPlugin plugin = Mockito.spy(DinkPlugin.class);
 
     @Bind
-    protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(gson, client, clientThread, plugin, config, null));
+    protected ConfigManager configManager = Mockito.mock(ConfigManager.class);
+
+    @Bind
+    protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(gson, client, clientThread, plugin, config, configManager));
 
     @Bind
     protected DiscordMessageHandler messageHandler = Mockito.spy(new DiscordMessageHandler(gson, client, drawManager, httpClient, config, executor));
@@ -95,6 +101,10 @@ abstract class MockedNotifierTest extends MockedTestBase {
             callback.accept(TestImageUtil.getExample());
             return null;
         }).when(drawManager).requestNextFrameListener(any());
+
+        ConfigDescriptor configDescriptor = mock(ConfigDescriptor.class);
+        when(configManager.getConfigDescriptor(any())).thenReturn(configDescriptor);
+        when(configDescriptor.getItems()).thenReturn(Collections.emptyList());
 
         // init config mocks
         when(config.primaryWebhook()).thenReturn(PRIMARY_WEBHOOK_URL);
