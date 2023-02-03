@@ -1,6 +1,5 @@
 package dinkplugin;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dinkplugin.notifiers.CollectionNotifier;
@@ -19,16 +18,12 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.util.ColorUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,17 +33,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static dinkplugin.util.ConfigUtil.*;
 
 @Slf4j
 @Singleton
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class SettingsManager {
     private static final String CONFIG_GROUP = "dinkplugin";
-    private static final Pattern DELIM = Pattern.compile("[,;\\n]");
-    private static final Collection<String> WEBHOOK_CONFIG_KEYS;
 
     private final Collection<String> ignoredNames = new HashSet<>();
     private final Map<String, Type> configValueTypes = new HashMap<>();
@@ -167,13 +160,6 @@ public class SettingsManager {
         }
     }
 
-    private static Stream<String> readDelimited(String value) {
-        if (value == null) return Stream.empty();
-        return DELIM.splitAsStream(value)
-            .map(String::trim)
-            .filter(StringUtils::isNotEmpty);
-    }
-
     @Synchronized
     private void setIgnoredNames(String configValue) {
         ignoredNames.clear();
@@ -184,11 +170,6 @@ public class SettingsManager {
 
         // clear any outdated notifier state
         plugin.resetNotifiers();
-    }
-
-    private static boolean isKillCountFilterInvalid(int varbitValue) {
-        // spam filter must be disabled for kill count chat message
-        return varbitValue > 0;
     }
 
     @Synchronized
@@ -320,90 +301,5 @@ public class SettingsManager {
         if (!mergedConfigs.isEmpty()) {
             plugin.addChatSuccess("The following settings were merged (rather than being overwritten): " + String.join(", ", mergedConfigs));
         }
-    }
-
-    private static boolean isCollectionLogInvalid(int varbitValue) {
-        // we require chat notification for collection log notifier
-        return varbitValue != 1 && varbitValue != 3;
-    }
-
-    private static boolean isRepeatPopupInvalid(int varbitValue) {
-        // we discourage repeat notifications for combat task notifier if unintentional
-        return varbitValue > 0;
-    }
-
-    private static boolean isPetLootInvalid(int varbitValue) {
-        // LOOT_DROP_NOTIFICATIONS and UNTRADEABLE_LOOT_DROPS must both be set to 1 for reliable pet name parsing
-        return varbitValue < 1;
-    }
-
-    @Nullable
-    private static Object convertTypeFromJson(@NotNull Type type, @NotNull Object in) {
-        if (in instanceof Boolean)
-            return type == boolean.class || type == Boolean.class ? in : null;
-
-        if (in instanceof Number) {
-            Number n = (Number) in;
-
-            if (type == int.class || type == Integer.class)
-                return n.intValue();
-
-            if (type == long.class || type == Long.class)
-                return n.longValue();
-
-            if (type == float.class || type == Float.class)
-                return n.floatValue();
-
-            if (type == double.class || type == Double.class)
-                return n.doubleValue();
-
-            if (type == byte.class || type == Byte.class)
-                return n.byteValue();
-
-            if (type == short.class || type == Short.class)
-                return n.shortValue();
-
-            return null;
-        }
-
-        if (in instanceof String) {
-            String s = (String) in;
-
-            if (type == String.class)
-                return s;
-
-            if (type == Color.class)
-                return ColorUtil.fromString(s);
-
-            if (type instanceof Class && ((Class<?>) type).isEnum()) {
-                try {
-                    // noinspection unchecked,rawtypes
-                    return Enum.valueOf((Class<? extends Enum>) type, s);
-                } catch (Exception e) {
-                    return null;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    static {
-        WEBHOOK_CONFIG_KEYS = ImmutableSet.of(
-            "discordWebhook",
-            "collectionWebhook",
-            "petWebhook",
-            "levelWebhook",
-            "lootWebhook",
-            "deathWebhook",
-            "slayerWebhook",
-            "questWebhook",
-            "clueWebhook",
-            "speedrunWebhook",
-            "killCountWebhook",
-            "combatTaskWebhook",
-            "diaryWebhook",
-            "gambleWebhook"
-        );
     }
 }
