@@ -95,6 +95,31 @@ class DiaryNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyKaramjaMessageBox() {
+        // initially many diary completions
+        when(client.getVarbitValue(anyInt())).thenReturn(1);
+        int total = AchievementDiary.DIARIES.size() - 3;
+
+        // perform enough ticks to trigger diary initialization
+        IntStream.range(0, 16).forEach(i -> notifier.onTick());
+
+        // trigger diary completion
+        notifier.onMessageBox("Congratulations! You have completed all of the hard tasks in the Karamja area. Speak to Pirate Jackie the Fruit to claim your reward.");
+
+        // verify notification message
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Karamja", total + 1))
+                .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1))
+                .type(NotificationType.ACHIEVEMENT_DIARY)
+                .playerName(PLAYER_NAME)
+                .build()
+        );
+    }
+
+    @Test
     void testIgnoreKaramja() {
         // initially 0 diary completions
         when(client.getVarbitValue(anyInt())).thenReturn(0);
