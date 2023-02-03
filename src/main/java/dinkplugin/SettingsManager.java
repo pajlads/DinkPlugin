@@ -246,7 +246,8 @@ public class SettingsManager {
                     newValue = String.join("\n", lines);
 
                     if (oldCount > 0) {
-                        mergedConfigs.add(key);
+                        String displayName = "discordWebhook".equals(key) ? "primaryWebhook" : key;
+                        mergedConfigs.add(displayName);
                     }
                 } else {
                     newValue = null;
