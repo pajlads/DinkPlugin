@@ -245,7 +245,7 @@ public class SettingsManager {
                 if (added > 0) {
                     newValue = String.join("\n", lines);
 
-                    if (oldCount == 0) {
+                    if (oldCount > 0) {
                         mergedConfigs.add(key);
                     }
                 } else {
