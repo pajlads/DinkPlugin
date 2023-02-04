@@ -82,18 +82,19 @@ public class DiaryNotifier extends BaseNotifier {
             }
 
             String area = matcher.group("area").trim();
-            Optional<Map.Entry<Integer, Pair<String, AchievementDiary.Difficulty>>> found = DIARIES.entrySet().stream()
+            Optional<Pair<Integer, String>> found = DIARIES.entrySet().stream()
                 .filter(e -> e.getValue().getRight() == difficulty && Utils.containsEither(e.getValue().getLeft(), area))
-                .findAny();
+                .findAny()
+                .map(entry -> Pair.of(entry.getKey(), entry.getValue().getLeft()));
             if (found.isPresent()) {
-                Map.Entry<Integer, Pair<String, AchievementDiary.Difficulty>> entry = found.get();
+                Pair<Integer, String> entry = found.get();
                 int varbitId = entry.getKey();
                 if (isComplete(varbitId, 1)) {
                     diaryCompletionById.put(varbitId, 1);
                 } else {
                     diaryCompletionById.put(varbitId, 2);
                 }
-                handle(entry.getValue().getLeft(), difficulty);
+                handle(entry.getValue(), difficulty);
             } else {
                 log.warn("Failed to match diary area: {}", area);
             }
