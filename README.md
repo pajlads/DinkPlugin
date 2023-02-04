@@ -49,9 +49,26 @@ Some notifiers require in-game settings to be configured to send chat messages u
 
 Dink allows you to export your current plugin configuration to the clipboard via the `::dinkexport` chat command.
 
-This export includes *every* setting from individual notifiers to the webhook URLs.
+You can share this produced JSON to friends who want to send similarly configured messages.
 
-You can share this produced JSON to friends who want to send similarly configured messages to the same webhook URLs.
+This export includes settings across all of the notifiers, but omits webhook URLs. If you also want to include webhook URLs in the export, you can use the `all` parameter to the command: `::dinkexport all`.
+
+If you *only* want to export the webhook URLs, run the `::dinkexport webhooks` chat command.
+
+You can export just the settings for select notifiers.  
+Simply run: `::dinkexport <notifier section header name without spaces>`.  
+For example: `::dinkexport pet` or `::dinkexport collectionlog`.
+
+#### Examples
+ - Export notifier settings, primary webhook URLs & webhook override URLs  
+   `::dinkexport all`
+ - Export Slayer & BA Gambles Notifier settings  
+   `::dinkexport slayer bagambles`
+ - Export webhook overrides only  
+   `::dinkexport webhookoverrides`
+ - Export all webhooks & the Levels notifier settings:  
+   `::dinkexport webhooks levels`
+
 
 ### Import Configuration via `::dinkimport`
 
@@ -63,7 +80,7 @@ If you would like all settings overwritten rather than merged during import, sim
 
 After an import, if the dink plugin settings panel was open, simply close and open it for the updated configuration to be reflected in the user interface.
 
-Note: There is no undo button for this command, so consider making a backup of your current Dink configuration by using the `::dinkexport` command explained above and saving that to a file on your computer.
+Note: There is no undo button for this command, so consider making a backup of your current Dink configuration by using the `::dinkexport all` command explained above and saving that to a file on your computer.
 
 Warning: If you import override URLs for a notifier (that previously did not have any overrides), this will result in the plugin no longer sending messages from that notifier to your old primary URLs.
 As such, you can manually add your primary URLs to the newly populated override URL boxes so that notifications are still sent to the old primary URLs.

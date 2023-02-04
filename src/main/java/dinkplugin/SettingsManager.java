@@ -20,6 +20,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static dinkplugin.util.ConfigUtil.*;
@@ -44,9 +46,18 @@ public class SettingsManager {
     private static final String CONFIG_GROUP = "dinkplugin";
 
     /**
-     * Maps our setting keys to their type for safe serialization & deserialization
+     * Maps our setting keys to their type for safe serialization and deserialization.
      */
     private final Map<String, Type> configValueTypes = new HashMap<>();
+
+    /**
+     * Maps section names to the corresponding config item keys to allow for selective export.
+     */
+    private final Map<String, Collection<String>> keysBySection = new HashMap<>();
+
+    /**
+     * User-specified RSNs that should not trigger webhook notifications.
+     */
     private final Collection<String> ignoredNames = new HashSet<>();
 
     private final Gson gson;
@@ -70,16 +81,52 @@ public class SettingsManager {
     @VisibleForTesting
     public void init() {
         setIgnoredNames(config.ignoredNames());
-        configManager.getConfigDescriptor(config).getItems()
-            .forEach(item -> configValueTypes.put(item.key(), item.getType()));
+        configManager.getConfigDescriptor(config).getItems().forEach(item -> {
+            String key = item.key();
+            configValueTypes.put(key, item.getType());
+
+            String section = item.getItem().section();
+            if (StringUtils.isNotEmpty(section)) {
+                keysBySection.computeIfAbsent(
+                    section.toLowerCase().replace(" ", ""),
+                    s -> new HashSet<>()
+                ).add(key);
+            }
+        });
     }
 
     void onCommand(CommandExecuted event) {
         String cmd = event.getCommand();
-        if ("dinkimport".equalsIgnoreCase(cmd)) {
+        if ("DinkImport".equalsIgnoreCase(cmd)) {
             importConfig();
-        } else if ("dinkexport".equalsIgnoreCase(cmd)) {
-            exportConfig();
+        } else if ("DinkExport".equalsIgnoreCase(cmd)) {
+            String[] args = event.getArguments();
+
+            Predicate<String> includeKey;
+            if (args == null || args.length == 0) {
+                includeKey = k -> !WEBHOOK_CONFIG_KEYS.contains(k);
+            } else {
+                includeKey = k -> false;
+
+                for (String arg : args) {
+                    if ("all".equalsIgnoreCase(arg)) {
+                        includeKey = k -> true;
+                        break;
+                    } else if ("webhooks".equalsIgnoreCase(arg)) {
+                        includeKey = includeKey.or(WEBHOOK_CONFIG_KEYS::contains);
+                    } else {
+                        Collection<String> sectionKeys = keysBySection.get(arg.toLowerCase());
+                        if (sectionKeys != null) {
+                            includeKey = includeKey.or(sectionKeys::contains);
+                        } else {
+                            plugin.addChatWarning(String.format("Failed to identify config section to export: \"%s\"", arg));
+                            return;
+                        }
+                    }
+                }
+            }
+
+            exportConfig(includeKey);
         }
     }
 
@@ -180,11 +227,12 @@ public class SettingsManager {
      * which is copied to the user's clipboard in string form
      */
     @Synchronized
-    private void exportConfig() {
+    private void exportConfig(@NotNull Predicate<String> exportKey) {
         String prefix = CONFIG_GROUP + '.';
         Map<String, Object> configMap = configManager.getConfigurationKeys(prefix)
             .stream()
             .map(prop -> prop.substring(prefix.length()))
+            .filter(exportKey)
             .map(key -> Pair.of(key, configValueTypes.get(key)))
             .filter(pair -> pair.getValue() != null)
             .map(pair -> Pair.of(pair.getKey(), configManager.getConfiguration(CONFIG_GROUP, pair.getKey(), pair.getValue())))
