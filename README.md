@@ -49,25 +49,26 @@ Some notifiers require in-game settings to be configured to send chat messages u
 
 Dink allows you to export your current plugin configuration to the clipboard via the `::dinkexport` chat command.
 
-This export includes settings across all of the notifiers. You can share this produced JSON to friends who want to send similarly configured messages.
+You can share this produced JSON to friends who want to send similarly configured messages.
 
-If you want to include webhook URLs in the export, run the `::dinkexport all` chat command.
+This export includes settings across all of the notifiers, but omits webhook URLs. If you also want to include webhook URLs in the export, you can use the `all` parameter to the command: `::dinkexport all`.
 
-Alternatively, if you *only* want to export the webhook URLs, run the `::dinkexport webhooks` chat command.
+If you *only* want to export the webhook URLs, run the `::dinkexport webhooks` chat command.
 
-In addition, you can export just the settings for select notifiers.  
+You can export just the settings for select notifiers.  
 Simply run: `::dinkexport <notifier section header name without spaces>`.  
 For example: `::dinkexport pet` or `::dinkexport collectionlog`.
 
-Further, you can combine arguments to export specific sets of settings. For example:  
-*Export Slayer & BA Gambles notifiers*: `::dinkexport slayer bagambles`  
-*Export webhook overrides only*: `::dinkexport WebhookOverrides`  
-*Export all webhooks & Levels notifier*: `::dinkexport webhooks levels`
+#### Examples
+ - Export notifier settings, primary webhook URLs & webhook override URLs  
+   `::dinkexport all`
+ - Export Slayer & BA Gambles Notifier settings  
+   `::dinkexport slayer bagambles`
+ - Export webhook overrides only  
+   `::dinkexport webhookoverrides`
+ - Export all webhooks & the Levels notifier settings:  
+   `::dinkexport webhooks levels`
 
-#### Available selectors:
- - `all`: Export everything
- - `webhooks`: Export primary webhook URLs & webhook overrides
- - `collectionlog`, `pet`, `levels`, `loot`, etc.: Export the settings of one notifier (syntax is: section header with spaces removed)
 
 ### Import Configuration via `::dinkimport`
 
