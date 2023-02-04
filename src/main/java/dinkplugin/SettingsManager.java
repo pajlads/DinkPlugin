@@ -20,6 +20,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static dinkplugin.util.ConfigUtil.*;
@@ -76,10 +78,20 @@ public class SettingsManager {
 
     void onCommand(CommandExecuted event) {
         String cmd = event.getCommand();
-        if ("dinkimport".equalsIgnoreCase(cmd)) {
+        if ("DinkImport".equalsIgnoreCase(cmd)) {
             importConfig();
-        } else if ("dinkexport".equalsIgnoreCase(cmd)) {
-            exportConfig();
+        } else if ("DinkExport".equalsIgnoreCase(cmd)) {
+            String[] args = event.getArguments();
+            String arg = args != null && args.length > 0 ? args[0] : null;
+
+            Predicate<String> includeKey;
+            if ("all".equalsIgnoreCase(arg)) {
+                includeKey = k -> true;
+            } else {
+                includeKey = k -> !WEBHOOK_CONFIG_KEYS.contains(k);
+            }
+
+            exportConfig(includeKey);
         }
     }
 
@@ -180,11 +192,12 @@ public class SettingsManager {
      * which is copied to the user's clipboard in string form
      */
     @Synchronized
-    private void exportConfig() {
+    private void exportConfig(@NotNull Predicate<String> exportKey) {
         String prefix = CONFIG_GROUP + '.';
         Map<String, Object> configMap = configManager.getConfigurationKeys(prefix)
             .stream()
             .map(prop -> prop.substring(prefix.length()))
+            .filter(exportKey)
             .map(key -> Pair.of(key, configValueTypes.get(key)))
             .filter(pair -> pair.getValue() != null)
             .map(pair -> Pair.of(pair.getKey(), configManager.getConfiguration(CONFIG_GROUP, pair.getKey(), pair.getValue())))
