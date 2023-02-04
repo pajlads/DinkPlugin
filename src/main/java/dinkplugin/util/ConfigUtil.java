@@ -20,6 +20,14 @@ public class ConfigUtil {
 
     private final Pattern DELIM = Pattern.compile("[,;\\n]");
 
+    /**
+     * Set of our config keys that correspond to webhook URL lists.
+     * <p>
+     * These are used in {@link dinkplugin.SettingsManager} for special logic
+     * to merge the previous value with the new value during config imports.
+     *
+     * @see dinkplugin.DinkPluginConfig
+     */
     public final Collection<String> WEBHOOK_CONFIG_KEYS = ImmutableSet.of(
         "discordWebhook",
         "collectionWebhook",

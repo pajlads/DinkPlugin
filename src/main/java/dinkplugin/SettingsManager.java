@@ -43,8 +43,11 @@ import static dinkplugin.util.ConfigUtil.*;
 public class SettingsManager {
     private static final String CONFIG_GROUP = "dinkplugin";
 
-    private final Collection<String> ignoredNames = new HashSet<>();
+    /**
+     * Maps our setting keys to their type for safe serialization & deserialization
+     */
     private final Map<String, Type> configValueTypes = new HashMap<>();
+    private final Collection<String> ignoredNames = new HashSet<>();
 
     private final Gson gson;
     private final Client client;
@@ -172,6 +175,10 @@ public class SettingsManager {
         plugin.resetNotifiers();
     }
 
+    /**
+     * Exports the full Dink config to a JSON map, excluding empty lists,
+     * which is copied to the user's clipboard in string form
+     */
     @Synchronized
     private void exportConfig() {
         String prefix = CONFIG_GROUP + '.';
@@ -202,6 +209,9 @@ public class SettingsManager {
             });
     }
 
+    /**
+     * Imports a Dink JSON config export from the user's clipboard
+     */
     @Synchronized
     private void importConfig() {
         Utils.readClipboard()
