@@ -3,6 +3,7 @@ package dinkplugin.util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
@@ -19,7 +20,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
+import javax.swing.SwingUtilities;
 import java.awt.Color;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,11 +33,13 @@ import java.io.Reader;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
+@Slf4j
 @UtilityClass
 public class Utils {
 
     public static final String WIKI_IMG_BASE_URL = "https://oldschool.runescape.wiki/images/";
 
+    public final Color GREEN = ColorUtil.fromHex("006c4c"); // dark shade of PINK in CIELCh_uv color space
     public final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
     public final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
 
@@ -84,6 +92,37 @@ public class Utils {
             MediaType type = part.body().contentType();
             return type != null && "image".equals(type.type());
         });
+    }
+
+    public CompletableFuture<String> readClipboard() {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                String data = (String) clipboard.getData(DataFlavor.stringFlavor);
+                future.complete(data);
+            } catch (Exception e) {
+                log.warn("Failed to read from clipboard", e);
+                future.completeExceptionally(e);
+            }
+        });
+        return future;
+    }
+
+    public CompletableFuture<Void> copyToClipboard(String text) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        SwingUtilities.invokeLater(() -> {
+            try {
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                StringSelection content = new StringSelection(text);
+                clipboard.setContents(content, content);
+                future.complete(null);
+            } catch (Exception e) {
+                log.warn("Failed to copy to clipboard", e);
+                future.completeExceptionally(e);
+            }
+        });
+        return future;
     }
 
     public <T> CompletableFuture<T> readJson(@NotNull OkHttpClient httpClient, @NotNull Gson gson, @NotNull String url, @NotNull TypeToken<T> type) {

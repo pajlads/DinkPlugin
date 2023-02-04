@@ -1,5 +1,7 @@
 package dinkplugin;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
@@ -11,32 +13,48 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import static dinkplugin.util.ConfigUtil.*;
 
 @Slf4j
 @Singleton
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class SettingsManager {
     private static final String CONFIG_GROUP = "dinkplugin";
-    private static final Pattern DELIM = Pattern.compile("[,;\\n]");
 
+    /**
+     * Maps our setting keys to their type for safe serialization & deserialization
+     */
+    private final Map<String, Type> configValueTypes = new HashMap<>();
     private final Collection<String> ignoredNames = new HashSet<>();
 
+    private final Gson gson;
     private final Client client;
     private final ClientThread clientThread;
     private final DinkPlugin plugin;
     private final DinkPluginConfig config;
+    private final ConfigManager configManager;
 
     /**
      * Check whether a username is not on the configured ignore list.
@@ -52,6 +70,17 @@ public class SettingsManager {
     @VisibleForTesting
     public void init() {
         setIgnoredNames(config.ignoredNames());
+        configManager.getConfigDescriptor(config).getItems()
+            .forEach(item -> configValueTypes.put(item.key(), item.getType()));
+    }
+
+    void onCommand(CommandExecuted event) {
+        String cmd = event.getCommand();
+        if ("dinkimport".equalsIgnoreCase(cmd)) {
+            importConfig();
+        } else if ("dinkexport".equalsIgnoreCase(cmd)) {
+            exportConfig();
+        }
     }
 
     void onConfigChanged(ConfigChanged event) {
@@ -134,13 +163,6 @@ public class SettingsManager {
         }
     }
 
-    private Stream<String> readDelimited(String value) {
-        if (value == null) return Stream.empty();
-        return DELIM.splitAsStream(value)
-            .map(String::trim)
-            .filter(StringUtils::isNotEmpty);
-    }
-
     @Synchronized
     private void setIgnoredNames(String configValue) {
         ignoredNames.clear();
@@ -153,23 +175,142 @@ public class SettingsManager {
         plugin.resetNotifiers();
     }
 
-    private static boolean isKillCountFilterInvalid(int varbitValue) {
-        // spam filter must be disabled for kill count chat message
-        return varbitValue > 0;
+    /**
+     * Exports the full Dink config to a JSON map, excluding empty lists,
+     * which is copied to the user's clipboard in string form
+     */
+    @Synchronized
+    private void exportConfig() {
+        String prefix = CONFIG_GROUP + '.';
+        Map<String, Object> configMap = configManager.getConfigurationKeys(prefix)
+            .stream()
+            .map(prop -> prop.substring(prefix.length()))
+            .map(key -> Pair.of(key, configValueTypes.get(key)))
+            .filter(pair -> pair.getValue() != null)
+            .map(pair -> Pair.of(pair.getKey(), configManager.getConfiguration(CONFIG_GROUP, pair.getKey(), pair.getValue())))
+            .filter(pair -> pair.getValue() != null)
+            .filter(pair -> {
+                // only serialize webhook urls if they are not blank
+                if (WEBHOOK_CONFIG_KEYS.contains(pair.getKey())) {
+                    Object value = pair.getValue();
+                    return value instanceof String && StringUtils.isNotBlank((String) value);
+                }
+
+                // always serialize everything else
+                return true;
+            })
+            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+
+        Utils.copyToClipboard(gson.toJson(configMap))
+            .thenRun(() -> plugin.addChatSuccess("Copied current configuration to clipboard"))
+            .exceptionally(e -> {
+                plugin.addChatWarning("Failed to copy config to clipboard");
+                return null;
+            });
     }
 
-    private static boolean isCollectionLogInvalid(int varbitValue) {
-        // we require chat notification for collection log notifier
-        return varbitValue != 1 && varbitValue != 3;
+    /**
+     * Imports a Dink JSON config export from the user's clipboard
+     */
+    @Synchronized
+    private void importConfig() {
+        Utils.readClipboard()
+            .thenApplyAsync(json -> {
+                if (json == null || json.isEmpty()) {
+                    plugin.addChatWarning("Clipboard was empty");
+                    return null;
+                }
+
+                try {
+                    return gson.<Map<String, Object>>fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
+                } catch (Exception e) {
+                    String warning = "Failed to parse config from clipboard";
+                    log.warn(warning, e);
+                    plugin.addChatWarning(warning);
+                    return null;
+                }
+            })
+            .thenAcceptAsync(this::handleImport)
+            .exceptionally(e -> {
+                plugin.addChatWarning("Failed to read clipboard");
+                return null;
+            });
     }
 
-    private static boolean isRepeatPopupInvalid(int varbitValue) {
-        // we discourage repeat notifications for combat task notifier if unintentional
-        return varbitValue > 0;
-    }
+    @Synchronized
+    private void handleImport(Map<String, Object> map) {
+        if (map == null) return;
 
-    private static boolean isPetLootInvalid(int varbitValue) {
-        // LOOT_DROP_NOTIFICATIONS and UNTRADEABLE_LOOT_DROPS must both be set to 1 for reliable pet name parsing
-        return varbitValue < 1;
+        AtomicInteger numUpdated = new AtomicInteger();
+        Collection<String> mergedConfigs = new TreeSet<>();
+        map.forEach((key, rawValue) -> {
+            Type valueType = configValueTypes.get(key);
+            if (valueType == null) {
+                log.debug("Encountered unrecognized config mapping during import: {} = {}", key, rawValue);
+                return;
+            }
+
+            if (rawValue == null) {
+                log.debug("Encountered null value for config key: {}", key);
+                return;
+            }
+
+            Object value = convertTypeFromJson(valueType, rawValue);
+            if (value == null) {
+                log.debug("Encountered config value with incorrect type: {} = {}", key, rawValue);
+                return;
+            }
+
+            Object prevValue = configManager.getConfiguration(CONFIG_GROUP, key, valueType);
+            Object newValue;
+
+            if (WEBHOOK_CONFIG_KEYS.contains(key) || "ignoredNames".equals(key)) {
+                // special case: multi-line configs that should be merged (rather than replaced)
+                assert prevValue == null || prevValue instanceof String;
+                Collection<String> lines = readDelimited((String) prevValue).collect(Collectors.toCollection(LinkedHashSet::new));
+
+                int oldCount = lines.size();
+                assert value instanceof String;
+                long added = readDelimited((String) value)
+                    .map(lines::add)
+                    .filter(Boolean::booleanValue)
+                    .count();
+
+                if (added > 0) {
+                    newValue = String.join("\n", lines);
+
+                    if (oldCount > 0) {
+                        String displayName = "discordWebhook".equals(key) ? "primaryWebhook" : key;
+                        mergedConfigs.add(displayName);
+                    }
+                } else {
+                    newValue = null;
+                }
+            } else {
+                if (Objects.equals(value, prevValue)) {
+                    newValue = null;
+                } else {
+                    newValue = value;
+                }
+            }
+
+            if (newValue != null) {
+                configManager.setConfiguration(CONFIG_GROUP, key, newValue);
+                numUpdated.incrementAndGet();
+            }
+        });
+
+        plugin.addChatSuccess(
+            String.format(
+                "Updated %d config settings (from %d total specified in import). " +
+                    "Please close and open the plugin settings panel for these changes to be visually reflected.",
+                numUpdated.get(),
+                map.size()
+            )
+        );
+
+        if (!mergedConfigs.isEmpty()) {
+            plugin.addChatSuccess("The following settings were merged (rather than being overwritten): " + String.join(", ", mergedConfigs));
+        }
     }
 }
