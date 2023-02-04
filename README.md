@@ -45,7 +45,7 @@ Some notifiers require in-game settings to be configured to send chat messages u
 
 ## Chat Commands
 
-### Export Current Configuration via `::DinkExport`
+### Export Current Configuration via `::dinkexport`
 
 Dink allows you to export your current plugin configuration to the clipboard via the `::dinkexport` chat command.
 
@@ -56,8 +56,8 @@ If you want to include webhook URLs in the export, run the `::dinkexport all` ch
 Alternatively, if you *only* want to export the webhook URLs, run the `::dinkexport webhooks` chat command.
 
 In addition, you can export just the settings for select notifiers.  
-Simply run: `::DinkExport <Notifier Section Header Name Without Space>`.  
-For example: `::DinkExport Pet` or `::DinkExport CollectionLog`.
+Simply run: `::dinkexport <notifier section header name without spaces>`.  
+For example: `::dinkexport pet` or `::dinkexport collectionlog`.
 
 Further, you can combine arguments to export specific sets of settings. For example:  
 *Export Slayer & BA Gambles notifiers*: `::dinkexport slayer bagambles`  
@@ -69,7 +69,7 @@ Further, you can combine arguments to export specific sets of settings. For exam
  - `webhooks`: Export primary webhook URLs & webhook overrides
  - `collectionlog`, `pet`, `levels`, `loot`, etc.: Export the settings of one notifier (syntax is: section header with spaces removed)
 
-### Import Configuration via `::DinkImport`
+### Import Configuration via `::dinkimport`
 
 With the output of the above command (`::dinkexport`) copied to your clipboard, you can merge these settings with your own via the `::dinkimport` chat command.
 
