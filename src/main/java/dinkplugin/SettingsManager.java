@@ -101,23 +101,29 @@ public class SettingsManager {
             importConfig();
         } else if ("DinkExport".equalsIgnoreCase(cmd)) {
             String[] args = event.getArguments();
-            String arg = args != null && args.length > 0 ? args[0] : null;
 
             Predicate<String> includeKey;
-            if ("all".equalsIgnoreCase(arg)) {
-                includeKey = k -> true;
-            } else if ("webhooks".equalsIgnoreCase(arg)) {
-                includeKey = WEBHOOK_CONFIG_KEYS::contains;
-            } else if (StringUtils.isNotBlank(arg)) {
-                Collection<String> sectionKeys = keysBySection.get(arg.toLowerCase());
-                if (sectionKeys != null) {
-                    includeKey = sectionKeys::contains;
-                } else {
-                    plugin.addChatWarning("Failed to identify config section to export");
-                    return;
-                }
-            } else {
+            if (args == null || args.length == 0) {
                 includeKey = k -> !WEBHOOK_CONFIG_KEYS.contains(k);
+            } else {
+                includeKey = k -> false;
+
+                for (String arg : args) {
+                    if ("all".equalsIgnoreCase(arg)) {
+                        includeKey = k -> true;
+                        break;
+                    } else if ("webhooks".equalsIgnoreCase(arg)) {
+                        includeKey = includeKey.or(WEBHOOK_CONFIG_KEYS::contains);
+                    } else {
+                        Collection<String> sectionKeys = keysBySection.get(arg.toLowerCase());
+                        if (sectionKeys != null) {
+                            includeKey = includeKey.or(sectionKeys::contains);
+                        } else {
+                            plugin.addChatWarning(String.format("Failed to identify config section to export: \"%s\"", arg));
+                            return;
+                        }
+                    }
+                }
             }
 
             exportConfig(includeKey);
