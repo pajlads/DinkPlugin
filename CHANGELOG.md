@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.3.0
+
 - Major: Add Barbarian Assault high level gambling notifications. (#150)
 - Minor: Add plugin config export and import chat commands. (#155, #160)
 - Minor: Make time units of advanced settings more obvious in the user interface. (#158)
