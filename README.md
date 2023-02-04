@@ -60,7 +60,7 @@ Simply run: `::DinkExport <Notifier Section Header Name Without Space>`.
 For example: `::DinkExport Pet` or `::DinkExport CollectionLog`.
 
 Further, you can combine arguments to export specific sets of settings. For example:  
-*Export Slayer & BA Gambles notifiers*: `::dinkexport bagambles slayer`  
+*Export Slayer & BA Gambles notifiers*: `::dinkexport slayer bagambles`  
 *Export webhook overrides only*: `::dinkexport WebhookOverrides`  
 *Export all webhooks & Levels notifier*: `::dinkexport webhooks levels`
 
