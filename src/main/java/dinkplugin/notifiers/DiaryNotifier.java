@@ -81,19 +81,20 @@ public class DiaryNotifier extends BaseNotifier {
                 return;
             }
 
-            String area = matcher.group("area");
-            Optional<Integer> found = DIARIES.entrySet().stream()
-                .filter(e -> e.getValue().getRight() == difficulty && e.getValue().getLeft().equals(area))
-                .map(Map.Entry::getKey)
-                .findAny();
+            String area = matcher.group("area").trim();
+            Optional<Pair<Integer, String>> found = DIARIES.entrySet().stream()
+                .filter(e -> e.getValue().getRight() == difficulty && Utils.containsEither(e.getValue().getLeft(), area))
+                .findAny()
+                .map(entry -> Pair.of(entry.getKey(), entry.getValue().getLeft()));
             if (found.isPresent()) {
-                int varbitId = found.get();
+                Pair<Integer, String> entry = found.get();
+                int varbitId = entry.getKey();
                 if (isComplete(varbitId, 1)) {
                     diaryCompletionById.put(varbitId, 1);
                 } else {
                     diaryCompletionById.put(varbitId, 2);
                 }
-                handle(area, difficulty);
+                handle(entry.getValue(), difficulty);
             } else {
                 log.warn("Failed to match diary area: {}", area);
             }
@@ -188,7 +189,7 @@ public class DiaryNotifier extends BaseNotifier {
                 diaryCompletionById.put(id, value);
             }
         }
-        log.info("Finished initializing current diary completions: {} out of {}", getTotalCompleted(), diaryCompletionById.size());
+        log.debug("Finished initializing current diary completions: {} out of {}", getTotalCompleted(), diaryCompletionById.size());
     }
 
     private static boolean isComplete(int id, int value) {
