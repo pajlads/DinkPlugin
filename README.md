@@ -50,6 +50,7 @@ Some notifiers require in-game settings to be configured to send chat messages u
 Dink allows you to export your current plugin configuration to the clipboard via the `::dinkexport` chat command.
 
 This export includes settings across all of the notifiers. If you want to include webhook URLs in the export, run the `::dinkexport all` chat command.
+Alternatively, if you *only* want to export the webhook URLs, run the `::dinkexport webhooks` chat command.
 
 You can share this produced JSON to friends who want to send similarly configured messages.
 

@@ -46,9 +46,18 @@ public class SettingsManager {
     private static final String CONFIG_GROUP = "dinkplugin";
 
     /**
-     * Maps our setting keys to their type for safe serialization & deserialization
+     * Maps our setting keys to their type for safe serialization and deserialization.
      */
     private final Map<String, Type> configValueTypes = new HashMap<>();
+
+    /**
+     * Maps section names to the corresponding config item keys to allow for selective export.
+     */
+    private final Map<String, Collection<String>> keysBySection = new HashMap<>();
+
+    /**
+     * User-specified RSNs that should not trigger webhook notifications.
+     */
     private final Collection<String> ignoredNames = new HashSet<>();
 
     private final Gson gson;
@@ -72,8 +81,18 @@ public class SettingsManager {
     @VisibleForTesting
     public void init() {
         setIgnoredNames(config.ignoredNames());
-        configManager.getConfigDescriptor(config).getItems()
-            .forEach(item -> configValueTypes.put(item.key(), item.getType()));
+        configManager.getConfigDescriptor(config).getItems().forEach(item -> {
+            String key = item.key();
+            configValueTypes.put(key, item.getType());
+
+            String section = item.getItem().section();
+            if (StringUtils.isNotEmpty(section)) {
+                keysBySection.computeIfAbsent(
+                    section.toLowerCase().replace(" ", ""),
+                    s -> new HashSet<>()
+                ).add(key);
+            }
+        });
     }
 
     void onCommand(CommandExecuted event) {
@@ -87,6 +106,16 @@ public class SettingsManager {
             Predicate<String> includeKey;
             if ("all".equalsIgnoreCase(arg)) {
                 includeKey = k -> true;
+            } else if ("webhooks".equalsIgnoreCase(arg)) {
+                includeKey = WEBHOOK_CONFIG_KEYS::contains;
+            } else if (StringUtils.isNotBlank(arg)) {
+                Collection<String> sectionKeys = keysBySection.get(arg.toLowerCase());
+                if (sectionKeys != null) {
+                    includeKey = sectionKeys::contains;
+                } else {
+                    plugin.addChatWarning("Failed to identify config section to export");
+                    return;
+                }
             } else {
                 includeKey = k -> !WEBHOOK_CONFIG_KEYS.contains(k);
             }
