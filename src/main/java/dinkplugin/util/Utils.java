@@ -54,6 +54,19 @@ public class Utils {
         return Character.toUpperCase(text.charAt(0)) + text.substring(1).toLowerCase();
     }
 
+    /**
+     * @param a some string
+     * @param b another string
+     * @return whether either string contains the other
+     */
+    public boolean containsEither(@NotNull String a, @NotNull String b) {
+        if (a.length() >= b.length()) {
+            return a.contains(b);
+        } else {
+            return b.contains(a);
+        }
+    }
+
     public boolean isSettingsOpen(@NotNull Client client) {
         Widget widget = client.getWidget(WidgetInfo.SETTINGS_INIT);
         return widget != null && !widget.isSelfHidden();
