@@ -118,7 +118,6 @@ public class SettingsManager {
             String[] args = event.getArguments();
 
             Predicate<String> includeKey;
-            boolean includeDefaults = false;
             if (args == null || args.length == 0) {
                 includeKey = k -> !WEBHOOK_CONFIG_KEYS.contains(k);
             } else {
@@ -127,12 +126,7 @@ public class SettingsManager {
                 for (String arg : args) {
                     if ("all".equalsIgnoreCase(arg)) {
                         includeKey = k -> true;
-                        includeDefaults = true;
                         break;
-                    } else if ("normal".equalsIgnoreCase(arg)) {
-                        includeKey = includeKey.or(k -> !WEBHOOK_CONFIG_KEYS.contains(k));
-                    } else if ("defaults".equalsIgnoreCase(arg)) {
-                        includeDefaults = true;
                     } else if ("webhooks".equalsIgnoreCase(arg)) {
                         includeKey = includeKey.or(WEBHOOK_CONFIG_KEYS::contains);
                     } else {
@@ -147,7 +141,7 @@ public class SettingsManager {
                 }
             }
 
-            exportConfig(includeKey, includeDefaults);
+            exportConfig(includeKey);
         }
     }
 
@@ -248,7 +242,7 @@ public class SettingsManager {
      * which is copied to the user's clipboard in string form
      */
     @Synchronized
-    private void exportConfig(@NotNull Predicate<String> exportKey, boolean exportDefaults) {
+    private void exportConfig(@NotNull Predicate<String> exportKey) {
         String prefix = CONFIG_GROUP + '.';
         Map<String, Object> configMap = configManager.getConfigurationKeys(prefix)
             .stream()
@@ -258,7 +252,7 @@ public class SettingsManager {
             .filter(pair -> pair.getValue() != null)
             .map(pair -> Pair.of(pair.getKey(), configManager.getConfiguration(CONFIG_GROUP, pair.getKey(), pair.getValue())))
             .filter(pair -> pair.getValue() != null)
-            .filter(pair -> exportDefaults || !Objects.equals(pair.getValue(), defaultValueByConfigKey.get(pair.getKey())))
+            .filter(pair -> !Objects.equals(pair.getValue(), defaultValueByConfigKey.get(pair.getKey())))
             .filter(pair -> {
                 // only serialize webhook urls if they are not blank
                 if (WEBHOOK_CONFIG_KEYS.contains(pair.getKey())) {
