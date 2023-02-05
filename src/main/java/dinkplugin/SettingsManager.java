@@ -16,8 +16,10 @@ import net.runelite.api.Varbits;
 import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.util.ReflectUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +27,8 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,6 +58,11 @@ public class SettingsManager {
      * Maps section names to the corresponding config item keys to allow for selective export.
      */
     private final Map<String, Collection<String>> keysBySection = new HashMap<>();
+
+    /**
+     * Maps each config key to the default value defined by the plugin.
+     */
+    private final Map<String, Object> defaultValueByConfigKey = new HashMap<>();
 
     /**
      * User-specified RSNs that should not trigger webhook notifications.
@@ -93,6 +102,12 @@ public class SettingsManager {
                 ).add(key);
             }
         });
+
+        try {
+            lookupDefaultValues();
+        } catch (Throwable e) {
+            log.warn("Failed to lookup default values for config items", e);
+        }
     }
 
     void onCommand(CommandExecuted event) {
@@ -103,6 +118,7 @@ public class SettingsManager {
             String[] args = event.getArguments();
 
             Predicate<String> includeKey;
+            boolean includeDefaults = false;
             if (args == null || args.length == 0) {
                 includeKey = k -> !WEBHOOK_CONFIG_KEYS.contains(k);
             } else {
@@ -111,7 +127,12 @@ public class SettingsManager {
                 for (String arg : args) {
                     if ("all".equalsIgnoreCase(arg)) {
                         includeKey = k -> true;
+                        includeDefaults = true;
                         break;
+                    } else if ("normal".equalsIgnoreCase(arg)) {
+                        includeKey = includeKey.or(k -> !WEBHOOK_CONFIG_KEYS.contains(k));
+                    } else if ("defaults".equalsIgnoreCase(arg)) {
+                        includeDefaults = true;
                     } else if ("webhooks".equalsIgnoreCase(arg)) {
                         includeKey = includeKey.or(WEBHOOK_CONFIG_KEYS::contains);
                     } else {
@@ -126,7 +147,7 @@ public class SettingsManager {
                 }
             }
 
-            exportConfig(includeKey);
+            exportConfig(includeKey, includeDefaults);
         }
     }
 
@@ -227,7 +248,7 @@ public class SettingsManager {
      * which is copied to the user's clipboard in string form
      */
     @Synchronized
-    private void exportConfig(@NotNull Predicate<String> exportKey) {
+    private void exportConfig(@NotNull Predicate<String> exportKey, boolean exportDefaults) {
         String prefix = CONFIG_GROUP + '.';
         Map<String, Object> configMap = configManager.getConfigurationKeys(prefix)
             .stream()
@@ -237,6 +258,7 @@ public class SettingsManager {
             .filter(pair -> pair.getValue() != null)
             .map(pair -> Pair.of(pair.getKey(), configManager.getConfiguration(CONFIG_GROUP, pair.getKey(), pair.getValue())))
             .filter(pair -> pair.getValue() != null)
+            .filter(pair -> exportDefaults || !Objects.equals(pair.getValue(), defaultValueByConfigKey.get(pair.getKey())))
             .filter(pair -> {
                 // only serialize webhook urls if they are not blank
                 if (WEBHOOK_CONFIG_KEYS.contains(pair.getKey())) {
@@ -361,4 +383,19 @@ public class SettingsManager {
             plugin.addChatSuccess("The following settings were merged (rather than being overwritten): " + String.join(", ", mergedConfigs));
         }
     }
+
+    private void lookupDefaultValues() throws Throwable {
+        DinkPluginConfig defaultConfig = configManager.getConfig(DinkPluginConfig.class);
+        MethodHandles.Lookup lookup = ReflectUtil.privateLookupIn(DinkPluginConfig.class);
+        for (Method m : DinkPluginConfig.class.getMethods()) {
+            if (m.isDefault() && m.getParameterCount() == 0 && m.isAnnotationPresent(ConfigItem.class)) {
+                String key = m.getDeclaredAnnotation(ConfigItem.class).keyName();
+                Object defaultValue = lookup.unreflectSpecial(m, DinkPluginConfig.class)
+                    .bindTo(defaultConfig)
+                    .invokeWithArguments();
+                defaultValueByConfigKey.put(key, defaultValue);
+            }
+        }
+    }
+
 }
