@@ -64,6 +64,26 @@ class LevelNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyJump() {
+        // fire skill event (4 => 6, skipping 5 while 5 is level interval)
+        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 200, 6, 6));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(PLAYER_NAME + " has levelled Hunter to 6")
+                .extra(new LevelNotificationData(ImmutableMap.of("Hunter", 6), ImmutableMap.of("Agility", 1, "Attack", 99, "Hunter", 6)))
+                .type(NotificationType.LEVEL)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyVirtual() {
         // fire skill event
         plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
