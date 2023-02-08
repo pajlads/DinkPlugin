@@ -96,6 +96,9 @@ public class LevelNotifier extends BaseNotifier {
 
         if (checkLevelInterval(previousLevel, virtualLevel) && levelledSkills.offer(skill)) {
             log.debug("Observed level up for {} to {}", skill, virtualLevel);
+
+            // allow more accumulation of level ups into single notification
+            ticksWaited.set(0);
         }
     }
 
