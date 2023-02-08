@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Fire skill notification when jumping over a level that matches the configured interval. (#164)
+
 ## 1.3.0
 
 - Major: Add Barbarian Assault high level gambling notifications. (#150)

@@ -37,6 +37,7 @@ public class LevelNotifier extends BaseNotifier {
         if (client.getGameState() != GameState.LOGGED_IN) return;
         for (Skill skill : Skill.values()) {
             if (skill != Skill.OVERALL) {
+                // uses log(n) operation to support virtual levels
                 currentLevels.put(skill.getName(), Experience.getLevelForXp(client.getSkillExperience(skill)));
             }
         }
@@ -81,11 +82,20 @@ public class LevelNotifier extends BaseNotifier {
 
         int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
         Integer previousLevel = currentLevels.put(skill, virtualLevel);
-        if (config.notifyLevel() && checkLevelInterval(virtualLevel) && previousLevel != null) {
-            if (virtualLevel > previousLevel) {
-                levelledSkills.add(skill);
-                sendMessage = true;
-            }
+
+        if (!config.notifyLevel() || previousLevel == null || virtualLevel == previousLevel) {
+            return;
+        }
+
+        if (virtualLevel < previousLevel) {
+            // base skill level should never regress; reset notifier state
+            reset();
+            return;
+        }
+
+        if (checkLevelInterval(previousLevel, virtualLevel)) {
+            levelledSkills.add(skill);
+            sendMessage = true;
         }
     }
 
@@ -126,15 +136,21 @@ public class LevelNotifier extends BaseNotifier {
             .build());
     }
 
-    private boolean checkLevelInterval(int level) {
+    private boolean checkLevelInterval(int previous, int level) {
         if (level < config.levelMinValue())
             return false;
+
         if (level > 99 && !config.levelNotifyVirtual())
             return false;
+
         int interval = config.levelInterval();
-        return interval <= 1
-            || level == 99
-            || level % interval == 0;
+        if (interval <= 1 || level == 99)
+            return true;
+
+        // Check levels in (previous, current] for divisibility by interval
+        // Allows for firing notification if jumping over a level that would've notified
+        int remainder = level % interval;
+        return remainder == 0 || (level - remainder) > previous;
     }
 
     private static String getSkillIcon(String skillName) {
