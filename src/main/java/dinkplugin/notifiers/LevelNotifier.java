@@ -149,11 +149,8 @@ public class LevelNotifier extends BaseNotifier {
 
         // Check levels in (previous, current] for divisibility by interval
         // Allows for firing notification if jumping over a level that would've notified
-        for (int lvl = level; lvl > previous; lvl--) {
-            if (lvl % interval == 0)
-                return true;
-        }
-        return false;
+        int remainder = level % interval;
+        return remainder == 0 || (level - remainder) > previous;
     }
 
     private static String getSkillIcon(String skillName) {
