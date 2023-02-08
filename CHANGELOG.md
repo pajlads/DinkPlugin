@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Bugfix: Fire skill notification when jumping over a level that matches the configured interval. (#164)
+- Dev: Improve thread-safety of level notifier. (#165)
 
 ## 1.3.0
 
