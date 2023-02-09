@@ -13,20 +13,21 @@ import net.runelite.api.events.StatChanged;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Singleton
 public class LevelNotifier extends BaseNotifier {
-    private final List<String> levelledSkills = new CopyOnWriteArrayList<>();
+    private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(Skill.values().length);
     private final Map<String, Integer> currentLevels = new ConcurrentHashMap<>();
     private final AtomicInteger ticksWaited = new AtomicInteger();
-    private volatile boolean sendMessage = false;
 
     @Override
     protected String getWebhookUrl() {
@@ -47,15 +48,15 @@ public class LevelNotifier extends BaseNotifier {
         currentLevels.clear();
         levelledSkills.clear();
         ticksWaited.set(0);
-        sendMessage = false;
     }
 
     public void onTick() {
         if (currentLevels.isEmpty()) {
             initLevels();
+            return;
         }
 
-        if (!sendMessage) {
+        if (levelledSkills.isEmpty()) {
             return;
         }
 
@@ -93,35 +94,38 @@ public class LevelNotifier extends BaseNotifier {
             return;
         }
 
-        if (checkLevelInterval(previousLevel, virtualLevel)) {
-            levelledSkills.add(skill);
-            sendMessage = true;
+        if (checkLevelInterval(previousLevel, virtualLevel) && levelledSkills.offer(skill)) {
+            log.debug("Observed level up for {} to {}", skill, virtualLevel);
+
+            // allow more accumulation of level ups into single notification
+            ticksWaited.set(0);
         }
     }
 
     private void attemptNotify() {
-        sendMessage = false;
         StringBuilder skillMessage = new StringBuilder();
-        int index = 0;
-        Map<String, Integer> lSkills = new HashMap<>();
+        List<String> levelled = new ArrayList<>(levelledSkills.size());
+        levelledSkills.drainTo(levelled);
+        int count = levelled.size();
+        Map<String, Integer> lSkills = new HashMap<>(count);
 
-        for (String skill : levelledSkills) {
+        for (int index = 0; index < count; index++) {
+            String skill = levelled.get(index);
             if (index > 0) {
-                if (levelledSkills.size() > 2) {
+                if (count > 2) {
                     skillMessage.append(',');
                 }
                 skillMessage.append(' ');
-                if (index + 1 == levelledSkills.size()) {
+                if (index + 1 == count) {
                     skillMessage.append("and ");
                 }
             }
-            skillMessage.append(String.format("%s to %s", skill, currentLevels.get(skill)));
-            lSkills.put(skill, currentLevels.get(skill));
-            index++;
+            Integer level = currentLevels.get(skill);
+            skillMessage.append(String.format("%s to %s", skill, level));
+            lSkills.put(skill, level);
         }
 
-        String thumbnail = levelledSkills.size() == 1 ? getSkillIcon(levelledSkills.get(0)) : null;
-        levelledSkills.clear();
+        String thumbnail = count == 1 ? getSkillIcon(levelled.get(0)) : null;
         String fullNotification = StringUtils.replaceEach(
             config.levelNotifyMessage(),
             new String[] { "%USERNAME%", "%SKILL%" },
