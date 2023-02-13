@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add setting to skip death notifications with low value of items lost. (#166)
 - Bugfix: Fire skill notification when jumping over a level that matches the configured interval. (#164)
 - Dev: Improve thread-safety of level notifier. (#165)
 
