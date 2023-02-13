@@ -8,6 +8,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.WorldUtils;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
@@ -33,6 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Singleton
 public class DeathNotifier extends BaseNotifier {
 
@@ -78,8 +80,6 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private void handleNotify() {
-        Actor pker = identifyPker();
-
         Collection<Item> items = ItemUtils.getItems(client);
         List<Pair<Item, Long>> itemsByPrice = getPricedItems(itemManager, items);
 
@@ -93,6 +93,12 @@ public class DeathNotifier extends BaseNotifier {
             .reduce(Long::sum)
             .orElse(0L);
 
+        if (losePrice < config.deathMinValue()) {
+            log.debug("Skipping death notification below minimum lost value");
+            return;
+        }
+
+        Actor pker = identifyPker();
         String notifyMessage = buildMessage(pker, losePrice);
 
         List<SerializedItemStack> lostStacks = getStacks(itemManager, lostItems, true);
