@@ -246,4 +246,27 @@ class DeathNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
+    @Test
+    void testIgnoreValue() {
+        // prepare mocks
+        when(config.deathMinValue()).thenReturn(TUNA_PRICE + 1);
+        when(client.isPrayerActive(Prayer.PROTECT_ITEM)).thenReturn(true);
+        Item[] items = {
+            new Item(ItemID.RUBY, 1),
+            new Item(ItemID.TUNA, 1),
+            new Item(ItemID.COAL, 1),
+            new Item(ItemID.SHARK, 1),
+            new Item(ItemID.OPAL, 1),
+        };
+        ItemContainer inv = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(inv.getItems()).thenReturn(items);
+
+        // fire event
+        plugin.onActorDeath(new ActorDeath(localPlayer));
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
 }
