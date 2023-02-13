@@ -630,12 +630,23 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "deathMinValue",
+        name = "Min Lost Value",
+        description = "The minimum value of the lost items for a notification to be sent",
+        position = 43,
+        section = deathSection
+    )
+    default int deathMinValue() {
+        return 0;
+    }
+
+    @ConfigItem(
         keyName = "deathNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 43,
+        position = 44,
         section = deathSection
     )
     default String deathNotifyMessage() {
@@ -646,7 +657,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpEnabled",
         name = "Distinguish PvP deaths",
         description = "Should the plugin use a different message for dying in PvP?",
-        position = 44,
+        position = 45,
         section = deathSection
     )
     default boolean deathNotifPvpEnabled() {
@@ -660,7 +671,7 @@ public interface DinkPluginConfig extends Config {
             "Use %PKER% to insert the killer<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 45,
+        position = 46,
         section = deathSection
     )
     default String deathNotifPvpMessage() {
