@@ -93,8 +93,9 @@ public class DeathNotifier extends BaseNotifier {
             .reduce(Long::sum)
             .orElse(0L);
 
-        if (losePrice < config.deathMinValue()) {
-            log.debug("Skipping death notification below minimum lost value");
+        int valueThreshold = config.deathMinValue();
+        if (losePrice < valueThreshold) {
+            log.debug("Skipping death notification; total value of lost items {} is below minimum lost value {}", losePrice, valueThreshold);
             return;
         }
 
