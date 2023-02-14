@@ -43,8 +43,9 @@ version = "1.3.0"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
-    sourceCompatibility = "1.8"
-    targetCompatibility = "1.8"
+    val version = JavaVersion.VERSION_1_8.toString()
+    sourceCompatibility = version
+    targetCompatibility = version
 }
 
 tasks.test {
@@ -71,6 +72,7 @@ tasks.register(name = "shadowJar", type = Jar::class) {
     exclude("META-INF/*.RSA")
     exclude("**/module-info.class")
 
+    group = BasePlugin.BUILD_GROUP
     archiveClassifier.set("shadow")
     archiveFileName.set(rootProject.name + "-" + project.version + "-all.jar")
 }
