@@ -3,6 +3,7 @@ package dinkplugin.message;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +25,6 @@ public class Field {
     }
 
     public static String format(String language, String value) {
-        return String.format("```%s\n%s\n```", language, value);
+        return String.format("```%s\n%s\n```", StringUtils.defaultString(language), value);
     }
 }
