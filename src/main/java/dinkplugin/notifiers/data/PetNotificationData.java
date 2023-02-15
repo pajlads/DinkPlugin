@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Value
@@ -20,8 +19,9 @@ public class PetNotificationData extends NotificationData {
             return super.getFields();
 
         List<Field> fields = new ArrayList<>();
-        fields.add(new Field("Name", "```\n" + petName + "\n```"));
-        if (milestone != null) fields.add(new Field("Milestone", "```\n" + milestone + "\n```"));
+        fields.add(new Field("Name", Field.format("", petName)));
+        if (milestone != null)
+            fields.add(new Field("Milestone", Field.format("", milestone)));
         return fields;
     }
 }

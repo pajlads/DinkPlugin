@@ -28,11 +28,7 @@ public class LevelNotificationData extends NotificationData {
             return Collections.singletonList(
                 new Field(
                     "Total Skills at Level 99+",
-                    String.format(
-                        "```\n%d: %s\n```",
-                        maxed.size(),
-                        String.join(", ", maxed)
-                    )
+                    Field.format("", maxed.size() + ": " + String.join(", ", maxed))
                 )
             );
         }

@@ -2,6 +2,7 @@ package dinkplugin.util;
 
 import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.Embed;
+import dinkplugin.message.Field;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
@@ -130,7 +131,7 @@ public class ItemUtils {
     }
 
     public String formatGold(long amount) {
-        return String.format("```ldif\n%s gp\n```", QuantityFormatter.quantityToStackSize(amount));
+        return Field.format("ldif", QuantityFormatter.quantityToStackSize(amount) + " gp");
     }
 
 }

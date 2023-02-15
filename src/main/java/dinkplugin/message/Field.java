@@ -20,6 +20,10 @@ public class Field {
     @Nullable Boolean inline;
 
     public Field(String name, String value) {
-        this(name, value, null);
+        this(name, value, true);
+    }
+
+    public static String format(String language, String value) {
+        return String.format("```%s\n%s\n```", language, value);
     }
 }
