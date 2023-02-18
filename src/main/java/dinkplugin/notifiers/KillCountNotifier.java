@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +41,7 @@ public class KillCountNotifier extends BaseNotifier {
     private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(.\\d+)?)\\.?", Pattern.CASE_INSENSITIVE);
 
     private final AtomicInteger badTicks = new AtomicInteger();
-    private volatile BossNotificationData data = null;
+    private final AtomicReference<BossNotificationData> data = new AtomicReference<>();
 
     @Override
     public boolean isEnabled() {
@@ -53,7 +54,7 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     public void reset() {
-        this.data = null;
+        this.data.set(null);
         this.badTicks.set(0);
     }
 
@@ -69,6 +70,7 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     public void onTick() {
+        BossNotificationData data = this.data.get();
         if (data != null) {
             if (data.getBoss() != null) {
                 // once boss name has arrived, we notify at tick end (even if duration hasn't arrived)
@@ -138,20 +140,22 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private void updateData(BossNotificationData updated) {
-        if (data == null) {
-            this.data = updated;
-        } else {
-            // Boss data and timing are sent in separate messages
-            // where the order of the messages differs depending on the boss.
-            // Here, we update data without setting any not-null values back to null.
-            this.data = new BossNotificationData(
-                defaultIfNull(updated.getBoss(), data.getBoss()),
-                defaultIfNull(updated.getCount(), data.getCount()),
-                defaultIfNull(updated.getGameMessage(), data.getGameMessage()),
-                defaultIfNull(updated.getTime(), data.getTime()),
-                defaultIfNull(updated.isPersonalBest(), data.isPersonalBest())
-            );
-        }
+        data.getAndUpdate(old -> {
+            if (old == null) {
+                return updated;
+            } else {
+                // Boss data and timing are sent in separate messages
+                // where the order of the messages differs depending on the boss.
+                // Here, we update data without setting any not-null values back to null.
+                return new BossNotificationData(
+                    defaultIfNull(updated.getBoss(), old.getBoss()),
+                    defaultIfNull(updated.getCount(), old.getCount()),
+                    defaultIfNull(updated.getGameMessage(), old.getGameMessage()),
+                    defaultIfNull(updated.getTime(), old.getTime()),
+                    defaultIfNull(updated.isPersonalBest(), old.isPersonalBest())
+                );
+            }
+        });
     }
 
     private static Optional<BossNotificationData> parse(String message) {
