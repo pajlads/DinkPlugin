@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include pet acquisition milestone in webhook metadata from clan message. (#169)
 - Minor: Add setting to skip death notifications with low value of items lost. (#166)
 - Bugfix: Associate fight duration to delayed kill count messages. (#171)
 - Bugfix: Fire skill notification when jumping over a level that matches the configured interval. (#164)

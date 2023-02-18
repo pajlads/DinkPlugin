@@ -400,13 +400,14 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 {
   "content": "%USERNAME% has a funny feeling they are being followed",
   "extra": {
-    "petName": "Ikkle hydra"
+    "petName": "Ikkle hydra",
+    "milestone": "5,000 killcount"
   },
   "type": "PET"
 }
 ```
 
-Note: `petName` is only included if the game sent it to your chat via untradeable drop or collection log or clan notifications.
+Note: `petName` is only included if the game sent it to your chat via untradeable drop or collection log or clan notifications. `milestone` is only included if a clan notification was triggered.
 </details>
 
 ### Speedrunning:
