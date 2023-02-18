@@ -24,7 +24,7 @@ public class Field {
         this(name, value, true);
     }
 
-    public static String format(String language, String value) {
-        return String.format("```%s\n%s\n```", StringUtils.defaultString(language), value);
+    public static String formatBlock(String codeBlockLanguage, String content) {
+        return String.format("```%s\n%s\n```", StringUtils.defaultString(codeBlockLanguage), content);
     }
 }

@@ -19,9 +19,9 @@ public class PetNotificationData extends NotificationData {
             return super.getFields();
 
         List<Field> fields = new ArrayList<>(2);
-        fields.add(new Field("Name", Field.format("", petName)));
+        fields.add(new Field("Name", Field.formatBlock("", petName)));
         if (milestone != null)
-            fields.add(new Field("Milestone", Field.format("", milestone)));
+            fields.add(new Field("Milestone", Field.formatBlock("", milestone)));
         return fields;
     }
 }

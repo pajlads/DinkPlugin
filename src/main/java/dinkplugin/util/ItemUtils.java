@@ -131,7 +131,7 @@ public class ItemUtils {
     }
 
     public String formatGold(long amount) {
-        return Field.format("ldif", QuantityFormatter.quantityToStackSize(amount) + " gp");
+        return Field.formatBlock("ldif", QuantityFormatter.quantityToStackSize(amount) + " gp");
     }
 
 }
