@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import java.time.Duration;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
@@ -141,6 +142,35 @@ class KillCountNotifierTest extends MockedNotifierTest {
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
             .text(PLAYER_NAME + " has defeated Zulrah with a new personal best time of 00:56.50 and a completion count of 12")
             .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(56).plusMillis(500), true))
+            .playerName(PLAYER_NAME)
+            .type(NotificationType.KILL_COUNT)
+            .build();
+
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            body
+        );
+
+        assertDoesNotThrow(() -> RuneLiteAPI.GSON.toJson(body));
+    }
+
+    @Test
+    void testNotifyPbDelayed() {
+        // more config
+        when(config.killCountInterval()).thenReturn(99);
+
+        // fire events
+        notifier.onGameMessage("Fight duration: 1:54.00 (new personal best)");
+        IntStream.range(0, 9).forEach(i -> notifier.onTick());
+        String gameMessage = "Your Grotesque Guardians kill count is: 79.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
+            .text(PLAYER_NAME + " has defeated Grotesque Guardians with a new personal best time of 01:54.00 and a completion count of 79")
+            .extra(new BossNotificationData("Grotesque Guardians", 79, gameMessage, Duration.ofMinutes(1).plusSeconds(54), true))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
             .build();
