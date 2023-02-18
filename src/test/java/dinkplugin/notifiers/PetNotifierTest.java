@@ -50,7 +50,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(null))
+                .extra(new PetNotificationData(null, null))
                 .text(PLAYER_NAME + " got a pet")
                 .type(NotificationType.PET)
                 .build()
@@ -75,7 +75,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(petName))
+                .extra(new PetNotificationData(petName, null))
                 .text(PLAYER_NAME + " got a pet")
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
@@ -101,7 +101,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(petName))
+                .extra(new PetNotificationData(petName, null))
                 .text(PLAYER_NAME + " got a pet")
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
@@ -124,7 +124,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(null))
+                .extra(new PetNotificationData(null, null))
                 .text(PLAYER_NAME + " got a pet")
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
@@ -145,7 +145,7 @@ class PetNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("Untradeable drop: " + petName);
         notifier.onClanNotification(
             String.format(
-                "[ClanName] %s has a funny feeling like he would have been followed: %s at 50 killcount",
+                "[ClanName] %s has a funny feeling like he would have been followed: %s at 50 killcount.",
                 PLAYER_NAME,
                 petName
             )
@@ -157,7 +157,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(petName))
+                .extra(new PetNotificationData(petName, "50 killcount"))
                 .text(PLAYER_NAME + " got a pet")
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
@@ -177,7 +177,7 @@ class PetNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You have a funny feeling like you're being followed.");
         notifier.onClanNotification(
             String.format(
-                "[ClanName] %s has a funny feeling like he would have been followed: %s at 50 killcount",
+                "[ClanName] %s has a funny feeling like he would have been followed: %s at 50 killcount.",
                 PLAYER_NAME,
                 petName
             )
@@ -189,7 +189,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(petName))
+                .extra(new PetNotificationData(petName, "50 killcount"))
                 .text(PLAYER_NAME + " got a pet")
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
@@ -211,7 +211,7 @@ class PetNotifierTest extends MockedNotifierTest {
             "https://example.com",
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(null))
+                .extra(new PetNotificationData(null, null))
                 .text(PLAYER_NAME + " got a pet")
                 .type(NotificationType.PET)
                 .build()
@@ -256,7 +256,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(null))
+                .extra(new PetNotificationData(null, null))
                 .text(PLAYER_NAME + " got a pet")
                 .type(NotificationType.PET)
                 .build()

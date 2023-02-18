@@ -3,6 +3,7 @@ package dinkplugin.message;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,10 @@ public class Field {
     @Nullable Boolean inline;
 
     public Field(String name, String value) {
-        this(name, value, null);
+        this(name, value, true);
+    }
+
+    public static String formatBlock(String codeBlockLanguage, String content) {
+        return String.format("```%s\n%s\n```", StringUtils.defaultString(codeBlockLanguage), content);
     }
 }

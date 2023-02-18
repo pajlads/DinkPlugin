@@ -37,7 +37,7 @@ public class PetNotifier extends BaseNotifier {
     static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
 
     @VisibleForTesting
-    static final Pattern CLAN_REGEX = Pattern.compile("\\b(?<user>[\\w\\s]+) (?:has a funny feeling like .+ followed|feels something weird sneaking into .+ backpack): (?<pet>.+) at\\s");
+    static final Pattern CLAN_REGEX = Pattern.compile("\\b(?<user>[\\w\\s]+) (?:has a funny feeling like .+ followed|feels something weird sneaking into .+ backpack): (?<pet>.+) at (?<milestone>.+)");
 
     private static final Pattern UNTRADEABLE_REGEX = Pattern.compile("Untradeable drop: (.+)");
     private static final Set<String> PET_NAMES;
@@ -48,6 +48,8 @@ public class PetNotifier extends BaseNotifier {
 
     @Setter(AccessLevel.PRIVATE)
     private volatile String petName = null;
+
+    private volatile String milestone = null;
 
     @Override
     public boolean isEnabled() {
@@ -77,7 +79,7 @@ public class PetNotifier extends BaseNotifier {
     }
 
     public void onClanNotification(String message) {
-        if (!PRIMED_NAME.equals(petName)) {
+        if (petName == null) {
             // We have not received the normal message about a pet drop, so this clan message cannot be relevant to us
             return;
         }
@@ -87,6 +89,7 @@ public class PetNotifier extends BaseNotifier {
             String user = matcher.group("user").trim();
             if (user.equals(Utils.getPlayerName(client))) {
                 this.petName = matcher.group("pet");
+                this.milestone = StringUtils.removeEnd(matcher.group("milestone"), ".");
             }
         }
     }
@@ -98,6 +101,7 @@ public class PetNotifier extends BaseNotifier {
 
     public void reset() {
         this.petName = null;
+        this.milestone = null;
     }
 
     private void handleNotify() {
@@ -111,7 +115,7 @@ public class PetNotifier extends BaseNotifier {
             .map(ItemUtils::getItemImageUrl)
             .orElse(null);
 
-        PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null));
+        PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null), milestone);
 
         createMessage(config.petSendImage(), NotificationBody.builder()
             .extra(extra)
