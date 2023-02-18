@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +39,7 @@ public class KillCountNotifier extends BaseNotifier {
     private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>\\d+)\\b");
     private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(.\\d+)?)\\.?", Pattern.CASE_INSENSITIVE);
 
+    private final AtomicInteger badTicks = new AtomicInteger();
     private volatile BossNotificationData data = null;
 
     @Override
@@ -52,6 +54,7 @@ public class KillCountNotifier extends BaseNotifier {
 
     public void reset() {
         this.data = null;
+        this.badTicks.set(0);
     }
 
     public void onGameMessage(String message) {
@@ -67,9 +70,15 @@ public class KillCountNotifier extends BaseNotifier {
 
     public void onTick() {
         if (data != null) {
-            // all data must be sent on the same tick to be included
-            handleKill(data);
-            reset();
+            if (data.getBoss() != null) {
+                // once boss name has arrived, we notify at tick end (even if duration hasn't arrived)
+                handleKill(data);
+                reset();
+            } else if (badTicks.incrementAndGet() > 10) {
+                // after receiving fight duration, allow up to 10 ticks for boss name to arrive.
+                // if boss name doesn't arrive in time, reset (to avoid stale data contaminating later notifications)
+                reset();
+            }
         }
     }
 
