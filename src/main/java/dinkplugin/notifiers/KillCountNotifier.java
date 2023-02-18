@@ -40,6 +40,15 @@ public class KillCountNotifier extends BaseNotifier {
     private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>\\d+)\\b");
     private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(.\\d+)?)\\.?", Pattern.CASE_INSENSITIVE);
 
+    /**
+     * The maximum number of ticks to hold onto a fight duration without a corresponding boss name.
+     * <p>
+     * Note: unlike other notifiers, this is applied asymmetrically
+     * (i.e., we do not wait for fight duration if only boss name was received on the tick)
+     */
+    @VisibleForTesting
+    static final int MAX_BAD_TICKS = 10;
+
     private final AtomicInteger badTicks = new AtomicInteger();
     private final AtomicReference<BossNotificationData> data = new AtomicReference<>();
 
@@ -76,7 +85,7 @@ public class KillCountNotifier extends BaseNotifier {
                 // once boss name has arrived, we notify at tick end (even if duration hasn't arrived)
                 handleKill(data);
                 reset();
-            } else if (badTicks.incrementAndGet() > 10) {
+            } else if (badTicks.incrementAndGet() > MAX_BAD_TICKS) {
                 // after receiving fight duration, allow up to 10 ticks for boss name to arrive.
                 // if boss name doesn't arrive in time, reset (to avoid stale data contaminating later notifications)
                 reset();
