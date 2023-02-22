@@ -6,6 +6,7 @@ import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.CollectionNotificationData;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.events.VarbitChanged;
@@ -18,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class CollectionNotifier extends BaseNotifier {
     static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
@@ -102,7 +104,11 @@ public class CollectionNotifier extends BaseNotifier {
         // multiple collection log entries are completed within a single tick.
         int completed = this.completed.incrementAndGet();
         int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
-        boolean varpValid = total > 0 && completed >= 0;
+        boolean varpValid = total > 0 && completed > 0;
+        if (!varpValid) {
+            // This should never occur unless Jagex changes the var player id's
+            log.warn("Collection log completion VarPlayer was invalid ({} / {})! Please report to Dink issue tracker", completed, total);
+        }
 
         Integer itemId = itemSearcher.findItemId(itemName);
         Long price = itemId != null ? ItemUtils.getPrice(itemManager, itemId) : null;
