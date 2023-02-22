@@ -62,7 +62,7 @@ public class CollectionNotifier extends BaseNotifier {
 
         // read updated # of collection log entries completed from varplayer id's
         int completed = client.getVarpValue(COMPLETED_VARP);
-        int total = client.getVarpValue(TOTAL_VARP);
+        int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed >= 0;
 
         Integer itemId = itemSearcher.findItemId(itemName);
