@@ -18,4 +18,10 @@ public class CollectionNotificationData extends NotificationData {
     @Nullable
     Long price;
 
+    @Nullable
+    Integer completedEntries;
+
+    @Nullable
+    Integer totalEntries;
+
 }
