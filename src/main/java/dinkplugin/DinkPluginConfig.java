@@ -25,91 +25,104 @@ public interface DinkPluginConfig extends Config {
     @ConfigSection(
         name = "Collection Log",
         description = "Settings for notifying about collection log",
-        position = 0
+        position = 0,
+        closedByDefault = true
     )
     String collectionSection = "Collection Log";
 
     @ConfigSection(
         name = "Pet",
         description = "Settings for notifying when obtaining a pet",
-        position = 10
+        position = 10,
+        closedByDefault = true
     )
     String petSection = "Pet";
 
     @ConfigSection(
         name = "Levels",
         description = "Settings for notifying when levelling a skill",
-        position = 20
+        position = 20,
+        closedByDefault = true
     )
     String levelSection = "Levels";
 
     @ConfigSection(
         name = "Loot",
         description = "Settings for notifying when loot is dropped",
-        position = 30
+        position = 30,
+        closedByDefault = true
     )
     String lootSection = "Loot";
 
     @ConfigSection(
         name = "Death",
         description = "Settings for notifying when you die",
-        position = 40
+        position = 40,
+        closedByDefault = true
     )
     String deathSection = "Death";
 
     @ConfigSection(
         name = "Slayer",
         description = "Settings for notifying when you complete a slayer task",
-        position = 50
+        position = 50,
+        closedByDefault = true
     )
     String slayerSection = "Slayer";
 
     @ConfigSection(
         name = "Quests",
         description = "Settings for notifying when you complete a quest",
-        position = 60
+        position = 60,
+        closedByDefault = true
     )
     String questSection = "Quests";
 
     @ConfigSection(
         name = "Clue Scrolls",
         description = "Settings for notifying when you complete a clue scroll",
-        position = 70
+        position = 70,
+        closedByDefault = true
     )
     String clueSection = "Clue Scrolls";
 
     @ConfigSection(
         name = "Speedruns",
         description = "Settings for notifying when you finish a speedrun",
-        position = 80
+        position = 80,
+        closedByDefault = true
     )
     String speedrunSection = "Speedruns";
 
     @ConfigSection(
         name = "Kill Count",
         description = "Settings for notifying when you kill a boss",
-        position = 90
+        position = 90,
+        closedByDefault = true
     )
     String killCountSection = "Kill Count";
 
     @ConfigSection(
         name = "Combat Tasks",
         description = "Settings for notifying when you complete a combat achievement",
-        position = 100
+        position = 100,
+        closedByDefault = true
     )
     String combatTaskSection = "Combat Tasks";
 
     @ConfigSection(
         name = "Achievement Diary",
         description = "Settings for notifying when you complete an Achievement Diary",
-        position = 110
+        position = 110,
+        closedByDefault = true
     )
     String diarySection = "Achievement Diary";
 
     @ConfigSection(
         name = "BA Gambles",
         description = "Settings for notifying when you gamble at Barbarian Assault",
-        position = 120
+        position = 120,
+        closedByDefault = true
     )
     String gambleSection = "BA Gambles";
 
