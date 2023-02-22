@@ -19,6 +19,8 @@ import static org.mockito.Mockito.when;
 
 class CollectionNotifierTest extends MockedNotifierTest {
 
+    private static final int TOTAL_ENTRIES = 1443;
+
     @Bind
     @InjectMocks
     CollectionNotifier notifier;
@@ -36,6 +38,10 @@ class CollectionNotifierTest extends MockedNotifierTest {
         when(config.notifyCollectionLog()).thenReturn(true);
         when(config.collectionSendImage()).thenReturn(false);
         when(config.collectionNotifyMessage()).thenReturn("%USERNAME% has added %ITEM% to their collection");
+
+        // init client mocks
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
+        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
     }
 
     @Test
@@ -45,7 +51,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
         when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
         when(itemManager.getItemPrice(ItemID.SEERCULL)).thenReturn(price);
 
-        // send fake message
+        // send fake notification
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(1);
         notifier.onChatMessage("New item added to your collection log: " + item);
 
         // verify handled
@@ -54,7 +61,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has added %s to their collection", PLAYER_NAME, item))
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
