@@ -7,12 +7,13 @@ import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.CollectionNotificationData;
 import net.runelite.api.Client;
-import net.runelite.client.callback.ClientThread;
+import net.runelite.api.GameState;
 import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,11 +24,10 @@ public class CollectionNotifier extends BaseNotifier {
     @VisibleForTesting
     static final int COMPLETED_VARP = 2943, TOTAL_VARP = 2944; // https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/[clientscript,collection_init_frame].cs2#L3
 
-    @Inject
-    private Client client;
+    private final AtomicInteger completed = new AtomicInteger(-1);
 
     @Inject
-    private ClientThread clientThread;
+    private Client client;
 
     @Inject
     private ItemManager itemManager;
@@ -45,13 +45,24 @@ public class CollectionNotifier extends BaseNotifier {
         return config.collectionWebhook();
     }
 
+    public void reset() {
+        this.completed.set(-1);
+    }
+
+    public void onTick() {
+        if (client.getGameState() != GameState.LOGGED_IN) {
+            completed.set(-1);
+        } else if (completed.get() < 0) {
+            completed.compareAndSet(-1, client.getVarpValue(COMPLETED_VARP));
+        }
+    }
+
     public void onChatMessage(String chatMessage) {
         if (!isEnabled()) return;
 
         Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(chatMessage);
         if (collectionMatcher.find()) {
-            String item = collectionMatcher.group("itemName");
-            clientThread.invokeLater(() -> handleNotify(item));
+            this.handleNotify(collectionMatcher.group("itemName"));
         }
     }
 
@@ -63,7 +74,7 @@ public class CollectionNotifier extends BaseNotifier {
         );
 
         // read updated # of collection log entries completed from varplayer id's
-        int completed = client.getVarpValue(COMPLETED_VARP);
+        int completed = this.completed.incrementAndGet();
         int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed >= 0;
 

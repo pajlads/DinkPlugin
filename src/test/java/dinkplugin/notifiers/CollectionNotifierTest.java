@@ -5,6 +5,7 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.CollectionNotificationData;
 import dinkplugin.util.ItemSearcher;
+import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
         // init client mocks
         when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
         when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
+        when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
+        notifier.onTick();
     }
 
     @Test
@@ -52,7 +55,6 @@ class CollectionNotifierTest extends MockedNotifierTest {
         when(itemManager.getItemPrice(ItemID.SEERCULL)).thenReturn(price);
 
         // send fake notification
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(1);
         notifier.onChatMessage("New item added to your collection log: " + item);
 
         // verify handled

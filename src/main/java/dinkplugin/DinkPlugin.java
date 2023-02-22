@@ -86,6 +86,7 @@ public class DinkPlugin extends Plugin {
     }
 
     void resetNotifiers() {
+        collectionNotifier.reset();
         petNotifier.reset();
         clueNotifier.reset();
         diaryNotifier.reset();
@@ -127,6 +128,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick event) {
+        collectionNotifier.onTick();
         petNotifier.onTick();
         clueNotifier.onTick();
         slayerNotifier.onTick();
