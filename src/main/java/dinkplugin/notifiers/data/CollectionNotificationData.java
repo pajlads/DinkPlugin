@@ -13,6 +13,8 @@ import java.util.List;
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class CollectionNotificationData extends NotificationData {
+    // DecimalFormat is not thread-safe, so ThreadLocal is used.
+    // Currently, this is not necessary, but is simple future-proofing in case of a DiscordMessageHandler refactor.
     private static final ThreadLocal<DecimalFormat> PERCENT_FORMAT = ThreadLocal.withInitial(() -> new DecimalFormat("#.#%"));
 
     @NotNull

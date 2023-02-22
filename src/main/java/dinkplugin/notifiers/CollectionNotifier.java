@@ -8,6 +8,7 @@ import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.CollectionNotificationData;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -24,6 +25,9 @@ public class CollectionNotifier extends BaseNotifier {
     @VisibleForTesting
     static final int COMPLETED_VARP = 2943, TOTAL_VARP = 2944; // https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/[clientscript,collection_init_frame].cs2#L3
 
+    /**
+     * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.
+     */
     private final AtomicInteger completed = new AtomicInteger(-1);
 
     @Inject
@@ -46,14 +50,33 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     public void reset() {
+        // note: unlike other notifiers, we do not need to reset completed after each message
         this.completed.set(-1);
     }
 
     public void onTick() {
         if (client.getGameState() != GameState.LOGGED_IN) {
+            // indicate that the latest completion count should be updated
             completed.set(-1);
         } else if (completed.get() < 0) {
-            completed.compareAndSet(-1, client.getVarpValue(COMPLETED_VARP));
+            // initialize collection log entry completion count
+            completed.set(client.getVarpValue(COMPLETED_VARP));
+        }
+    }
+
+    public void onVarPlayer(VarbitChanged event) {
+        if (event.getVarpId() != COMPLETED_VARP)
+            return;
+
+        // Currently, this varp is sent early enough to be read on the first logged-in tick.
+        // For robustness, we also allow initialization here just in case the varp is sent with greater delay.
+
+        // Also, it is worth noting that this varp is not updated until a few ticks after the collection log message.
+        // However, this behavior could also change, which is why here we don't synchronize "completed" beyond initialization.
+
+        int old = completed.get();
+        if (old <= 0) {
+            completed.compareAndSet(old, event.getValue());
         }
     }
 
@@ -73,7 +96,9 @@ public class CollectionNotifier extends BaseNotifier {
             new String[] { Utils.getPlayerName(client), itemName }
         );
 
-        // read updated # of collection log entries completed from varplayer id's
+        // varp isn't updated for a few ticks, so we increment the count locally.
+        // this approach also has the benefit of yielding incrementing values even when
+        // multiple collection log entries are completed within a single tick.
         int completed = this.completed.incrementAndGet();
         int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed >= 0;
