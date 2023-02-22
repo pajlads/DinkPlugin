@@ -54,7 +54,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
         when(itemManager.getItemPrice(ItemID.SEERCULL)).thenReturn(price);
 
-        // send fake notification
+        // send fake message
         notifier.onChatMessage("New item added to your collection log: " + item);
 
         // verify handled

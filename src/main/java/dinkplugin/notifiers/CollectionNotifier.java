@@ -51,6 +51,7 @@ public class CollectionNotifier extends BaseNotifier {
 
     public void reset() {
         // note: unlike other notifiers, we do not need to reset completed after each message
+        // in fact, resetting would be problematic for an edge case with multiple completions in a single tick
         this.completed.set(-1);
     }
 
@@ -71,7 +72,7 @@ public class CollectionNotifier extends BaseNotifier {
         // Currently, this varp is sent early enough to be read on the first logged-in tick.
         // For robustness, we also allow initialization here just in case the varp is sent with greater delay.
 
-        // Also, it is worth noting that this varp is not updated until a few ticks after the collection log message.
+        // Note: upon a completion, this varp is not updated until a few ticks after the collection log message.
         // However, this behavior could also change, which is why here we don't synchronize "completed" beyond initialization.
 
         int old = completed.get();
