@@ -180,7 +180,9 @@ The examples below omit `embeds` and `playerName` keys because they are always t
   "extra": {
     "itemName": "Zamorak chaps",
     "itemId": 10372,
-    "price": 500812
+    "price": 500812,
+    "completedEntries": 420,
+    "totalEntries": 1443
   },
   "type": "COLLECTION"
 }

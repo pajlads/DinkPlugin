@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include number of completed entries in collection log notification. (#174)
+
 ## 1.3.1
 
 - Minor: Include pet acquisition milestone in webhook metadata from clan message. (#169)
