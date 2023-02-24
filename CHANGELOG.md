@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include number of completions in quest notifications. (#178)
 - Minor: Include number of completed entries in collection log notification. (#174)
 
 ## 1.3.1
