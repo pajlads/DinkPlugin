@@ -9,7 +9,6 @@ import dinkplugin.notifiers.data.CollectionNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.StringUtils;
@@ -25,8 +24,11 @@ public class CollectionNotifier extends BaseNotifier {
     static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
 
+    /*
+     * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
+     */
     @VisibleForTesting
-    static final int COMPLETED_VARP = 2943, TOTAL_VARP = 2944; // https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
+    static final int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
 
     /**
      * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.
@@ -56,12 +58,6 @@ public class CollectionNotifier extends BaseNotifier {
         // note: unlike other notifiers, we do not need to reset completed after each message
         // in fact, resetting would be problematic for an edge case with multiple completions in a single tick
         this.completed.set(-1);
-    }
-
-    public void onGameState(GameStateChanged event) {
-        if (event.getGameState() != GameState.LOGGED_IN) {
-            reset();
-        }
     }
 
     public void onTick() {

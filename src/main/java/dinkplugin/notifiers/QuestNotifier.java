@@ -20,13 +20,19 @@ import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
 public class QuestNotifier extends BaseNotifier {
 
+    /*
+     * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,questlist_completed%5D.cs2#L5
+     */
     @Varbit
     @VisibleForTesting
-    static final int COMPLETED_ID = 6347, TOTAL_ID = 11877; // https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,questlist_completed%5D.cs2#L5
+    static final int COMPLETED_ID = 6347, TOTAL_ID = 11877;
 
+    /*
+     * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,questlist_qp%5D.cs2#L5
+     */
     @Varbit
     @VisibleForTesting
-    static final int QP_TOTAL_ID = 1782; // https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,questlist_qp%5D.cs2#L5
+    static final int QP_TOTAL_ID = 1782;
 
     @Inject
     private ClientThread clientThread;
@@ -53,27 +59,27 @@ public class QuestNotifier extends BaseNotifier {
     }
 
     private void handleNotify(String questText) {
-        int completed = client.getVarbitValue(COMPLETED_ID);
-        int total = client.getVarbitValue(TOTAL_ID);
-        boolean validCount = completed > 0 && total > 0;
+        int completedQuests = client.getVarbitValue(COMPLETED_ID);
+        int totalQuests = client.getVarbitValue(TOTAL_ID);
+        boolean validQuests = completedQuests > 0 && totalQuests > 0;
 
-        int points = client.getVarpValue(VarPlayer.QUEST_POINTS);
-        int possiblePoints = client.getVarbitValue(QP_TOTAL_ID);
-        boolean validPoints = points > 0 && possiblePoints > 0;
+        int questPoints = client.getVarpValue(VarPlayer.QUEST_POINTS);
+        int totalQuestPoints = client.getVarbitValue(QP_TOTAL_ID);
+        boolean validPoints = questPoints > 0 && totalQuestPoints > 0;
 
         String parsed = QuestUtils.parseQuestWidget(questText);
         String notifyMessage = StringUtils.replaceEach(
             config.questNotifyMessage(),
             new String[] { "%USERNAME%", "%QUEST%", "%POINTS%" },
-            new String[] { Utils.getPlayerName(client), parsed, String.valueOf(points) }
+            new String[] { Utils.getPlayerName(client), parsed, String.valueOf(questPoints) }
         );
 
         QuestNotificationData extra = new QuestNotificationData(
             parsed,
-            validCount ? completed : null,
-            validCount ? total : null,
-            validPoints ? points : null,
-            validPoints ? possiblePoints : null
+            validQuests ? completedQuests : null,
+            validQuests ? totalQuests : null,
+            validPoints ? questPoints : null,
+            validPoints ? totalQuestPoints : null
         );
 
         createMessage(config.questSendImage(), NotificationBody.builder()
