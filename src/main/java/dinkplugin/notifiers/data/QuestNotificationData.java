@@ -6,7 +6,7 @@ import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Value
@@ -22,13 +22,22 @@ public class QuestNotificationData extends NotificationData {
     @Nullable
     Integer totalQuests;
 
+    @Nullable
+    Integer questPoints;
+
+    @Nullable
+    Integer totalQuestPoints;
+
     @Override
     public List<Field> getFields() {
-        if (completedQuests == null || totalQuests == null)
-            return super.getFields();
+        List<Field> fields = new ArrayList<>(2);
 
-        return Collections.singletonList(
-            new Field("Completed Quests", Field.formatProgress(completedQuests, totalQuests))
-        );
+        if (completedQuests != null && totalQuests != null)
+            fields.add(new Field("Completed Quests", Field.formatProgress(completedQuests, totalQuests)));
+
+        if (questPoints != null && totalQuestPoints != null)
+            fields.add(new Field("Quest Points", Field.formatProgress(questPoints, totalQuestPoints)));
+
+        return fields;
     }
 }
