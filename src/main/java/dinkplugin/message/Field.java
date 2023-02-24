@@ -27,4 +27,10 @@ public class Field {
     public static String formatBlock(String codeBlockLanguage, String content) {
         return String.format("```%s\n%s\n```", StringUtils.defaultString(codeBlockLanguage), content);
     }
+
+    public static String formatProgress(int completed, int total) {
+        assert total != 0;
+        double percent = 100.0 * completed / total;
+        return Field.formatBlock("", String.format("%d/%d (%.1f%%)", completed, total, percent));
+    }
 }
