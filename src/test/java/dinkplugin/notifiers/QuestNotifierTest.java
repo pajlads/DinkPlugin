@@ -34,10 +34,15 @@ class QuestNotifierTest extends MockedNotifierTest {
         when(config.notifyQuest()).thenReturn(true);
         when(config.questSendImage()).thenReturn(false);
         when(config.questNotifyMessage()).thenReturn("%USERNAME% has completed: %QUEST%");
+
     }
 
     @Test
     void testNotify() {
+        // init client mocks
+        when(client.getVarbitValue(QuestNotifier.COMPLETED_ID)).thenReturn(50);
+        when(client.getVarbitValue(QuestNotifier.TOTAL_ID)).thenReturn(156);
+
         // mock widget
         Widget questWidget = mock(Widget.class);
         when(client.getWidget(QUEST_COMPLETED_NAME_TEXT)).thenReturn(questWidget);
@@ -52,7 +57,7 @@ class QuestNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(PLAYER_NAME + " has completed: Dragon Slayer")
-                .extra(new QuestNotificationData("Dragon Slayer", null, null))
+                .extra(new QuestNotificationData("Dragon Slayer", 50, 156))
                 .type(NotificationType.QUEST)
                 .build()
         );

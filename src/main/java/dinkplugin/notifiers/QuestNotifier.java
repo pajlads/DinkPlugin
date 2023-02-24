@@ -11,6 +11,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 
@@ -19,7 +20,8 @@ import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 public class QuestNotifier extends BaseNotifier {
 
     @Varbit
-    private static final int COMPLETED_ID = 6347, TOTAL_ID = 11877; // https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,questlist_completed%5D.cs2#L5
+    @VisibleForTesting
+    static final int COMPLETED_ID = 6347, TOTAL_ID = 11877; // https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,questlist_completed%5D.cs2#L5
 
     @Inject
     private ClientThread clientThread;
