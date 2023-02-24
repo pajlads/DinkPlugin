@@ -24,8 +24,11 @@ public class CollectionNotifier extends BaseNotifier {
     static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
 
+    /*
+     * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
+     */
     @VisibleForTesting
-    static final int COMPLETED_VARP = 2943, TOTAL_VARP = 2944; // https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/[clientscript,collection_init_frame].cs2#L3
+    static final int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
 
     /**
      * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.

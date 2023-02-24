@@ -283,7 +283,11 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 {
   "content": "%USERNAME% has completed a quest: %QUEST%",
   "extra": {
-    "questName": "Recipe for Disaster"
+    "questName": "Dragon Slayer I",
+    "completedQuests": 22,
+    "totalQuests": 156,
+    "questPoints": 44,
+    "totalQuestPoints": 293
   },
   "type": "QUEST"
 }
