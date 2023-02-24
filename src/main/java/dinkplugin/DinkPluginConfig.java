@@ -766,8 +766,7 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %QUEST% to insert the quest that you completed<br/>" +
-            "Use %POINTS% to insert your total number of quest points",
+            "Use %QUEST% to insert the quest that you completed",
         position = 62,
         section = questSection
     )

@@ -276,8 +276,6 @@ The examples below omit `embeds` and `playerName` keys because they are always t
 
 `%QUEST%` will be replaced with the name of the quest completed
 
-`%POINTS%` will be replaced with the updated number of total quest points
-
 <details>
   <summary>JSON for Quest Notifications:</summary>
 

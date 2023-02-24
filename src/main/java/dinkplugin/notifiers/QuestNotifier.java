@@ -70,8 +70,8 @@ public class QuestNotifier extends BaseNotifier {
         String parsed = QuestUtils.parseQuestWidget(questText);
         String notifyMessage = StringUtils.replaceEach(
             config.questNotifyMessage(),
-            new String[] { "%USERNAME%", "%QUEST%", "%POINTS%" },
-            new String[] { Utils.getPlayerName(client), parsed, String.valueOf(questPoints) }
+            new String[] { "%USERNAME%", "%QUEST%" },
+            new String[] { Utils.getPlayerName(client), parsed }
         );
 
         QuestNotificationData extra = new QuestNotificationData(
