@@ -30,15 +30,11 @@ public class CollectionNotificationData extends NotificationData {
 
     @Override
     public List<Field> getFields() {
-        if (completedEntries != null && totalEntries != null) {
-            double percent = 100.0 * completedEntries / totalEntries;
-            return Collections.singletonList(
-                new Field(
-                    "Completed Entries",
-                    Field.formatBlock("", String.format("%d/%d (%.1f%%)", completedEntries, totalEntries, percent)))
-            );
-        }
+        if (completedEntries == null || totalEntries == null)
+            return super.getFields();
 
-        return super.getFields();
+        return Collections.singletonList(
+            new Field("Completed Entries", Field.formatProgress(completedEntries, totalEntries))
+        );
     }
 }

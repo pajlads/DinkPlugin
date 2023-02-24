@@ -1,10 +1,34 @@
 package dinkplugin.notifiers.data;
 
-import lombok.Data;
+import dinkplugin.message.Field;
 import lombok.EqualsAndHashCode;
+import lombok.Value;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-@Data
+import java.util.Collections;
+import java.util.List;
+
+@Value
 @EqualsAndHashCode(callSuper = false)
 public class QuestNotificationData extends NotificationData {
-    final String questName;
+
+    @NotNull
+    String questName;
+
+    @Nullable
+    Integer completedQuests;
+
+    @Nullable
+    Integer totalQuests;
+
+    @Override
+    public List<Field> getFields() {
+        if (completedQuests == null || totalQuests == null)
+            return super.getFields();
+
+        return Collections.singletonList(
+            new Field("Completed Quests", Field.formatProgress(completedQuests, totalQuests))
+        );
+    }
 }

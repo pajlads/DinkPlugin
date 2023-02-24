@@ -52,7 +52,7 @@ class QuestNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(PLAYER_NAME + " has completed: Dragon Slayer")
-                .extra(new QuestNotificationData("Dragon Slayer"))
+                .extra(new QuestNotificationData("Dragon Slayer", null, null))
                 .type(NotificationType.QUEST)
                 .build()
         );
