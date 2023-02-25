@@ -21,18 +21,18 @@ public class CombatAchievementData extends NotificationData {
     String task;
 
     @Nullable
-    Integer tierTasksCompleted;
+    Integer completedTierTasks;
 
     @Nullable
     Integer totalTierTasks;
 
     @Override
     public List<Field> getFields() {
-        if (tierTasksCompleted == null || totalTierTasks == null)
+        if (completedTierTasks == null || totalTierTasks == null)
             return super.getFields();
 
         return Collections.singletonList(
-            new Field("Tier Progress", Field.formatProgress(tierTasksCompleted, totalTierTasks))
+            new Field("Tier Progress", Field.formatProgress(completedTierTasks, totalTierTasks))
         );
     }
 }

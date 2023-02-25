@@ -369,7 +369,7 @@ The examples below omit `embeds` and `playerName` keys because they are always t
   "extra": {
     "tier": "GRANDMASTER",
     "task": "Peach Conjurer",
-    "tierTasksCompleted": 12,
+    "completedTierTasks": 12,
     "totalTierTasks": 88
   },
   "type": "COMBAT_ACHIEVEMENT"

@@ -137,14 +137,15 @@ public class CombatTaskNotifier extends BaseNotifier {
             new String[] { player, tier.toString(), task }
         );
 
+        // Jagex does the same min logic: https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,ca_overview_create_tiers%5D.cs2#L28-L32
         int totalTierTasks = totalByTier.getOrDefault(tier, -1);
-        int tierTasksCompleted = Math.min(client.getVarbitValue(tier.getCompletedVarbitId()), totalTierTasks);
-        boolean validCount = totalTierTasks > 0 && tierTasksCompleted > 0;
+        int completedTierTasks = Math.min(client.getVarbitValue(tier.getCompletedVarbitId()), totalTierTasks);
+        boolean validCount = totalTierTasks > 0 && completedTierTasks > 0;
 
         CombatAchievementData extra = new CombatAchievementData(
             tier,
             task,
-            validCount ? tierTasksCompleted : null,
+            validCount ? completedTierTasks : null,
             validCount ? totalTierTasks : null
         );
 
