@@ -9,6 +9,7 @@ import dinkplugin.notifiers.data.CollectionNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.StringUtils;
@@ -58,6 +59,11 @@ public class CollectionNotifier extends BaseNotifier {
         // note: unlike other notifiers, we do not need to reset completed after each message
         // in fact, resetting would be problematic for an edge case with multiple completions in a single tick
         this.completed.set(-1);
+    }
+
+    public void onGameState(GameStateChanged event) {
+        if (event.getGameState() != GameState.LOGGED_IN)
+            this.reset();
     }
 
     public void onTick() {
