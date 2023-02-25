@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include number of tasks completed at same tier in combat achievement notifications. (#180)
 - Minor: Include number of quest completions and quest points in quest notifications. (#178)
 - Minor: Collapse all notifier configuration sections by default. (#176)
 - Minor: Include number of completed entries in collection log notification. (#174)
