@@ -368,7 +368,9 @@ The examples below omit `embeds` and `playerName` keys because they are always t
   "content": "%USERNAME% has completed %TIER% combat task: %TASK%",
   "extra": {
     "tier": "GRANDMASTER",
-    "task": "Peach Conjurer"
+    "task": "Peach Conjurer",
+    "tierTasksCompleted": 12,
+    "totalTierTasks": 88
   },
   "type": "COMBAT_ACHIEVEMENT"
 }

@@ -23,6 +23,8 @@ import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.InteractingChanged;
+import net.runelite.api.events.ScriptPostFired;
+import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
@@ -93,6 +95,7 @@ public class DinkPlugin extends Plugin {
         levelNotifier.reset();
         slayerNotifier.reset();
         killCountNotifier.reset();
+        combatTaskNotifier.reset();
     }
 
     @Provides
@@ -135,6 +138,7 @@ public class DinkPlugin extends Plugin {
         levelNotifier.onTick();
         diaryNotifier.onTick();
         killCountNotifier.onTick();
+        combatTaskNotifier.onTick();
     }
 
     @Subscribe
@@ -209,6 +213,16 @@ public class DinkPlugin extends Plugin {
         clueNotifier.onWidgetLoaded(event);
         speedrunNotifier.onWidgetLoaded(event);
         lootNotifier.onWidgetLoaded(event);
+    }
+
+    @Subscribe
+    public void onScriptPreFired(ScriptPreFired event) {
+        combatTaskNotifier.onPreScript(event);
+    }
+
+    @Subscribe
+    public void onScriptPostFired(ScriptPostFired event) {
+        combatTaskNotifier.onPostScript(event);
     }
 
     public void addChatSuccess(String message) {

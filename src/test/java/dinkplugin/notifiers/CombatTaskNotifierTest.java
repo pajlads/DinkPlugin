@@ -44,7 +44,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has completed %s combat task: %s", PLAYER_NAME, "Hard", "Whack-a-Mole"))
-                .extra(new CombatAchievementData(CombatAchievementTier.HARD, "Whack-a-Mole"))
+                .extra(new CombatAchievementData(CombatAchievementTier.HARD, "Whack-a-Mole", null, null))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
                 .build()
