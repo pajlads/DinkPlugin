@@ -1,16 +1,14 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.util.Utils;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.CombatAchievementData;
+import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.ScriptPostFired;
-import net.runelite.api.events.ScriptPreFired;
 import net.runelite.client.callback.ClientThread;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,7 +20,6 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,10 +43,6 @@ public class CombatTaskNotifier extends BaseNotifier {
      */
     private static final int TIER_TOTAL_SCRIPT_ID = 4789;
 
-    private static final int SCRIPT_INACTIVE = 0, SCRIPT_RUNNING = -1;
-
-    private final AtomicInteger currentScriptArgument = new AtomicInteger(SCRIPT_INACTIVE);
-
     private final Map<CombatAchievementTier, Integer> totalByTier = Collections.synchronizedMap(new EnumMap<>(CombatAchievementTier.class));
 
     @Inject
@@ -66,7 +59,6 @@ public class CombatTaskNotifier extends BaseNotifier {
     }
 
     public void reset() {
-        this.currentScriptArgument.set(SCRIPT_INACTIVE);
         this.totalByTier.clear();
     }
 
@@ -78,43 +70,8 @@ public class CombatTaskNotifier extends BaseNotifier {
     public void onTick() {
         if (client.getGameState() != GameState.LOGGED_IN) {
             this.reset();
-        } else if (currentScriptArgument.get() == SCRIPT_INACTIVE && totalByTier.size() < TIER_COUNT && currentScriptArgument.compareAndSet(SCRIPT_INACTIVE, SCRIPT_RUNNING)) {
-            for (int i = 1; i <= TIER_COUNT; i++) {
-                client.runScript(TIER_TOTAL_SCRIPT_ID, i);
-            }
-        }
-    }
-
-    public void onPreScript(ScriptPreFired event) {
-        if (event.getScriptId() != TIER_TOTAL_SCRIPT_ID || currentScriptArgument.get() != SCRIPT_RUNNING)
-            return;
-
-        Object[] args = event.getScriptEvent().getArguments();
-        if (args.length != 2)
-            return;
-
-        Object arg = args[1]; // index 0 is script id
-        if (arg instanceof Integer) {
-            currentScriptArgument.compareAndSet(SCRIPT_RUNNING, (Integer) arg);
-        }
-    }
-
-    public void onPostScript(ScriptPostFired event) {
-        if (event.getScriptId() != TIER_TOTAL_SCRIPT_ID)
-            return;
-
-        int arg = currentScriptArgument.get();
-        if (arg <= SCRIPT_INACTIVE || arg > TIER_COUNT || client.getIntStackSize() < 1)
-            return;
-
-        CombatAchievementTier tier = CombatAchievementTier.values()[arg - 1];
-        totalByTier.put(tier, client.getIntStack()[0]);
-
-        if (arg < TIER_COUNT) {
-            currentScriptArgument.compareAndSet(arg, SCRIPT_RUNNING);
-        } else {
-            currentScriptArgument.compareAndSet(arg, SCRIPT_INACTIVE);
-            log.debug("Finished initializing tier totals: {}", totalByTier);
+        } else if (totalByTier.size() < TIER_COUNT) {
+            this.populateTotalByTier();
         }
     }
 
@@ -155,6 +112,17 @@ public class CombatTaskNotifier extends BaseNotifier {
             .playerName(player)
             .extra(extra)
             .build());
+    }
+
+    private void populateTotalByTier() {
+        // note: must be called from client thread
+        CombatAchievementTier[] tiers = CombatAchievementTier.values();
+        for (int i = 0; i < TIER_COUNT; i++) {
+            CombatAchievementTier tier = tiers[i];
+            client.runScript(TIER_TOTAL_SCRIPT_ID, i + 1); // 1-indexed in cs2
+            totalByTier.put(tier, client.getIntStack()[0]);
+        }
+        log.debug("Finished initializing tier totals: {}", totalByTier);
     }
 
     @VisibleForTesting

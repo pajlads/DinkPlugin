@@ -216,16 +216,6 @@ public class DinkPlugin extends Plugin {
         lootNotifier.onWidgetLoaded(event);
     }
 
-    @Subscribe
-    public void onScriptPreFired(ScriptPreFired event) {
-        combatTaskNotifier.onPreScript(event);
-    }
-
-    @Subscribe
-    public void onScriptPostFired(ScriptPostFired event) {
-        combatTaskNotifier.onPostScript(event);
-    }
-
     public void addChatSuccess(String message) {
         addChatMessage("Success", Utils.GREEN, message);
     }
