@@ -8,6 +8,7 @@ import dinkplugin.notifiers.data.CombatAchievementData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.annotations.Varbit;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.client.callback.ClientThread;
@@ -67,6 +68,11 @@ public class CombatTaskNotifier extends BaseNotifier {
     public void reset() {
         this.currentScriptArgument.set(SCRIPT_INACTIVE);
         this.totalByTier.clear();
+    }
+
+    public void onGameState(GameStateChanged event) {
+        if (event.getGameState() != GameState.LOGGED_IN)
+            this.reset();
     }
 
     public void onTick() {

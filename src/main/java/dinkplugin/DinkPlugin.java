@@ -121,6 +121,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
         levelNotifier.onGameStateChanged(gameStateChanged);
+        combatTaskNotifier.onGameState(gameStateChanged);
         diaryNotifier.onGameState(gameStateChanged);
     }
 
