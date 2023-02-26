@@ -1,5 +1,6 @@
 package dinkplugin;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dinkplugin.notifiers.CollectionNotifier;
@@ -32,6 +33,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
@@ -44,6 +46,7 @@ import static dinkplugin.util.ConfigUtil.*;
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class SettingsManager {
     private static final String CONFIG_GROUP = "dinkplugin";
+    private static final Set<Integer> PROBLEMATIC_VARBITS;
 
     /**
      * Maps our setting keys to their type for safe serialization and deserialization.
@@ -185,6 +188,14 @@ public class SettingsManager {
         int id = event.getVarbitId();
         int value = event.getValue();
 
+        if (client.getGameState() == GameState.LOGGED_IN) {
+            checkVarbits(id, value);
+        } else if (PROBLEMATIC_VARBITS.contains(id)) {
+            clientThread.invokeLater(() -> checkVarbits(id, client.getVarbitValue(id)));
+        }
+    }
+
+    private void checkVarbits(int id, int value) {
         if (id == KillCountNotifier.KILL_COUNT_SPAM_FILTER && isKillCountFilterInvalid(value) && config.notifyKillCount()) {
             warnForGameSetting(KillCountNotifier.SPAM_WARNING);
         }
@@ -360,5 +371,15 @@ public class SettingsManager {
         if (!mergedConfigs.isEmpty()) {
             plugin.addChatSuccess("The following settings were merged (rather than being overwritten): " + String.join(", ", mergedConfigs));
         }
+    }
+
+    static {
+        PROBLEMATIC_VARBITS = ImmutableSet.of(
+            KillCountNotifier.KILL_COUNT_SPAM_FILTER,
+            CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP,
+            Varbits.COLLECTION_LOG_NOTIFICATION,
+            PetNotifier.LOOT_DROP_NOTIFICATIONS,
+            PetNotifier.UNTRADEABLE_LOOT_DROPS
+        );
     }
 }
