@@ -203,7 +203,7 @@ public class SettingsManager {
     }
 
     private void warnForGameSetting(String message) {
-        if (Utils.isSettingsOpen(client)) {
+        if (isSettingsOpen(client)) {
             plugin.addChatWarning(message);
         } else {
             log.warn(message);
