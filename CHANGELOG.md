@@ -3,6 +3,7 @@
 - Minor: Include number of quest completions and quest points in quest notifications. (#178)
 - Minor: Collapse all notifier configuration sections by default. (#176)
 - Minor: Include number of completed entries in collection log notification. (#174)
+- Bugfix: Fire slayer notifications beyond 999 points. (#182)
 - Dev: Add issue tracker link to README. (#179)
 
 ## 1.3.1
