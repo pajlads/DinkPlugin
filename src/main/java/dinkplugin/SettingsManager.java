@@ -15,6 +15,7 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.CommandExecuted;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -35,6 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -62,6 +64,8 @@ public class SettingsManager {
      * User-specified RSNs that should not trigger webhook notifications.
      */
     private final Collection<String> ignoredNames = new HashSet<>();
+
+    private final AtomicBoolean justLoggedIn = new AtomicBoolean();
 
     private final Gson gson;
     private final Client client;
@@ -184,18 +188,50 @@ public class SettingsManager {
         }
     }
 
-    void onVarbitChanged(VarbitChanged event) {
-        int id = event.getVarbitId();
-        int value = event.getValue();
-
-        if (client.getGameState() == GameState.LOGGED_IN) {
-            checkVarbits(id, value);
-        } else if (PROBLEMATIC_VARBITS.contains(id)) {
-            clientThread.invokeLater(() -> checkVarbits(id, client.getVarbitValue(id)));
+    void onGameState(GameStateChanged event) {
+        if (event.getGameState() != GameState.LOGGED_IN) {
+            justLoggedIn.set(false);
+            return;
+        } else {
+            justLoggedIn.set(true);
         }
+
+        // Since varbit values default to zero and no VarbitChanged occurs if the
+        // newly received value is equal to the existing value, we must manually
+        // check those where 0 is an invalid value deserving of a warning.
+        clientThread.invokeLater(() -> {
+            if (justLoggedIn.get())
+                return false; // try again on next tick
+
+            if (config.notifyCollectionLog() && client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) == 0) {
+                warnForGameSetting(CollectionNotifier.ADDITION_WARNING);
+            }
+
+            if (config.notifyPet() && (client.getVarbitValue(PetNotifier.UNTRADEABLE_LOOT_DROPS) == 0 || client.getVarbitValue(PetNotifier.LOOT_DROP_NOTIFICATIONS) == 0)) {
+                warnForGameSetting(PetNotifier.UNTRADEABLE_WARNING);
+            }
+
+            return true;
+        });
     }
 
-    private void checkVarbits(int id, int value) {
+    void onTick() {
+        justLoggedIn.compareAndSet(client.getGameState() == GameState.LOGGED_IN, false);
+    }
+
+    void onVarbitChanged(VarbitChanged event) {
+        int id = event.getVarbitId();
+        if (PROBLEMATIC_VARBITS.contains(id))
+            clientThread.invoke(() -> checkVarbits(id, client.getVarbitValue(id)));
+    }
+
+    private boolean checkVarbits(int id, int value) {
+        if (client.getGameState() != GameState.LOGGED_IN)
+            return false; // try again on next tick
+
+        if (justLoggedIn.get())
+            return value == 0; // try again next tick, unless would already be handled by invokeLater above
+
         if (id == KillCountNotifier.KILL_COUNT_SPAM_FILTER && isKillCountFilterInvalid(value) && config.notifyKillCount()) {
             warnForGameSetting(KillCountNotifier.SPAM_WARNING);
         }
@@ -211,6 +247,8 @@ public class SettingsManager {
         if ((id == PetNotifier.LOOT_DROP_NOTIFICATIONS || id == PetNotifier.UNTRADEABLE_LOOT_DROPS) && isPetLootInvalid(value) && config.notifyPet()) {
             warnForGameSetting(PetNotifier.UNTRADEABLE_WARNING);
         }
+
+        return true;
     }
 
     private void warnForGameSetting(String message) {

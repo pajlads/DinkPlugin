@@ -117,6 +117,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
+        settingsManager.onGameState(gameStateChanged);
         levelNotifier.onGameStateChanged(gameStateChanged);
         diaryNotifier.onGameState(gameStateChanged);
     }
@@ -128,6 +129,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onGameTick(GameTick event) {
+        settingsManager.onTick();
         collectionNotifier.onTick();
         petNotifier.onTick();
         clueNotifier.onTick();

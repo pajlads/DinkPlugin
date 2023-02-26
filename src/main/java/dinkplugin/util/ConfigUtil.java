@@ -3,7 +3,6 @@ package dinkplugin.util;
 import com.google.common.collect.ImmutableSet;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
-import net.runelite.api.GameState;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.util.ColorUtil;
@@ -130,7 +129,6 @@ public class ConfigUtil {
     }
 
     public boolean isSettingsOpen(@NotNull Client client) {
-        if (client.getGameState() != GameState.LOGGED_IN) return false;
         Widget widget = client.getWidget(WidgetInfo.SETTINGS_INIT);
         return widget != null && !widget.isHidden();
     }
