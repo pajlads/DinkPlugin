@@ -216,6 +216,7 @@ public class SettingsManager {
     }
 
     void onTick() {
+        // indicate when we've been logged in for more than a single tick
         justLoggedIn.compareAndSet(client.getGameState() == GameState.LOGGED_IN, false);
     }
 
