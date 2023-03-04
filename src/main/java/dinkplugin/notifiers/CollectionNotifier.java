@@ -115,8 +115,8 @@ public class CollectionNotifier extends BaseNotifier {
         int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed > 0;
         if (!varpValid) {
-            // This should never occur unless Jagex changes the var player id's
-            log.warn("Collection log completion VarPlayer was invalid ({} / {})! Please report to Dink issue tracker", completed, total);
+            // This occurs if the player doesn't have the character summary tab selected
+            log.debug("Collection log progress varps were invalid ({} / {})", completed, total);
         }
 
         Integer itemId = itemSearcher.findItemId(itemName);
