@@ -9,6 +9,7 @@ import dinkplugin.notifiers.data.CollectionNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.StringUtils;
@@ -60,6 +61,11 @@ public class CollectionNotifier extends BaseNotifier {
         this.completed.set(-1);
     }
 
+    public void onGameState(GameStateChanged event) {
+        if (event.getGameState() != GameState.LOGGED_IN)
+            this.reset();
+    }
+
     public void onTick() {
         if (client.getGameState() != GameState.LOGGED_IN) {
             // indicate that the latest completion count should be updated
@@ -109,8 +115,8 @@ public class CollectionNotifier extends BaseNotifier {
         int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed > 0;
         if (!varpValid) {
-            // This should never occur unless Jagex changes the var player id's
-            log.warn("Collection log completion VarPlayer was invalid ({} / {})! Please report to Dink issue tracker", completed, total);
+            // This occurs if the player doesn't have the character summary tab selected
+            log.debug("Collection log progress varps were invalid ({} / {})", completed, total);
         }
 
         Integer itemId = itemSearcher.findItemId(itemName);
