@@ -49,7 +49,11 @@ public class WorldUtils {
     }
 
     public boolean isLastManStanding(Client client) {
-        return LMS_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
+        if (LMS_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
+            return true;
+
+        Widget widget = client.getWidget(WidgetInfo.LMS_KDA);
+        return widget != null && !widget.isHidden();
     }
 
     public boolean isPestControl(Client client) {
