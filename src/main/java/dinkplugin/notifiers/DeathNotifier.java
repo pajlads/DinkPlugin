@@ -175,8 +175,8 @@ public class DeathNotifier extends BaseNotifier {
         if (WorldUtils.isPvpSafeZone(client))
             return null;
 
-        // must be in wildness or pvp world to be pk'd
-        if (client.getVarbitValue(Varbits.IN_WILDERNESS) <= 0 && !WorldUtils.isPvpWorld(client.getWorldType()))
+        // must be in wildness or pvp world or LMS to be pk'd
+        if (client.getVarbitValue(Varbits.IN_WILDERNESS) <= 0 && !WorldUtils.isPvpWorld(client.getWorldType()) && !WorldUtils.isLastManStanding(client))
             return null;
 
         Player localPlayer = client.getLocalPlayer();
@@ -187,8 +187,9 @@ public class DeathNotifier extends BaseNotifier {
                 Player last = (Player) lastTarget;
                 if (!last.isClanMember() && !last.isFriend() && !last.isFriendsChatMember())
                     return last;
-            } else
+            } else if (lastTarget.getCombatLevel() > 0) {
                 return null; // we likely died to this NPC rather than a player
+            }
         }
 
         // find another player interacting with us (that is preferably not a friend or clan member)
@@ -201,6 +202,7 @@ public class DeathNotifier extends BaseNotifier {
                     .thenComparing(Player::isFriendsChatMember) // prefer not fc
                     .thenComparingInt(p -> Math.abs(localPlayer.getCombatLevel() - p.getCombatLevel())) // prefer similar level
                     .thenComparing(p -> p.getOverheadIcon() == null) // prefer skulled
+                    .thenComparingInt(p -> -p.getCombatLevel()) // prefer higher level for a given absolute level gap
             )
             .orElse(null);
     }

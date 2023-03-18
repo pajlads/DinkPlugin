@@ -3,6 +3,7 @@
 - Minor: Include number of quest completions and quest points in quest notifications. (#178)
 - Minor: Collapse all notifier configuration sections by default. (#176)
 - Minor: Include number of completed entries in collection log notification. (#174, #181)
+- Bugfix: Include PKer from Last Man Standing minigame in death notifications. (#187)
 - Bugfix: Fire slayer notifications beyond 999 points. (#182)
 - Dev: Update Gradle to 8.0.2 patch version. (#185)
 - Dev: Add issue tracker link to README. (#179)
