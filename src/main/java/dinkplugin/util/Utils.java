@@ -6,8 +6,6 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.vars.AccountType;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.util.ColorUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -65,11 +63,6 @@ public class Utils {
         } else {
             return b.contains(a);
         }
-    }
-
-    public boolean isSettingsOpen(@NotNull Client client) {
-        Widget widget = client.getWidget(WidgetInfo.SETTINGS_INIT);
-        return widget != null && !widget.isSelfHidden();
     }
 
     public String getPlayerName(Client client) {

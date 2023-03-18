@@ -2,6 +2,9 @@ package dinkplugin.util;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.experimental.UtilityClass;
+import net.runelite.api.Client;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.util.ColorUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -123,6 +126,11 @@ public class ConfigUtil {
         }
 
         return null;
+    }
+
+    public boolean isSettingsOpen(@NotNull Client client) {
+        Widget widget = client.getWidget(WidgetInfo.SETTINGS_INIT);
+        return widget != null && !widget.isHidden();
     }
 
     public boolean isKillCountFilterInvalid(int varbitValue) {

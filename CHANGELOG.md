@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Avoid unwarranted settings warnings when world hopping. (#183)
 - Minor: Include number of quest completions and quest points in quest notifications. (#178)
 - Minor: Collapse all notifier configuration sections by default. (#176)
 - Minor: Include number of completed entries in collection log notification. (#174, #181)
