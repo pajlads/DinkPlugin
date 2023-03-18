@@ -1,5 +1,6 @@
 package dinkplugin;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dinkplugin.notifiers.CollectionNotifier;
@@ -14,6 +15,7 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.CommandExecuted;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -32,7 +34,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -44,6 +48,7 @@ import static dinkplugin.util.ConfigUtil.*;
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class SettingsManager {
     private static final String CONFIG_GROUP = "dinkplugin";
+    private static final Set<Integer> PROBLEMATIC_VARBITS;
 
     /**
      * Maps our setting keys to their type for safe serialization and deserialization.
@@ -59,6 +64,8 @@ public class SettingsManager {
      * User-specified RSNs that should not trigger webhook notifications.
      */
     private final Collection<String> ignoredNames = new HashSet<>();
+
+    private final AtomicBoolean justLoggedIn = new AtomicBoolean();
 
     private final Gson gson;
     private final Client client;
@@ -181,9 +188,50 @@ public class SettingsManager {
         }
     }
 
+    void onGameState(GameStateChanged event) {
+        if (event.getGameState() != GameState.LOGGED_IN) {
+            justLoggedIn.set(false);
+            return;
+        } else {
+            justLoggedIn.set(true);
+        }
+
+        // Since varbit values default to zero and no VarbitChanged occurs if the
+        // newly received value is equal to the existing value, we must manually
+        // check those where 0 is an invalid value deserving of a warning.
+        clientThread.invokeLater(() -> {
+            if (justLoggedIn.get())
+                return false; // try again on next tick
+
+            if (config.notifyCollectionLog() && client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) == 0) {
+                warnForGameSetting(CollectionNotifier.ADDITION_WARNING);
+            }
+
+            if (config.notifyPet() && (client.getVarbitValue(PetNotifier.UNTRADEABLE_LOOT_DROPS) == 0 || client.getVarbitValue(PetNotifier.LOOT_DROP_NOTIFICATIONS) == 0)) {
+                warnForGameSetting(PetNotifier.UNTRADEABLE_WARNING);
+            }
+
+            return true;
+        });
+    }
+
+    void onTick() {
+        // indicate when we've been logged in for more than a single tick
+        justLoggedIn.compareAndSet(client.getGameState() == GameState.LOGGED_IN, false);
+    }
+
     void onVarbitChanged(VarbitChanged event) {
         int id = event.getVarbitId();
-        int value = event.getValue();
+        if (PROBLEMATIC_VARBITS.contains(id))
+            clientThread.invoke(() -> checkVarbits(id, client.getVarbitValue(id)));
+    }
+
+    private boolean checkVarbits(int id, int value) {
+        if (client.getGameState() != GameState.LOGGED_IN)
+            return false; // try again on next tick
+
+        if (justLoggedIn.get())
+            return value == 0; // try again next tick, unless would already be handled by invokeLater above
 
         if (id == KillCountNotifier.KILL_COUNT_SPAM_FILTER && isKillCountFilterInvalid(value) && config.notifyKillCount()) {
             warnForGameSetting(KillCountNotifier.SPAM_WARNING);
@@ -200,10 +248,12 @@ public class SettingsManager {
         if ((id == PetNotifier.LOOT_DROP_NOTIFICATIONS || id == PetNotifier.UNTRADEABLE_LOOT_DROPS) && isPetLootInvalid(value) && config.notifyPet()) {
             warnForGameSetting(PetNotifier.UNTRADEABLE_WARNING);
         }
+
+        return true;
     }
 
     private void warnForGameSetting(String message) {
-        if (Utils.isSettingsOpen(client)) {
+        if (isSettingsOpen(client)) {
             plugin.addChatWarning(message);
         } else {
             log.warn(message);
@@ -360,5 +410,15 @@ public class SettingsManager {
         if (!mergedConfigs.isEmpty()) {
             plugin.addChatSuccess("The following settings were merged (rather than being overwritten): " + String.join(", ", mergedConfigs));
         }
+    }
+
+    static {
+        PROBLEMATIC_VARBITS = ImmutableSet.of(
+            KillCountNotifier.KILL_COUNT_SPAM_FILTER,
+            CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP,
+            Varbits.COLLECTION_LOG_NOTIFICATION,
+            PetNotifier.LOOT_DROP_NOTIFICATIONS,
+            PetNotifier.UNTRADEABLE_LOOT_DROPS
+        );
     }
 }
