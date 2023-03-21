@@ -18,11 +18,9 @@ import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
-import net.runelite.client.game.NPCManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,10 +45,6 @@ class DeathNotifierTest extends MockedNotifierTest {
     @Bind
     @InjectMocks
     DeathNotifier notifier;
-
-    @Bind
-    @Mock
-    NPCManager npcManager;
 
     @Override
     @BeforeEach

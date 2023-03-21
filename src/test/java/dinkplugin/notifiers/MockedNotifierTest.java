@@ -21,6 +21,7 @@ import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigDescriptor;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.NPCManager;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.http.api.RuneLiteAPI;
 import okhttp3.OkHttpClient;
@@ -72,6 +73,9 @@ abstract class MockedNotifierTest extends MockedTestBase {
 
     @Bind
     protected ItemManager itemManager = Mockito.mock(ItemManager.class);
+
+    @Bind
+    protected NPCManager npcManager = Mockito.mock(NPCManager.class);
 
     @Bind
     protected DinkPlugin plugin = Mockito.spy(DinkPlugin.class);
