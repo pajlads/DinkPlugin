@@ -11,15 +11,18 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
+import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
+import net.runelite.client.game.NPCManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,6 +30,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -44,6 +48,10 @@ class DeathNotifierTest extends MockedNotifierTest {
     @InjectMocks
     DeathNotifier notifier;
 
+    @Bind
+    @Mock
+    NPCManager npcManager;
+
     @Override
     @BeforeEach
     protected void setUp() {
@@ -59,7 +67,8 @@ class DeathNotifierTest extends MockedNotifierTest {
 
         // init client mocks
         when(client.getVarbitValue(Varbits.IN_WILDERNESS)).thenReturn(1);
-        when(client.getPlayers()).thenReturn(Collections.emptyList());
+        when(client.getCachedPlayers()).thenReturn(new Player[0]);
+        when(client.getCachedNPCs()).thenReturn(new NPC[0]);
         WorldPoint location = new WorldPoint(0, 0, 0);
         when(localPlayer.getWorldLocation()).thenReturn(location);
 
@@ -69,6 +78,9 @@ class DeathNotifierTest extends MockedNotifierTest {
         mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
         mockItem(ItemID.COAL, COAL_PRICE, "Coal");
         mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
+
+        // init npc mocks
+        when(npcManager.getHealth(anyInt())).thenReturn(50);
     }
 
     @Test
@@ -82,7 +94,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
-                .extra(new DeathNotificationData(0L, false, null, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -127,7 +139,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE))
-                .extra(new DeathNotificationData((long) TUNA_PRICE, false, null, kept, lost))
+                .extra(new DeathNotificationData((long) TUNA_PRICE, false, null, null, null, kept, lost))
                 .type(NotificationType.DEATH)
                 .embeds(embeds)
                 .build()
@@ -141,7 +153,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         Player other = mock(Player.class);
         when(other.getName()).thenReturn(pker);
         when(other.getInteracting()).thenReturn(localPlayer);
-        when(client.getPlayers()).thenReturn(Arrays.asList(mock(Player.class), mock(Player.class), other, mock(Player.class)));
+        when(client.getCachedPlayers()).thenReturn(new Player[] { mock(Player.class), mock(Player.class), other, mock(Player.class) });
 
         // fire event
         plugin.onActorDeath(new ActorDeath(localPlayer));
@@ -152,7 +164,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
-                .extra(new DeathNotificationData(0L, true, pker, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -179,7 +191,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
-                .extra(new DeathNotificationData(0L, true, pker, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -191,7 +203,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         Player other = mock(Player.class);
         when(other.getName()).thenReturn("Rasmus");
         when(other.getInteracting()).thenReturn(localPlayer);
-        when(client.getPlayers()).thenReturn(Collections.singletonList(other));
+        when(client.getCachedPlayers()).thenReturn(new Player[] { other });
         when(client.getVarbitValue(Varbits.IN_WILDERNESS)).thenReturn(0);
 
         // fire event
@@ -203,7 +215,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
-                .extra(new DeathNotificationData(0L, false, null, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
         );

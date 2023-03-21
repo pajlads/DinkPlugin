@@ -2,15 +2,36 @@ package dinkplugin.notifiers.data;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import java.util.Collection;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class DeathNotificationData extends NotificationData {
-    Long valueLost;
+
+    long valueLost;
+
     boolean isPvp;
+
+    /**
+     * @deprecated in favor of {@link #getKillerName()}
+     */
+    @Nullable
+    @Deprecated
     String pker;
-    List<SerializedItemStack> keptItems;
-    List<SerializedItemStack> lostItems;
+
+    @Nullable
+    String killerName;
+
+    @Nullable
+    Integer killerNpcId;
+
+    @NotNull
+    Collection<SerializedItemStack> keptItems;
+
+    @NotNull
+    Collection<SerializedItemStack> lostItems;
+
 }

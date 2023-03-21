@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
 import net.runelite.api.annotations.Varbit;
+import net.runelite.api.annotations.Varp;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -24,6 +25,7 @@ public class WorldUtils {
     private final int CASTLE_WARS_REGION = 9520;
 
     @VisibleForTesting
+    @Varp
     public final int CASTLE_WARS_COUNTDOWN = 380;
     @Varbit
     private final int CASTLE_WARS_X_OFFSET = 156;
@@ -66,7 +68,7 @@ public class WorldUtils {
     }
 
     public boolean isSafeArea(Client client) {
-        return isCastleWars(client) || isPestControl(client) || isPlayerOwnedHouse(client);
+        return isCastleWars(client) || isPestControl(client) || isPlayerOwnedHouse(client) || isLastManStanding(client);
     }
 
     public boolean isSoulWars(Client client) {
