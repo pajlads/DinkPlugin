@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 public class DeathNotifier extends BaseNotifier {
 
     private static final BiPredicate<Player, Actor> INTERACTING;
-    private static final Predicate<NPC> NPC_PREDICATE;
+    private static final Predicate<NPCComposition> NPC_PREDICATE;
     private static final Function<Player, Comparator<Player>> PK_COMPARATOR; // less is better (i.e., use min)
     private static final Function<NPCManager, Comparator<NPC>> NPC_COMPARATOR; // less is worse (i.e., use max)
 
@@ -233,7 +233,7 @@ public class DeathNotifier extends BaseNotifier {
         // otherwise search through NPCs interacting with us
         return Arrays.stream(client.getCachedNPCs())
             .filter(interacting)
-            .filter(NPC_PREDICATE)
+            .filter(npc -> NPC_PREDICATE.test(npc.getTransformedComposition()))
             .max(NPC_COMPARATOR.apply(npcManager)) // O(n)
             .orElse(null);
     }
@@ -248,10 +248,21 @@ public class DeathNotifier extends BaseNotifier {
         }
 
         if (actor instanceof NPC) {
-            return NPC_PREDICATE.test((NPC) actor);
+            NPCComposition npc = ((NPC) actor).getTransformedComposition();
+            return NPC_PREDICATE.test(npc) && hasAttackOption(npc.getActions());
         }
 
         log.warn("Encountered unknown type of Actor; was neither Player nor NPC!");
+        return false;
+    }
+
+    private static boolean hasAttackOption(String[] actions) {
+        if (actions != null) {
+            for (String action : actions) {
+                if ("Attack".equalsIgnoreCase(action))
+                    return true;
+            }
+        }
         return false;
     }
 
@@ -327,10 +338,7 @@ public class DeathNotifier extends BaseNotifier {
     static {
         INTERACTING = (localPlayer, a) -> a != null && !a.isDead() && a.getInteracting() == localPlayer;
 
-        NPC_PREDICATE = npc -> {
-            NPCComposition comp = npc.getTransformedComposition();
-            return comp != null && comp.isInteractible() && !comp.isFollower() && comp.getCombatLevel() > 0;
-        };
+        NPC_PREDICATE = comp -> comp != null && comp.isInteractible() && !comp.isFollower() && comp.getCombatLevel() > 0;
 
         PK_COMPARATOR = localPlayer -> Comparator
             .comparing(Player::isClanMember) // prefer not in clan
@@ -350,17 +358,7 @@ public class DeathNotifier extends BaseNotifier {
                     )
                     .thenComparing(
                         NPCComposition::getActions,
-                        Comparator.nullsFirst(
-                            Comparator.comparing(actions -> {
-                                for (String action : actions) {
-                                    if ("Attack".equalsIgnoreCase(action))
-                                        return true; // prefer explicitly attackable
-                                }
-
-                                // note: this is not applied as a filter as some NPCs lack this menu option but can be attacked
-                                return false;
-                            })
-                        )
+                        Comparator.comparing(DeathNotifier::hasAttackOption)
                     )
                     .thenComparingInt(NPCComposition::getCombatLevel) // prefer high level
                     .thenComparingInt(NPCComposition::getSize) // prefer large
