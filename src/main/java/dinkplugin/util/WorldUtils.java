@@ -25,13 +25,14 @@ public class WorldUtils {
     private final Set<Integer> MAGE_TRAIN_REGIONS = ImmutableSet.of(13462, 13463);
     private final Set<Integer> POH_REGIONS = ImmutableSet.of(7257, 7513, 7514, 7769, 7770, 8025, 8026);
     private final Set<Integer> SOUL_REGIONS = ImmutableSet.of(8493, 8748, 8749, 9005);
-    private final Set<Integer> TZHAAR_REGIONS = ImmutableSet.of(9551, 9552);
     private final int BURTHORPE_REGION = 8781;
     private final int INFERNO_REGION = 9043;
     private final int NMZ_REGION = 9033;
     private final int SORCERESS_REGION = 11605;
     private final int TITHE_REGION = 7222;
     private final int TRAWLER_REGION = 7499;
+    private final int TZHAAR_CAVE = 9551;
+    private final int TZHAAR_PIT = 9552;
 
     public boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);
@@ -99,15 +100,15 @@ public class WorldUtils {
         int regionId = client.getLocalPlayer().getWorldLocation().getRegionID();
 
         if (isBarbarianAssault(regionId) || isChambersOfXeric(regionId) || isInferno(regionId) ||
-            isNightmareZone(regionId) || isTzHaar(regionId) || isPestControl(client)) {
+            isNightmareZone(regionId) || isTzHaarFightCave(regionId) || isPestControl(client)) {
             // All PvM activities are dangerous for Hardcore group iron players
             return client.getAccountType() != AccountType.HARDCORE_GROUP_IRONMAN;
         }
 
         return isCastleWars(regionId) || isClanWars(regionId) || isSoulWars(regionId) ||
-            isPlayerOwnedHouse(regionId) || isLastManStanding(client) || isFishingTrawler(regionId) ||
+            isPlayerOwnedHouse(regionId) || isLastManStanding(client) || isTzHaarFightPit(regionId) ||
             isMageTrainingArena(regionId) || isSorceressGarden(regionId) || isTitheFarm(regionId) ||
-            isBurthorpeGameRoom(regionId);
+            isFishingTrawler(regionId) || isBurthorpeGameRoom(regionId);
     }
 
     public boolean isSorceressGarden(int regionId) {
@@ -126,8 +127,12 @@ public class WorldUtils {
         return regionId == TITHE_REGION;
     }
 
-    public boolean isTzHaar(int regionId) {
-        return TZHAAR_REGIONS.contains(regionId);
+    public boolean isTzHaarFightCave(int regionId) {
+        return regionId == TZHAAR_CAVE;
+    }
+
+    public boolean isTzHaarFightPit(int regionId) {
+        return regionId == TZHAAR_PIT;
     }
 
 }
