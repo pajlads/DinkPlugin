@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +43,11 @@ public class PetNotifier extends BaseNotifier {
     private static final Pattern UNTRADEABLE_REGEX = Pattern.compile("Untradeable drop: (.+)");
     private static final Set<String> PET_NAMES;
     private static final String PRIMED_NAME = "";
+
+    @VisibleForTesting
+    static final int MAX_TICKS_WAIT = 5;
+
+    private final AtomicInteger ticksWaited = new AtomicInteger();
 
     @Inject
     private ItemSearcher itemSearcher;
@@ -95,13 +101,17 @@ public class PetNotifier extends BaseNotifier {
     }
 
     public void onTick() {
-        if (petName != null)
+        if (petName == null)
+            return;
+
+        if (milestone != null || ticksWaited.incrementAndGet() > MAX_TICKS_WAIT)
             this.handleNotify();
     }
 
     public void reset() {
         this.petName = null;
         this.milestone = null;
+        this.ticksWaited.set(0);
     }
 
     private void handleNotify() {
