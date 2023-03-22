@@ -4,11 +4,8 @@ import com.google.common.collect.ImmutableSet;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
-import net.runelite.api.annotations.Varbit;
-import net.runelite.api.annotations.Varp;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -34,11 +31,6 @@ public class WorldUtils {
     private final int TITHE_REGION = 7222;
     private final int TRAWLER_REGION = 7499;
 
-    @VisibleForTesting
-    public final @Varp int CASTLE_WARS_COUNTDOWN = 380;
-    private final @Varbit int CASTLE_WARS_X_OFFSET = 156;
-    private final @Varbit int CASTLE_WARS_Y_OFFSET = 157;
-
     public boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);
     }
@@ -61,8 +53,7 @@ public class WorldUtils {
     }
 
     public boolean isCastleWars(Client client) {
-        return CASTLE_WARS_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()) &&
-            (client.getVarpValue(CASTLE_WARS_COUNTDOWN) > 0 || client.getVarbitValue(CASTLE_WARS_X_OFFSET) > 0 || client.getVarbitValue(CASTLE_WARS_Y_OFFSET) > 0);
+        return CASTLE_WARS_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
     }
 
     public boolean isClanWars(Client client) {
