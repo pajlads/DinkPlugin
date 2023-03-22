@@ -41,27 +41,27 @@ public class WorldUtils {
 
     public boolean isPvpSafeZone(Client client) {
         Widget widget = client.getWidget(WidgetInfo.PVP_WORLD_SAFE_ZONE);
-        return widget != null && !widget.isSelfHidden();
+        return widget != null && !widget.isHidden();
     }
 
-    public boolean isBarbarianAssault(Client client) {
-        return BA_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
+    public boolean isBarbarianAssault(int regionId) {
+        return BA_REGIONS.contains(regionId);
     }
 
-    public boolean isBurthorpeGameRoom(Client client) {
-        return client.getLocalPlayer().getWorldLocation().getRegionID() == BURTHORPE_REGION;
+    public boolean isBurthorpeGameRoom(int regionId) {
+        return regionId == BURTHORPE_REGION;
     }
 
-    public boolean isCastleWars(Client client) {
-        return CASTLE_WARS_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
+    public boolean isCastleWars(int regionId) {
+        return CASTLE_WARS_REGIONS.contains(regionId);
     }
 
-    public boolean isClanWars(Client client) {
-        return CLAN_WARS_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
+    public boolean isClanWars(int regionId) {
+        return CLAN_WARS_REGIONS.contains(regionId);
     }
 
-    public boolean isInferno(Client client) {
-        return client.getLocalPlayer().getWorldLocation().getRegionID() == INFERNO_REGION;
+    public boolean isInferno(int regionId) {
+        return regionId == INFERNO_REGION;
     }
 
     public boolean isLastManStanding(Client client) {
@@ -72,49 +72,50 @@ public class WorldUtils {
         return widget != null && !widget.isHidden();
     }
 
-    public boolean isMageTrainingArena(Client client) {
-        return MAGE_TRAIN_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
+    public boolean isMageTrainingArena(int regionId) {
+        return MAGE_TRAIN_REGIONS.contains(regionId);
     }
 
-    public boolean isNightmareZone(Client client) {
-        return client.getLocalPlayer().getWorldLocation().getRegionID() == NMZ_REGION;
+    public boolean isNightmareZone(int regionId) {
+        return regionId == NMZ_REGION;
     }
 
     public boolean isPestControl(Client client) {
         Widget widget = client.getWidget(WidgetInfo.PEST_CONTROL_BLUE_SHIELD);
-        return widget != null;
+        return widget != null && !widget.isHidden();
     }
 
-    public boolean isPlayerOwnedHouse(Client client) {
-        return POH_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
+    public boolean isPlayerOwnedHouse(int regionId) {
+        return POH_REGIONS.contains(regionId);
     }
 
     public boolean isSafeArea(Client client) {
-        return isCastleWars(client) || isPestControl(client) || isPlayerOwnedHouse(client) ||
-            isLastManStanding(client) || isSoulWars(client) || isBarbarianAssault(client) ||
-            isNightmareZone(client) || isInferno(client) || isClanWars(client) ||
-            isTzHaar(client) || isFishingTrawler(client) || isMageTrainingArena(client) ||
-            isSorceressGarden(client) || isTitheFarm(client) || isBurthorpeGameRoom(client);
+        int regionId = client.getLocalPlayer().getWorldLocation().getRegionID();
+        return isCastleWars(regionId) || isPestControl(client) || isPlayerOwnedHouse(regionId) ||
+            isLastManStanding(client) || isSoulWars(regionId) || isBarbarianAssault(regionId) ||
+            isNightmareZone(regionId) || isInferno(regionId) || isClanWars(regionId) ||
+            isTzHaar(regionId) || isFishingTrawler(regionId) || isMageTrainingArena(regionId) ||
+            isSorceressGarden(regionId) || isTitheFarm(regionId) || isBurthorpeGameRoom(regionId);
     }
 
-    public boolean isSorceressGarden(Client client) {
-        return client.getLocalPlayer().getWorldLocation().getRegionID() == SORCERESS_REGION;
+    public boolean isSorceressGarden(int regionId) {
+        return regionId == SORCERESS_REGION;
     }
 
-    public boolean isSoulWars(Client client) {
-        return SOUL_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
+    public boolean isSoulWars(int regionId) {
+        return SOUL_REGIONS.contains(regionId);
     }
 
-    public boolean isFishingTrawler(Client client) {
-        return client.getLocalPlayer().getWorldLocation().getRegionID() == TRAWLER_REGION;
+    public boolean isFishingTrawler(int regionId) {
+        return regionId == TRAWLER_REGION;
     }
 
-    public boolean isTitheFarm(Client client) {
-        return client.getLocalPlayer().getWorldLocation().getRegionID() == TITHE_REGION;
+    public boolean isTitheFarm(int regionId) {
+        return regionId == TITHE_REGION;
     }
 
-    public boolean isTzHaar(Client client) {
-        return TZHAAR_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID());
+    public boolean isTzHaar(int regionId) {
+        return TZHAAR_REGIONS.contains(regionId);
     }
 
 }
