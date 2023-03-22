@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
+import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 
@@ -19,6 +20,7 @@ public class WorldUtils {
     private final Set<Integer> BA_REGIONS = ImmutableSet.of(7508, 7509, 10322);
     private final Set<Integer> CASTLE_WARS_REGIONS = ImmutableSet.of(9520, 9620);
     private final Set<Integer> CLAN_WARS_REGIONS = ImmutableSet.of(12621, 12622, 12623, 13130, 13131, 13133, 13134, 13135, 13386, 13387, 13390, 13641, 13642, 13643, 13644, 13645, 13646, 13647, 13899, 13900, 14155, 14156);
+    private final Set<Integer> COX_REGIONS = ImmutableSet.of(12889, 13136, 13137, 13138, 13139, 13140, 13141, 13145, 13393, 13394, 13395, 13396, 13397, 13401);
     private final Set<Integer> LMS_REGIONS = ImmutableSet.of(13658, 13659, 13660, 13914, 13915, 13916, 13918, 13919, 13920, 14174, 14175, 14176, 14430, 14431, 14432);
     private final Set<Integer> MAGE_TRAIN_REGIONS = ImmutableSet.of(13462, 13463);
     private final Set<Integer> POH_REGIONS = ImmutableSet.of(7257, 7513, 7514, 7769, 7770, 8025, 8026);
@@ -56,6 +58,10 @@ public class WorldUtils {
         return CASTLE_WARS_REGIONS.contains(regionId);
     }
 
+    public boolean isChambersOfXeric(int regionId) {
+        return COX_REGIONS.contains(regionId);
+    }
+
     public boolean isClanWars(int regionId) {
         return CLAN_WARS_REGIONS.contains(regionId);
     }
@@ -91,11 +97,17 @@ public class WorldUtils {
 
     public boolean isSafeArea(Client client) {
         int regionId = client.getLocalPlayer().getWorldLocation().getRegionID();
-        return isCastleWars(regionId) || isPestControl(client) || isPlayerOwnedHouse(regionId) ||
-            isLastManStanding(client) || isSoulWars(regionId) || isBarbarianAssault(regionId) ||
-            isNightmareZone(regionId) || isInferno(regionId) || isClanWars(regionId) ||
-            isTzHaar(regionId) || isFishingTrawler(regionId) || isMageTrainingArena(regionId) ||
-            isSorceressGarden(regionId) || isTitheFarm(regionId) || isBurthorpeGameRoom(regionId);
+
+        if (isBarbarianAssault(regionId) || isChambersOfXeric(regionId) || isInferno(regionId) ||
+            isNightmareZone(regionId) || isTzHaar(regionId) || isPestControl(client)) {
+            // All PvM activities are dangerous for Hardcore group iron players
+            return client.getAccountType() != AccountType.HARDCORE_GROUP_IRONMAN;
+        }
+
+        return isCastleWars(regionId) || isClanWars(regionId) || isSoulWars(regionId) ||
+            isPlayerOwnedHouse(regionId) || isLastManStanding(client) || isFishingTrawler(regionId) ||
+            isMageTrainingArena(regionId) || isSorceressGarden(regionId) || isTitheFarm(regionId) ||
+            isBurthorpeGameRoom(regionId);
     }
 
     public boolean isSorceressGarden(int regionId) {
