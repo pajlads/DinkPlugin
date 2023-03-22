@@ -48,10 +48,25 @@ import java.util.stream.Collectors;
 @Singleton
 public class DeathNotifier extends BaseNotifier {
 
+    /**
+     * Checks whether the actor is alive and interacting with the specified player.
+     */
     private static final BiPredicate<Player, Actor> INTERACTING;
-    private static final Predicate<NPCComposition> NPC_PREDICATE;
-    private static final Function<Player, Comparator<Player>> PK_COMPARATOR; // less is better (i.e., use min)
-    private static final Function<NPCManager, Comparator<NPC>> NPC_COMPARATOR; // less is worse (i.e., use max)
+
+    /**
+     * Checks whether a NPC is a valid candidate to be our killer.
+     */
+    private static final Predicate<NPCComposition> NPC_VALID;
+
+    /**
+     * Orders actors by their likelihood of being the killer of the specified player.
+     */
+    private static final Function<Player, Comparator<Player>> PK_COMPARATOR;
+
+    /**
+     * Orders NPCs by their likelihood of being our killer.
+     */
+    private static final Function<NPCManager, Comparator<NPC>> NPC_COMPARATOR;
 
     @Inject
     private ItemManager itemManager;
@@ -61,7 +76,7 @@ public class DeathNotifier extends BaseNotifier {
 
     /**
      * Tracks the last {@link Actor} our local player interacted with,
-     * for the purposes of attributing deaths to particular {@link Player}'s.
+     * for the purpose of attributing deaths to particular {@link Actor}'s.
      * <p>
      * Note: this is wrapped in a weak reference to allow garbage collection,
      * for example if the {@link Actor} despawns.
@@ -71,6 +86,12 @@ public class DeathNotifier extends BaseNotifier {
      */
     private WeakReference<Actor> lastTarget = new WeakReference<>(null);
 
+    /**
+     * Tracks the last {@link Actor} that interacted with our local player,
+     * for the purpose of attributing deaths to particular {@link Actor}'s.
+     *
+     * @see #identifyKiller()
+     */
     private WeakReference<Actor> lastIncoming = new WeakReference<>(null);
 
     @Override
@@ -233,11 +254,17 @@ public class DeathNotifier extends BaseNotifier {
         // otherwise search through NPCs interacting with us
         return Arrays.stream(client.getCachedNPCs())
             .filter(interacting)
-            .filter(npc -> NPC_PREDICATE.test(npc.getTransformedComposition()))
-            .max(NPC_COMPARATOR.apply(npcManager)) // O(n)
+            .filter(npc -> NPC_VALID.test(npc.getTransformedComposition()))
+            .min(NPC_COMPARATOR.apply(npcManager)) // O(n)
             .orElse(null);
     }
 
+    /**
+     * @param localPlayer {@link net.runelite.api.Client#getLocalPlayer()}
+     * @param actor       the {@link Actor} that is a candidate killer from {@link #lastIncoming} or {@link #lastTarget}
+     * @param pvpEnabled  whether a player could be our killer (e.g., in wilderness)
+     * @return whether the specified actor is the likely killer of the local player
+     */
     private static boolean checkLastInteraction(Player localPlayer, Actor actor, boolean pvpEnabled) {
         if (!INTERACTING.test(localPlayer, actor))
             return false;
@@ -249,14 +276,18 @@ public class DeathNotifier extends BaseNotifier {
 
         if (actor instanceof NPC) {
             NPCComposition npc = ((NPC) actor).getTransformedComposition();
-            return NPC_PREDICATE.test(npc) && hasAttackOption(npc.getActions());
+            return NPC_VALID.test(npc) && hasAttackOption(npc.getActions());
         }
 
         log.warn("Encountered unknown type of Actor; was neither Player nor NPC!");
         return false;
     }
 
-    private static boolean hasAttackOption(String[] actions) {
+    /**
+     * @param actions {@link NPCComposition#getActions()}
+     * @return whether the menu actions for the NPC contains "Attack"
+     */
+    private static boolean hasAttackOption(@Nullable String[] actions) {
         if (actions != null) {
             for (String action : actions) {
                 if ("Attack".equalsIgnoreCase(action))
@@ -338,7 +369,7 @@ public class DeathNotifier extends BaseNotifier {
     static {
         INTERACTING = (localPlayer, a) -> a != null && !a.isDead() && a.getInteracting() == localPlayer;
 
-        NPC_PREDICATE = comp -> comp != null && comp.isInteractible() && !comp.isFollower() && comp.getCombatLevel() > 0;
+        NPC_VALID = comp -> comp != null && comp.isInteractible() && !comp.isFollower() && comp.getCombatLevel() > 0;
 
         PK_COMPARATOR = localPlayer -> Comparator
             .comparing(Player::isClanMember) // prefer not in clan
@@ -369,6 +400,6 @@ public class DeathNotifier extends BaseNotifier {
                         )
                     )
             )
-        );
+        ).reversed(); // for consistency with PK_COMPARATOR such that Stream#min should be used in #identifyKiller
     }
 }
