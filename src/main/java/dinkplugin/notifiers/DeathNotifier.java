@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -66,7 +67,7 @@ public class DeathNotifier extends BaseNotifier {
     /**
      * Orders NPCs by their likelihood of being our killer.
      */
-    private static final Function<NPCManager, Comparator<NPC>> NPC_COMPARATOR;
+    private static final BiFunction<NPCManager, Player, Comparator<NPC>> NPC_COMPARATOR;
 
     @Inject
     private ItemManager itemManager;
@@ -255,7 +256,7 @@ public class DeathNotifier extends BaseNotifier {
         return Arrays.stream(client.getCachedNPCs())
             .filter(interacting)
             .filter(npc -> NPC_VALID.test(npc.getTransformedComposition()))
-            .min(NPC_COMPARATOR.apply(npcManager)) // O(n)
+            .min(NPC_COMPARATOR.apply(npcManager, localPlayer)) // O(n)
             .orElse(null);
     }
 
@@ -376,30 +377,35 @@ public class DeathNotifier extends BaseNotifier {
             .thenComparing(Player::isFriend) // prefer not friend
             .thenComparing(Player::isFriendsChatMember) // prefer not fc
             .thenComparingInt(p -> Math.abs(localPlayer.getCombatLevel() - p.getCombatLevel())) // prefer similar level
+            .thenComparingInt(p -> -p.getCombatLevel()) // prefer higher level for a given absolute level gap
             .thenComparing(p -> p.getOverheadIcon() == null) // prefer praying
-            .thenComparingInt(p -> -p.getCombatLevel()); // prefer higher level for a given absolute level gap
+            .thenComparing(p -> p.getTeam() == localPlayer.getTeam()) // prefer different team cape
+            .thenComparingInt(p -> localPlayer.getLocalLocation().distanceTo(p.getLocalLocation())); // prefer nearby
 
-        NPC_COMPARATOR = npcManager -> Comparator.comparing(
-            NPC::getTransformedComposition,
-            Comparator.nullsFirst(
-                Comparator
-                    .comparing(
-                        (NPCComposition comp) -> comp.getStringValue(ParamID.NPC_HP_NAME),
-                        Comparator.comparing(StringUtils::isNotEmpty) // prefer has name in hit points UI
-                    )
-                    .thenComparing(
-                        NPCComposition::getActions,
-                        Comparator.comparing(DeathNotifier::hasAttackOption)
-                    )
-                    .thenComparingInt(NPCComposition::getCombatLevel) // prefer high level
-                    .thenComparingInt(NPCComposition::getSize) // prefer large
-                    .thenComparing(NPCComposition::isMinimapVisible) // prefer visible on minimap
-                    .thenComparing(
-                        Comparator.nullsFirst(
-                            Comparator.comparing(comp -> npcManager.getHealth(comp.getId())) // prefer high max health
+        NPC_COMPARATOR = (npcManager, localPlayer) -> Comparator
+            .comparing(
+                NPC::getTransformedComposition,
+                Comparator.nullsFirst(
+                    Comparator
+                        .comparing(
+                            (NPCComposition comp) -> comp.getStringValue(ParamID.NPC_HP_NAME),
+                            Comparator.comparing(StringUtils::isNotEmpty) // prefer has name in hit points UI
                         )
-                    )
+                        .thenComparing(
+                            NPCComposition::getActions,
+                            Comparator.comparing(DeathNotifier::hasAttackOption)
+                        )
+                        .thenComparingInt(NPCComposition::getCombatLevel) // prefer high level
+                        .thenComparingInt(NPCComposition::getSize) // prefer large
+                        .thenComparing(NPCComposition::isMinimapVisible) // prefer visible on minimap
+                        .thenComparing(
+                            Comparator.nullsFirst(
+                                Comparator.comparing(comp -> npcManager.getHealth(comp.getId())) // prefer high max health
+                            )
+                        )
+                )
             )
-        ).reversed(); // for consistency with PK_COMPARATOR such that Stream#min should be used in #identifyKiller
+            .thenComparingInt(p -> -localPlayer.getLocalLocation().distanceTo(p.getLocalLocation())) // prefer nearby
+            .reversed(); // for consistency with PK_COMPARATOR such that Stream#min should be used in #identifyKiller
     }
 }
