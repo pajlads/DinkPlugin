@@ -44,9 +44,21 @@ public class PetNotifier extends BaseNotifier {
     private static final Set<String> PET_NAMES;
     private static final String PRIMED_NAME = "";
 
+    /**
+     * The maximum number ticks to wait for {@link #milestone} to be populated,
+     * before firing notification with only the {@link #petName}.
+     *
+     * @see #ticksWaited
+     */
     @VisibleForTesting
     static final int MAX_TICKS_WAIT = 5;
 
+    /**
+     * Tracks the number of ticks that occur where {@link #milestone} is not populated
+     * while {@link #petName} <i>is</i> populated.
+     *
+     * @see #onTick()
+     */
     private final AtomicInteger ticksWaited = new AtomicInteger();
 
     @Inject
