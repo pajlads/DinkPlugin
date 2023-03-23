@@ -23,6 +23,7 @@ import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.vars.AccountType;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +49,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class DeathNotifier extends BaseNotifier {
+
+    private static final String ATTACK_OPTION = "Attack";
 
     /**
      * Checks whether the actor is alive and interacting with the specified player.
@@ -277,24 +280,10 @@ public class DeathNotifier extends BaseNotifier {
 
         if (actor instanceof NPC) {
             NPCComposition npc = ((NPC) actor).getTransformedComposition();
-            return NPC_VALID.test(npc) && hasAttackOption(npc.getActions());
+            return NPC_VALID.test(npc) && ArrayUtils.contains(npc.getActions(), ATTACK_OPTION);
         }
 
         log.warn("Encountered unknown type of Actor; was neither Player nor NPC!");
-        return false;
-    }
-
-    /**
-     * @param actions {@link NPCComposition#getActions()}
-     * @return whether the menu actions for the NPC contains "Attack"
-     */
-    private static boolean hasAttackOption(@Nullable String[] actions) {
-        if (actions != null) {
-            for (String action : actions) {
-                if ("Attack".equalsIgnoreCase(action))
-                    return true;
-            }
-        }
         return false;
     }
 
@@ -391,10 +380,7 @@ public class DeathNotifier extends BaseNotifier {
                             (NPCComposition comp) -> comp.getStringValue(ParamID.NPC_HP_NAME),
                             Comparator.comparing(StringUtils::isNotEmpty) // prefer has name in hit points UI
                         )
-                        .thenComparing(
-                            NPCComposition::getActions,
-                            Comparator.comparing(DeathNotifier::hasAttackOption)
-                        )
+                        .thenComparing(comp -> ArrayUtils.contains(comp.getActions(), ATTACK_OPTION)) // prefer explicitly attackable
                         .thenComparingInt(NPCComposition::getCombatLevel) // prefer high level
                         .thenComparingInt(NPCComposition::getSize) // prefer large
                         .thenComparing(NPCComposition::isMinimapVisible) // prefer visible on minimap
