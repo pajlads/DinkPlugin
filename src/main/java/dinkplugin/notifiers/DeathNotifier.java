@@ -18,6 +18,7 @@ import net.runelite.api.ParamID;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.Varbits;
+import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.vars.AccountType;
@@ -51,6 +52,12 @@ import java.util.stream.Collectors;
 public class DeathNotifier extends BaseNotifier {
 
     private static final String ATTACK_OPTION = "Attack";
+
+    /*
+     * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,magic_spellbook_redraw%5D.cs2#L115
+     */
+    @Varbit
+    private static final int PVP_ZONE_SPELLBOOK = 6549;
 
     /**
      * Checks whether the actor is alive and interacting with the specified player.
@@ -231,8 +238,10 @@ public class DeathNotifier extends BaseNotifier {
      */
     @Nullable
     private Actor identifyKiller() {
-        boolean pvpEnabled = !WorldUtils.isPvpSafeZone(client) && (client.getVarbitValue(Varbits.IN_WILDERNESS) > 0 || WorldUtils.isPvpWorld(client.getWorldType()));
         Player localPlayer = client.getLocalPlayer();
+        boolean pvpEnabled = !WorldUtils.isPvpSafeZone(client) &&
+            (client.getVarbitValue(Varbits.PVP_SPEC_ORB) == 1 || client.getVarbitValue(PVP_ZONE_SPELLBOOK) == 1 ||
+                client.getVarbitValue(Varbits.IN_WILDERNESS) > 0 || WorldUtils.isPvpWorld(client.getWorldType()));
 
         // O(1) fast path based on last outbound interaction
         Actor lastTarget = this.lastTarget.get();
