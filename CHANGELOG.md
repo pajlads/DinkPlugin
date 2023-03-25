@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Minor: Avoid death notifications for more safe activities: Barbarian Assault, Burthorpe Games Room, Chambers of Xeric, Clan Wars, Fishing Trawler, Last Man Standing, Mage Training Arena, Nightmare Zone, Sorceress's Garden, Soul Wars, Tithe Farm, TzHaar Fight Pit. (#194)
+- Minor: Avoid death notifications for more safe activities: Barbarian Assault, Chambers of Xeric, Clan Wars, Last Man Standing, Nightmare Zone, Soul Wars, TzHaar Fight Pit. (#194)
 - Minor: Avoid unwarranted settings warnings when world hopping. (#183)
 - Minor: Include number of quest completions and quest points in quest notifications. (#178)
 - Minor: Collapse all notifier configuration sections by default. (#176)
