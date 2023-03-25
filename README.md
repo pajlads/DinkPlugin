@@ -247,7 +247,8 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
         "name": "Some item"
       }
     ],
-    "source": "Giant rat"
+    "source": "Giant rat",
+    "category": "NPC"
   },
   "type": "LOOT"
 }
