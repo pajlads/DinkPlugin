@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include loot source category in notification metadata. (#196)
 - Minor: Avoid unwarranted settings warnings when world hopping. (#183)
 - Minor: Include number of quest completions and quest points in quest notifications. (#178)
 - Minor: Collapse all notifier configuration sections by default. (#176)
