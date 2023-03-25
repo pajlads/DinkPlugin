@@ -50,7 +50,7 @@ public class LootNotifier extends BaseNotifier {
 
     public void onNpcLootReceived(NpcLootReceived event) {
         if (isEnabled())
-            this.handleNotify(event.getItems(), event.getNpc().getName());
+            this.handleNotify(event.getItems(), event.getNpc().getName(), LootRecordType.NPC);
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
@@ -58,7 +58,7 @@ public class LootNotifier extends BaseNotifier {
             return;
 
         if (config.includePlayerLoot() && isEnabled())
-            this.handleNotify(event.getItems(), event.getPlayer().getName());
+            this.handleNotify(event.getItems(), event.getPlayer().getName(), LootRecordType.PLAYER);
     }
 
     public void onLootReceived(LootReceived lootReceived) {
@@ -71,7 +71,7 @@ public class LootNotifier extends BaseNotifier {
                 return;
             }
 
-            this.handleNotify(lootReceived.getItems(), lootReceived.getName());
+            this.handleNotify(lootReceived.getItems(), lootReceived.getName(), lootReceived.getType());
         }
     }
 
@@ -90,7 +90,7 @@ public class LootNotifier extends BaseNotifier {
                             1,
                             client.getLocalPlayer().getLocalLocation()
                         );
-                        this.handleNotify(Collections.singletonList(item), "The Font of Consumption");
+                        this.handleNotify(Collections.singletonList(item), "The Font of Consumption", LootRecordType.EVENT);
                     } else {
                         Widget widget = client.getWidget(WidgetInfo.DIALOG_SPRITE);
                         log.warn(
@@ -106,7 +106,7 @@ public class LootNotifier extends BaseNotifier {
         }
     }
 
-    private void handleNotify(Collection<ItemStack> items, String dropper) {
+    private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type) {
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
 
@@ -142,7 +142,7 @@ public class LootNotifier extends BaseNotifier {
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
-                    .extra(new LootNotificationData(serializedItems, dropper))
+                    .extra(new LootNotificationData(serializedItems, dropper, type))
                     .type(NotificationType.LOOT)
                     .build()
             );

@@ -4,6 +4,7 @@ import dinkplugin.message.Field;
 import dinkplugin.util.ItemUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import net.runelite.http.api.loottracker.LootRecordType;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 public class LootNotificationData extends NotificationData {
     List<SerializedItemStack> items;
     String source;
+    LootRecordType category;
 
     @Override
     public List<Field> getFields() {

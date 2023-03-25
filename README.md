@@ -243,7 +243,8 @@ The examples below omit `embeds` and `playerName` keys because they are always t
         "name": "Some item"
       }
     ],
-    "source": "Giant rat"
+    "source": "Giant rat",
+    "category": "NPC"
   },
   "type": "LOOT"
 }
