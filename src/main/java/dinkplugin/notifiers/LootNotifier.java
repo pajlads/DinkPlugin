@@ -54,7 +54,7 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
-        if (WorldUtils.isCastleWars(client) || WorldUtils.isLastManStanding(client) || WorldUtils.isSoulWars(client))
+        if (WorldUtils.isSafeArea(client))
             return;
 
         if (config.includePlayerLoot() && isEnabled())
