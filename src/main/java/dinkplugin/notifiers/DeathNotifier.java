@@ -50,7 +50,7 @@ public class DeathNotifier extends BaseNotifier {
      * for example if the {@link Actor} despawns.
      * As a result, the underlying reference can be null.
      *
-     * @see #identifyPker()
+     * @see #identifyKiller()
      */
     private WeakReference<Actor> lastTarget = new WeakReference<>(null);
 
@@ -100,8 +100,9 @@ public class DeathNotifier extends BaseNotifier {
             return;
         }
 
-        Actor pker = identifyPker();
-        String notifyMessage = buildMessage(pker, losePrice);
+        Actor killer = identifyKiller();
+        boolean pk = killer instanceof Player;
+        String notifyMessage = buildMessage(killer, losePrice, pk);
 
         List<SerializedItemStack> lostStacks = getStacks(itemManager, lostItems, true);
         List<SerializedItemStack> keptStacks = getStacks(itemManager, keptItems, false);
@@ -120,8 +121,8 @@ public class DeathNotifier extends BaseNotifier {
 
         DeathNotificationData extra = new DeathNotificationData(
             losePrice,
-            pker != null,
-            pker != null ? pker.getName() : null,
+            pk,
+            pk ? killer.getName() : null,
             keptStacks,
             lostStacks
         );
@@ -134,8 +135,8 @@ public class DeathNotifier extends BaseNotifier {
             .build());
     }
 
-    private String buildMessage(Actor pker, long losePrice) {
-        boolean pvp = pker != null && config.deathNotifPvpEnabled();
+    private String buildMessage(Actor killer, long losePrice, boolean pk) {
+        boolean pvp = pk && config.deathNotifPvpEnabled();
         String template;
         if (pvp)
             template = config.deathNotifPvpMessage();
@@ -145,7 +146,7 @@ public class DeathNotifier extends BaseNotifier {
             .replace("%USERNAME%", Utils.getPlayerName(client))
             .replace("%VALUELOST%", String.valueOf(losePrice));
         if (pvp) {
-            notifyMessage = notifyMessage.replace("%PKER%", String.valueOf(pker.getName()));
+            notifyMessage = notifyMessage.replace("%PKER%", String.valueOf(killer.getName()));
         }
         return notifyMessage;
     }
@@ -168,10 +169,10 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     /**
-     * @return the inferred {@link Player} who killed us, or null if not pk'd
+     * @return the inferred {@link Actor} who killed us, or null if not killed by an external source
      */
     @Nullable
-    private Player identifyPker() {
+    private Actor identifyKiller() {
         // cannot be pk'd in safe zone
         if (WorldUtils.isPvpSafeZone(client))
             return null;
