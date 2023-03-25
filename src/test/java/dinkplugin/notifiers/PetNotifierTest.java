@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.stream.IntStream;
+
+import static dinkplugin.notifiers.PetNotifier.MAX_TICKS_WAIT;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
@@ -43,7 +46,7 @@ class PetNotifierTest extends MockedNotifierTest {
     void testNotify() {
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
-        notifier.onTick();
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
         verify(messageHandler).createMessage(
@@ -68,7 +71,7 @@ class PetNotifierTest extends MockedNotifierTest {
         // send fake message
         notifier.onChatMessage("You have a funny feeling like you're being followed.");
         notifier.onChatMessage("New item added to your collection log: " + petName);
-        notifier.onTick();
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
         verify(messageHandler).createMessage(
@@ -94,7 +97,7 @@ class PetNotifierTest extends MockedNotifierTest {
         // send fake message
         notifier.onChatMessage("You have a funny feeling like you're being followed.");
         notifier.onChatMessage("Untradeable drop: " + petName);
-        notifier.onTick();
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
         verify(messageHandler).createMessage(
@@ -117,7 +120,7 @@ class PetNotifierTest extends MockedNotifierTest {
         // send fake message
         notifier.onChatMessage("You have a funny feeling like you're being followed.");
         notifier.onChatMessage("Untradeable drop: " + petName);
-        notifier.onTick();
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
         verify(messageHandler).createMessage(
@@ -143,6 +146,12 @@ class PetNotifierTest extends MockedNotifierTest {
         // send fake message
         notifier.onChatMessage("You have a funny feeling like you're being followed.");
         notifier.onChatMessage("Untradeable drop: " + petName);
+        notifier.onTick();
+
+        notifier.onChatMessage("random unrelated chat message");
+        notifier.onClanNotification("random unrelated clan message");
+        notifier.onTick();
+
         notifier.onClanNotification(
             String.format(
                 "[ClanName] %s has a funny feeling like he would have been followed: %s at 50 killcount.",
@@ -175,6 +184,12 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // send fake message
         notifier.onChatMessage("You have a funny feeling like you're being followed.");
+        notifier.onTick();
+
+        notifier.onChatMessage("random unrelated chat message");
+        notifier.onClanNotification("random unrelated clan message");
+        notifier.onTick();
+
         notifier.onClanNotification(
             String.format(
                 "[ClanName] %s has a funny feeling like he would have been followed: %s at 50 killcount.",
@@ -204,7 +219,7 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
-        notifier.onTick();
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled at override url
         verify(messageHandler).createMessage(
@@ -222,7 +237,7 @@ class PetNotifierTest extends MockedNotifierTest {
     void testIgnore() {
         // send non-pet message
         notifier.onChatMessage("You feel Forsen's warmth behind you.");
-        notifier.onTick();
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -235,7 +250,7 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
-        notifier.onTick();
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -249,7 +264,7 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
-        notifier.onTick();
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
         verify(messageHandler).createMessage(
@@ -271,7 +286,7 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
-        notifier.onTick();
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
