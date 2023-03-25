@@ -10,6 +10,7 @@ import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
+import net.runelite.api.Client;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
 import net.runelite.api.Player;
@@ -55,7 +56,7 @@ public class DeathNotifier extends BaseNotifier {
 
     @Override
     public boolean isEnabled() {
-        return config.notifyDeath() && super.isEnabled() && !WorldUtils.isSafeArea(client);
+        return config.notifyDeath() && super.isEnabled() && isDangerous(client);
     }
 
     @Override
@@ -274,6 +275,19 @@ public class DeathNotifier extends BaseNotifier {
         return items.stream()
             .map(item -> ItemUtils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
+    }
+
+    /**
+     * @param client {@link Client}
+     * @return whether the player is not in a safe area (excluding inferno and fight cave)
+     */
+    private static boolean isDangerous(Client client) {
+        if (!WorldUtils.isSafeArea(client))
+            return true; // normally dangerous
+
+        // inferno and fight cave are technically safe, but we want death notification regardless
+        int regionId = client.getLocalPlayer().getWorldLocation().getRegionID();
+        return WorldUtils.isInferno(regionId) || WorldUtils.isTzHaarFightCave(regionId);
     }
 
 }
