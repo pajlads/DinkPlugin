@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -186,33 +187,46 @@ public class DeathNotifier extends BaseNotifier {
      */
     @Nullable
     private Actor identifyKiller() {
-        // cannot be pk'd in safe zone
-        if (WorldUtils.isPvpSafeZone(client))
-            return null;
-
-        // must be in wildness or pvp world or LMS to be pk'd
-        if (client.getVarbitValue(Varbits.IN_WILDERNESS) <= 0 && !WorldUtils.isPvpWorld(client.getWorldType()) && !WorldUtils.isLastManStanding(client))
-            return null;
+        // must be in unsafe wildness or pvp world to be pk'd
+        boolean pvpEnabled = !WorldUtils.isPvpSafeZone(client) &&
+            (client.getVarbitValue(Varbits.IN_WILDERNESS) > 0 || WorldUtils.isPvpWorld(client.getWorldType()));
 
         Player localPlayer = client.getLocalPlayer();
         Predicate<Actor> interacting = a -> INTERACTING.test(localPlayer, a);
 
+        // O(1) fast path based on last outbound interaction
         Actor lastTarget = this.lastTarget.get();
-        if (interacting.test(lastTarget)) {
-            if (lastTarget instanceof Player) {
-                Player last = (Player) lastTarget;
-                if (!last.isClanMember() && !last.isFriend() && !last.isFriendsChatMember())
-                    return last;
-            } else if (lastTarget.getCombatLevel() > 0) {
-                return null; // we likely died to this NPC rather than a player
-            }
-        }
+        if (checkLastInteraction(localPlayer, lastTarget, pvpEnabled))
+            return lastTarget;
 
         // find another player interacting with us (that is preferably not a friend or clan member)
-        return client.getPlayers().stream()
-            .filter(interacting)
-            .min(PK_COMPARATOR.apply(localPlayer))
-            .orElse(null);
+        if (pvpEnabled) {
+            Optional<Player> pker = client.getPlayers().stream()
+                .filter(interacting)
+                .min(PK_COMPARATOR.apply(localPlayer)); // O(n)
+            if (pker.isPresent())
+                return pker.get();
+        }
+
+        return null;
+    }
+
+    /**
+     * @param localPlayer {@link net.runelite.api.Client#getLocalPlayer()}
+     * @param actor       the {@link Actor} that is a candidate killer from {@link #lastTarget}
+     * @param pvpEnabled  whether a player could be our killer (e.g., in wilderness)
+     * @return whether the specified actor is the likely killer of the local player
+     */
+    private static boolean checkLastInteraction(Player localPlayer, Actor actor, boolean pvpEnabled) {
+        if (!INTERACTING.test(localPlayer, actor))
+            return false;
+
+        if (actor instanceof Player) {
+            Player other = (Player) actor;
+            return pvpEnabled && !other.isClanMember() && !other.isFriend() && !other.isFriendsChatMember();
+        }
+
+        return false;
     }
 
     /**
