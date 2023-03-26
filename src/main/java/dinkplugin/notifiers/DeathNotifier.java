@@ -33,11 +33,24 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
 public class DeathNotifier extends BaseNotifier {
+
+    /**
+     * Checks whether the actor is alive and interacting with the specified player.
+     */
+    private static final BiPredicate<Player, Actor> INTERACTING;
+
+    /**
+     * Orders actors by their likelihood of being the killer of the specified player.
+     */
+    private static final Function<Player, Comparator<Player>> PK_COMPARATOR;
 
     @Inject
     private ItemManager itemManager;
@@ -182,9 +195,10 @@ public class DeathNotifier extends BaseNotifier {
             return null;
 
         Player localPlayer = client.getLocalPlayer();
+        Predicate<Actor> interacting = a -> INTERACTING.test(localPlayer, a);
 
         Actor lastTarget = this.lastTarget.get();
-        if (lastTarget != null && !lastTarget.isDead() && lastTarget.getInteracting() == localPlayer) {
+        if (interacting.test(lastTarget)) {
             if (lastTarget instanceof Player) {
                 Player last = (Player) lastTarget;
                 if (!last.isClanMember() && !last.isFriend() && !last.isFriendsChatMember())
@@ -196,16 +210,8 @@ public class DeathNotifier extends BaseNotifier {
 
         // find another player interacting with us (that is preferably not a friend or clan member)
         return client.getPlayers().stream()
-            .filter(other -> other.getInteracting() == localPlayer)
-            .min(
-                Comparator.comparing(Player::isDead) // prefer alive
-                    .thenComparing(Player::isClanMember) // prefer not in clan
-                    .thenComparing(Player::isFriend) // prefer not friend
-                    .thenComparing(Player::isFriendsChatMember) // prefer not fc
-                    .thenComparingInt(p -> Math.abs(localPlayer.getCombatLevel() - p.getCombatLevel())) // prefer similar level
-                    .thenComparing(p -> p.getOverheadIcon() == null) // prefer skulled
-                    .thenComparingInt(p -> -p.getCombatLevel()) // prefer higher level for a given absolute level gap
-            )
+            .filter(interacting)
+            .min(PK_COMPARATOR.apply(localPlayer))
             .orElse(null);
     }
 
@@ -291,4 +297,17 @@ public class DeathNotifier extends BaseNotifier {
         return WorldUtils.isInferno(regionId) || WorldUtils.isTzHaarFightCave(regionId);
     }
 
+    static {
+        INTERACTING = (localPlayer, a) -> a != null && !a.isDead() && a.getInteracting() == localPlayer;
+
+        PK_COMPARATOR = localPlayer -> Comparator
+            .comparing(Player::isClanMember) // prefer not in clan
+            .thenComparing(Player::isFriend) // prefer not friend
+            .thenComparing(Player::isFriendsChatMember) // prefer not fc
+            .thenComparingInt(p -> Math.abs(localPlayer.getCombatLevel() - p.getCombatLevel())) // prefer similar level
+            .thenComparingInt(p -> -p.getCombatLevel()) // prefer higher level for a given absolute level gap
+            .thenComparing(p -> p.getOverheadIcon() == null) // prefer praying
+            .thenComparing(p -> p.getTeam() == localPlayer.getTeam()) // prefer different team cape
+            .thenComparingInt(p -> localPlayer.getLocalLocation().distanceTo(p.getLocalLocation())); // prefer nearby
+    }
 }
