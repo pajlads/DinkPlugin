@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Refactor killer identification in death notifier. (#197)
+
 ## 1.3.2
 
 - Minor: Include loot source category in notification metadata. (#196)
@@ -10,7 +12,6 @@
 - Minor: Include number of completed entries in collection log notification. (#174, #181)
 - Bugfix: Read pet acquisition milestone from delayed clan messages. (#193)
 - Bugfix: Fire slayer notifications beyond 999 points. (#182)
-- Dev: Refactor killer identification in death notifier. (#197)
 - Dev: Improve thread-safety of slayer notifier. (#184)
 - Dev: Update Gradle to 8.0.2 patch version. (#185)
 - Dev: Add issue tracker link to README. (#179)
