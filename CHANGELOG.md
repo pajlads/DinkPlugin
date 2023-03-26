@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.3.2
+
 - Minor: Include loot source category in notification metadata. (#196)
 - Minor: Avoid death notifications for more safe activities: Barbarian Assault, Chambers of Xeric, Clan Wars, Last Man Standing, Nightmare Zone, Soul Wars, TzHaar Fight Pit. (#194)
 - Minor: Avoid unwarranted settings warnings when world hopping. (#183)
