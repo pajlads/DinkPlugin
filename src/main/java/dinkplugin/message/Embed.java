@@ -18,6 +18,7 @@ import java.util.List;
 @Value
 @Builder
 public class Embed {
+    public static final int MAX_IMAGE_SIZE = 8_000_000; // 8 MB
     public static final int MAX_DESCRIPTION_LENGTH = 4096;
     public static final int MAX_FOOTER_LENGTH = 2048;
 

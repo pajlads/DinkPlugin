@@ -23,10 +23,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.Image;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,6 +177,22 @@ public class DiscordMessageHandler {
                     return Utils.convertImageToByteArray(image);
                 } catch (IOException e) {
                     throw new CompletionException("Could not convert image to byte array", e);
+                }
+            })
+            .thenApply(bytes -> {
+                int n = bytes.length;
+                if (n <= Embed.MAX_IMAGE_SIZE)
+                    return bytes; // already compliant; no further rescale necessary
+
+                // calculate scale factor to comply with MAX_IMAGE_SIZE
+                double factor = Math.sqrt(1.0 * Embed.MAX_IMAGE_SIZE / n);
+                factor = Math.max(0.01, factor - 0.05); // prefer some headroom
+
+                // bytes => original image => rescaled image => updated bytes
+                try (InputStream is = new ByteArrayInputStream(bytes)) {
+                    return Utils.convertImageToByteArray(Utils.rescale(ImageIO.read(is), factor));
+                } catch (Exception e) {
+                    throw new CompletionException("Failed to automatically resize image below Discord size limit", e);
                 }
             });
     }
