@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Rescale screenshots to comply with Discord's 8MB size limit. (#200)
+
 ## 1.3.2
 
 - Minor: Include loot source category in notification metadata. (#196)
