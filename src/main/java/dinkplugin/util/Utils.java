@@ -30,6 +30,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -103,7 +104,9 @@ public class Utils {
 
     public byte[] convertImageToByteArray(BufferedImage bufferedImage, String format) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, format, byteArrayOutputStream);
+        boolean foundWriter = ImageIO.write(bufferedImage, format, byteArrayOutputStream);
+        if (!foundWriter)
+            throw new IllegalArgumentException(String.format("Specified format '%s' was not in supported formats: %s", format, Arrays.toString(ImageIO.getWriterFormatNames())));
         return byteArrayOutputStream.toByteArray();
     }
 
