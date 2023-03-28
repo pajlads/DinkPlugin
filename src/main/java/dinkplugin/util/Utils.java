@@ -94,7 +94,7 @@ public class Utils {
             return input;
 
         AffineTransform rescale = AffineTransform.getScaleInstance(percent, percent);
-        AffineTransformOp operation = new AffineTransformOp(rescale, AffineTransformOp.TYPE_BILINEAR);
+        AffineTransformOp operation = new AffineTransformOp(rescale, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 
         BufferedImage output = new BufferedImage((int) (input.getWidth() * percent), (int) (input.getHeight() * percent), input.getType());
         operation.filter(input, output);
