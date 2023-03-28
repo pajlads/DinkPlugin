@@ -101,9 +101,9 @@ public class Utils {
         return output;
     }
 
-    public byte[] convertImageToByteArray(BufferedImage bufferedImage) throws IOException {
+    public byte[] convertImageToByteArray(BufferedImage bufferedImage, String format) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+        ImageIO.write(bufferedImage, format, byteArrayOutputStream);
         return byteArrayOutputStream.toByteArray();
     }
 

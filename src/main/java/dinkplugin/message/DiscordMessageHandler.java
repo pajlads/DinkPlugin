@@ -20,6 +20,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -27,6 +28,7 @@ import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +38,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -108,8 +111,8 @@ public class DiscordMessageHandler {
                         "file",
                         screenshotFile,
                         RequestBody.create(
-                            MediaType.parse("image/png"),
-                            image
+                            MediaType.parse("image/" + image.getKey()),
+                            image.getValue()
                         )
                     )
                 )
@@ -167,30 +170,33 @@ public class DiscordMessageHandler {
         });
     }
 
-    private static CompletableFuture<byte[]> captureScreenshot(DrawManager drawManager, double scalePercent) {
+    private static CompletableFuture<Map.Entry<String, byte[]>> captureScreenshot(DrawManager drawManager, double scalePercent) {
         CompletableFuture<Image> future = new CompletableFuture<>();
         drawManager.requestNextFrameListener(future::complete);
         return future.thenApply(ImageUtil::bufferedImageFromImage)
             .thenApply(input -> Utils.rescale(input, scalePercent))
             .thenApply(image -> {
                 try {
-                    return Utils.convertImageToByteArray(image);
+                    String format = "png"; // lossless
+                    return Pair.of(format, Utils.convertImageToByteArray(image, format));
                 } catch (IOException e) {
                     throw new CompletionException("Could not convert image to byte array", e);
                 }
             })
-            .thenApply(bytes -> {
+            .thenApply(pair -> {
+                byte[] bytes = pair.getValue();
                 int n = bytes.length;
                 if (n <= Embed.MAX_IMAGE_SIZE)
-                    return bytes; // already compliant; no further rescale necessary
+                    return pair; // already compliant; no further rescale necessary
 
                 // calculate scale factor to comply with MAX_IMAGE_SIZE
                 double factor = Math.sqrt(1.0 * Embed.MAX_IMAGE_SIZE / n);
-                factor = Math.max(0.01, factor - 0.05); // prefer some headroom
 
                 // bytes => original image => rescaled image => updated bytes
                 try (InputStream is = new ByteArrayInputStream(bytes)) {
-                    return Utils.convertImageToByteArray(Utils.rescale(ImageIO.read(is), factor));
+                    String format = "jpeg"; // lossy
+                    BufferedImage rescaled = Utils.rescale(ImageIO.read(is), factor);
+                    return Pair.of(format, Utils.convertImageToByteArray(rescaled, format));
                 } catch (Exception e) {
                     throw new CompletionException("Failed to automatically resize image below Discord size limit", e);
                 }
