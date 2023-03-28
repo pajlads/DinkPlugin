@@ -170,6 +170,16 @@ public class DiscordMessageHandler {
         });
     }
 
+    /**
+     * Captures the next frame and applies the specified rescaling
+     * while abiding by {@link Embed#MAX_IMAGE_SIZE}.
+     *
+     * @param drawManager  {@link DrawManager}
+     * @param scalePercent {@link DinkPluginConfig#screenshotScale()} divided by 100.0
+     * @return future of the image byte array by the image format name
+     * @apiNote scalePercent should be in (0, 1]
+     * @implNote the image format is either "png" (lossless) or "jpeg" (lossy), both of which can be used in MIME type
+     */
     private static CompletableFuture<Map.Entry<String, byte[]>> captureScreenshot(DrawManager drawManager, double scalePercent) {
         CompletableFuture<Image> future = new CompletableFuture<>();
         drawManager.requestNextFrameListener(future::complete);
