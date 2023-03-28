@@ -25,12 +25,16 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.awt.Image;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -95,24 +99,22 @@ public class DiscordMessageHandler {
 
         if (sendImage) {
             String screenshotFile = mBody.getType().getScreenshot();
-            drawManager.requestNextFrameListener(image -> {
-                try {
-                    byte[] imageBytes = Utils.convertImageToByteArray(ImageUtil.bufferedImageFromImage(image));
-
-                    reqBodyBuilder.addFormDataPart(
+            captureScreenshot(drawManager, config.screenshotScale() / 100.0)
+                .thenApply(image -> reqBodyBuilder
+                    .addFormDataPart(
                         "file",
                         screenshotFile,
                         RequestBody.create(
                             MediaType.parse("image/png"),
-                            imageBytes
+                            image
                         )
-                    );
-                } catch (Exception e) {
+                    )
+                )
+                .exceptionally(e -> {
                     log.warn("There was an error creating bytes from captured image", e);
-                } finally {
-                    sendToMultiple(urlList, reqBodyBuilder);
-                }
-            });
+                    return reqBodyBuilder;
+                })
+                .thenAcceptAsync(body -> sendToMultiple(urlList, body));
         } else {
             sendToMultiple(urlList, reqBodyBuilder);
         }
@@ -160,6 +162,20 @@ public class DiscordMessageHandler {
                 }
             }
         });
+    }
+
+    private static CompletableFuture<byte[]> captureScreenshot(DrawManager drawManager, double scalePercent) {
+        CompletableFuture<Image> future = new CompletableFuture<>();
+        drawManager.requestNextFrameListener(future::complete);
+        return future.thenApply(ImageUtil::bufferedImageFromImage)
+            .thenApply(input -> Utils.rescale(input, scalePercent))
+            .thenApply(image -> {
+                try {
+                    return Utils.convertImageToByteArray(image);
+                } catch (IOException e) {
+                    throw new CompletionException("Could not convert image to byte array", e);
+                }
+            });
     }
 
     private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, DinkPluginConfig config) {

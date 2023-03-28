@@ -24,6 +24,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -85,6 +87,18 @@ public class Utils {
             default:
                 return null;
         }
+    }
+
+    public BufferedImage rescale(BufferedImage input, double percent) {
+        if (percent + Math.ulp(1.0) >= 1.0)
+            return input;
+
+        AffineTransform rescale = AffineTransform.getScaleInstance(percent, percent);
+        AffineTransformOp operation = new AffineTransformOp(rescale, AffineTransformOp.TYPE_BILINEAR);
+
+        BufferedImage output = new BufferedImage((int) (input.getWidth() * percent), (int) (input.getHeight() * percent), input.getType());
+        operation.filter(input, output);
+        return output;
     }
 
     public byte[] convertImageToByteArray(BufferedImage bufferedImage) throws IOException {
