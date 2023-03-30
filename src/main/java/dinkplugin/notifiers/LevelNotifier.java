@@ -95,8 +95,16 @@ public class LevelNotifier extends BaseNotifier {
             return;
         }
 
+        // Check normal skill level up
         checkLevelUp(config.notifyLevel(), skill, previousLevel, virtualLevel);
 
+        // Skip combat level checking if no level up has occurred
+        if (previousLevel == null || virtualLevel <= previousLevel) {
+            if (currentLevels.containsKey(COMBAT_NAME))
+                return;
+        }
+
+        // Check for combat level increase
         if (COMBAT_COMPONENTS.contains(skill)) {
             int combatLevel = getCombatLevel();
             Integer previousCombatLevel = currentLevels.put(COMBAT_NAME, combatLevel);
