@@ -84,18 +84,33 @@ public class LevelNotifier extends BaseNotifier {
         int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
         Integer previousLevel = currentLevels.put(skill, virtualLevel);
 
-        if (!config.notifyLevel() || previousLevel == null || virtualLevel == previousLevel) {
-            return;
-        }
-
-        if (virtualLevel < previousLevel) {
+        if (previousLevel != null && virtualLevel < previousLevel) {
             // base skill level should never regress; reset notifier state
             reset();
             return;
         }
 
-        if (checkLevelInterval(previousLevel, virtualLevel) && levelledSkills.offer(skill)) {
-            log.debug("Observed level up for {} to {}", skill, virtualLevel);
+        checkLevelUp(config.notifyLevel(), skill, previousLevel, virtualLevel);
+    }
+
+    private void checkLevelUp(boolean configEnabled, String skill, Integer previousLevel, int currentLevel) {
+        if (previousLevel == null || currentLevel <= previousLevel) {
+            log.trace("Ignoring non-level-up for {}: {}", skill, currentLevel);
+            return;
+        }
+
+        if (!configEnabled) {
+            log.trace("Ignoring level up of {} to {} due to disabled config setting", skill, currentLevel);
+            return;
+        }
+
+        if (!checkLevelInterval(previousLevel, currentLevel)) {
+            log.trace("Ignoring level up of {} from {} to {} that does not align with config interval", skill, previousLevel, currentLevel);
+            return;
+        }
+
+        if (levelledSkills.offer(skill)) {
+            log.debug("Observed level up for {} to {}", skill, currentLevel);
 
             // allow more accumulation of level ups into single notification
             ticksWaited.set(0);
