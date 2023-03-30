@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.LevelNotificationData;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,6 +27,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @Singleton
 public class LevelNotifier extends BaseNotifier {
+    private static final String COMBAT_NAME = "Combat";
+    private static final Set<String> COMBAT_COMPONENTS;
     private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(Skill.values().length);
     private final Map<String, Integer> currentLevels = new ConcurrentHashMap<>();
     private final AtomicInteger ticksWaited = new AtomicInteger();
@@ -42,6 +46,7 @@ public class LevelNotifier extends BaseNotifier {
                 currentLevels.put(skill.getName(), Experience.getLevelForXp(client.getSkillExperience(skill)));
             }
         }
+        currentLevels.put(COMBAT_NAME, getCombatLevel());
     }
 
     public void reset() {
@@ -91,6 +96,12 @@ public class LevelNotifier extends BaseNotifier {
         }
 
         checkLevelUp(config.notifyLevel(), skill, previousLevel, virtualLevel);
+
+        if (COMBAT_COMPONENTS.contains(skill)) {
+            int combatLevel = getCombatLevel();
+            Integer previousCombatLevel = currentLevels.put(COMBAT_NAME, combatLevel);
+            checkLevelUp(config.levelNotifyCombat(), COMBAT_NAME, previousCombatLevel, combatLevel);
+        }
     }
 
     private void checkLevelUp(boolean configEnabled, String skill, Integer previousLevel, int currentLevel) {
@@ -123,6 +134,7 @@ public class LevelNotifier extends BaseNotifier {
         levelledSkills.drainTo(levelled);
         int count = levelled.size();
         Map<String, Integer> lSkills = new HashMap<>(count);
+        Map<String, Integer> currentLevels = new HashMap<>(this.currentLevels);
 
         for (int index = 0; index < count; index++) {
             String skill = levelled.get(index);
@@ -140,7 +152,14 @@ public class LevelNotifier extends BaseNotifier {
             lSkills.put(skill, level);
         }
 
-        String thumbnail = count == 1 ? getSkillIcon(levelled.get(0)) : null;
+        Boolean combatLevelUp = lSkills.remove(COMBAT_NAME) != null;
+        Integer combatLevel = currentLevels.remove(COMBAT_NAME);
+        if (combatLevel == null) {
+            combatLevelUp = null;
+            combatLevel = getCombatLevel();
+        }
+
+        String thumbnail = count == 1 && (combatLevelUp == null || !combatLevelUp) ? getSkillIcon(levelled.get(0)) : null;
         String fullNotification = StringUtils.replaceEach(
             config.levelNotifyMessage(),
             new String[] { "%USERNAME%", "%SKILL%" },
@@ -149,7 +168,7 @@ public class LevelNotifier extends BaseNotifier {
 
         createMessage(config.levelSendImage(), NotificationBody.builder()
             .text(fullNotification)
-            .extra(new LevelNotificationData(lSkills, new HashMap<>(currentLevels)))
+            .extra(new LevelNotificationData(lSkills, currentLevels))
             .type(NotificationType.LEVEL)
             .thumbnailUrl(thumbnail)
             .build());
@@ -172,7 +191,31 @@ public class LevelNotifier extends BaseNotifier {
         return remainder == 0 || (level - remainder) > previous;
     }
 
+    private int getCombatLevel() {
+        return Experience.getCombatLevel(
+            client.getRealSkillLevel(Skill.ATTACK),
+            client.getRealSkillLevel(Skill.STRENGTH),
+            client.getRealSkillLevel(Skill.DEFENCE),
+            client.getRealSkillLevel(Skill.HITPOINTS),
+            client.getRealSkillLevel(Skill.MAGIC),
+            client.getRealSkillLevel(Skill.RANGED),
+            client.getRealSkillLevel(Skill.PRAYER)
+        );
+    }
+
     private static String getSkillIcon(String skillName) {
         return Utils.WIKI_IMG_BASE_URL + skillName + "_icon.png";
+    }
+
+    static {
+        COMBAT_COMPONENTS = ImmutableSet.of(
+            Skill.ATTACK.getName(),
+            Skill.STRENGTH.getName(),
+            Skill.DEFENCE.getName(),
+            Skill.HITPOINTS.getName(),
+            Skill.MAGIC.getName(),
+            Skill.RANGED.getName(),
+            Skill.PRAYER.getName()
+        );
     }
 }
