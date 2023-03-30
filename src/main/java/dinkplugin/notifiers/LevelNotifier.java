@@ -157,7 +157,10 @@ public class LevelNotifier extends BaseNotifier {
         if (combatLevel == null) {
             combatLevelUp = null;
             combatLevel = getCombatLevel();
+        } else if (!config.levelNotifyCombat()) {
+            combatLevelUp = null;
         }
+        LevelNotificationData.CombatLevel combatData = new LevelNotificationData.CombatLevel(combatLevel, combatLevelUp);
 
         String thumbnail = count == 1 && (combatLevelUp == null || !combatLevelUp) ? getSkillIcon(levelled.get(0)) : null;
         String fullNotification = StringUtils.replaceEach(
@@ -168,7 +171,7 @@ public class LevelNotifier extends BaseNotifier {
 
         createMessage(config.levelSendImage(), NotificationBody.builder()
             .text(fullNotification)
-            .extra(new LevelNotificationData(lSkills, currentLevels))
+            .extra(new LevelNotificationData(lSkills, currentLevels, combatData))
             .type(NotificationType.LEVEL)
             .thumbnailUrl(thumbnail)
             .build());
