@@ -170,7 +170,7 @@ public class LevelNotifier extends BaseNotifier {
         }
         LevelNotificationData.CombatLevel combatData = new LevelNotificationData.CombatLevel(combatLevel, combatLevelUp);
 
-        String thumbnail = count == 1 && (combatLevelUp == null || !combatLevelUp) ? getSkillIcon(levelled.get(0)) : null;
+        String thumbnail = count == 1 ? getSkillIcon(levelled.get(0)) : null;
         String fullNotification = StringUtils.replaceEach(
             config.levelNotifyMessage(),
             new String[] { "%USERNAME%", "%SKILL%" },
