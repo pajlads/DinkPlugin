@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
+import java.util.Collections;
 import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -44,10 +45,12 @@ class LevelNotifierTest extends MockedNotifierTest {
         // init base level
         when(client.getRealSkillLevel(any())).thenReturn(1);
         when(client.getRealSkillLevel(Skill.ATTACK)).thenReturn(99);
-        initialCombatLevel = Experience.getCombatLevel(99, 1, 1, 1, 1, 1, 1);
+        when(client.getRealSkillLevel(Skill.HITPOINTS)).thenReturn(10);
+        initialCombatLevel = Experience.getCombatLevel(99, 1, 1, 10, 1, 1, 1);
         unchangedCombatLevel = new LevelNotificationData.CombatLevel(initialCombatLevel, false);
         plugin.onStatChanged(new StatChanged(Skill.AGILITY, 0, 1, 1));
         plugin.onStatChanged(new StatChanged(Skill.ATTACK, 14_000_000, 99, 99));
+        plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 1200, 10, 10));
         plugin.onStatChanged(new StatChanged(Skill.HUNTER, 300, 4, 4));
     }
 
@@ -65,7 +68,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(PLAYER_NAME + " has levelled Agility to 5")
-                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5), ImmutableMap.of("Agility", 5, "Attack", 99, "Hunter", 4), unchangedCombatLevel))
+                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5), ImmutableMap.of("Agility", 5, "Attack", 99, "Hitpoints", 10, "Hunter", 4), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
@@ -85,7 +88,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(PLAYER_NAME + " has levelled Hunter to 6")
-                .extra(new LevelNotificationData(ImmutableMap.of("Hunter", 6), ImmutableMap.of("Agility", 1, "Attack", 99, "Hunter", 6), unchangedCombatLevel))
+                .extra(new LevelNotificationData(ImmutableMap.of("Hunter", 6), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 10, "Hunter", 6), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
@@ -105,7 +108,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(PLAYER_NAME + " has levelled Attack to 100")
-                .extra(new LevelNotificationData(ImmutableMap.of("Attack", 100), ImmutableMap.of("Agility", 1, "Attack", 100, "Hunter", 4), unchangedCombatLevel))
+                .extra(new LevelNotificationData(ImmutableMap.of("Attack", 100), ImmutableMap.of("Agility", 1, "Attack", 100, "Hitpoints", 10, "Hunter", 4), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
@@ -126,7 +129,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(PLAYER_NAME + " has levelled Agility to 5 and Hunter to 99")
-                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Hunter", 99), ImmutableMap.of("Agility", 5, "Attack", 99, "Hunter", 99), unchangedCombatLevel))
+                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Hunter", 99), ImmutableMap.of("Agility", 5, "Attack", 99, "Hitpoints", 10, "Hunter", 99), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
@@ -148,7 +151,57 @@ class LevelNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(PLAYER_NAME + " has levelled Agility to 5, Attack to 100, and Hunter to 5")
-                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5), ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5), unchangedCombatLevel))
+                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5), ImmutableMap.of("Agility", 5, "Attack", 100, "Hitpoints", 10, "Hunter", 5), unchangedCombatLevel))
+                .type(NotificationType.LEVEL)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyCombat() {
+        // update config mocks
+        when(config.levelInterval()).thenReturn(18); // won't trigger on hp @ 13, will trigger on combat level @ 36
+
+        // fire skill event
+        when(client.getRealSkillLevel(Skill.HITPOINTS)).thenReturn(13);
+        plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // verify handled
+        LevelNotificationData.CombatLevel combatLevel = new LevelNotificationData.CombatLevel(initialCombatLevel + 1, true);
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(PLAYER_NAME + " has levelled Combat to 36")
+                .extra(new LevelNotificationData(Collections.emptyMap(), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 13, "Hunter", 4), combatLevel))
+                .type(NotificationType.LEVEL)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyTwoCombat() {
+        // update config mocks
+        when(config.levelInterval()).thenReturn(1);
+
+        // fire skill event
+        when(client.getRealSkillLevel(Skill.HITPOINTS)).thenReturn(13);
+        plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // verify handled
+        LevelNotificationData.CombatLevel combatLevel = new LevelNotificationData.CombatLevel(initialCombatLevel + 1, true);
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(PLAYER_NAME + " has levelled Hitpoints to 13 and Combat to 36")
+                .extra(new LevelNotificationData(ImmutableMap.of("Hitpoints", 13), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 13, "Hunter", 4), combatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
