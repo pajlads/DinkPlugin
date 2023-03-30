@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include combat level in skill notifications. (#203)
+
 ## 1.3.2
 
 - Minor: Include loot source category in notification metadata. (#196)
