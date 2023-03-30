@@ -174,8 +174,21 @@ public class LevelNotifier extends BaseNotifier {
         }
         LevelNotificationData.CombatLevel combatData = new LevelNotificationData.CombatLevel(combatLevel, combatLevelUp);
 
-        // Use skill icon if only one skill was levelled up
-        String thumbnail = count == 1 ? getSkillIcon(levelled.get(0)) : null;
+        // Select relevant thumbnail url
+        String thumbnail;
+        if (count == 1) {
+            // Use skill icon if only one skill was levelled up
+            thumbnail = getSkillIcon(levelled.get(0));
+        } else if (combatLevelUp != null && combatLevelUp && count == 2) {
+            // Upon a combat level increase, use icon of the other combat-related skill that was levelled up
+            String skill = levelled.get(0);
+            if (COMBAT_NAME.equals(skill))
+                skill = levelled.get(1);
+            thumbnail = getSkillIcon(skill);
+        } else {
+            // Fall back to NotificationType#getThumbnail
+            thumbnail = null;
+        }
 
         // Populate message template
         String fullNotification = StringUtils.replaceEach(
