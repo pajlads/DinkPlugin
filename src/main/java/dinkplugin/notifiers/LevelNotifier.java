@@ -123,7 +123,7 @@ public class LevelNotifier extends BaseNotifier {
             return;
         }
 
-        if (!checkLevelInterval(previousLevel, currentLevel)) {
+        if (!checkLevelInterval(previousLevel, currentLevel, COMBAT_NAME.equals(skill))) {
             log.trace("Ignoring level up of {} from {} to {} that does not align with config interval", skill, previousLevel, currentLevel);
             return;
         }
@@ -185,11 +185,11 @@ public class LevelNotifier extends BaseNotifier {
             .build());
     }
 
-    private boolean checkLevelInterval(int previous, int level) {
+    private boolean checkLevelInterval(int previous, int level, boolean skipVirtualCheck) {
         if (level < config.levelMinValue())
             return false;
 
-        if (level > 99 && !config.levelNotifyVirtual())
+        if (!skipVirtualCheck && level > 99 && !config.levelNotifyVirtual())
             return false;
 
         int interval = config.levelInterval();
