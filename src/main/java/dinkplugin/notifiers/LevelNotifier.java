@@ -46,7 +46,7 @@ public class LevelNotifier extends BaseNotifier {
                 currentLevels.put(skill.getName(), Experience.getLevelForXp(client.getSkillExperience(skill)));
             }
         }
-        currentLevels.put(COMBAT_NAME, getCombatLevel());
+        currentLevels.put(COMBAT_NAME, calculateCombatLevel());
     }
 
     public void reset() {
@@ -100,13 +100,14 @@ public class LevelNotifier extends BaseNotifier {
 
         // Skip combat level checking if no level up has occurred
         if (previousLevel == null || virtualLevel <= previousLevel) {
+            // only return if we don't need to initialize combat level for the first time
             if (currentLevels.containsKey(COMBAT_NAME))
                 return;
         }
 
         // Check for combat level increase
         if (COMBAT_COMPONENTS.contains(skill)) {
-            int combatLevel = getCombatLevel();
+            int combatLevel = calculateCombatLevel();
             Integer previousCombatLevel = currentLevels.put(COMBAT_NAME, combatLevel);
             checkLevelUp(config.levelNotifyCombat(), COMBAT_NAME, previousCombatLevel, combatLevel);
         }
@@ -137,13 +138,15 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     private void attemptNotify() {
-        StringBuilder skillMessage = new StringBuilder();
+        // Prepare level state
         List<String> levelled = new ArrayList<>(levelledSkills.size());
         levelledSkills.drainTo(levelled);
         int count = levelled.size();
         Map<String, Integer> lSkills = new HashMap<>(count);
         Map<String, Integer> currentLevels = new HashMap<>(this.currentLevels);
 
+        // Build skillMessage and populate lSkills
+        StringBuilder skillMessage = new StringBuilder();
         for (int index = 0; index < count; index++) {
             String skill = levelled.get(index);
             if (index > 0) {
@@ -160,23 +163,28 @@ public class LevelNotifier extends BaseNotifier {
             lSkills.put(skill, level);
         }
 
-        Boolean combatLevelUp = lSkills.remove(COMBAT_NAME) != null;
-        Integer combatLevel = currentLevels.remove(COMBAT_NAME);
+        // Separately check for combat level increase for extra data
+        Boolean combatLevelUp = lSkills.remove(COMBAT_NAME) != null; // remove Combat from levelledSkills
+        Integer combatLevel = currentLevels.remove(COMBAT_NAME); // remove Combat from allSkills
         if (combatLevel == null) {
-            combatLevelUp = null;
-            combatLevel = getCombatLevel();
+            combatLevelUp = null; // combat level was not populated, so it is unclear whether combat level increased
+            combatLevel = calculateCombatLevel(); // populate combat level for extra data
         } else if (!config.levelNotifyCombat()) {
-            combatLevelUp = null;
+            combatLevelUp = null; // if levelNotifyCombat is disabled, it is unclear whether combat level increased
         }
         LevelNotificationData.CombatLevel combatData = new LevelNotificationData.CombatLevel(combatLevel, combatLevelUp);
 
+        // Use skill icon if only one skill was levelled up
         String thumbnail = count == 1 ? getSkillIcon(levelled.get(0)) : null;
+
+        // Populate message template
         String fullNotification = StringUtils.replaceEach(
             config.levelNotifyMessage(),
             new String[] { "%USERNAME%", "%SKILL%" },
             new String[] { Utils.getPlayerName(client), skillMessage.toString() }
         );
 
+        // Fire notification
         createMessage(config.levelSendImage(), NotificationBody.builder()
             .text(fullNotification)
             .extra(new LevelNotificationData(lSkills, currentLevels, combatData))
@@ -202,7 +210,7 @@ public class LevelNotifier extends BaseNotifier {
         return remainder == 0 || (level - remainder) > previous;
     }
 
-    private int getCombatLevel() {
+    private int calculateCombatLevel() {
         return Experience.getCombatLevel(
             client.getRealSkillLevel(Skill.ATTACK),
             client.getRealSkillLevel(Skill.STRENGTH),
