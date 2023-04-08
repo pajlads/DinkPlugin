@@ -208,7 +208,7 @@ public class DiscordMessageHandler {
                     BufferedImage rescaled = Utils.rescale(ImageIO.read(is), factor);
                     return Pair.of(format, Utils.convertImageToByteArray(rescaled, format));
                 } catch (Exception e) {
-                    throw new CompletionException("Failed to automatically resize image below Discord size limit", e);
+                    throw new CompletionException("Failed to resize image below Discord size limit", e);
                 }
             });
     }
