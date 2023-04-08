@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Bugfix: Rescale screenshots to comply with Discord's 8MB size limit. (#200)
+- Minor: Rescale screenshots to comply with Discord's 8MB size limit. (#200)
 
 ## 1.3.2
 
