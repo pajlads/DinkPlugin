@@ -215,6 +215,10 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
       // These are all the skills
       "Skill name": 30,
       "Other skill": 1
+    },
+    "combatLevel": {
+      "value": 50,
+      "increased": false
     }
   },
   "type": "LEVEL"

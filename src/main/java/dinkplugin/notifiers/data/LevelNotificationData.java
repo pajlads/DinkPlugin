@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class LevelNotificationData extends NotificationData {
     Map<String, Integer> levelledSkills;
     Map<String, Integer> allSkills;
+    CombatLevel combatLevel;
 
     @Override
     public List<Field> getFields() {
@@ -34,5 +35,11 @@ public class LevelNotificationData extends NotificationData {
         }
 
         return super.getFields();
+    }
+
+    @Value
+    public static class CombatLevel {
+        int value;
+        Boolean increased;
     }
 }

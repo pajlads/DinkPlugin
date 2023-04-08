@@ -496,10 +496,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "levelNotifyCombat",
+        name = "Notify for Combat Levels",
+        description = "Whether notifications should occur for combat level increases",
+        position = 23,
+        section = levelSection
+    )
+    default boolean levelNotifyCombat() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "levelInterval",
         name = "Notify Interval",
         description = "Interval between when a notification should be sent",
-        position = 23,
+        position = 24,
         section = levelSection
     )
     default int levelInterval() {
@@ -511,7 +522,7 @@ public interface DinkPluginConfig extends Config {
         name = "Minimum Skill Level",
         description = "The minimum skill level required to send a notification.<br/>" +
             "Useful for filtering out low-level notifications",
-        position = 24,
+        position = 25,
         section = levelSection
     )
     default int levelMinValue() {
@@ -524,7 +535,7 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %SKILL% to insert the levelled skill(s)",
-        position = 25,
+        position = 26,
         section = levelSection
     )
     default String levelNotifyMessage() {
