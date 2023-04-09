@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include NPC killer in death notification metadata. (#207)
 - Minor: Rescale screenshots to comply with Discord's 8MB size limit. (#200)
 - Minor: Include combat level in skill notifications. (#203)
 - Dev: Refactor killer identification in death notifier. (#197)
