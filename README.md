@@ -39,6 +39,7 @@ Some notifiers require in-game settings to be configured to send chat messages u
 * Multiple webhook urls are supported; simply place each on a separate line
 * Each notifier can send webhook messages to separate "override" urls
 * Screenshots can be individually configured for each notifier
+* Screenshots are compressed if needed to comply with Discord limits
 * The plugin can skip notifications if the current player name is on the user-configured RSN ignore list
 * Users can choose whether their webhook messages are sent in Discord's rich embed format or a traditional format
 * The player name in Discord rich embeds can be linked to various tracking services (from HiScores to Wise Old Man)

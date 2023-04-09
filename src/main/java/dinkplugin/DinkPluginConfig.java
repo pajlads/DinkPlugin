@@ -170,10 +170,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "screenshotScale",
+        name = "Screenshot Scale",
+        description = "Resizes screenshots in each dimension by the specified percentage.<br/>" +
+            "Useful to avoid Discord's max upload size of 8MB or reduce bandwidth",
+        position = 1003,
+        section = advancedSection
+    )
+    @Units(Units.PERCENT)
+    @Range(min = 1, max = 100)
+    default int screenshotScale() {
+        return 100;
+    }
+
+    @ConfigItem(
         keyName = "discordRichEmbeds",
         name = "Use Rich Embeds",
         description = "Whether Discord's rich embed format should be used for webhooks",
-        position = 1003,
+        position = 1004,
         section = advancedSection
     )
     default boolean discordRichEmbeds() {
@@ -184,7 +198,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "embedFooterText",
         name = "Embed Footer Text",
         description = "The text in the footer of rich embed webhook messages. If empty, no footer will be sent",
-        position = 1004,
+        position = 1005,
         section = advancedSection
     )
     default String embedFooterText() {
@@ -195,7 +209,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "embedFooterIcon",
         name = "Embed Footer Icon",
         description = "The URL for the footer icon image of rich embed webhooks. Requires footer text to not be empty",
-        position = 1005,
+        position = 1006,
         section = advancedSection
     )
     default String embedFooterIcon() {
@@ -206,7 +220,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "ignoredNames",
         name = "Ignored RSNs",
         description = "Prevent notifications from the following player names (One name per line)",
-        position = 1006,
+        position = 1007,
         section = advancedSection
     )
     default String ignoredNames() {
@@ -217,7 +231,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "playerLookupService",
         name = "Player Lookup Service",
         description = "The service used to lookup a players account, to make their name clickable in Discord embeds",
-        position = 1007,
+        position = 1008,
         section = advancedSection
     )
     default PlayerLookupService playerLookupService() {

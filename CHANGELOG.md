@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Rescale screenshots to comply with Discord's 8MB size limit. (#200)
 - Minor: Include combat level in skill notifications. (#203)
 
 ## 1.3.2
