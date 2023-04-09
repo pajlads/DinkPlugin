@@ -24,10 +24,13 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -87,9 +90,23 @@ public class Utils {
         }
     }
 
-    public byte[] convertImageToByteArray(BufferedImage bufferedImage) throws IOException {
+    public BufferedImage rescale(BufferedImage input, double percent) {
+        if (percent + Math.ulp(1.0) >= 1.0)
+            return input;
+
+        AffineTransform rescale = AffineTransform.getScaleInstance(percent, percent);
+        AffineTransformOp operation = new AffineTransformOp(rescale, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+
+        BufferedImage output = new BufferedImage((int) (input.getWidth() * percent), (int) (input.getHeight() * percent), input.getType());
+        operation.filter(input, output);
+        return output;
+    }
+
+    public byte[] convertImageToByteArray(BufferedImage bufferedImage, String format) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+        boolean foundWriter = ImageIO.write(bufferedImage, format, byteArrayOutputStream);
+        if (!foundWriter)
+            throw new IllegalArgumentException(String.format("Specified format '%s' was not in supported formats: %s", format, Arrays.toString(ImageIO.getWriterFormatNames())));
         return byteArrayOutputStream.toByteArray();
     }
 
