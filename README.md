@@ -158,7 +158,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "extra": {
     "valueLost": 300,
     "isPvp": true,
-    "pker": "%PKER%",
+    "killerName": "%PKER%",
     "keptItems": [],
     "lostItems": [
       {

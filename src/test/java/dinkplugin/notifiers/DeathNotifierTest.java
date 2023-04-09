@@ -10,6 +10,7 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
+import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.Varbits;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -59,6 +61,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         // init client mocks
         when(client.getVarbitValue(Varbits.IN_WILDERNESS)).thenReturn(1);
         when(client.getPlayers()).thenReturn(Collections.emptyList());
+        when(client.getCachedNPCs()).thenReturn(new NPC[0]);
         WorldPoint location = new WorldPoint(0, 0, 0);
         when(localPlayer.getWorldLocation()).thenReturn(location);
 
@@ -68,6 +71,9 @@ class DeathNotifierTest extends MockedNotifierTest {
         mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
         mockItem(ItemID.COAL, COAL_PRICE, "Coal");
         mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
+
+        // init npc mocks
+        when(npcManager.getHealth(anyInt())).thenReturn(50);
     }
 
     @Test
@@ -81,7 +87,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
-                .extra(new DeathNotificationData(0L, false, null, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -126,7 +132,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE))
-                .extra(new DeathNotificationData((long) TUNA_PRICE, false, null, kept, lost))
+                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
                 .type(NotificationType.DEATH)
                 .embeds(embeds)
                 .build()
@@ -151,7 +157,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
-                .extra(new DeathNotificationData(0L, true, pker, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -178,7 +184,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
-                .extra(new DeathNotificationData(0L, true, pker, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -202,7 +208,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
-                .extra(new DeathNotificationData(0L, false, null, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
         );
