@@ -33,11 +33,25 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
 public class DeathNotifier extends BaseNotifier {
+
+    /**
+     * Checks whether the actor is alive and interacting with the specified player.
+     */
+    private static final BiPredicate<Player, Actor> INTERACTING;
+
+    /**
+     * Orders actors by their likelihood of being the killer of the specified player.
+     */
+    private static final Function<Player, Comparator<Player>> PK_COMPARATOR;
 
     @Inject
     private ItemManager itemManager;
@@ -50,7 +64,7 @@ public class DeathNotifier extends BaseNotifier {
      * for example if the {@link Actor} despawns.
      * As a result, the underlying reference can be null.
      *
-     * @see #identifyPker()
+     * @see #identifyKiller()
      */
     private WeakReference<Actor> lastTarget = new WeakReference<>(null);
 
@@ -100,8 +114,9 @@ public class DeathNotifier extends BaseNotifier {
             return;
         }
 
-        Actor pker = identifyPker();
-        String notifyMessage = buildMessage(pker, losePrice);
+        Actor killer = identifyKiller();
+        boolean pk = killer instanceof Player;
+        String notifyMessage = buildMessage(killer, losePrice, pk);
 
         List<SerializedItemStack> lostStacks = getStacks(itemManager, lostItems, true);
         List<SerializedItemStack> keptStacks = getStacks(itemManager, keptItems, false);
@@ -120,8 +135,8 @@ public class DeathNotifier extends BaseNotifier {
 
         DeathNotificationData extra = new DeathNotificationData(
             losePrice,
-            pker != null,
-            pker != null ? pker.getName() : null,
+            pk,
+            pk ? killer.getName() : null,
             keptStacks,
             lostStacks
         );
@@ -134,8 +149,8 @@ public class DeathNotifier extends BaseNotifier {
             .build());
     }
 
-    private String buildMessage(Actor pker, long losePrice) {
-        boolean pvp = pker != null && config.deathNotifPvpEnabled();
+    private String buildMessage(Actor killer, long losePrice, boolean pk) {
+        boolean pvp = pk && config.deathNotifPvpEnabled();
         String template;
         if (pvp)
             template = config.deathNotifPvpMessage();
@@ -145,7 +160,7 @@ public class DeathNotifier extends BaseNotifier {
             .replace("%USERNAME%", Utils.getPlayerName(client))
             .replace("%VALUELOST%", String.valueOf(losePrice));
         if (pvp) {
-            notifyMessage = notifyMessage.replace("%PKER%", String.valueOf(pker.getName()));
+            notifyMessage = notifyMessage.replace("%PKER%", String.valueOf(killer.getName()));
         }
         return notifyMessage;
     }
@@ -168,44 +183,50 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     /**
-     * @return the inferred {@link Player} who killed us, or null if not pk'd
+     * @return the inferred {@link Actor} who killed us, or null if not killed by an external source
      */
     @Nullable
-    private Player identifyPker() {
-        // cannot be pk'd in safe zone
-        if (WorldUtils.isPvpSafeZone(client))
-            return null;
-
-        // must be in wildness or pvp world or LMS to be pk'd
-        if (client.getVarbitValue(Varbits.IN_WILDERNESS) <= 0 && !WorldUtils.isPvpWorld(client.getWorldType()) && !WorldUtils.isLastManStanding(client))
-            return null;
+    private Actor identifyKiller() {
+        // must be in unsafe wildness or pvp world to be pk'd
+        boolean pvpEnabled = !WorldUtils.isPvpSafeZone(client) &&
+            (client.getVarbitValue(Varbits.IN_WILDERNESS) > 0 || WorldUtils.isPvpWorld(client.getWorldType()));
 
         Player localPlayer = client.getLocalPlayer();
+        Predicate<Actor> interacting = a -> INTERACTING.test(localPlayer, a);
 
+        // O(1) fast path based on last outbound interaction
         Actor lastTarget = this.lastTarget.get();
-        if (lastTarget != null && !lastTarget.isDead() && lastTarget.getInteracting() == localPlayer) {
-            if (lastTarget instanceof Player) {
-                Player last = (Player) lastTarget;
-                if (!last.isClanMember() && !last.isFriend() && !last.isFriendsChatMember())
-                    return last;
-            } else if (lastTarget.getCombatLevel() > 0) {
-                return null; // we likely died to this NPC rather than a player
-            }
-        }
+        if (checkLastInteraction(localPlayer, lastTarget, pvpEnabled))
+            return lastTarget;
 
         // find another player interacting with us (that is preferably not a friend or clan member)
-        return client.getPlayers().stream()
-            .filter(other -> other.getInteracting() == localPlayer)
-            .min(
-                Comparator.comparing(Player::isDead) // prefer alive
-                    .thenComparing(Player::isClanMember) // prefer not in clan
-                    .thenComparing(Player::isFriend) // prefer not friend
-                    .thenComparing(Player::isFriendsChatMember) // prefer not fc
-                    .thenComparingInt(p -> Math.abs(localPlayer.getCombatLevel() - p.getCombatLevel())) // prefer similar level
-                    .thenComparing(p -> p.getOverheadIcon() == null) // prefer skulled
-                    .thenComparingInt(p -> -p.getCombatLevel()) // prefer higher level for a given absolute level gap
-            )
-            .orElse(null);
+        if (pvpEnabled) {
+            Optional<Player> pker = client.getPlayers().stream()
+                .filter(interacting)
+                .min(PK_COMPARATOR.apply(localPlayer)); // O(n)
+            if (pker.isPresent())
+                return pker.get();
+        }
+
+        return null;
+    }
+
+    /**
+     * @param localPlayer {@link net.runelite.api.Client#getLocalPlayer()}
+     * @param actor       the {@link Actor} that is a candidate killer from {@link #lastTarget}
+     * @param pvpEnabled  whether a player could be our killer (e.g., in wilderness)
+     * @return whether the specified actor is the likely killer of the local player
+     */
+    private static boolean checkLastInteraction(Player localPlayer, Actor actor, boolean pvpEnabled) {
+        if (!INTERACTING.test(localPlayer, actor))
+            return false;
+
+        if (actor instanceof Player) {
+            Player other = (Player) actor;
+            return pvpEnabled && !other.isClanMember() && !other.isFriend() && !other.isFriendsChatMember();
+        }
+
+        return false;
     }
 
     /**
@@ -290,4 +311,17 @@ public class DeathNotifier extends BaseNotifier {
         return WorldUtils.isInferno(regionId) || WorldUtils.isTzHaarFightCave(regionId);
     }
 
+    static {
+        INTERACTING = (localPlayer, a) -> a != null && !a.isDead() && a.getInteracting() == localPlayer;
+
+        PK_COMPARATOR = localPlayer -> Comparator
+            .comparing(Player::isClanMember) // prefer not in clan
+            .thenComparing(Player::isFriend) // prefer not friend
+            .thenComparing(Player::isFriendsChatMember) // prefer not fc
+            .thenComparingInt(p -> Math.abs(localPlayer.getCombatLevel() - p.getCombatLevel())) // prefer similar level
+            .thenComparingInt(p -> -p.getCombatLevel()) // prefer higher level for a given absolute level gap
+            .thenComparing(p -> p.getOverheadIcon() == null) // prefer praying
+            .thenComparing(p -> p.getTeam() == localPlayer.getTeam()) // prefer different team cape
+            .thenComparingInt(p -> localPlayer.getLocalLocation().distanceTo(p.getLocalLocation())); // prefer nearby
+    }
 }
