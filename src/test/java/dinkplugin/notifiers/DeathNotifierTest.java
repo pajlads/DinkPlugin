@@ -11,9 +11,13 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
+import net.runelite.api.NPCComposition;
+import net.runelite.api.NpcID;
+import net.runelite.api.ParamID;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.Varbits;
+import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
@@ -64,6 +68,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(client.getCachedNPCs()).thenReturn(new NPC[0]);
         WorldPoint location = new WorldPoint(0, 0, 0);
         when(localPlayer.getWorldLocation()).thenReturn(location);
+        when(localPlayer.getLocalLocation()).thenReturn(new LocalPoint(0, 0));
 
         // init item mocks
         mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
@@ -209,6 +214,46 @@ class DeathNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
                 .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
+                .type(NotificationType.DEATH)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyNpc() {
+        // init mocks
+        String name = "Guard";
+        NPC other = mock(NPC.class);
+        when(other.getName()).thenReturn(name);
+        when(other.getId()).thenReturn(NpcID.GUARD);
+        when(other.getCombatLevel()).thenReturn(21);
+        when(other.getInteracting()).thenReturn(localPlayer);
+        when(other.getLocalLocation()).thenReturn(new LocalPoint(1, 1));
+
+        NPCComposition comp = mock(NPCComposition.class);
+        when(other.getTransformedComposition()).thenReturn(comp);
+        when(comp.isInteractible()).thenReturn(true);
+        when(comp.isFollower()).thenReturn(false);
+        when(comp.getSize()).thenReturn(1);
+        when(comp.isMinimapVisible()).thenReturn(true);
+        when(comp.getId()).thenReturn(NpcID.GUARD);
+        when(comp.getName()).thenReturn(name);
+        when(comp.getStringValue(ParamID.NPC_HP_NAME)).thenReturn(name);
+        when(comp.getCombatLevel()).thenReturn(21);
+        when(comp.getActions()).thenReturn(new String[] { "Pickpocket", "Attack", "Examine" });
+
+        when(client.getCachedNPCs()).thenReturn(new NPC[] { other });
+
+        // fire event
+        plugin.onActorDeath(new ActorDeath(localPlayer));
+
+        // verify notification
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
+                .extra(new DeathNotificationData(0L, false, null, name, NpcID.GUARD, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
         );
