@@ -226,6 +226,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         NPC other = mock(NPC.class);
         when(other.getName()).thenReturn(name);
         when(other.getId()).thenReturn(NpcID.GUARD);
+        when(other.isDead()).thenReturn(false);
         when(other.getCombatLevel()).thenReturn(21);
         when(other.getInteracting()).thenReturn(localPlayer);
         when(other.getLocalLocation()).thenReturn(new LocalPoint(1, 1));
@@ -242,6 +243,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(comp.getCombatLevel()).thenReturn(21);
         when(comp.getActions()).thenReturn(new String[] { "Pickpocket", "Attack", "Examine" });
 
+        when(npcManager.getHealth(NpcID.GUARD)).thenReturn(22);
         when(client.getCachedNPCs()).thenReturn(new NPC[] { other });
 
         // fire event
