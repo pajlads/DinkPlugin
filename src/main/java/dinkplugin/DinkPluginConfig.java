@@ -241,7 +241,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "screenshotHideChat",
         name = "Hide Chat in Images",
-        description = "Whether to hide the chat box and private messages when capturing screenshots",
+        description = "Whether to hide the chat box and private messages when capturing screenshots.<br/>" +
+            "Note: visually you may notice the chat box momentarily flicker as it is hidden for the screenshot.",
         position = 1009,
         section = advancedSection
     )
