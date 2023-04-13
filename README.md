@@ -127,7 +127,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
 **Note**: If *Distinguish PvP deaths* is disabled, the message content will be the non-PvP version.
 
 <details>
-  <summary>JSON for non-PvP death:</summary>
+  <summary>JSON for non-combat death:</summary>
 
 ```json5
 {
@@ -159,7 +159,33 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "extra": {
     "valueLost": 300,
     "isPvp": true,
-    "pker": "%PKER%",
+    "killerName": "%PKER%",
+    "keptItems": [],
+    "lostItems": [
+      {
+        "id": 314,
+        "quantity": 100,
+        "priceEach": 3,
+        "name": "Feather"
+      }
+    ]
+  },
+  "type": "DEATH"
+}
+```
+</details>
+
+<details>
+  <summary>JSON for NPC scenarios:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has died...",
+  "extra": {
+    "valueLost": 300,
+    "isPvp": false,
+    "killerName": "%NPC%",
+    "killerNpcId": 69, 
     "keptItems": [],
     "lostItems": [
       {

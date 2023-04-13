@@ -13,6 +13,9 @@ import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
+import net.runelite.api.NPC;
+import net.runelite.api.NPCComposition;
+import net.runelite.api.ParamID;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.Varbits;
@@ -20,6 +23,9 @@ import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.vars.AccountType;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.NPCManager;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,11 +35,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -43,10 +51,22 @@ import java.util.stream.Collectors;
 @Singleton
 public class DeathNotifier extends BaseNotifier {
 
+    private static final String ATTACK_OPTION = "Attack";
+
     /**
      * Checks whether the actor is alive and interacting with the specified player.
      */
     private static final BiPredicate<Player, Actor> INTERACTING;
+
+    /**
+     * Checks whether a NPC is a valid candidate to be our killer.
+     */
+    private static final Predicate<NPCComposition> NPC_VALID;
+
+    /**
+     * Orders NPCs by their likelihood of being our killer.
+     */
+    private static final BiFunction<NPCManager, Player, Comparator<NPC>> NPC_COMPARATOR;
 
     /**
      * Orders actors by their likelihood of being the killer of the specified player.
@@ -55,6 +75,9 @@ public class DeathNotifier extends BaseNotifier {
 
     @Inject
     private ItemManager itemManager;
+
+    @Inject
+    private NPCManager npcManager;
 
     /**
      * Tracks the last {@link Actor} our local player interacted with,
@@ -116,7 +139,9 @@ public class DeathNotifier extends BaseNotifier {
 
         Actor killer = identifyKiller();
         boolean pk = killer instanceof Player;
-        String notifyMessage = buildMessage(killer, losePrice, pk);
+        boolean npc = killer instanceof NPC;
+        String killerName = killer != null ? StringUtils.defaultIfEmpty(killer.getName(), "?") : null;
+        String notifyMessage = buildMessage(killerName, losePrice, pk, npc);
 
         List<SerializedItemStack> lostStacks = getStacks(itemManager, lostItems, true);
         List<SerializedItemStack> keptStacks = getStacks(itemManager, keptItems, false);
@@ -136,7 +161,9 @@ public class DeathNotifier extends BaseNotifier {
         DeathNotificationData extra = new DeathNotificationData(
             losePrice,
             pk,
-            pk ? killer.getName() : null,
+            pk ? killerName : null,
+            killerName,
+            npc ? ((NPC) killer).getId() : null,
             keptStacks,
             lostStacks
         );
@@ -149,7 +176,7 @@ public class DeathNotifier extends BaseNotifier {
             .build());
     }
 
-    private String buildMessage(Actor killer, long losePrice, boolean pk) {
+    private String buildMessage(String killer, long losePrice, boolean pk, boolean npc) {
         boolean pvp = pk && config.deathNotifPvpEnabled();
         String template;
         if (pvp)
@@ -160,7 +187,9 @@ public class DeathNotifier extends BaseNotifier {
             .replace("%USERNAME%", Utils.getPlayerName(client))
             .replace("%VALUELOST%", String.valueOf(losePrice));
         if (pvp) {
-            notifyMessage = notifyMessage.replace("%PKER%", String.valueOf(killer.getName()));
+            notifyMessage = notifyMessage.replace("%PKER%", killer);
+        } else if (npc) {
+            notifyMessage = notifyMessage.replace("%NPC%", killer);
         }
         return notifyMessage;
     }
@@ -208,7 +237,12 @@ public class DeathNotifier extends BaseNotifier {
                 return pker.get();
         }
 
-        return null;
+        // otherwise search through NPCs interacting with us
+        return Arrays.stream(client.getCachedNPCs())
+            .filter(interacting)
+            .filter(npc -> NPC_VALID.test(npc.getTransformedComposition()))
+            .min(NPC_COMPARATOR.apply(npcManager, localPlayer)) // O(n)
+            .orElse(null);
     }
 
     /**
@@ -226,6 +260,12 @@ public class DeathNotifier extends BaseNotifier {
             return pvpEnabled && !other.isClanMember() && !other.isFriend() && !other.isFriendsChatMember();
         }
 
+        if (actor instanceof NPC) {
+            NPCComposition npc = ((NPC) actor).getTransformedComposition();
+            return NPC_VALID.test(npc) && ArrayUtils.contains(npc.getActions(), ATTACK_OPTION);
+        }
+
+        log.warn("Encountered unknown type of Actor; was neither Player nor NPC!");
         return false;
     }
 
@@ -313,6 +353,31 @@ public class DeathNotifier extends BaseNotifier {
 
     static {
         INTERACTING = (localPlayer, a) -> a != null && !a.isDead() && a.getInteracting() == localPlayer;
+
+        NPC_VALID = comp -> comp != null && comp.isInteractible() && !comp.isFollower() && comp.getCombatLevel() > 0;
+
+        NPC_COMPARATOR = (npcManager, localPlayer) -> Comparator
+            .comparing(
+                NPC::getTransformedComposition,
+                Comparator.nullsFirst(
+                    Comparator
+                        .comparing(
+                            (NPCComposition comp) -> comp.getStringValue(ParamID.NPC_HP_NAME),
+                            Comparator.comparing(StringUtils::isNotEmpty) // prefer has name in hit points UI
+                        )
+                        .thenComparing(comp -> ArrayUtils.contains(comp.getActions(), ATTACK_OPTION)) // prefer explicitly attackable
+                        .thenComparingInt(NPCComposition::getCombatLevel) // prefer high level
+                        .thenComparingInt(NPCComposition::getSize) // prefer large
+                        .thenComparing(NPCComposition::isMinimapVisible) // prefer visible on minimap
+                        .thenComparing(
+                            Comparator.nullsFirst(
+                                Comparator.comparing(comp -> npcManager.getHealth(comp.getId())) // prefer high max health
+                            )
+                        )
+                )
+            )
+            .thenComparingInt(p -> -localPlayer.getLocalLocation().distanceTo(p.getLocalLocation())) // prefer nearby
+            .reversed(); // for consistency with PK_COMPARATOR such that Stream#min should be used in #identifyKiller
 
         PK_COMPARATOR = localPlayer -> Comparator
             .comparing(Player::isClanMember) // prefer not in clan
