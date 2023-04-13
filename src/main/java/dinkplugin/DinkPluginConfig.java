@@ -239,6 +239,18 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "screenshotHideChat",
+        name = "Hide Chat in Images",
+        description = "Whether to hide the chat box and private messages when capturing screenshots.<br/>" +
+            "Note: visually you may notice the chat box momentarily flicker as it is hidden for the screenshot.",
+        position = 1009,
+        section = advancedSection
+    )
+    default boolean screenshotHideChat() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +

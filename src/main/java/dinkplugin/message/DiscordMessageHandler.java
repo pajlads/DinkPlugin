@@ -9,6 +9,9 @@ import dinkplugin.util.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.ImageUtil;
 import okhttp3.HttpUrl;
@@ -54,15 +57,17 @@ public class DiscordMessageHandler {
     private final OkHttpClient httpClient;
     private final DinkPluginConfig config;
     private final ScheduledExecutorService executor;
+    private final ClientThread clientThread;
 
     @Inject
     @VisibleForTesting
-    public DiscordMessageHandler(Gson gson, Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor) {
+    public DiscordMessageHandler(Gson gson, Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor, ClientThread clientThread) {
         this.gson = gson;
         this.client = client;
         this.drawManager = drawManager;
         this.config = config;
         this.executor = executor;
+        this.clientThread = clientThread;
         this.httpClient = httpClient.newBuilder()
             .addInterceptor(chain -> {
                 Request request = chain.request().newBuilder()
@@ -104,6 +109,10 @@ public class DiscordMessageHandler {
             .addFormDataPart("payload_json", gson.toJson(mBody));
 
         if (sendImage) {
+            // optionally hide chat for privacy in screenshot
+            boolean chatHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.CHATBOX);
+            boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.PRIVATE_CHAT_MESSAGE);
+
             String screenshotFile = mBody.getType().getScreenshot();
             captureScreenshot(drawManager, config.screenshotScale() / 100.0)
                 .thenApply(image -> reqBodyBuilder
@@ -119,6 +128,12 @@ public class DiscordMessageHandler {
                 .exceptionally(e -> {
                     log.warn("There was an error creating bytes from captured image", e);
                     return reqBodyBuilder;
+                })
+                .thenApply(body -> {
+                    // unhide any widgets we hid
+                    unhideWidget(chatHidden, client, clientThread, WidgetInfo.CHATBOX);
+                    unhideWidget(whispersHidden, client, clientThread, WidgetInfo.PRIVATE_CHAT_MESSAGE);
+                    return body;
                 })
                 .thenAcceptAsync(body -> sendToMultiple(urlList, body));
         } else {
@@ -248,5 +263,28 @@ public class DiscordMessageHandler {
                 .build()
         );
         return body.withEmbeds(embeds);
+    }
+
+    private static boolean hideWidget(boolean shouldHide, Client client, WidgetInfo info) {
+        if (!shouldHide)
+            return false;
+
+        Widget widget = client.getWidget(info);
+        if (widget == null || widget.isHidden())
+            return false;
+
+        widget.setHidden(true);
+        return true;
+    }
+
+    private static void unhideWidget(boolean shouldUnhide, Client client, ClientThread clientThread, WidgetInfo info) {
+        if (!shouldUnhide)
+            return;
+
+        clientThread.invoke(() -> {
+            Widget widget = client.getWidget(info);
+            if (widget != null)
+                widget.setHidden(false);
+        });
     }
 }
