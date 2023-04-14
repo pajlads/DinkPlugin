@@ -6,7 +6,7 @@
 - Minor: Include combat level in skill notifications. (#203)
 - Bugfix: Skip quest notification for Hazeel cult partial completion. (#211)
 - Dev: Update grade wrapper to v8.1 minor version. (#209)
-- Dev: Refactor killer identification in death notifier. (#197)
+- Dev: Refactor killer identification in death notifier. (#197, #210)
 
 ## 1.3.2
 
