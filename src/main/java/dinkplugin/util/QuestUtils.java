@@ -36,6 +36,8 @@ package dinkplugin.util;
 import com.google.common.collect.ImmutableList;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -53,18 +55,14 @@ public class QuestUtils {
 
     @Nullable
     public String parseQuestWidget(final String text) {
-        // "You have completed The Corsair Curse!"
-        final Matcher questMatch1 = QUEST_PATTERN_1.matcher(text);
-        // "'One Small Favour' completed!"
-        final Matcher questMatch2 = QUEST_PATTERN_2.matcher(text);
-        final Matcher questMatchFinal = questMatch1.matches() ? questMatch1 : questMatch2;
-        if (!questMatchFinal.matches()) {
+        Matcher matcher = getMatcher(text);
+        if (matcher == null) {
             log.warn("Unable to match quest: {}", text);
             return null;
         }
 
-        String quest = questMatchFinal.group("quest");
-        String verb = questMatchFinal.group("verb") != null ? questMatchFinal.group("verb") : "";
+        String quest = matcher.group("quest");
+        String verb = StringUtils.defaultString(matcher.group("verb"));
 
         if (verb.contains("kind of")) {
             log.debug("Skipping partial completion of quest: {}", quest);
@@ -82,6 +80,24 @@ public class QuestUtils {
         }
 
         return quest;
+    }
+
+    @Nullable
+    private Matcher getMatcher(String text) {
+        if (text == null)
+            return null;
+
+        // "You have completed The Corsair Curse!"
+        Matcher questMatch1 = QUEST_PATTERN_1.matcher(text);
+        if (questMatch1.matches())
+            return questMatch1;
+
+        // "'One Small Favour' completed!"
+        Matcher questMatch2 = QUEST_PATTERN_2.matcher(text);
+        if (questMatch2.matches())
+            return questMatch2;
+
+        return null;
     }
 
 }
