@@ -68,6 +68,8 @@ public class QuestNotifier extends BaseNotifier {
         boolean validPoints = questPoints > 0 && totalQuestPoints > 0;
 
         String parsed = QuestUtils.parseQuestWidget(questText);
+        if (parsed == null) return;
+
         String notifyMessage = StringUtils.replaceEach(
             config.questNotifyMessage(),
             new String[] { "%USERNAME%", "%QUEST%" },
