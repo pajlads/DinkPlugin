@@ -1,10 +1,12 @@
 /*
- * Adapted from https://github.com/oliverpatrick/Enhanced-Discord-Notifications
+ * Adapted from https://github.com/runelite/runelite/pull/11580
  * which is available under the following license:
  *
  * BSD 2-Clause License
  *
- * Copyright (c) 2021, William Winter
+ * Copyright (c) 2016-2017, Adam <Adam@sigterm.info>
+ * Copyright (c) 2018, Lotto <https://github.com/devLotto>
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,11 +35,16 @@ package dinkplugin.util;
 
 import com.google.common.collect.ImmutableList;
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @UtilityClass
 public class QuestUtils {
 
@@ -46,21 +53,20 @@ public class QuestUtils {
     private final Collection<String> RFD_TAGS = ImmutableList.of("Another Cook", "freed", "defeated", "saved");
     private final Collection<String> WORD_QUEST_IN_NAME_TAGS = ImmutableList.of("Another Cook", "Doric", "Heroes", "Legends", "Observatory", "Olaf", "Waterfall");
 
+    @Nullable
     public String parseQuestWidget(final String text) {
-        // "You have completed The Corsair Curse!"
-        final Matcher questMatch1 = QUEST_PATTERN_1.matcher(text);
-        // "'One Small Favour' completed!"
-        final Matcher questMatch2 = QUEST_PATTERN_2.matcher(text);
-        final Matcher questMatchFinal = questMatch1.matches() ? questMatch1 : questMatch2;
-        if (!questMatchFinal.matches()) {
-            return "Unable to find quest name!";
+        Matcher matcher = getMatcher(text);
+        if (matcher == null) {
+            log.warn("Unable to match quest: {}", text);
+            return null;
         }
 
-        String quest = questMatchFinal.group("quest");
-        String verb = questMatchFinal.group("verb") != null ? questMatchFinal.group("verb") : "";
+        String quest = matcher.group("quest");
+        String verb = StringUtils.defaultString(matcher.group("verb"));
 
         if (verb.contains("kind of")) {
-            quest += " partial completion";
+            log.debug("Skipping partial completion of quest: {}", quest);
+            return null;
         } else if (verb.contains("completely")) {
             quest += " II";
         }
@@ -74,6 +80,24 @@ public class QuestUtils {
         }
 
         return quest;
+    }
+
+    @Nullable
+    private Matcher getMatcher(String text) {
+        if (text == null)
+            return null;
+
+        // "You have completed The Corsair Curse!"
+        Matcher questMatch1 = QUEST_PATTERN_1.matcher(text);
+        if (questMatch1.matches())
+            return questMatch1;
+
+        // "'One Small Favour' completed!"
+        Matcher questMatch2 = QUEST_PATTERN_2.matcher(text);
+        if (questMatch2.matches())
+            return questMatch2;
+
+        return null;
     }
 
 }
