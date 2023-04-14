@@ -64,7 +64,7 @@ class DeathNotifierTest extends MockedNotifierTest {
 
         // init client mocks
         when(client.getVarbitValue(Varbits.IN_WILDERNESS)).thenReturn(1);
-        when(client.getPlayers()).thenReturn(Collections.emptyList());
+        when(client.getCachedPlayers()).thenReturn(new Player[0]);
         when(client.getCachedNPCs()).thenReturn(new NPC[0]);
         WorldPoint location = new WorldPoint(0, 0, 0);
         when(localPlayer.getWorldLocation()).thenReturn(location);
@@ -151,7 +151,8 @@ class DeathNotifierTest extends MockedNotifierTest {
         Player other = mock(Player.class);
         when(other.getName()).thenReturn(pker);
         when(other.getInteracting()).thenReturn(localPlayer);
-        when(client.getPlayers()).thenReturn(Arrays.asList(mock(Player.class), mock(Player.class), other, mock(Player.class)));
+        Player[] candidates = { mock(Player.class), mock(Player.class), other, mock(Player.class) };
+        when(client.getCachedPlayers()).thenReturn(candidates);
 
         // fire event
         plugin.onActorDeath(new ActorDeath(localPlayer));
@@ -201,7 +202,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         Player other = mock(Player.class);
         when(other.getName()).thenReturn("Rasmus");
         when(other.getInteracting()).thenReturn(localPlayer);
-        when(client.getPlayers()).thenReturn(Collections.singletonList(other));
+        when(client.getCachedPlayers()).thenReturn(new Player[] { other });
         when(client.getVarbitValue(Varbits.IN_WILDERNESS)).thenReturn(0);
 
         // fire event
