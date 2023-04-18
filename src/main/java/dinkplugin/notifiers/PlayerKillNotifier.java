@@ -11,6 +11,7 @@ import net.runelite.api.Hitsplat;
 import net.runelite.api.Player;
 import net.runelite.api.PlayerComposition;
 import net.runelite.api.Skill;
+import net.runelite.api.WorldType;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.kit.KitType;
 import net.runelite.client.game.ItemManager;
@@ -19,6 +20,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -40,7 +42,13 @@ public class PlayerKillNotifier extends BaseNotifier {
 
     @Override
     public boolean isEnabled() {
-        return config.notifyPk() && super.isEnabled();
+        if (!config.notifyPk())
+            return false;
+
+        // duplicated logic from super class but allow Duel Arena
+        EnumSet<WorldType> world = client.getWorldType().clone(); // fast on RegularEnumSet
+        world.remove(WorldType.PVP_ARENA);
+        return !WorldUtils.isIgnoredWorld(world) && settingsManager.isNamePermitted(client.getLocalPlayer().getName());
     }
 
     @Override
@@ -85,7 +93,7 @@ public class PlayerKillNotifier extends BaseNotifier {
         if (config.pkSkipFriendly() && isFriendly(target))
             return;
 
-        if (config.pkSkipSafe() && WorldUtils.isSafeArea(client))
+        if (config.pkSkipSafe() && (WorldUtils.isSafeArea(client) || client.getWorldType().contains(WorldType.PVP_ARENA)))
             return;
 
         Map<KitType, SerializedItemStack> equipment = getEquipment(target.getPlayerComposition());

@@ -1251,7 +1251,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "pkSkipSafe",
         name = "Ignore Safe Deaths",
-        description = "Whether notifications should be sent for kills in safe areas",
+        description = "Whether notifications should be skipped for kills in safe areas.<br/>" +
+            "This includes Clan Wars, Duel Arena, Fight Pit, Last Man Standing, etc.",
         position = 132,
         section = pkSection
     )
