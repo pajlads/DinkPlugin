@@ -127,6 +127,14 @@ public interface DinkPluginConfig extends Config {
     String gambleSection = "BA Gambles";
 
     @ConfigSection(
+        name = "Player Kills",
+        description = "Settings for notifying when you kill another player",
+        position = 130,
+        closedByDefault = true
+    )
+    String pkSection = "Player Kills";
+
+    @ConfigSection(
         name = "Advanced",
         description = "Do not modify without fully understanding these settings",
         position = 1000,
@@ -401,6 +409,17 @@ public interface DinkPluginConfig extends Config {
         section = webhookSection
     )
     default String gambleWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "pkWebhook",
+        name = "Player Kill Webhook Override",
+        description = "If non-empty, PK messages are sent to this URL, instead of the primary URL",
+        position = -6,
+        section = webhookSection
+    )
+    default String pkWebhook() {
         return "";
     }
 
@@ -1206,4 +1225,73 @@ public interface DinkPluginConfig extends Config {
     default String gambleRareNotifyMessage() {
         return "%USERNAME% has received rare loot at gamble count %COUNT%: \n\n%LOOT%";
     }
+
+    @ConfigItem(
+        keyName = "pkEnabled",
+        name = "Enable Player Kills",
+        description = "Enable notifications upon killing other players",
+        position = 130,
+        section = pkSection
+    )
+    default boolean notifyPk() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "pkSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 131,
+        section = pkSection
+    )
+    default boolean pkSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "pkSkipSafe",
+        name = "Ignore Safe Deaths",
+        description = "Whether notifications should be sent for kills in safe areas",
+        position = 132,
+        section = pkSection
+    )
+    default boolean pkSkipSafe() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "pkSkipFriendly",
+        name = "Ignore Friendly's",
+        description = "Whether notifications should be skipped upon killing friends, clan members, or team mates",
+        position = 133,
+        section = pkSection
+    )
+    default boolean pkSkipFriendly() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "pkMinValue",
+        name = "Min Value",
+        description = "The minimum value of the victim's equipment to send a notification.",
+        position = 134,
+        section = pkSection
+    )
+    default int pkMinValue() {
+        return 0;
+    }
+
+    @ConfigItem(
+        keyName = "pkNotifyMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %TARGET% to insert the victim's username<br/>",
+        position = 135,
+        section = pkSection
+    )
+    default String pkNotifyMessage() {
+        return "%USERNAME% has PK'd %TARGET%";
+    }
+
 }

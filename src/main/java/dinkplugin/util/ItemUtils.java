@@ -75,6 +75,14 @@ public class ItemUtils {
         return price;
     }
 
+    public long getTotalPrice(@NotNull Iterable<SerializedItemStack> items) {
+        long sum = 0L;
+        for (SerializedItemStack item : items) {
+            sum += item.getTotalPrice();
+        }
+        return sum;
+    }
+
     public Collection<Item> getItems(Client client) {
         return Stream.of(InventoryID.INVENTORY, InventoryID.EQUIPMENT)
             .map(client::getItemContainer)
