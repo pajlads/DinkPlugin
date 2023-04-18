@@ -24,20 +24,14 @@ public class PkNotificationData extends NotificationData {
 
     @Override
     public List<Field> getFields() {
-        List<Field> fields = new ArrayList<>(2 + equipment.size());
-
-        fields.add(
-            new Field(
-                "World",
-                Field.formatBlock("", String.valueOf(world)),
-                false
-            )
-        );
+        List<Field> fields = new ArrayList<>(1 + equipment.size());
 
         fields.add(
             new Field(
                 "Location",
-                Field.formatBlock("", String.format("X: %d, Y: %d, Plane: %d", location.getX(), location.getY(), location.getPlane())),
+                Field.formatBlock("",
+                    String.format("X: %d, Y: %d, Z: %d, World: %d", location.getX(), location.getY(), location.getPlane(), world)
+                ),
                 false
             )
         );
