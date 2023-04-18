@@ -1,7 +1,6 @@
 package dinkplugin.notifiers.data;
 
 import dinkplugin.message.Field;
-import dinkplugin.util.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.runelite.api.coords.WorldPoint;
@@ -24,23 +23,23 @@ public class PkNotificationData extends NotificationData {
 
     @Override
     public List<Field> getFields() {
-        List<Field> fields = new ArrayList<>(1 + equipment.size());
+        List<Field> fields = new ArrayList<>(2);
+
+        fields.add(
+            new Field(
+                "World",
+                Field.formatBlock("", String.valueOf(world))
+            )
+        );
 
         fields.add(
             new Field(
                 "Location",
                 Field.formatBlock("",
-                    String.format("X: %d, Y: %d, Z: %d, World: %d", location.getX(), location.getY(), location.getPlane(), world)
-                ),
-                false
+                    String.format("X: %d, Y: %d, Plane: %d", location.getX(), location.getY(), location.getPlane())
+                )
             )
         );
-
-        equipment.forEach((slot, item) -> {
-            String key = Utils.ucFirst(slot.toString());
-            String value = Field.formatBlock("", item.getName());
-            fields.add(new Field(key, value));
-        });
 
         return fields;
     }

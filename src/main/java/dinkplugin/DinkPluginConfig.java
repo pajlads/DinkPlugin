@@ -1286,7 +1286,7 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %TARGET% to insert the victim's username<br/>",
+            "Use %TARGET% to insert the victim's username",
         position = 135,
         section = pkSection
     )
