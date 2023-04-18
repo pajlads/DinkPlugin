@@ -27,7 +27,13 @@ public class PlayerKillNotifier extends BaseNotifier {
 
     private static final KitType[] EQUIPMENT;
 
-    private final Map<Player, Integer> attacked = new WeakHashMap<>();
+    /**
+     * Contains the damage inflicted by the local player on various targets in a short time period.
+     * <p>
+     * Uses weak keys to not hinder garbage collection
+     * (and avoid synchronization if we were forced to do Map#clear on plugin shutdown).
+     */
+    private final Map<Player, Integer> attacked = new WeakHashMap<>(4);
 
     @Inject
     private ItemManager itemManager;
