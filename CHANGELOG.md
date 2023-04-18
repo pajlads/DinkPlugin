@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Major: Add notifier to capture player kills while hitsplats are still visible. (#214)
+
 ## 1.3.3
 
 - Minor: Include NPC killer in death notification metadata. (#207)
