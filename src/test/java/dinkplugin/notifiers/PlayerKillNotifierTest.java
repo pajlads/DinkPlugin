@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.when;
 public class PlayerKillNotifierTest extends MockedNotifierTest {
 
     private static final String TARGET = "Romy";
+    private static final int LEVEL = 99;
     private static final int MY_HP = 10;
     private static final int WORLD = 420;
     private static final WorldPoint LOCATION = new WorldPoint(3000, 4000, 0);
@@ -89,6 +91,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
                 .extra(
                     new PkNotificationData(
                         TARGET,
+                        LEVEL,
                         EQUIPMENT,
                         WORLD,
                         LOCATION,
@@ -177,6 +180,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         Player target = mock(Player.class);
         when(target.getName()).thenReturn(TARGET);
         when(target.isDead()).thenReturn(true);
+        when(target.getCombatLevel()).thenReturn(LEVEL);
         when(target.getWorldLocation()).thenReturn(LOCATION);
         PlayerComposition comp = mock(PlayerComposition.class);
         when(target.getPlayerComposition()).thenReturn(comp);
@@ -200,6 +204,6 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         m.put(KitType.LEGS, new SerializedItemStack(ItemID.MYSTIC_ROBE_BOTTOM, 1, LEGS_PRICE, "Mystic robe bottom"));
         m.put(KitType.HANDS, new SerializedItemStack(ItemID.BARROWS_GLOVES, 1, HAND_PRICE, "Barrows gloves"));
         m.put(KitType.SHIELD, new SerializedItemStack(ItemID.UNHOLY_BOOK, 1, SHIELD_PRICE, "Unholy book"));
-        EQUIPMENT = m;
+        EQUIPMENT = Collections.unmodifiableMap(m);
     }
 }

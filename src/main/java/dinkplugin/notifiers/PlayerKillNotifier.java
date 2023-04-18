@@ -90,6 +90,7 @@ public class PlayerKillNotifier extends BaseNotifier {
 
         PkNotificationData extra = new PkNotificationData(
             target.getName(),
+            target.getCombatLevel(),
             equipment,
             client.getWorld(),
             target.getWorldLocation(),

@@ -15,6 +15,7 @@ import java.util.Map;
 public class PkNotificationData extends NotificationData {
 
     String name;
+    int combatLevel;
     Map<KitType, SerializedItemStack> equipment;
     int world;
     WorldPoint location;
