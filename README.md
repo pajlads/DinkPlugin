@@ -534,6 +534,7 @@ Note: `petName` is only included if the game sent it to your chat via untradeabl
 
 ```json5
 {
+  "content": "%USERNAME% has PK'd %TARGET%",
   "type": "PLAYER_KILL",
   "playerName": "%USERNAME%",
   "accountType": "NORMAL",
