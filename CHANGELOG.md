@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Update gradle wrapper to v8.1.1 patch version. (#215)
+
 ## 1.3.3
 
 - Minor: Include NPC killer in death notification metadata. (#207)
