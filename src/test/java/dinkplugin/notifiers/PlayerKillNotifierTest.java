@@ -3,7 +3,7 @@ package dinkplugin.notifiers;
 import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
-import dinkplugin.notifiers.data.PkNotificationData;
+import dinkplugin.notifiers.data.PlayerKillNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.WorldUtils;
 import net.runelite.api.Actor;
@@ -90,7 +90,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
                 .text(String.format("%s has PK'd %s", PLAYER_NAME, TARGET))
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
-                .extra(new PkNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, damage))
+                .extra(new PlayerKillNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, damage))
                 .build()
         );
     }
@@ -113,7 +113,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
                 .text(String.format("%s has PK'd %s", PLAYER_NAME, TARGET))
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
-                .extra(new PkNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, 12))
+                .extra(new PlayerKillNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, 12))
                 .build()
         );
     }
@@ -140,7 +140,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
                 .text(String.format("%s has PK'd %s", PLAYER_NAME, TARGET))
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
-                .extra(new PkNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, damage))
+                .extra(new PlayerKillNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, damage))
                 .build()
         );
     }

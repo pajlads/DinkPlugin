@@ -2,7 +2,7 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
-import dinkplugin.notifiers.data.PkNotificationData;
+import dinkplugin.notifiers.data.PlayerKillNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.WorldUtils;
@@ -103,7 +103,7 @@ public class PlayerKillNotifier extends BaseNotifier {
             return;
 
         boolean sendLocation = config.pkIncludeLocation();
-        PkNotificationData extra = new PkNotificationData(
+        PlayerKillNotificationData extra = new PlayerKillNotificationData(
             target.getName(),
             target.getCombatLevel(),
             equipment,

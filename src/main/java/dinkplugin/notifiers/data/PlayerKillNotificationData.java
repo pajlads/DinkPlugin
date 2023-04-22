@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
-public class PkNotificationData extends NotificationData {
+public class PlayerKillNotificationData extends NotificationData {
 
     String name;
     int combatLevel;
