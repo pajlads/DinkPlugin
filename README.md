@@ -541,9 +541,9 @@ Note: `world` and `location` are *not* sent if the user has disabled the "Includ
   "playerName": "%USERNAME%",
   "accountType": "NORMAL",
   "extra": {
-    "name": "%TARGET%",
-    "combatLevel": 69,
-    "equipment": {
+    "victimName": "%TARGET%",
+    "victimCombatLevel": 69,
+    "victimEquipment": {
       "AMULET": {
         "id": 1731,
         "priceEach": 1987,

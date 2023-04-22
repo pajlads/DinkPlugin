@@ -15,9 +15,9 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 public class PlayerKillNotificationData extends NotificationData {
 
-    String name;
-    int combatLevel;
-    Map<KitType, SerializedItemStack> equipment;
+    String victimName;
+    int victimCombatLevel;
+    Map<KitType, SerializedItemStack> victimEquipment;
     @Nullable Integer world;
     @Nullable WorldPoint location;
     int myHitpoints;
