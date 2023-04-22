@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Bugfix: Fire death notification when multiple similar NPCs are attacking the player that lack scraped wiki HP data. (#216)
+- Dev: Update gradle wrapper to v8.1.1 patch version. (#215)
 
 ## 1.3.3
 
