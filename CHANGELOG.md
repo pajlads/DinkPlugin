@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Fire death notification when multiple similar NPCs are attacking the player that lack scraped wiki HP data. (#216)
+
 ## 1.3.3
 
 - Minor: Include NPC killer in death notification metadata. (#207)
