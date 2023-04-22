@@ -1274,7 +1274,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "pkMinValue",
         name = "Min Value",
-        description = "The minimum value of the victim's equipment to send a notification.",
+        description = "The minimum value of the victim's visible equipment to send a notification.<br/>" +
+            "This does not include equipment you cannot see or items in their inventory.",
         position = 134,
         section = pkSection
     )
