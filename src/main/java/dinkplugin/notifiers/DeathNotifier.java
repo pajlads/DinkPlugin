@@ -370,9 +370,9 @@ public class DeathNotifier extends BaseNotifier {
                         .thenComparingInt(NPCComposition::getSize) // prefer large
                         .thenComparing(NPCComposition::isMinimapVisible) // prefer visible on minimap
                         .thenComparing(
-                            Comparator.nullsFirst(
-                                Comparator.comparing(comp -> npcManager.getHealth(comp.getId())) // prefer high max health
-                            )
+                            // prefer high max health
+                            comp -> npcManager.getHealth(comp.getId()),
+                            Comparator.nullsFirst(Comparator.naturalOrder())
                         )
                 )
             )
