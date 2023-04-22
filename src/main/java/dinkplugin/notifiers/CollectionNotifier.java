@@ -9,8 +9,10 @@ import dinkplugin.notifiers.data.CollectionNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.annotations.Varp;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -29,7 +31,7 @@ public class CollectionNotifier extends BaseNotifier {
      * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
      */
     @VisibleForTesting
-    static final int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
+    static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
 
     /**
      * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.
@@ -38,6 +40,9 @@ public class CollectionNotifier extends BaseNotifier {
 
     @Inject
     private Client client;
+
+    @Inject
+    private ClientThread clientThread;
 
     @Inject
     private ItemManager itemManager;
@@ -97,7 +102,8 @@ public class CollectionNotifier extends BaseNotifier {
 
         Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(chatMessage);
         if (collectionMatcher.find()) {
-            this.handleNotify(collectionMatcher.group("itemName"));
+            String item = collectionMatcher.group("itemName");
+            clientThread.invokeLater(() -> handleNotify(item));
         }
     }
 
