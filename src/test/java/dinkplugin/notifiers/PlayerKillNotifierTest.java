@@ -88,17 +88,30 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
                 .text(String.format("%s has PK'd %s", PLAYER_NAME, TARGET))
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
-                .extra(
-                    new PkNotificationData(
-                        TARGET,
-                        LEVEL,
-                        EQUIPMENT,
-                        WORLD,
-                        LOCATION,
-                        MY_HP,
-                        damage
-                    )
-                )
+                .extra(new PkNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, damage))
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyMulti() {
+        // init mocks
+        Player target = mockPlayer();
+
+        // fire event
+        notifier.onHitsplat(event(target, 5));
+        notifier.onHitsplat(event(target, 7));
+        notifier.onTick();
+
+        // verify notification
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(String.format("%s has PK'd %s", PLAYER_NAME, TARGET))
+                .type(NotificationType.PLAYER_KILL)
+                .playerName(PLAYER_NAME)
+                .extra(new PkNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, 12))
                 .build()
         );
     }
