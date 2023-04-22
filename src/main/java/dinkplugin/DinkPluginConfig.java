@@ -1262,13 +1262,13 @@ public interface DinkPluginConfig extends Config {
 
     @ConfigItem(
         keyName = "pkSkipFriendly",
-        name = "Ignore Friendly's",
+        name = "Ignore Friendlies",
         description = "Whether notifications should be skipped upon killing friends, clan members, or team mates",
         position = 133,
         section = pkSection
     )
     default boolean pkSkipFriendly() {
-        return true;
+        return false;
     }
 
     @ConfigItem(
