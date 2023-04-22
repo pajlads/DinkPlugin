@@ -59,6 +59,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         // init config mocks
         when(config.notifyPk()).thenReturn(true);
         when(config.pkMinValue()).thenReturn(EQUIPMENT_VALUE);
+        when(config.pkIncludeLocation()).thenReturn(true);
         when(config.pkNotifyMessage()).thenReturn("%USERNAME% has PK'd %TARGET%");
 
         // init client mocks

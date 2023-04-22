@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.kit.KitType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +18,16 @@ public class PkNotificationData extends NotificationData {
     String name;
     int combatLevel;
     Map<KitType, SerializedItemStack> equipment;
-    int world;
-    WorldPoint location;
+    @Nullable Integer world;
+    @Nullable WorldPoint location;
     int myHitpoints;
     int myLastDamage;
 
     @Override
     public List<Field> getFields() {
+        if (location == null)
+            return super.getFields();
+
         List<Field> fields = new ArrayList<>(2);
 
         fields.add(

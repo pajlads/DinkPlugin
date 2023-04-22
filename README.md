@@ -529,6 +529,8 @@ Note: `petName` is only included if the game sent it to your chat via untradeabl
 
 `%TARGET%` will be replaced with the victim's user name
 
+Note: `world` and `location` are *not* sent if the user has disabled the "Include Location" notifier setting.
+
 <details>
   <summary>JSON for PK Notifications:</summary>
 

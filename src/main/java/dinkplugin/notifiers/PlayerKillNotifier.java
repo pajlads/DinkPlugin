@@ -102,12 +102,13 @@ public class PlayerKillNotifier extends BaseNotifier {
         if (value < minValue)
             return;
 
+        boolean sendLocation = config.pkIncludeLocation();
         PkNotificationData extra = new PkNotificationData(
             target.getName(),
             target.getCombatLevel(),
             equipment,
-            client.getWorld(),
-            target.getWorldLocation(),
+            sendLocation ? client.getWorld() : null,
+            sendLocation ? target.getWorldLocation() : null,
             client.getBoostedSkillLevel(Skill.HITPOINTS),
             myLastDamage
         );
