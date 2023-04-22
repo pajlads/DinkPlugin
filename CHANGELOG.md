@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Major: Add notifier to capture player kills while hitsplats are still visible. (#214)
 - Bugfix: Improve reliablity of hidden chat setting for collection log screenshots. (#217)
 - Bugfix: Fire death notification when multiple similar NPCs are attacking the player that lack scraped wiki HP data. (#216)
 - Dev: Update gradle wrapper to v8.1.1 patch version. (#215)

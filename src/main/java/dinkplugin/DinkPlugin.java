@@ -11,6 +11,7 @@ import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.LevelNotifier;
 import dinkplugin.notifiers.LootNotifier;
 import dinkplugin.notifiers.PetNotifier;
+import dinkplugin.notifiers.PlayerKillNotifier;
 import dinkplugin.notifiers.QuestNotifier;
 import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
@@ -22,6 +23,7 @@ import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.UsernameChanged;
@@ -71,6 +73,7 @@ public class DinkPlugin extends Plugin {
     private @Inject CombatTaskNotifier combatTaskNotifier;
     private @Inject DiaryNotifier diaryNotifier;
     private @Inject GambleNotifier gambleNotifier;
+    private @Inject PlayerKillNotifier pkNotifier;
 
     @Override
     protected void startUp() {
@@ -138,6 +141,7 @@ public class DinkPlugin extends Plugin {
         levelNotifier.onTick();
         diaryNotifier.onTick();
         killCountNotifier.onTick();
+        pkNotifier.onTick();
     }
 
     @Subscribe
@@ -172,6 +176,11 @@ public class DinkPlugin extends Plugin {
                 // do nothing
                 break;
         }
+    }
+
+    @Subscribe
+    public void onHitsplatApplied(HitsplatApplied event) {
+        pkNotifier.onHitsplat(event);
     }
 
     @Subscribe

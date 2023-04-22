@@ -7,6 +7,7 @@ import net.runelite.api.WorldType;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -28,7 +29,7 @@ public class WorldUtils {
     private final int INFERNO_REGION = 9043;
     private final int NMZ_REGION = 9033;
     private final int TZHAAR_CAVE = 9551;
-    private final int TZHAAR_PIT = 9552;
+    public final @VisibleForTesting int TZHAAR_PIT = 9552;
 
     public boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);

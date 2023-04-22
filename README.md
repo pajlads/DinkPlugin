@@ -21,6 +21,7 @@ Have a suggestion (e.g., new notifier, additional data), bug report (as rare as 
 - [Pet](#pet): Send a webhook message upon receiving a pet
 - [Speedrunning](#speedrunning): Send a webhook message upon completing a quest speedrun (with special configuration for personal best times)
 - [BA Gambles](#ba-gambles): Sends a webhook message upon receiving high level gambles from Barbarian Assault
+- [Player Kills](#player-kills): Sends a webhook message upon killing another player (while hitsplats are still visible)
 
 ## Other Setup
 
@@ -520,6 +521,64 @@ Note: `petName` is only included if the game sent it to your chat via untradeabl
     ]
   },
   "type": "BARBARIAN_ASSAULT_GAMBLE"
+}
+```
+</details>
+
+### Player Kills:
+
+`%TARGET%` will be replaced with the victim's user name
+
+Note: `world` and `location` are *not* sent if the user has disabled the "Include Location" notifier setting.
+
+<details>
+  <summary>JSON for PK Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has PK'd %TARGET%",
+  "type": "PLAYER_KILL",
+  "playerName": "%USERNAME%",
+  "accountType": "NORMAL",
+  "extra": {
+    "victimName": "%TARGET%",
+    "victimCombatLevel": 69,
+    "victimEquipment": {
+      "AMULET": {
+        "id": 1731,
+        "priceEach": 1987,
+        "name": "Amulet of power"
+      },
+      "WEAPON": {
+        "id": 1333,
+        "priceEach": 14971,
+        "name": "Rune scimitar"
+      },
+      "TORSO": {
+        "id": 1135,
+        "priceEach": 4343,
+        "name": "Green d'hide body"
+      },
+      "LEGS": {
+        "id": 1099,
+        "priceEach": 2077,
+        "name": "Green d'hide chaps"
+      },
+      "HANDS": {
+        "id": 1065,
+        "priceEach": 1392,
+        "name": "Green d'hide vambraces"
+      }
+    },
+    "world": 394,
+    "location": {
+      "x": 3334,
+      "y": 4761,
+      "plane": 0
+    },
+    "myHitpoints": 20,
+    "myLastDamage": 12
+  }
 }
 ```
 </details>
