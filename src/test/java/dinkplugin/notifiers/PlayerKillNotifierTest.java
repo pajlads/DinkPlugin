@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
+import static net.runelite.api.HitsplatID.DAMAGE_OTHER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -98,7 +99,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         // init mocks
         Player target = mockPlayer();
 
-        // fire event
+        // fire events
         notifier.onHitsplat(event(target, 5));
         notifier.onHitsplat(event(target, 7));
         notifier.onTick();
@@ -112,6 +113,33 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
                 .extra(new PkNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, 12))
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyMultiOther() {
+        // init mocks
+        Player target = mockPlayer();
+
+        // fire event
+        int damage = 12;
+        notifier.onHitsplat(event(target, damage));
+        HitsplatApplied eventOther = new HitsplatApplied();
+        eventOther.setActor(target);
+        eventOther.setHitsplat(new Hitsplat(DAMAGE_OTHER, 13, 1));
+        notifier.onHitsplat(eventOther);
+        notifier.onTick();
+
+        // verify notification
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(String.format("%s has PK'd %s", PLAYER_NAME, TARGET))
+                .type(NotificationType.PLAYER_KILL)
+                .playerName(PLAYER_NAME)
+                .extra(new PkNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, damage))
                 .build()
         );
     }
@@ -183,6 +211,35 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
 
         // fire event
         notifier.onHitsplat(event(target, 16));
+        notifier.onTick();
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreOther() {
+        // init mocks
+        Player target = mockPlayer();
+
+        // fire event
+        HitsplatApplied event = new HitsplatApplied();
+        event.setActor(target);
+        event.setHitsplat(new Hitsplat(DAMAGE_OTHER, 17, 1));
+        notifier.onHitsplat(event);
+        notifier.onTick();
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreSelf() {
+        // fire event
+        HitsplatApplied event = new HitsplatApplied();
+        event.setActor(localPlayer);
+        event.setHitsplat(new Hitsplat(HitsplatID.DAMAGE_ME, 18, 1));
+        notifier.onHitsplat(event);
         notifier.onTick();
 
         // ensure no notification
