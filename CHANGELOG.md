@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Improve test suite reliability for uploading screenshots. (#219)
+
 ## 1.4.0
 
 - Major: Add notifier to capture player kills while hitsplats are still visible. (#214)
