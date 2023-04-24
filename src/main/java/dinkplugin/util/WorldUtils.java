@@ -2,8 +2,10 @@ package dinkplugin.util;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.experimental.UtilityClass;
+import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
@@ -30,6 +32,17 @@ public class WorldUtils {
     private final int NMZ_REGION = 9033;
     private final int TZHAAR_CAVE = 9551;
     public final @VisibleForTesting int TZHAAR_PIT = 9552;
+
+    public static WorldPoint getLocation(Client client) {
+        return getLocation(client, client.getLocalPlayer());
+    }
+
+    public static WorldPoint getLocation(Client client, Actor actor) {
+        if (client.isInInstancedRegion())
+            return WorldPoint.fromLocalInstance(client, actor.getLocalLocation());
+
+        return actor.getWorldLocation();
+    }
 
     public boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);
@@ -69,7 +82,7 @@ public class WorldUtils {
     }
 
     public boolean isLastManStanding(Client client) {
-        if (LMS_REGIONS.contains(client.getLocalPlayer().getWorldLocation().getRegionID()))
+        if (LMS_REGIONS.contains(getLocation(client).getRegionID()))
             return true;
 
         Widget widget = client.getWidget(WidgetInfo.LMS_KDA);
@@ -90,7 +103,7 @@ public class WorldUtils {
     }
 
     public boolean isSafeArea(Client client) {
-        int regionId = client.getLocalPlayer().getWorldLocation().getRegionID();
+        int regionId = getLocation(client).getRegionID();
 
         if (isBarbarianAssault(regionId) || isChambersOfXeric(regionId) || isInferno(regionId) ||
             isNightmareZone(regionId) || isTzHaarFightCave(regionId) || isPestControl(client)) {

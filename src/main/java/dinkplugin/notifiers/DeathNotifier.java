@@ -347,7 +347,7 @@ public class DeathNotifier extends BaseNotifier {
             return true; // normally dangerous
 
         // inferno and fight cave are technically safe, but we want death notification regardless
-        int regionId = client.getLocalPlayer().getWorldLocation().getRegionID();
+        int regionId = WorldUtils.getLocation(client).getRegionID();
         return WorldUtils.isInferno(regionId) || WorldUtils.isTzHaarFightCave(regionId);
     }
 
