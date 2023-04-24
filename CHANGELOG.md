@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Ignore deaths and player kills in instanced regions that are safe. (#221)
+
 ## 1.4.0
 
 - Major: Add notifier to capture player kills while hitsplats are still visible. (#214)
