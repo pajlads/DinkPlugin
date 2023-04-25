@@ -135,7 +135,7 @@ public class DiscordMessageHandler {
                     unhideWidget(whispersHidden, client, clientThread, WidgetInfo.PRIVATE_CHAT_MESSAGE);
                     return body;
                 })
-                .thenAcceptAsync(body -> sendToMultiple(urlList, body));
+                .thenAccept(body -> sendToMultiple(urlList, body));
         } else {
             sendToMultiple(urlList, reqBodyBuilder);
         }
