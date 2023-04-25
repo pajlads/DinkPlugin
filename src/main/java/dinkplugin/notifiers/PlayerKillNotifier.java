@@ -108,7 +108,7 @@ public class PlayerKillNotifier extends BaseNotifier {
             target.getCombatLevel(),
             equipment,
             sendLocation ? client.getWorld() : null,
-            sendLocation ? target.getWorldLocation() : null,
+            sendLocation ? WorldUtils.getLocation(client, target) : null,
             client.getBoostedSkillLevel(Skill.HITPOINTS),
             myLastDamage
         );
