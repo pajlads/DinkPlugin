@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.4.1
+
 - Bugfix: Ignore deaths and player kills in instanced regions that are safe. (#221)
 - Dev: Improve test suite reliability for uploading screenshots. (#219)
 
