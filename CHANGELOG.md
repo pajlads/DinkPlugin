@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Allow player name in Discord notifications to link to CollectionLog.net profile. (#224)
+
 ## 1.4.1
 
 - Bugfix: Ignore deaths and player kills in instanced regions that are safe. (#221)
