@@ -13,6 +13,7 @@ import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetModalMode;
@@ -60,8 +61,11 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
         mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
         mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
+        mockItem(ItemID.TUNA_26149, TUNA_PRICE, "Tuna");
+        when(itemManager.canonicalize(ItemID.TUNA_26149)).thenReturn(ItemID.TUNA);
 
         // init group mock
+        when(client.getAccountType()).thenReturn(AccountType.HARDCORE_GROUP_IRONMAN);
         ClanChannel channel = mock(ClanChannel.class);
         when(channel.getName()).thenReturn(GROUP_NAME);
         when(client.getClanChannel(ClanID.GROUP_IRONMAN)).thenReturn(channel);
@@ -273,6 +277,66 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
                 .playerName(PLAYER_NAME)
                 .build()
         );
+    }
+
+    @Test
+    void testNotifyNoted() {
+        // mock initial inventory state
+        Item[] initialItems = { new Item(ItemID.TUNA, 2) };
+        mockContainer(initialItems);
+        notifier.onWidgetLoad(LOAD_EVENT);
+
+        // mock updated inventory
+        Item[] updatedItems = { new Item(ItemID.TUNA_26149, 3) };
+        mockContainer(updatedItems);
+
+        mockSaveWidget();
+        notifier.onWidgetClose(CLOSE_EVENT);
+
+        // verify notification message
+        GroupStorageNotificationData extra = new GroupStorageNotificationData(
+            Collections.emptyList(),
+            Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")),
+            -TUNA_PRICE,
+            GROUP_NAME
+        );
+
+        String text = String.format(
+            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
+            PLAYER_NAME,
+            GroupStorageNotifier.EMPTY_TRANSACTION,
+            PLAYER_NAME,
+            "- 1 x Tuna (" + TUNA_PRICE + ")"
+        );
+
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(text)
+                .extra(extra)
+                .type(NotificationType.GROUP_STORAGE)
+                .playerName(PLAYER_NAME)
+                .build()
+        );
+    }
+
+    @Test
+    void testIgnoreNoted() {
+        // mock initial inventory state
+        Item[] initialItems = { new Item(ItemID.TUNA, 2) };
+        mockContainer(initialItems);
+        notifier.onWidgetLoad(LOAD_EVENT);
+
+        // mock updated inventory
+        Item[] updatedItems = { new Item(ItemID.TUNA_26149, 2) };
+        mockContainer(updatedItems);
+
+        mockSaveWidget();
+        notifier.onWidgetClose(CLOSE_EVENT);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
