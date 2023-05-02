@@ -159,6 +159,37 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnoreValue() {
+        // update config mocks
+        when(config.bankMinValue()).thenReturn(RUBY_PRICE + 1);
+
+        // mock initial inventory state
+        ItemContainer initial = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(initial);
+        Item[] initialItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.TUNA, 1) };
+        when(initial.getItems()).thenReturn(initialItems);
+
+        WidgetLoaded load = new WidgetLoaded();
+        load.setGroupId(WidgetID.GROUP_STORAGE_GROUP_ID);
+        notifier.onWidgetLoad(load);
+
+        // mock updated inventory
+        ItemContainer updated = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(updated);
+        Item[] updatedItems = { new Item(ItemID.TUNA, 1), new Item(ItemID.OPAL, 1) };
+        when(updated.getItems()).thenReturn(updatedItems);
+
+        Widget widget = mock(Widget.class);
+        when(client.getWidget(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, 1)).thenReturn(widget);
+        when(widget.getText()).thenReturn("Saving...");
+        WidgetClosed close = new WidgetClosed(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, WidgetModalMode.MODAL_NOCLICKTHROUGH, true);
+        notifier.onWidgetClose(close);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testIgnore() {
         // update mocks
         when(config.notifyBank()).thenReturn(false);
