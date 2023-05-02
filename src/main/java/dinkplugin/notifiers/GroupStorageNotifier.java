@@ -169,19 +169,19 @@ public class GroupStorageNotifier extends BaseNotifier {
         return inv != null ? inv : client.getItemContainer(InventoryID.INVENTORY);
     }
 
-    private static Map<Integer, Integer> reduce(Item[] items) {
+    private Map<Integer, Integer> reduce(Item[] items) {
         return Arrays.stream(items)
             .filter(Objects::nonNull)
             .filter(item -> item.getId() >= 0)
             .filter(item -> item.getQuantity() > 0)
-            .collect(Collectors.toMap(GroupStorageNotifier::getId, Item::getQuantity, Integer::sum));
+            .collect(Collectors.toMap(this::getItemId, Item::getQuantity, Integer::sum));
     }
 
-    private static int getId(Item item) {
+    private int getItemId(Item item) {
         int id = item.getId();
         if (id == ItemID.COINS || id == ItemID.COINS_8890 || id == ItemID.COINS_6964)
             return ItemID.COINS_995;
-        return id;
+        return itemManager.canonicalize(id);
     }
 
     private static <K> Map<K, Integer> computeDifference(Map<K, Integer> before, Map<K, Integer> after) {
