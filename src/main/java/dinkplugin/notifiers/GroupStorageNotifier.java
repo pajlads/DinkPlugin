@@ -16,6 +16,7 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,7 +35,8 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class GroupStorageNotifier extends BaseNotifier {
-    private static final int GROUP_STORAGE_LOADER_ID = 293;
+    @VisibleForTesting
+    static final int GROUP_STORAGE_LOADER_ID = 293;
     private static final BinaryOperator<Integer> SUM;
 
     @Inject
