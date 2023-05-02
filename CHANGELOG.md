@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Major: Add notifications for depositing or withdrawing items from Group Ironman Shared Storage. (#225)
 - Minor: Allow player name in Discord notifications to link to CollectionLog.net profile. (#224)
 
 ## 1.4.1
