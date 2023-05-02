@@ -9,6 +9,7 @@ import dinkplugin.util.ItemUtils;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
+import net.runelite.api.ItemID;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
@@ -157,7 +158,14 @@ public class GroupStorageNotifier extends BaseNotifier {
             .filter(Objects::nonNull)
             .filter(item -> item.getId() >= 0)
             .filter(item -> item.getQuantity() > 0)
-            .collect(Collectors.toMap(Item::getId, Item::getQuantity, Integer::sum));
+            .collect(Collectors.toMap(GroupStorageNotifier::getId, Item::getQuantity, Integer::sum));
+    }
+
+    private static int getId(Item item) {
+        int id = item.getId();
+        if (id == ItemID.COINS_995 || id == ItemID.COINS_8890 || id == ItemID.COINS_6964)
+            return ItemID.COINS;
+        return id;
     }
 
     private static <K> Map<K, Integer> computeDifference(Map<K, Integer> before, Map<K, Integer> after) {
