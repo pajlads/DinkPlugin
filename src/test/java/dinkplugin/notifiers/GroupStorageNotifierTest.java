@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -169,6 +170,160 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyStackable() {
+        // mock initial inventory state
+        ItemContainer initial = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(initial);
+        Item[] initialItems = { new Item(ItemID.RUBY, 2), new Item(ItemID.COINS_6964, 100), new Item(ItemID.COINS_995, 150) };
+        when(initial.getItems()).thenReturn(initialItems);
+
+        WidgetLoaded load = new WidgetLoaded();
+        load.setGroupId(WidgetID.GROUP_STORAGE_GROUP_ID);
+        notifier.onWidgetLoad(load);
+
+        // mock updated inventory
+        ItemContainer updated = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(updated);
+        Item[] updatedItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.RUBY, 1), new Item(ItemID.COINS_8890, 1000), new Item(ItemID.COINS, 50) };
+        when(updated.getItems()).thenReturn(updatedItems);
+
+        Widget widget = mock(Widget.class);
+        when(client.getWidget(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, 1)).thenReturn(widget);
+        when(widget.getText()).thenReturn("Saving...");
+        WidgetClosed close = new WidgetClosed(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, WidgetModalMode.MODAL_NOCLICKTHROUGH, true);
+        notifier.onWidgetClose(close);
+
+        // verify notification message
+        GroupStorageNotificationData extra = new GroupStorageNotificationData(
+            Collections.emptyList(),
+            Collections.singletonList(new SerializedItemStack(ItemID.COINS_995, 800, 1, "Coins")),
+            -800,
+            GROUP_NAME
+        );
+
+        String text = String.format(
+            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
+            PLAYER_NAME,
+            GroupStorageNotifier.EMPTY_TRANSACTION,
+            PLAYER_NAME,
+            "- 800 x Coins (800)"
+        );
+
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(text)
+                .extra(extra)
+                .type(NotificationType.GROUP_STORAGE)
+                .playerName(PLAYER_NAME)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyMultipleDebit() {
+        // mock initial inventory state
+        ItemContainer initial = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(initial);
+        Item[] initialItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.OPAL, 1) };
+        when(initial.getItems()).thenReturn(initialItems);
+
+        WidgetLoaded load = new WidgetLoaded();
+        load.setGroupId(WidgetID.GROUP_STORAGE_GROUP_ID);
+        notifier.onWidgetLoad(load);
+
+        // mock updated inventory
+        ItemContainer updated = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(updated);
+        when(updated.getItems()).thenReturn(new Item[0]);
+
+        Widget widget = mock(Widget.class);
+        when(client.getWidget(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, 1)).thenReturn(widget);
+        when(widget.getText()).thenReturn("Saving...");
+        WidgetClosed close = new WidgetClosed(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, WidgetModalMode.MODAL_NOCLICKTHROUGH, true);
+        notifier.onWidgetClose(close);
+
+        // verify notification message
+        GroupStorageNotificationData extra = new GroupStorageNotificationData(
+            Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal")),
+            Collections.emptyList(),
+            RUBY_PRICE + OPAL_PRICE,
+            GROUP_NAME
+        );
+
+        String text = String.format(
+            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
+            PLAYER_NAME,
+            "+ 1 x Ruby (" + RUBY_PRICE + ")\n+ 1 x Opal (" + OPAL_PRICE + ")",
+            PLAYER_NAME,
+            GroupStorageNotifier.EMPTY_TRANSACTION
+        );
+
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(text)
+                .extra(extra)
+                .type(NotificationType.GROUP_STORAGE)
+                .playerName(PLAYER_NAME)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyMultipleCredit() {
+        // mock initial inventory state
+        ItemContainer initial = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(initial);
+        when(initial.getItems()).thenReturn(new Item[0]);
+
+        WidgetLoaded load = new WidgetLoaded();
+        load.setGroupId(WidgetID.GROUP_STORAGE_GROUP_ID);
+        notifier.onWidgetLoad(load);
+
+        // mock updated inventory
+        ItemContainer updated = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(updated);
+        Item[] updatedItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.OPAL, 1) };
+        when(updated.getItems()).thenReturn(updatedItems);
+
+        Widget widget = mock(Widget.class);
+        when(client.getWidget(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, 1)).thenReturn(widget);
+        when(widget.getText()).thenReturn("Saving...");
+        WidgetClosed close = new WidgetClosed(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, WidgetModalMode.MODAL_NOCLICKTHROUGH, true);
+        notifier.onWidgetClose(close);
+
+        // verify notification message
+        GroupStorageNotificationData extra = new GroupStorageNotificationData(
+            Collections.emptyList(),
+            Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal")),
+            -(RUBY_PRICE + OPAL_PRICE),
+            GROUP_NAME
+        );
+
+        String text = String.format(
+            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
+            PLAYER_NAME,
+            GroupStorageNotifier.EMPTY_TRANSACTION,
+            PLAYER_NAME,
+            "- 1 x Ruby (" + RUBY_PRICE + ")\n- 1 x Opal (" + OPAL_PRICE + ")"
+        );
+
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(text)
+                .extra(extra)
+                .type(NotificationType.GROUP_STORAGE)
+                .playerName(PLAYER_NAME)
+                .build()
+        );
+    }
+
+    @Test
     void testIgnoreValue() {
         // update config mocks
         when(config.bankMinValue()).thenReturn(RUBY_PRICE + 1);
@@ -187,6 +342,34 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         ItemContainer updated = mock(ItemContainer.class);
         when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(updated);
         Item[] updatedItems = { new Item(ItemID.TUNA, 1), new Item(ItemID.OPAL, 1) };
+        when(updated.getItems()).thenReturn(updatedItems);
+
+        Widget widget = mock(Widget.class);
+        when(client.getWidget(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, 1)).thenReturn(widget);
+        when(widget.getText()).thenReturn("Saving...");
+        WidgetClosed close = new WidgetClosed(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, WidgetModalMode.MODAL_NOCLICKTHROUGH, true);
+        notifier.onWidgetClose(close);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreZero() {
+        // mock initial inventory state
+        ItemContainer initial = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(initial);
+        Item[] initialItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.TUNA, 1) };
+        when(initial.getItems()).thenReturn(initialItems);
+
+        WidgetLoaded load = new WidgetLoaded();
+        load.setGroupId(WidgetID.GROUP_STORAGE_GROUP_ID);
+        notifier.onWidgetLoad(load);
+
+        // mock updated inventory
+        ItemContainer updated = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(updated);
+        Item[] updatedItems = { new Item(ItemID.TUNA, 1), new Item(ItemID.RUBY, 1) };
         when(updated.getItems()).thenReturn(updatedItems);
 
         Widget widget = mock(Widget.class);
