@@ -8,7 +8,7 @@ public enum PlayerLookupService {
     CRYSTAL_MATH_LABS("Crystal Math Labs"),
     TEMPLE_OSRS("Temple OSRS"),
     WISE_OLD_MAN("Wise Old Man"),
-    COLLECTION_LOG("Collectionlog.net");
+    COLLECTION_LOG("CollectionLog.net");
 
     private final String name;
 
