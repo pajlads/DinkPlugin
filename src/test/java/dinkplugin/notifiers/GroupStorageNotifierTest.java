@@ -43,6 +43,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         super.setUp();
 
         // init config mocks
+        when(config.discordRichEmbeds()).thenReturn(true);
         when(config.notifyBank()).thenReturn(true);
         when(config.bankSendImage()).thenReturn(false);
         when(config.bankNotifyMessage())
@@ -92,6 +93,57 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             "+ 1 x Ruby (" + RUBY_PRICE + ")",
             PLAYER_NAME,
             "- 1 x Opal (" + OPAL_PRICE + ")"
+        );
+
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(text)
+                .extra(extra)
+                .type(NotificationType.GROUP_STORAGE)
+                .playerName(PLAYER_NAME)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyCoins() {
+        // mock initial inventory state
+        ItemContainer initial = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(initial);
+        Item[] initialItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.COINS_6964, 100) };
+        when(initial.getItems()).thenReturn(initialItems);
+
+        WidgetLoaded load = new WidgetLoaded();
+        load.setGroupId(WidgetID.GROUP_STORAGE_GROUP_ID);
+        notifier.onWidgetLoad(load);
+
+        // mock updated inventory
+        ItemContainer updated = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(updated);
+        Item[] updatedItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.COINS_8890, 1000) };
+        when(updated.getItems()).thenReturn(updatedItems);
+
+        Widget widget = mock(Widget.class);
+        when(client.getWidget(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, 1)).thenReturn(widget);
+        when(widget.getText()).thenReturn("Saving...");
+        WidgetClosed close = new WidgetClosed(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, WidgetModalMode.MODAL_NOCLICKTHROUGH, true);
+        notifier.onWidgetClose(close);
+
+        // verify notification message
+        GroupStorageNotificationData extra = new GroupStorageNotificationData(
+            Collections.emptyList(),
+            Collections.singletonList(new SerializedItemStack(ItemID.COINS, 900, 1, "Coins")),
+            -900
+        );
+
+        String text = String.format(
+            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
+            PLAYER_NAME,
+            GroupStorageNotifier.EMPTY_TRANSACTION,
+            PLAYER_NAME,
+            "- 900 x Coins (900)"
         );
 
         verify(messageHandler).createMessage(
