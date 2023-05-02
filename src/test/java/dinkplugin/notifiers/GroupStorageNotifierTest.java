@@ -41,7 +41,6 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
     private static final WidgetLoaded LOAD_EVENT;
     private static final WidgetClosed CLOSE_EVENT;
 
-
     @Bind
     @InjectMocks
     GroupStorageNotifier notifier;

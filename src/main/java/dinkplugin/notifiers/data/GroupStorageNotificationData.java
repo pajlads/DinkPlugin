@@ -4,9 +4,10 @@ import dinkplugin.message.Field;
 import dinkplugin.util.ItemUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @Value
@@ -19,8 +20,12 @@ public class GroupStorageNotificationData extends NotificationData {
 
     @Override
     public List<Field> getFields() {
-        return Collections.singletonList(
-            new Field("Net Value", ItemUtils.formatGold(netValue))
-        );
+        boolean groupKnown = StringUtils.isNotBlank(groupName);
+        List<Field> fields = new ArrayList<>(groupKnown ? 2 : 1);
+        if (groupKnown) {
+            fields.add(new Field("Group", Field.formatBlock(null, groupName)));
+        }
+        fields.add(new Field("Net Value", ItemUtils.formatGold(netValue)));
+        return fields;
     }
 }
