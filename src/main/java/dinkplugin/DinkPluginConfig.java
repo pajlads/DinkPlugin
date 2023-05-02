@@ -1349,13 +1349,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "bankMinValue",
+        name = "Min Value",
+        description = "The minimum value of the deposits or withdrawals to send a notification",
+        position = 142,
+        section = bankSection
+    )
+    default int bankMinValue() {
+        return 0;
+    }
+
+    @ConfigItem(
         keyName = "bankNotifyMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %DEBITS% to insert the list of deposited items<br/>" +
             "Use %CREDITS% to insert the list of withdrawn items",
-        position = 142,
+        position = 143,
         section = bankSection
     )
     default String bankNotifyMessage() {

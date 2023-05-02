@@ -113,6 +113,10 @@ public class GroupStorageNotifier extends BaseNotifier {
         }
         long netValue = debits - credits;
 
+        // Ensure transaction is large enough to be logged
+        if (debits < config.bankMinValue() && credits < config.bankMinValue())
+            return;
+
         // Sort lists so more valuable item transactions are at the top
         Comparator<SerializedItemStack> valuable = Comparator.comparingLong(SerializedItemStack::getTotalPrice).reversed();
         deposits.sort(valuable);
