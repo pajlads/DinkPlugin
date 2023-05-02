@@ -150,13 +150,15 @@ public class GroupStorageNotifier extends BaseNotifier {
             getGroupName()
         );
 
-        // Fire notification
-        createMessage(config.bankSendImage(), NotificationBody.builder()
-            .type(NotificationType.GROUP_STORAGE)
-            .text(formattedText)
-            .playerName(playerName)
-            .extra(extra)
-            .build());
+        // Fire notification (delayed by a tick for screenshotHideChat reliability)
+        clientThread.invokeAtTickEnd(() -> createMessage(config.bankSendImage(),
+            NotificationBody.builder()
+                .type(NotificationType.GROUP_STORAGE)
+                .text(formattedText)
+                .playerName(playerName)
+                .extra(extra)
+                .build())
+        );
     }
 
     private String getGroupName() {
