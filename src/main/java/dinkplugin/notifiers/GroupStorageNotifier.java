@@ -36,8 +36,8 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class GroupStorageNotifier extends BaseNotifier {
-    @VisibleForTesting
-    static final int GROUP_STORAGE_LOADER_ID = 293;
+    static final @VisibleForTesting int GROUP_STORAGE_LOADER_ID = 293;
+    static final @VisibleForTesting String EMPTY_TRANSACTION = "N/A";
     private static final BinaryOperator<Integer> SUM;
 
     @Inject
@@ -119,9 +119,12 @@ public class GroupStorageNotifier extends BaseNotifier {
         withdrawals.sort(valuable);
 
         // Convert lists to strings
-        BiFunction<Collection<SerializedItemStack>, String, String> formatItems = (items, linePrefix) -> items.stream()
-            .map(ItemUtils::formatStack)
-            .collect(Collectors.joining('\n' + linePrefix, linePrefix, ""));
+        BiFunction<Collection<SerializedItemStack>, String, String> formatItems = (items, linePrefix) -> {
+            if (items.isEmpty()) return EMPTY_TRANSACTION;
+            return items.stream()
+                .map(ItemUtils::formatStack)
+                .collect(Collectors.joining('\n' + linePrefix, linePrefix, ""));
+        };
         String depositString = formatItems.apply(deposits, "+ ");
         String withdrawalString = formatItems.apply(withdrawals, "- ");
 
@@ -131,6 +134,7 @@ public class GroupStorageNotifier extends BaseNotifier {
             new String[] { "%USERNAME%", "%DEBITS%", "%CREDITS%" },
             new String[] { playerName, depositString, withdrawalString }
         );
+        String formattedText = config.discordRichEmbeds() ? Field.formatBlock("diff", content) : content;
 
         // Populate metadata
         GroupStorageNotificationData extra = new GroupStorageNotificationData(
@@ -142,7 +146,7 @@ public class GroupStorageNotifier extends BaseNotifier {
         // Fire notification
         createMessage(config.bankSendImage(), NotificationBody.builder()
             .type(NotificationType.GROUP_STORAGE)
-            .text(Field.formatBlock("diff", content))
+            .text(formattedText)
             .playerName(playerName)
             .extra(extra)
             .build());
