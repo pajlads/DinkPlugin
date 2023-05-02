@@ -179,8 +179,8 @@ public class GroupStorageNotifier extends BaseNotifier {
 
     private static int getId(Item item) {
         int id = item.getId();
-        if (id == ItemID.COINS_995 || id == ItemID.COINS_8890 || id == ItemID.COINS_6964)
-            return ItemID.COINS;
+        if (id == ItemID.COINS || id == ItemID.COINS_8890 || id == ItemID.COINS_6964)
+            return ItemID.COINS_995;
         return id;
     }
 
