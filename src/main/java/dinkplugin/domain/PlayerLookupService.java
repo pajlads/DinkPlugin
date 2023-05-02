@@ -8,8 +8,8 @@ public enum PlayerLookupService {
     CRYSTAL_MATH_LABS("Crystal Math Labs"),
     TEMPLE_OSRS("Temple OSRS"),
     WISE_OLD_MAN("Wise Old Man"),
-    COLLECTION_LOG("Collectionlog.net"); //unsure of name to use, title appears to be Collectionlog.net on site but could be just Collection Log?
-    
+    COLLECTION_LOG("Collectionlog.net");
+
     private final String name;
 
     PlayerLookupService(String name) {
