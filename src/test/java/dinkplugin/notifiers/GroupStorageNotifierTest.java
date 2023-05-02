@@ -24,6 +24,7 @@ import org.mockito.InjectMocks;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static dinkplugin.notifiers.GroupStorageNotifier.EMPTY_TRANSACTION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -39,6 +40,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
     private static final int TUNA_PRICE = 100;
     private static final WidgetLoaded LOAD_EVENT;
     private static final WidgetClosed CLOSE_EVENT;
+
 
     @Bind
     @InjectMocks
@@ -93,24 +95,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             GROUP_NAME
         );
 
-        String text = String.format(
-            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
-            PLAYER_NAME,
-            "+ 1 x Ruby (" + RUBY_PRICE + ")",
-            PLAYER_NAME,
-            "- 1 x Opal (" + OPAL_PRICE + ")"
-        );
-
-        verify(messageHandler).createMessage(
-            PRIMARY_WEBHOOK_URL,
-            false,
-            NotificationBody.builder()
-                .text(text)
-                .extra(extra)
-                .type(NotificationType.GROUP_STORAGE)
-                .playerName(PLAYER_NAME)
-                .build()
-        );
+        verifyNotification(extra, "+ 1 x Ruby (" + RUBY_PRICE + ")", "- 1 x Opal (" + OPAL_PRICE + ")");
     }
 
     @Test
@@ -135,24 +120,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             GROUP_NAME
         );
 
-        String text = String.format(
-            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
-            PLAYER_NAME,
-            GroupStorageNotifier.EMPTY_TRANSACTION,
-            PLAYER_NAME,
-            "- 900 x Coins (900)"
-        );
-
-        verify(messageHandler).createMessage(
-            PRIMARY_WEBHOOK_URL,
-            false,
-            NotificationBody.builder()
-                .text(text)
-                .extra(extra)
-                .type(NotificationType.GROUP_STORAGE)
-                .playerName(PLAYER_NAME)
-                .build()
-        );
+        verifyNotification(extra, EMPTY_TRANSACTION, "- 900 x Coins (900)");
     }
 
     @Test
@@ -177,24 +145,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             GROUP_NAME
         );
 
-        String text = String.format(
-            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
-            PLAYER_NAME,
-            GroupStorageNotifier.EMPTY_TRANSACTION,
-            PLAYER_NAME,
-            "- 800 x Coins (800)"
-        );
-
-        verify(messageHandler).createMessage(
-            PRIMARY_WEBHOOK_URL,
-            false,
-            NotificationBody.builder()
-                .text(text)
-                .extra(extra)
-                .type(NotificationType.GROUP_STORAGE)
-                .playerName(PLAYER_NAME)
-                .build()
-        );
+        verifyNotification(extra, EMPTY_TRANSACTION, "- 800 x Coins (800)");
     }
 
     @Test
@@ -218,24 +169,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             GROUP_NAME
         );
 
-        String text = String.format(
-            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
-            PLAYER_NAME,
-            "+ 1 x Ruby (" + RUBY_PRICE + ")\n+ 1 x Opal (" + OPAL_PRICE + ")",
-            PLAYER_NAME,
-            GroupStorageNotifier.EMPTY_TRANSACTION
-        );
-
-        verify(messageHandler).createMessage(
-            PRIMARY_WEBHOOK_URL,
-            false,
-            NotificationBody.builder()
-                .text(text)
-                .extra(extra)
-                .type(NotificationType.GROUP_STORAGE)
-                .playerName(PLAYER_NAME)
-                .build()
-        );
+        verifyNotification(extra, "+ 1 x Ruby (" + RUBY_PRICE + ")\n+ 1 x Opal (" + OPAL_PRICE + ")", EMPTY_TRANSACTION);
     }
 
     @Test
@@ -259,24 +193,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             GROUP_NAME
         );
 
-        String text = String.format(
-            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
-            PLAYER_NAME,
-            GroupStorageNotifier.EMPTY_TRANSACTION,
-            PLAYER_NAME,
-            "- 1 x Ruby (" + RUBY_PRICE + ")\n- 1 x Opal (" + OPAL_PRICE + ")"
-        );
-
-        verify(messageHandler).createMessage(
-            PRIMARY_WEBHOOK_URL,
-            false,
-            NotificationBody.builder()
-                .text(text)
-                .extra(extra)
-                .type(NotificationType.GROUP_STORAGE)
-                .playerName(PLAYER_NAME)
-                .build()
-        );
+        verifyNotification(extra, EMPTY_TRANSACTION, "- 1 x Ruby (" + RUBY_PRICE + ")\n- 1 x Opal (" + OPAL_PRICE + ")");
     }
 
     @Test
@@ -301,24 +218,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             GROUP_NAME
         );
 
-        String text = String.format(
-            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
-            PLAYER_NAME,
-            GroupStorageNotifier.EMPTY_TRANSACTION,
-            PLAYER_NAME,
-            "- 1 x Tuna (" + TUNA_PRICE + ")"
-        );
-
-        verify(messageHandler).createMessage(
-            PRIMARY_WEBHOOK_URL,
-            false,
-            NotificationBody.builder()
-                .text(text)
-                .extra(extra)
-                .type(NotificationType.GROUP_STORAGE)
-                .playerName(PLAYER_NAME)
-                .build()
-        );
+        verifyNotification(extra, EMPTY_TRANSACTION, "- 1 x Tuna (" + TUNA_PRICE + ")");
     }
 
     @Test
@@ -395,6 +295,24 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    private void verifyNotification(GroupStorageNotificationData extra, String deposited, String withdrawn) {
+        String text = String.format(
+            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
+            PLAYER_NAME, deposited, PLAYER_NAME, withdrawn
+        );
+
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(text)
+                .extra(extra)
+                .type(NotificationType.GROUP_STORAGE)
+                .playerName(PLAYER_NAME)
+                .build()
+        );
     }
 
     private void mockContainer(Item[] items) {
