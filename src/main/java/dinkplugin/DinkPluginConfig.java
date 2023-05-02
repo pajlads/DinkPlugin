@@ -135,6 +135,14 @@ public interface DinkPluginConfig extends Config {
     String pkSection = "Player Kills";
 
     @ConfigSection(
+        name = "Group Storage",
+        description = "Settings for notifying when you deposit or withdraw items from group ironman shared storage",
+        position = 140,
+        closedByDefault = true
+    )
+    String bankSection = "Group Storage";
+
+    @ConfigSection(
         name = "Advanced",
         description = "Do not modify without fully understanding these settings",
         position = 1000,
@@ -420,6 +428,17 @@ public interface DinkPluginConfig extends Config {
         section = webhookSection
     )
     default String pkWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "bankWebhook",
+        name = "Group Storage Webhook Override",
+        description = "If non-empty, Group Storage messages are sent to this URL, instead of the primary URL",
+        position = -5,
+        section = webhookSection
+    )
+    default String bankWebhook() {
         return "";
     }
 
@@ -1305,6 +1324,42 @@ public interface DinkPluginConfig extends Config {
     )
     default String pkNotifyMessage() {
         return "%USERNAME% has PK'd %TARGET%";
+    }
+
+    @ConfigItem(
+        keyName = "bankEnabled",
+        name = "Enable Transactions",
+        description = "Enable notifications upon group storage transactions",
+        position = 140,
+        section = bankSection
+    )
+    default boolean notifyBank() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "bankSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 141,
+        section = bankSection
+    )
+    default boolean bankSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "bankNotifyMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %DEBITS% to insert the list of deposited items<br/>" +
+            "Use %CREDITS% to insert the list of withdrawn items",
+        position = 142,
+        section = bankSection
+    )
+    default String bankNotifyMessage() {
+        return "%USERNAME% has deposited:\n%DEBITS%\n\n%USERNAME% has withdrawn:\n%CREDITS%";
     }
 
 }

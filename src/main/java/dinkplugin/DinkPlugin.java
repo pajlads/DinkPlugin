@@ -7,6 +7,7 @@ import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.DeathNotifier;
 import dinkplugin.notifiers.DiaryNotifier;
 import dinkplugin.notifiers.GambleNotifier;
+import dinkplugin.notifiers.GroupStorageNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.LevelNotifier;
 import dinkplugin.notifiers.LootNotifier;
@@ -28,6 +29,7 @@ import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.RuneLite;
 import net.runelite.client.chat.ChatMessageManager;
@@ -74,6 +76,7 @@ public class DinkPlugin extends Plugin {
     private @Inject DiaryNotifier diaryNotifier;
     private @Inject GambleNotifier gambleNotifier;
     private @Inject PlayerKillNotifier pkNotifier;
+    private @Inject GroupStorageNotifier bankNotifier;
 
     @Override
     protected void startUp() {
@@ -221,6 +224,12 @@ public class DinkPlugin extends Plugin {
         clueNotifier.onWidgetLoaded(event);
         speedrunNotifier.onWidgetLoaded(event);
         lootNotifier.onWidgetLoaded(event);
+        bankNotifier.onWidgetLoad(event);
+    }
+
+    @Subscribe
+    public void onWidgetClosed(WidgetClosed event) {
+        bankNotifier.onWidgetClose(event);
     }
 
     public void addChatSuccess(String message) {
