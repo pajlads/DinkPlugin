@@ -15,6 +15,7 @@ public class GroupStorageNotificationData extends NotificationData {
     Collection<SerializedItemStack> deposits;
     Collection<SerializedItemStack> withdrawals;
     long netValue;
+    String groupName;
 
     @Override
     public List<Field> getFields() {

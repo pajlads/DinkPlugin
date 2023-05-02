@@ -10,6 +10,8 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
+import net.runelite.api.clan.ClanChannel;
+import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
@@ -144,7 +146,8 @@ public class GroupStorageNotifier extends BaseNotifier {
         GroupStorageNotificationData extra = new GroupStorageNotificationData(
             deposits,
             withdrawals,
-            netValue
+            netValue,
+            getGroupName()
         );
 
         // Fire notification
@@ -154,6 +157,11 @@ public class GroupStorageNotifier extends BaseNotifier {
             .playerName(playerName)
             .extra(extra)
             .build());
+    }
+
+    private String getGroupName() {
+        ClanChannel channel = client.getClanChannel(ClanID.GROUP_IRONMAN);
+        return channel != null ? channel.getName() : null;
     }
 
     private ItemContainer getInventory() {

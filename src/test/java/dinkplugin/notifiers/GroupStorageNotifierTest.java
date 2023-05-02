@@ -9,6 +9,8 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
+import net.runelite.api.clan.ClanChannel;
+import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
@@ -29,6 +31,7 @@ import static org.mockito.Mockito.when;
 
 class GroupStorageNotifierTest extends MockedNotifierTest {
 
+    private static final String GROUP_NAME = "Dink QA";
     private static final int OPAL_PRICE = 600;
     private static final int RUBY_PRICE = 900;
     private static final int TUNA_PRICE = 100;
@@ -54,6 +57,11 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
         mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
         mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
+
+        // init group mock
+        ClanChannel channel = mock(ClanChannel.class);
+        when(channel.getName()).thenReturn(GROUP_NAME);
+        when(client.getClanChannel(ClanID.GROUP_IRONMAN)).thenReturn(channel);
     }
 
     @Test
@@ -84,7 +92,8 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         GroupStorageNotificationData extra = new GroupStorageNotificationData(
             Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")),
             Collections.singletonList(new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal")),
-            RUBY_PRICE - OPAL_PRICE
+            RUBY_PRICE - OPAL_PRICE,
+            GROUP_NAME
         );
 
         String text = String.format(
@@ -135,7 +144,8 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         GroupStorageNotificationData extra = new GroupStorageNotificationData(
             Collections.emptyList(),
             Collections.singletonList(new SerializedItemStack(ItemID.COINS, 900, 1, "Coins")),
-            -900
+            -900,
+            GROUP_NAME
         );
 
         String text = String.format(
