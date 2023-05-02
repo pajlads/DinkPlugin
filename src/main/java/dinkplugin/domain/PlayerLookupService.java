@@ -7,8 +7,9 @@ public enum PlayerLookupService {
     OSRS_HISCORE("OSRS HiScore"),
     CRYSTAL_MATH_LABS("Crystal Math Labs"),
     TEMPLE_OSRS("Temple OSRS"),
-    WISE_OLD_MAN("Wise Old Man");
-
+    WISE_OLD_MAN("Wise Old Man"),
+    COLLECTION_LOG("Collectionlog.net"); //unsure of name to use, title appears to be Collectionlog.net on site but could be just Collection Log?
+    
     private final String name;
 
     PlayerLookupService(String name) {
@@ -26,6 +27,8 @@ public enum PlayerLookupService {
                 return "https://crystalmathlabs.com/track.php?player=" + escapedName;
             case TEMPLE_OSRS:
                 return "https://templeosrs.com/player/overview.php?player=" + escapedName;
+            case COLLECTION_LOG:
+                return "https://collectionlog.net/log/" + escapedName;
             case NONE:
             default:
                 return null;
