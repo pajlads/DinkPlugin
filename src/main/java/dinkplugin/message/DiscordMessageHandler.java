@@ -5,6 +5,7 @@ import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.notifiers.data.NotificationData;
+import dinkplugin.util.DiscordProfile;
 import dinkplugin.util.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.discord.DiscordService;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.ImageUtil;
 import okhttp3.HttpUrl;
@@ -58,16 +60,18 @@ public class DiscordMessageHandler {
     private final DinkPluginConfig config;
     private final ScheduledExecutorService executor;
     private final ClientThread clientThread;
+    private final DiscordService discordService;
 
     @Inject
     @VisibleForTesting
-    public DiscordMessageHandler(Gson gson, Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor, ClientThread clientThread) {
+    public DiscordMessageHandler(Gson gson, Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor, ClientThread clientThread, DiscordService discordService) {
         this.gson = gson;
         this.client = client;
         this.drawManager = drawManager;
         this.config = config;
         this.executor = executor;
         this.clientThread = clientThread;
+        this.discordService = discordService;
         this.httpClient = httpClient.newBuilder()
             .addInterceptor(chain -> {
                 Request request = chain.request().newBuilder()
@@ -97,6 +101,9 @@ public class DiscordMessageHandler {
 
         if (mBody.getAccountType() == null)
             mBody = mBody.withAccountType(client.getAccountType());
+
+        if (config.sendDiscordUser())
+            mBody = mBody.withDiscordUser(DiscordProfile.of(discordService.getCurrentUser()));
 
         if (config.discordRichEmbeds()) {
             mBody = injectContent(mBody, sendImage, config);
