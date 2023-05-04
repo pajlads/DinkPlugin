@@ -59,6 +59,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(config.deathNotifPvpEnabled()).thenReturn(true);
         when(config.deathSendImage()).thenReturn(false);
         when(config.deathEmbedKeptItems()).thenReturn(true);
+        when(config.deathSkipSafe()).thenReturn(true);
         when(config.deathNotifyMessage()).thenReturn("%USERNAME% has died, losing %VALUELOST% gp");
         when(config.deathNotifPvpMessage()).thenReturn("%USERNAME% has been PKed by %PKER% for %VALUELOST% gp");
 
@@ -257,6 +258,29 @@ class DeathNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
                 .extra(new DeathNotificationData(0L, false, null, name, NpcID.GUARD, Collections.emptyList(), Collections.emptyList()))
+                .type(NotificationType.DEATH)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifySafe() {
+        // update config mock
+        when(config.deathSkipSafe()).thenReturn(false);
+
+        // mock castle wars
+        when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(2400, 3100, 0));
+
+        // fire event
+        plugin.onActorDeath(new ActorDeath(localPlayer));
+
+        // verify notification
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
+                .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
         );
