@@ -15,7 +15,6 @@ import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetModalMode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -322,13 +321,13 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
 
     private void mockSaveWidget() {
         Widget widget = mock(Widget.class);
-        when(client.getWidget(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, 1)).thenReturn(widget);
+        when(client.getWidget(GroupStorageNotifier.GROUP_STORAGE_SAVING_WIDGET_ID, 1)).thenReturn(widget);
         when(widget.getText()).thenReturn("Saving...");
     }
 
     static {
         LOAD_EVENT = new WidgetLoaded();
-        LOAD_EVENT.setGroupId(WidgetID.GROUP_STORAGE_GROUP_ID);
-        CLOSE_EVENT = new WidgetClosed(GroupStorageNotifier.GROUP_STORAGE_LOADER_ID, WidgetModalMode.MODAL_NOCLICKTHROUGH, true);
+        LOAD_EVENT.setGroupId(GroupStorageNotifier.GROUP_STORAGE_WIDGET_GROUP);
+        CLOSE_EVENT = new WidgetClosed(GroupStorageNotifier.GROUP_STORAGE_SAVING_WIDGET_ID, WidgetModalMode.MODAL_NOCLICKTHROUGH, true);
     }
 }

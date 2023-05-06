@@ -38,7 +38,8 @@ import java.util.stream.Collectors;
 
 @Singleton
 public class GroupStorageNotifier extends BaseNotifier {
-    static final @VisibleForTesting int GROUP_STORAGE_LOADER_ID = 293;
+    static final @VisibleForTesting int GROUP_STORAGE_SAVING_WIDGET_ID = 293;
+    static final @VisibleForTesting int GROUP_STORAGE_WIDGET_GROUP = WidgetID.GROUP_STORAGE_GROUP_ID;
     static final @VisibleForTesting String EMPTY_TRANSACTION = "N/A";
     private static final BinaryOperator<Integer> SUM;
 
@@ -61,7 +62,7 @@ public class GroupStorageNotifier extends BaseNotifier {
     }
 
     public void onWidgetLoad(WidgetLoaded event) {
-        if (event.getGroupId() != WidgetID.GROUP_STORAGE_GROUP_ID)
+        if (event.getGroupId() != GROUP_STORAGE_WIDGET_GROUP)
             return;
 
         clientThread.invokeLater(() -> {
@@ -75,10 +76,10 @@ public class GroupStorageNotifier extends BaseNotifier {
     }
 
     public void onWidgetClose(WidgetClosed event) {
-        if (event.getGroupId() != GROUP_STORAGE_LOADER_ID)
+        if (event.getGroupId() != GROUP_STORAGE_SAVING_WIDGET_ID)
             return;
 
-        Widget widget = client.getWidget(GROUP_STORAGE_LOADER_ID, 1);
+        Widget widget = client.getWidget(GROUP_STORAGE_SAVING_WIDGET_ID, 1);
         if (widget == null)
             return;
 
