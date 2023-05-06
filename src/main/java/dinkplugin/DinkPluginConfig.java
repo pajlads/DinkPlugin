@@ -710,10 +710,23 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "deathIgnoreSafe",
+        name = "Ignore Safe Deaths",
+        description = "Whether deaths in safe areas should be ignored.<br/>" +
+            "Note: Inferno and TzHaar Fight Cave deaths are still sent with this setting enabled",
+        position = 43,
+        section = deathSection
+    )
+    default boolean deathIgnoreSafe() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "deathMinValue",
         name = "Min Lost Value",
-        description = "The minimum value of the lost items for a notification to be sent",
-        position = 43,
+        description = "The minimum value of the lost items for a notification to be sent.<br/>" +
+            "This setting does not apply for safe deaths",
+        position = 44,
         section = deathSection
     )
     default int deathMinValue() {
@@ -726,7 +739,7 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 44,
+        position = 45,
         section = deathSection
     )
     default String deathNotifyMessage() {
@@ -737,7 +750,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpEnabled",
         name = "Distinguish PvP deaths",
         description = "Should the plugin use a different message for dying in PvP?",
-        position = 45,
+        position = 46,
         section = deathSection
     )
     default boolean deathNotifPvpEnabled() {
@@ -751,7 +764,7 @@ public interface DinkPluginConfig extends Config {
             "Use %PKER% to insert the killer<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 46,
+        position = 47,
         section = deathSection
     )
     default String deathNotifPvpMessage() {

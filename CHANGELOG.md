@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Include discord user profile in notification metadata. (#226)
+- Minor: Add setting to allow death notifications during safe activities. (#227)
 - Minor: Allow player name in Discord notifications to link to CollectionLog.net profile. (#224)
 
 ## 1.4.1

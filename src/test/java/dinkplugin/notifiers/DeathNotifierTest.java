@@ -6,6 +6,7 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.ItemUtils;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -27,7 +28,9 @@ import org.mockito.InjectMocks;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -59,6 +62,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(config.deathNotifPvpEnabled()).thenReturn(true);
         when(config.deathSendImage()).thenReturn(false);
         when(config.deathEmbedKeptItems()).thenReturn(true);
+        when(config.deathIgnoreSafe()).thenReturn(true);
         when(config.deathNotifyMessage()).thenReturn("%USERNAME% has died, losing %VALUELOST% gp");
         when(config.deathNotifPvpMessage()).thenReturn("%USERNAME% has been PKed by %PKER% for %VALUELOST% gp");
 
@@ -257,6 +261,87 @@ class DeathNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
                 .extra(new DeathNotificationData(0L, false, null, name, NpcID.GUARD, Collections.emptyList(), Collections.emptyList()))
+                .type(NotificationType.DEATH)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyValue() {
+        // prepare mocks
+        when(config.deathMinValue()).thenReturn(TUNA_PRICE - 1);
+        when(config.deathEmbedKeptItems()).thenReturn(false);
+        when(client.isPrayerActive(Prayer.PROTECT_ITEM)).thenReturn(true);
+        Item[] items = {
+            new Item(ItemID.RUBY, 1),
+            new Item(ItemID.TUNA, 1),
+            new Item(ItemID.COAL, 1),
+            new Item(ItemID.SHARK, 1),
+            new Item(ItemID.OPAL, 1),
+        };
+        ItemContainer inv = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(inv.getItems()).thenReturn(items);
+
+        // fire event
+        plugin.onActorDeath(new ActorDeath(localPlayer));
+
+        // verify notification
+        List<SerializedItemStack> kept = Arrays.asList(
+            ItemUtils.stackFromItem(itemManager, items[0]),
+            ItemUtils.stackFromItem(itemManager, items[3]),
+            ItemUtils.stackFromItem(itemManager, items[4]),
+            ItemUtils.stackFromItem(itemManager, items[2])
+        );
+        List<SerializedItemStack> lost = Collections.singletonList(
+            ItemUtils.stackFromItem(itemManager, items[1])
+        );
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE))
+                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
+                .type(NotificationType.DEATH)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifySafe() {
+        // update config mock
+        when(config.deathIgnoreSafe()).thenReturn(false);
+        when(config.deathEmbedKeptItems()).thenReturn(false);
+        when(config.deathMinValue()).thenReturn(TUNA_PRICE + 1);
+        when(client.isPrayerActive(Prayer.PROTECT_ITEM)).thenReturn(true);
+        Item[] items = {
+            new Item(ItemID.RUBY, 1),
+            new Item(ItemID.TUNA, 1),
+            new Item(ItemID.COAL, 1),
+            new Item(ItemID.SHARK, 1),
+            new Item(ItemID.OPAL, 1),
+        };
+        ItemContainer inv = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(inv.getItems()).thenReturn(items);
+
+        // mock castle wars
+        when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(2400, 3100, 0));
+
+        // fire event
+        plugin.onActorDeath(new ActorDeath(localPlayer));
+
+        // verify notification
+        List<SerializedItemStack> kept = Arrays.stream(items)
+            .map(i -> ItemUtils.stackFromItem(itemManager, i))
+            .sorted(Comparator.comparingLong(SerializedItemStack::getTotalPrice).reversed())
+            .collect(Collectors.toList());
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
+                .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
         );
