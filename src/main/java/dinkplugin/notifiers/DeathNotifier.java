@@ -93,7 +93,7 @@ public class DeathNotifier extends BaseNotifier {
 
     @Override
     public boolean isEnabled() {
-        return config.notifyDeath() && super.isEnabled() && isDangerous(client);
+        return config.notifyDeath() && super.isEnabled();
     }
 
     @Override
@@ -118,11 +118,20 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private void handleNotify() {
+        boolean dangerous = isDangerous(client);
+        if (!dangerous && config.deathIgnoreSafe())
+            return;
+
         Collection<Item> items = ItemUtils.getItems(client);
         List<Pair<Item, Long>> itemsByPrice = getPricedItems(itemManager, items);
 
-        int keepCount = getKeepCount();
-        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(itemsByPrice, keepCount);
+        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split;
+        if (dangerous) {
+            int keepCount = getKeepCount();
+            split = splitItemsByKept(itemsByPrice, keepCount);
+        } else {
+            split = Pair.of(itemsByPrice, Collections.emptyList());
+        }
         List<Pair<Item, Long>> keptItems = split.getLeft();
         List<Pair<Item, Long>> lostItems = split.getRight();
 
@@ -132,7 +141,7 @@ public class DeathNotifier extends BaseNotifier {
             .orElse(0L);
 
         int valueThreshold = config.deathMinValue();
-        if (losePrice < valueThreshold) {
+        if (dangerous && losePrice < valueThreshold) {
             log.debug("Skipping death notification; total value of lost items {} is below minimum lost value {}", losePrice, valueThreshold);
             return;
         }
