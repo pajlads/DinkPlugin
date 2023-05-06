@@ -119,7 +119,7 @@ public class DeathNotifier extends BaseNotifier {
 
     private void handleNotify() {
         boolean dangerous = isDangerous(client);
-        if (!dangerous && config.deathSkipSafe())
+        if (!dangerous && config.deathIgnoreSafe())
             return;
 
         Collection<Item> items = ItemUtils.getItems(client);

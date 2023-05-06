@@ -699,14 +699,14 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "deathSkipSafe",
+        keyName = "deathIgnoreSafe",
         name = "Ignore Safe Deaths",
         description = "Whether deaths in safe areas should be ignored.<br/>" +
             "Note: Inferno and TzHaar Fight Cave deaths are still sent with this setting enabled",
         position = 43,
         section = deathSection
     )
-    default boolean deathSkipSafe() {
+    default boolean deathIgnoreSafe() {
         return true;
     }
 

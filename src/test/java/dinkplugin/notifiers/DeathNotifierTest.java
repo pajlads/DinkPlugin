@@ -62,7 +62,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(config.deathNotifPvpEnabled()).thenReturn(true);
         when(config.deathSendImage()).thenReturn(false);
         when(config.deathEmbedKeptItems()).thenReturn(true);
-        when(config.deathSkipSafe()).thenReturn(true);
+        when(config.deathIgnoreSafe()).thenReturn(true);
         when(config.deathNotifyMessage()).thenReturn("%USERNAME% has died, losing %VALUELOST% gp");
         when(config.deathNotifPvpMessage()).thenReturn("%USERNAME% has been PKed by %PKER% for %VALUELOST% gp");
 
@@ -310,7 +310,7 @@ class DeathNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifySafe() {
         // update config mock
-        when(config.deathSkipSafe()).thenReturn(false);
+        when(config.deathIgnoreSafe()).thenReturn(false);
         when(config.deathEmbedKeptItems()).thenReturn(false);
         when(config.deathMinValue()).thenReturn(TUNA_PRICE + 1);
         when(client.isPrayerActive(Prayer.PROTECT_ITEM)).thenReturn(true);
