@@ -645,6 +645,7 @@ Note: `world` and `location` are _not_ sent if the user has disabled the "Includ
   }
 }
 ```
+
 </details>
 
 ## Credits
