@@ -140,7 +140,7 @@ public interface DinkPluginConfig extends Config {
         position = 140,
         closedByDefault = true
     )
-    String bankSection = "Group Storage";
+    String groupStorageSection = "Group Storage";
 
     @ConfigSection(
         name = "Advanced",
@@ -443,13 +443,13 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "bankWebhook",
+        keyName = "groupStorageWebhook",
         name = "Group Storage Webhook Override",
         description = "If non-empty, Group Storage messages are sent to this URL, instead of the primary URL",
         position = -5,
         section = webhookSection
     )
-    default String bankWebhook() {
+    default String groupStorageWebhook() {
         return "";
     }
 
@@ -1351,49 +1351,49 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "bankEnabled",
+        keyName = "groupStorageEnabled",
         name = "Enable Transactions",
         description = "Enable notifications upon group storage transactions",
         position = 140,
-        section = bankSection
+        section = groupStorageSection
     )
-    default boolean notifyBank() {
+    default boolean notifyGroupStorage() {
         return false;
     }
 
     @ConfigItem(
-        keyName = "bankSendImage",
+        keyName = "groupStorageSendImage",
         name = "Send Image",
         description = "Send image with the notification",
         position = 141,
-        section = bankSection
+        section = groupStorageSection
     )
-    default boolean bankSendImage() {
+    default boolean groupStorageSendImage() {
         return true;
     }
 
     @ConfigItem(
-        keyName = "bankMinValue",
+        keyName = "groupStorageMinValue",
         name = "Min Value",
         description = "The minimum value of the deposits or withdrawals to send a notification",
         position = 142,
-        section = bankSection
+        section = groupStorageSection
     )
-    default int bankMinValue() {
+    default int groupStorageMinValue() {
         return 0;
     }
 
     @ConfigItem(
-        keyName = "bankNotifyMessage",
+        keyName = "groupStorageNotifyMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %DEPOSITED% to insert the list of deposited items<br/>" +
             "Use %WITHDRAWN% to insert the list of withdrawn items",
         position = 143,
-        section = bankSection
+        section = groupStorageSection
     )
-    default String bankNotifyMessage() {
+    default String groupStorageNotifyMessage() {
         return "%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%";
     }
 

@@ -76,7 +76,7 @@ public class DinkPlugin extends Plugin {
     private @Inject DiaryNotifier diaryNotifier;
     private @Inject GambleNotifier gambleNotifier;
     private @Inject PlayerKillNotifier pkNotifier;
-    private @Inject GroupStorageNotifier bankNotifier;
+    private @Inject GroupStorageNotifier groupStorageNotifier;
 
     @Override
     protected void startUp() {
@@ -224,12 +224,12 @@ public class DinkPlugin extends Plugin {
         clueNotifier.onWidgetLoaded(event);
         speedrunNotifier.onWidgetLoaded(event);
         lootNotifier.onWidgetLoaded(event);
-        bankNotifier.onWidgetLoad(event);
+        groupStorageNotifier.onWidgetLoad(event);
     }
 
     @Subscribe
     public void onWidgetClosed(WidgetClosed event) {
-        bankNotifier.onWidgetClose(event);
+        groupStorageNotifier.onWidgetClose(event);
     }
 
     public void addChatSuccess(String message) {

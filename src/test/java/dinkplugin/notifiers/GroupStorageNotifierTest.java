@@ -52,9 +52,9 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
 
         // init config mocks
         when(config.discordRichEmbeds()).thenReturn(true);
-        when(config.notifyBank()).thenReturn(true);
-        when(config.bankSendImage()).thenReturn(false);
-        when(config.bankNotifyMessage())
+        when(config.notifyGroupStorage()).thenReturn(true);
+        when(config.groupStorageSendImage()).thenReturn(false);
+        when(config.groupStorageNotifyMessage())
             .thenReturn("%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%");
 
         // init item mocks
@@ -241,7 +241,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreValue() {
         // update config mocks
-        when(config.bankMinValue()).thenReturn(RUBY_PRICE + 1);
+        when(config.groupStorageMinValue()).thenReturn(RUBY_PRICE + 1);
 
         // mock initial inventory state
         Item[] initialItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.TUNA, 1) };
@@ -280,7 +280,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnore() {
         // update mocks
-        when(config.notifyBank()).thenReturn(false);
+        when(config.notifyGroupStorage()).thenReturn(false);
 
         // mock initial inventory state
         Item[] initialItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.TUNA, 1) };

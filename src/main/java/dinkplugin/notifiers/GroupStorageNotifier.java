@@ -52,12 +52,12 @@ public class GroupStorageNotifier extends BaseNotifier {
 
     @Override
     public boolean isEnabled() {
-        return config.notifyBank() && super.isEnabled();
+        return config.notifyGroupStorage() && super.isEnabled();
     }
 
     @Override
     protected String getWebhookUrl() {
-        return config.bankWebhook();
+        return config.groupStorageWebhook();
     }
 
     public void onWidgetLoad(WidgetLoaded event) {
@@ -116,7 +116,7 @@ public class GroupStorageNotifier extends BaseNotifier {
         long netValue = debits - credits;
 
         // Ensure transaction is large enough to be logged
-        if (debits < config.bankMinValue() && credits < config.bankMinValue())
+        if (debits < config.groupStorageMinValue() && credits < config.groupStorageMinValue())
             return;
 
         // Sort lists so more valuable item transactions are at the top
@@ -136,7 +136,7 @@ public class GroupStorageNotifier extends BaseNotifier {
 
         // Build content
         String playerName = client.getLocalPlayer().getName();
-        String content = StringUtils.replaceEach(config.bankNotifyMessage(),
+        String content = StringUtils.replaceEach(config.groupStorageNotifyMessage(),
             new String[] { "%USERNAME%", "%DEPOSITED%", "%WITHDRAWN%" },
             new String[] { playerName, depositString, withdrawalString }
         );
@@ -151,7 +151,7 @@ public class GroupStorageNotifier extends BaseNotifier {
         );
 
         // Fire notification (delayed by a tick for screenshotHideChat reliability)
-        clientThread.invokeAtTickEnd(() -> createMessage(config.bankSendImage(),
+        clientThread.invokeAtTickEnd(() -> createMessage(config.groupStorageSendImage(),
             NotificationBody.builder()
                 .type(NotificationType.GROUP_STORAGE)
                 .text(formattedText)
