@@ -20,11 +20,9 @@ public class GroupStorageNotificationData extends NotificationData {
 
     @Override
     public List<Field> getFields() {
-        boolean groupKnown = StringUtils.isNotBlank(groupName);
-        List<Field> fields = new ArrayList<>(groupKnown ? 2 : 1);
-        if (groupKnown) {
+        List<Field> fields = new ArrayList<>(2);
+        if (StringUtils.isNotBlank(groupName))
             fields.add(new Field("Group", Field.formatBlock(null, groupName)));
-        }
         fields.add(new Field("Net Value", ItemUtils.formatGold(netValue)));
         return fields;
     }
