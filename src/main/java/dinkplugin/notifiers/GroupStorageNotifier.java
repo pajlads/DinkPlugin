@@ -137,7 +137,7 @@ public class GroupStorageNotifier extends BaseNotifier {
         // Build content
         String playerName = client.getLocalPlayer().getName();
         String content = StringUtils.replaceEach(config.bankNotifyMessage(),
-            new String[] { "%USERNAME%", "%DEBITS%", "%CREDITS%" },
+            new String[] { "%USERNAME%", "%DEPOSITED%", "%WITHDRAWN%" },
             new String[] { playerName, depositString, withdrawalString }
         );
         String formattedText = config.discordRichEmbeds() ? Field.formatBlock("diff", content) : content;

@@ -604,16 +604,16 @@ Note: `world` and `location` are _not_ sent if the user has disabled the "Includ
 
 ### Group Storage:
 
-`%DEBITS%` will be replaced with the list of deposited items
+`%DEPOSITED%` will be replaced with the list of deposited items
 
-`%CREDITS%` will be replaced with the list of withdrawn items
+`%WITHDRAWN%` will be replaced with the list of withdrawn items
 
 <details>
   <summary>JSON for GIM Bank Notifications:</summary>
 
 ```json5
 {
-  "content": "%USERNAME% has deposited: %DEBITS% | %USERNAME% has withdrawn: %CREDITS%",
+  "content": "%USERNAME% has deposited: %DEPOSITED% | %USERNAME% has withdrawn: %WITHDRAWN%",
   "type": "GROUP_STORAGE",
   "playerName": "%USERNAME%",
   "accountType": "HARDCORE_GROUP_IRONMAN",

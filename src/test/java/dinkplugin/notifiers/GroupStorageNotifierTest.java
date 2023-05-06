@@ -55,7 +55,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         when(config.notifyBank()).thenReturn(true);
         when(config.bankSendImage()).thenReturn(false);
         when(config.bankNotifyMessage())
-            .thenReturn("%USERNAME% has deposited:\n%DEBITS%\n\n%USERNAME% has withdrawn:\n%CREDITS%");
+            .thenReturn("%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%");
 
         // init item mocks
         mockItem(ItemID.COINS_995, 1, "Coins");

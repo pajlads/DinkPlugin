@@ -1388,13 +1388,13 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %DEBITS% to insert the list of deposited items<br/>" +
-            "Use %CREDITS% to insert the list of withdrawn items",
+            "Use %DEPOSITED% to insert the list of deposited items<br/>" +
+            "Use %WITHDRAWN% to insert the list of withdrawn items",
         position = 143,
         section = bankSection
     )
     default String bankNotifyMessage() {
-        return "%USERNAME% has deposited:\n%DEBITS%\n\n%USERNAME% has withdrawn:\n%CREDITS%";
+        return "%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%";
     }
 
 }
