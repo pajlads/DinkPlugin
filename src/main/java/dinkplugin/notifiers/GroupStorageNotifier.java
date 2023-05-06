@@ -36,11 +36,38 @@ import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
+/**
+ * Tracks when items are deposited or withdrawn to GIM shared storage.
+ * <p>
+ * This is achieved by comparing snapshots of the player's inventory
+ * when the storage is opened and when the transaction is saved.
+ * When the difference between these two snapshots is non-empty,
+ * we fire a notification (given the configured min value is satisfied).
+ */
 @Singleton
 public class GroupStorageNotifier extends BaseNotifier {
-    static final @VisibleForTesting int GROUP_STORAGE_SAVING_WIDGET_ID = 293;
+
+    /**
+     * The Group ID corresponding to {@link net.runelite.api.widgets.WidgetInfo#GROUP_STORAGE_ITEM_CONTAINER}
+     * for tracking when GIM shared storage is opened.
+     */
     static final @VisibleForTesting int GROUP_STORAGE_WIDGET_GROUP = WidgetID.GROUP_STORAGE_GROUP_ID;
+
+    /**
+     * The ID of the widget that appears over the chat box
+     * when the storage transaction is saved/committed.
+     */
+    static final @VisibleForTesting int GROUP_STORAGE_SAVING_WIDGET_ID = 293;
+
+    /**
+     * The message to indicate that a list of deposits or withdrawals is empty.
+     */
     static final @VisibleForTesting String EMPTY_TRANSACTION = "N/A";
+
+    /**
+     * Adds two integers, but yields null if the sum is zero
+     * (which removes the entry via Map#merge in {@link GroupStorageNotifier#computeDifference(Map, Map)}).
+     */
     private static final BinaryOperator<Integer> SUM;
 
     @Inject
@@ -49,6 +76,10 @@ public class GroupStorageNotifier extends BaseNotifier {
     @Inject
     private ItemManager itemManager;
 
+    /**
+     * Items in the player's inventory when the group storage was opened.
+     * Entries map item id to total quantity (across stacks).
+     */
     private Map<Integer, Integer> initial = Collections.emptyMap();
 
     @Override
@@ -162,16 +193,33 @@ public class GroupStorageNotifier extends BaseNotifier {
         );
     }
 
+    /**
+     * @return the name of the ironman group
+     */
     private String getGroupName() {
         ClanChannel channel = client.getClanChannel(ClanID.GROUP_IRONMAN);
         return channel != null ? channel.getName() : null;
     }
 
+    /**
+     * Upon opening the group's shared storage, the inventory is replaced
+     * by a temporary container ({@link InventoryID#GROUP_STORAGE_INV}),
+     * which reflects intermediate changes before the transaction is committed.
+     * We prefer reading from this "fake" inventory when available.
+     * On storage open, it is a server-validated copy of the local inventory.
+     * On save, it has modifications that may not yet be reflected in the real inventory.
+     *
+     * @return the player's inventory
+     */
     private ItemContainer getInventory() {
         ItemContainer inv = client.getItemContainer(InventoryID.GROUP_STORAGE_INV);
         return inv != null ? inv : client.getItemContainer(InventoryID.INVENTORY);
     }
 
+    /**
+     * @param items array of items (e.g., in the player's inventory)
+     * @return mappings of item id to total quantity of the item (across stacks)
+     */
     private Map<Integer, Integer> reduce(Item[] items) {
         return Arrays.stream(items)
             .filter(Objects::nonNull)
@@ -180,13 +228,23 @@ public class GroupStorageNotifier extends BaseNotifier {
             .collect(Collectors.toMap(this::getItemId, Item::getQuantity, Integer::sum));
     }
 
+    /**
+     * @param item the item whose ID to query
+     * @return the canonical item ID
+     */
     private int getItemId(Item item) {
         int id = item.getId();
         if (id == ItemID.COINS || id == ItemID.COINS_8890 || id == ItemID.COINS_6964)
-            return ItemID.COINS_995;
-        return itemManager.canonicalize(id);
+            return ItemID.COINS_995; // use single ID for all coins
+        return itemManager.canonicalize(id); // un-noted, un-placeholdered, un-worn
     }
 
+    /**
+     * @param before the reduced item mappings when the group storage was first opened
+     * @param after  the reduced item mappings after the save operation
+     * @param <K>    generic key to merge the maps (always Integer in this notifier)
+     * @return mappings of item id to change in quantity, excluding items with no change
+     */
     private static <K> Map<K, Integer> computeDifference(Map<K, Integer> before, Map<K, Integer> after) {
         Map<K, Integer> delta = new HashMap<>(after);
         before.forEach((id, quantity) -> delta.merge(id, -quantity, SUM));
@@ -194,7 +252,6 @@ public class GroupStorageNotifier extends BaseNotifier {
     }
 
     static {
-        // Integer::sum but 0 yields null (which removes the entry in Map#merge)
         SUM = (a, b) -> {
             int sum = a + b;
             return sum != 0 ? sum : null;
