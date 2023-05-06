@@ -259,6 +259,17 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "sendDiscordUser",
+        name = "Send Discord Profile",
+        description = "Whether to send your discord user information to the webhook server via metadata",
+        position = 1010,
+        section = advancedSection
+    )
+    default boolean sendDiscordUser() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
