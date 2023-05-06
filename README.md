@@ -2,7 +2,7 @@
 
 Dink sends webhook messages upon noteworthy in-game events.
 While Dink supports the Discord webhook format (with rich embeds and optional screenshots), it also includes additional metadata that allows custom webhook servers to analyze messages or even generate their own messages.
-This project was forked from UniversalDiscordNotifier, but has more features, reliability, configurability, testing, and maintainer activity. 
+This project was forked from UniversalDiscordNotifier, but has more features, reliability, configurability, testing, and maintainer activity.
 
 Have a suggestion (e.g., new notifier, additional data), bug report (as rare as it may be), or question? Let us know on our [issue tracker](https://github.com/pajlads/DinkPlugin/issues)!
 
@@ -28,9 +28,9 @@ Have a suggestion (e.g., new notifier, additional data), bug report (as rare as 
 
 Some notifiers require in-game settings to be configured to send chat messages upon certain events (so these events can serve as triggers for webhook notifications).
 
-* Collection notifier requires `Settings > All Settings > Chat > Collection log - New addition notification` to be enabled
-* Pet notifier recommends `Settings > All Settings > Chat > Untradeable loot notifications` to be enabled (which requires `Settings > All Settings > Chat > Loot drop notifications`) in order to determine the name of the pet
-* For Kill Count notifier, ensure you do *not* enable `Settings > All Settings > Chat > Filter out boss kill-count with spam-filter` (note: this setting is already disabled by default by Jagex)
+- Collection notifier requires `Settings > All Settings > Chat > Collection log - New addition notification` to be enabled
+- Pet notifier recommends `Settings > All Settings > Chat > Untradeable loot notifications` to be enabled (which requires `Settings > All Settings > Chat > Loot drop notifications`) in order to determine the name of the pet
+- For Kill Count notifier, ensure you do _not_ enable `Settings > All Settings > Chat > Filter out boss kill-count with spam-filter` (note: this setting is already disabled by default by Jagex)
 
 ### Example
 
@@ -38,16 +38,16 @@ Some notifiers require in-game settings to be configured to send chat messages u
 
 ## Advanced Features
 
-* Multiple webhook urls are supported; simply place each on a separate line
-* Each notifier can send webhook messages to separate "override" urls
-* Screenshots can be individually configured for each notifier
-* Screenshots are compressed if needed to comply with Discord limits
-* The chat box (and private messages above chat) can be hidden from screenshots
-* The plugin can skip notifications if the current player name is on the user-configured RSN ignore list
-* Users can choose whether their webhook messages are sent in Discord's rich embed format or a traditional format
-* The player name in Discord rich embeds can be linked to various tracking services (from HiScores to Wise Old Man)
-* Discord rich embed footers can be customized with user-specified text and image url
-* When network issues occur, Dink can make repeated attempts to send the webhook (with exponential backoff)
+- Multiple webhook urls are supported; simply place each on a separate line
+- Each notifier can send webhook messages to separate "override" urls
+- Screenshots can be individually configured for each notifier
+- Screenshots are compressed if needed to comply with Discord limits
+- The chat box (and private messages above chat) can be hidden from screenshots
+- The plugin can skip notifications if the current player name is on the user-configured RSN ignore list
+- Users can choose whether their webhook messages are sent in Discord's rich embed format or a traditional format
+- The player name in Discord rich embeds can be linked to various tracking services (from HiScores to Wise Old Man)
+- Discord rich embed footers can be customized with user-specified text and image url
+- When network issues occur, Dink can make repeated attempts to send the webhook (with exponential backoff)
 
 ## Chat Commands
 
@@ -59,22 +59,22 @@ You can share this produced JSON to friends who want to send similarly configure
 
 This export includes settings across all of the notifiers, but omits webhook URLs. If you also want to include webhook URLs in the export, you can use the `all` parameter to the command: `::dinkexport all`.
 
-If you *only* want to export the webhook URLs, run the `::dinkexport webhooks` chat command.
+If you _only_ want to export the webhook URLs, run the `::dinkexport webhooks` chat command.
 
 You can export just the settings for select notifiers.  
 Simply run: `::dinkexport <notifier section header name without spaces>`.  
 For example: `::dinkexport pet` or `::dinkexport collectionlog`.
 
 #### Examples
- - Export notifier settings, primary webhook URLs & webhook override URLs  
-   `::dinkexport all`
- - Export Slayer & BA Gambles Notifier settings  
-   `::dinkexport slayer bagambles`
- - Export webhook overrides only  
-   `::dinkexport webhookoverrides`
- - Export all webhooks & the Levels notifier settings:  
-   `::dinkexport webhooks levels`
 
+- Export notifier settings, primary webhook URLs & webhook override URLs  
+  `::dinkexport all`
+- Export Slayer & BA Gambles Notifier settings  
+  `::dinkexport slayer bagambles`
+- Export webhook overrides only  
+  `::dinkexport webhookoverrides`
+- Export all webhooks & the Levels notifier settings:  
+  `::dinkexport webhooks levels`
 
 ### Import Configuration via `::dinkimport`
 
@@ -114,19 +114,20 @@ contain some words that will be replaced with in-game values.
   "embeds": []
 }
 ```
+
 </details>
 
 The examples below omit `embeds` and `playerName` keys because they are always the same.
 
-### Death: 
+### Death:
 
 `%VALUELOST%` will be replaced with the price of the items you lost. If you died in PvP, `%PKER%` will be replaced with the name of your killer.
 
 By default, to avoid spam, Dink will ignore deaths from the following [safe](https://oldschool.runescape.wiki/w/Minigames#Safe) activities/areas: Barbarian Assault, Castle Wars, Chambers of Xeric (CoX), Clan Wars, Last Man Standing (LMS), Nightmare Zone (NMZ), Pest Control, player-owned houses (POH), Soul Wars, TzHaar Fight Pit.
-However, PvM deaths as a hardcore group ironman are *not* considered to be safe (and *will* trigger a notification in these areas).
-Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these areas *do* trigger notifications (despite technically being safe).
+However, PvM deaths as a hardcore group ironman are _not_ considered to be safe (and _will_ trigger a notification in these areas).
+Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these areas _do_ trigger notifications (despite technically being safe).
 
-**Note**: If *Distinguish PvP deaths* is disabled, the message content will be the non-PvP version.
+**Note**: If _Distinguish PvP deaths_ is disabled, the message content will be the non-PvP version.
 
 <details>
   <summary>JSON for non-combat death:</summary>
@@ -150,6 +151,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "DEATH"
 }
 ```
+
 </details>
 
 <details>
@@ -175,6 +177,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "DEATH"
 }
 ```
+
 </details>
 
 <details>
@@ -187,7 +190,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
     "valueLost": 300,
     "isPvp": false,
     "killerName": "%NPC%",
-    "killerNpcId": 69, 
+    "killerNpcId": 69,
     "keptItems": [],
     "lostItems": [
       {
@@ -201,6 +204,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "DEATH"
 }
 ```
+
 </details>
 
 ### Collection:
@@ -223,6 +227,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "COLLECTION"
 }
 ```
+
 </details>
 
 ### Level:
@@ -253,6 +258,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "LEVEL"
 }
 ```
+
 </details>
 
 ### Loot:
@@ -287,6 +293,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "LOOT"
 }
 ```
+
 </details>
 
 ### Slayer:
@@ -311,6 +318,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "SLAYER"
 }
 ```
+
 </details>
 
 ### Quests:
@@ -333,6 +341,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "QUEST"
 }
 ```
+
 </details>
 
 ### Clue Scrolls:
@@ -369,6 +378,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "CLUE"
 }
 ```
+
 </details>
 
 ### Kill Count:
@@ -391,6 +401,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "KILL_COUNT"
 }
 ```
+
 </details>
 
 ### Combat Achievements:
@@ -412,6 +423,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "COMBAT_ACHIEVEMENT"
 }
 ```
+
 </details>
 
 ### Achievement Diary:
@@ -436,6 +448,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "type": "ACHIEVEMENT_DIARY"
 }
 ```
+
 </details>
 
 ### Pet:
@@ -455,6 +468,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
 ```
 
 Note: `petName` is only included if the game sent it to your chat via untradeable drop or collection log or clan notifications. `milestone` is only included if a clan notification was triggered.
+
 </details>
 
 ### Speedrunning:
@@ -479,6 +493,7 @@ Note: `petName` is only included if the game sent it to your chat via untradeabl
   "type": "SPEEDRUN"
 }
 ```
+
 </details>
 
 <details>
@@ -495,13 +510,14 @@ Note: `petName` is only included if the game sent it to your chat via untradeabl
   "type": "SPEEDRUN"
 }
 ```
+
 </details>
 
 ### BA Gambles:
 
 `%COUNT%` will be replaced with the high level gamble count
 
-`%LOOT%` will be replaced with the loot received from the gamble 
+`%LOOT%` will be replaced with the loot received from the gamble
 (by default, this is included only in rare loot notifications)
 
 <details>
@@ -524,13 +540,14 @@ Note: `petName` is only included if the game sent it to your chat via untradeabl
   "type": "BARBARIAN_ASSAULT_GAMBLE"
 }
 ```
+
 </details>
 
 ### Player Kills:
 
 `%TARGET%` will be replaced with the victim's user name
 
-Note: `world` and `location` are *not* sent if the user has disabled the "Include Location" notifier setting.
+Note: `world` and `location` are _not_ sent if the user has disabled the "Include Location" notifier setting.
 
 <details>
   <summary>JSON for PK Notifications:</summary>
@@ -582,6 +599,7 @@ Note: `world` and `location` are *not* sent if the user has disabled the "Includ
   }
 }
 ```
+
 </details>
 
 ### Group Storage:

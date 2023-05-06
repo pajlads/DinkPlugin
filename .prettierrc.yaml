@@ -1,0 +1,7 @@
+trailingComma: none
+endOfLine: auto
+quoteProps: preserve
+overrides:
+  - files: "*.md"
+    options:
+      proseWrap: preserve
