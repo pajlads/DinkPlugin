@@ -118,15 +118,15 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private void handleNotify() {
-        boolean dangerous = isDangerous(client);
-        if (!dangerous && config.deathIgnoreSafe())
+        Danger danger = getDangerLevel(client);
+        if (danger == Danger.SAFE && config.deathIgnoreSafe())
             return;
 
         Collection<Item> items = ItemUtils.getItems(client);
         List<Pair<Item, Long>> itemsByPrice = getPricedItems(itemManager, items);
 
         Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split;
-        if (dangerous) {
+        if (danger == Danger.DANGEROUS) {
             int keepCount = getKeepCount();
             split = splitItemsByKept(itemsByPrice, keepCount);
         } else {
@@ -141,7 +141,7 @@ public class DeathNotifier extends BaseNotifier {
             .orElse(0L);
 
         int valueThreshold = config.deathMinValue();
-        if (dangerous && losePrice < valueThreshold) {
+        if (danger == Danger.DANGEROUS && losePrice < valueThreshold) {
             log.debug("Skipping death notification; total value of lost items {} is below minimum lost value {}", losePrice, valueThreshold);
             return;
         }
@@ -351,13 +351,23 @@ public class DeathNotifier extends BaseNotifier {
      * @param client {@link Client}
      * @return whether the player is not in a safe area (excluding inferno and fight cave)
      */
-    private static boolean isDangerous(Client client) {
+    private static Danger getDangerLevel(Client client) {
         if (!WorldUtils.isSafeArea(client))
-            return true; // normally dangerous
+            return Danger.DANGEROUS;
 
         // inferno and fight cave are technically safe, but we want death notification regardless
         int regionId = WorldUtils.getLocation(client).getRegionID();
-        return WorldUtils.isInferno(regionId) || WorldUtils.isTzHaarFightCave(regionId);
+        if (WorldUtils.isInferno(regionId) || WorldUtils.isTzHaarFightCave(regionId))
+            return Danger.EXCEPTIONAL;
+
+        // otherwise actually safe
+        return Danger.SAFE;
+    }
+
+    private enum Danger {
+        SAFE,
+        DANGEROUS,
+        EXCEPTIONAL // safe areas that should trigger death notification when ignoreSafe is enabled
     }
 
     static {
