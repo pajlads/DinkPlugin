@@ -80,7 +80,7 @@ public class GroupStorageNotifier extends BaseNotifier {
      * Items in the player's inventory when the group storage was opened.
      * Entries map item id to total quantity (across stacks).
      */
-    private Map<Integer, Integer> initial = Collections.emptyMap();
+    private Map<Integer, Integer> initialInventory = Collections.emptyMap();
 
     @Override
     public boolean isEnabled() {
@@ -101,7 +101,7 @@ public class GroupStorageNotifier extends BaseNotifier {
             if (inv == null)
                 return false;
 
-            initial = reduce(inv.getItems());
+            initialInventory = reduce(inv.getItems());
             return true;
         });
     }
@@ -117,15 +117,15 @@ public class GroupStorageNotifier extends BaseNotifier {
         if (isEnabled() && StringUtils.containsIgnoreCase(widget.getText(), "Saving")) {
             ItemContainer inv = getInventory();
             if (inv != null) {
-                Map<Integer, Integer> modified = reduce(inv.getItems());
-                Map<Integer, Integer> delta = computeDifference(initial, modified);
+                Map<Integer, Integer> updatedInventory = reduce(inv.getItems());
+                Map<Integer, Integer> delta = computeDifference(initialInventory, updatedInventory);
                 if (!delta.isEmpty()) {
                     handleNotify(delta);
                 }
             }
         }
 
-        initial = Collections.emptyMap();
+        initialInventory = Collections.emptyMap();
     }
 
     private void handleNotify(Map<Integer, Integer> inventoryChanges) {
