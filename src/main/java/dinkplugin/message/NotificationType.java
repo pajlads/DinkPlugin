@@ -21,7 +21,8 @@ public enum NotificationType {
     COMBAT_ACHIEVEMENT("Combat Achievement", "combatTaskImage.png", WIKI_IMG_BASE_URL + "Combat_achievements.png"),
     ACHIEVEMENT_DIARY("Achievement Diary", "achievementDiaryImage.png", WIKI_IMG_BASE_URL + "Achievement_Diaries_icon.png"),
     BARBARIAN_ASSAULT_GAMBLE("Barbarian Assault Gamble", "baGambleImage.png", WIKI_IMG_BASE_URL + "Barbarian_Assault_logo.jpg"),
-    PLAYER_KILL("Player Kill", "playerKillImage.png", WIKI_IMG_BASE_URL + "Skull_(status)_icon.png");
+    PLAYER_KILL("Player Kill", "playerKillImage.png", WIKI_IMG_BASE_URL + "Skull_(status)_icon.png"),
+    GROUP_STORAGE("Group Shared Storage", "groupStorage.png", WIKI_IMG_BASE_URL + "Coins_10000.png");
 
     private final String title;
 

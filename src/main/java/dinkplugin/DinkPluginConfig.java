@@ -135,6 +135,14 @@ public interface DinkPluginConfig extends Config {
     String pkSection = "Player Kills";
 
     @ConfigSection(
+        name = "Group Storage",
+        description = "Settings for notifying when you deposit or withdraw items from group ironman shared storage",
+        position = 140,
+        closedByDefault = true
+    )
+    String groupStorageSection = "Group Storage";
+
+    @ConfigSection(
         name = "Advanced",
         description = "Do not modify without fully understanding these settings",
         position = 1000,
@@ -431,6 +439,17 @@ public interface DinkPluginConfig extends Config {
         section = webhookSection
     )
     default String pkWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "groupStorageWebhook",
+        name = "Group Storage Webhook Override",
+        description = "If non-empty, Group Storage messages are sent to this URL, instead of the primary URL",
+        position = -5,
+        section = webhookSection
+    )
+    default String groupStorageWebhook() {
         return "";
     }
 
@@ -1329,6 +1348,53 @@ public interface DinkPluginConfig extends Config {
     )
     default String pkNotifyMessage() {
         return "%USERNAME% has PK'd %TARGET%";
+    }
+
+    @ConfigItem(
+        keyName = "groupStorageEnabled",
+        name = "Enable Transactions",
+        description = "Enable notifications upon group storage transactions",
+        position = 140,
+        section = groupStorageSection
+    )
+    default boolean notifyGroupStorage() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "groupStorageSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 141,
+        section = groupStorageSection
+    )
+    default boolean groupStorageSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "groupStorageMinValue",
+        name = "Min Value",
+        description = "The minimum value of the deposits or withdrawals to send a notification",
+        position = 142,
+        section = groupStorageSection
+    )
+    default int groupStorageMinValue() {
+        return 0;
+    }
+
+    @ConfigItem(
+        keyName = "groupStorageNotifyMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %DEPOSITED% to insert the list of deposited items<br/>" +
+            "Use %WITHDRAWN% to insert the list of withdrawn items",
+        position = 143,
+        section = groupStorageSection
+    )
+    default String groupStorageNotifyMessage() {
+        return "%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%";
     }
 
 }
