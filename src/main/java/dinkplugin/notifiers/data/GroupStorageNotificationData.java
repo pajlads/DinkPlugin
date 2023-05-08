@@ -23,7 +23,7 @@ public class GroupStorageNotificationData extends NotificationData {
         List<Field> fields = new ArrayList<>(2);
         if (StringUtils.isNotBlank(groupName))
             fields.add(new Field("Group", Field.formatBlock(null, groupName)));
-        fields.add(new Field("Net Value", ItemUtils.formatGold(netValue)));
+        fields.add(new Field("Net Value (GE)", ItemUtils.formatGold(netValue)));
         return fields;
     }
 }
