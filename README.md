@@ -22,6 +22,7 @@ Have a suggestion (e.g., new notifier, additional data), bug report (as rare as 
 - [Speedrunning](#speedrunning): Send a webhook message upon completing a quest speedrun (with special configuration for personal best times)
 - [BA Gambles](#ba-gambles): Sends a webhook message upon receiving high level gambles from Barbarian Assault
 - [Player Kills](#player-kills): Sends a webhook message upon killing another player (while hitsplats are still visible)
+- [Group Storage](#group-storage): Sends a webhook message upon Group Ironman Shared Bank transactions (i.e., depositing or withdrawing items)
 
 ## Other Setup
 
@@ -595,6 +596,52 @@ Note: `world` and `location` are _not_ sent if the user has disabled the "Includ
     },
     "myHitpoints": 20,
     "myLastDamage": 12
+  }
+}
+```
+
+</details>
+
+### Group Storage:
+
+`%DEPOSITED%` will be replaced with the list of deposited items
+
+`%WITHDRAWN%` will be replaced with the list of withdrawn items
+
+<details>
+  <summary>JSON for GIM Bank Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has deposited: %DEPOSITED% | %USERNAME% has withdrawn: %WITHDRAWN%",
+  "type": "GROUP_STORAGE",
+  "playerName": "%USERNAME%",
+  "accountType": "HARDCORE_GROUP_IRONMAN",
+  "extra": {
+    "groupName": "group name",
+    "deposits": [
+      {
+        "id": 315,
+        "name": "Shrimps",
+        "quantity": 2,
+        "priceEach": 56
+      },
+      {
+        "id": 1205,
+        "name": "Bronze dagger",
+        "quantity": 1,
+        "priceEach": 53
+      }
+    ],
+    "withdrawals": [
+      {
+        "id": 1265,
+        "name": "Bronze pickaxe",
+        "quantity": 1,
+        "priceEach": 22
+      }
+    ],
+    "netValue": 143
   }
 }
 ```
