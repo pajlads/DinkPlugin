@@ -92,6 +92,10 @@ public class GroupStorageNotifier extends BaseNotifier {
         return config.groupStorageWebhook();
     }
 
+    public void reset() {
+        clientThread.invoke(() -> initialInventory = Collections.emptyMap());
+    }
+
     public void onWidgetLoad(WidgetLoaded event) {
         if (event.getGroupId() != GROUP_STORAGE_WIDGET_GROUP)
             return;
@@ -125,7 +129,7 @@ public class GroupStorageNotifier extends BaseNotifier {
             }
         }
 
-        initialInventory = Collections.emptyMap();
+        this.reset();
     }
 
     private void handleNotify(Map<Integer, Integer> inventoryChanges) {

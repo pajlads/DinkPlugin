@@ -99,6 +99,7 @@ public class DinkPlugin extends Plugin {
         levelNotifier.reset();
         slayerNotifier.reset();
         killCountNotifier.reset();
+        groupStorageNotifier.reset();
     }
 
     @Provides
