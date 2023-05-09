@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.5.0
+
 - Major: Add notifications for depositing or withdrawing items from Group Ironman Shared Storage. (#225)
 - Minor: Include discord user profile in notification metadata. (#226)
 - Minor: Add setting to allow death notifications during safe activities. (#227)
