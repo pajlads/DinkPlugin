@@ -628,7 +628,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "lootIcons",
         name = "Show loot icons",
-        description = "Show icons for the loot obtained",
+        description = "Show icons for the loot obtained as additional embeds.<br/>" +
+            "When disabled, the rich embed thumbnail is set to the most valuable looted item image",
         position = 32,
         section = lootSection
     )
