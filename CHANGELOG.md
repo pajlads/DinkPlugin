@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Use item image as rich embed thumbnail for loot notifications. (#234)
+
 ## 1.5.0
 
 - Major: Add notifications for depositing or withdrawing items from Group Ironman Shared Storage. (#225)
