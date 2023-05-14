@@ -117,6 +117,7 @@ public class LootNotifier extends BaseNotifier {
         StringBuilder lootMessage = new StringBuilder();
         long totalStackValue = 0;
         boolean sendMessage = false;
+        SerializedItemStack max = null;
 
         for (ItemStack item : reduced) {
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
@@ -126,6 +127,9 @@ public class LootNotifier extends BaseNotifier {
                 if (lootMessage.length() > 0) lootMessage.append("\n");
                 lootMessage.append(ItemUtils.formatStack(stack));
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
+                if (max == null || totalPrice > max.getTotalPrice()) {
+                    max = stack;
+                }
             }
             serializedItems.add(stack);
             totalStackValue += totalPrice;
@@ -144,6 +148,7 @@ public class LootNotifier extends BaseNotifier {
                     .embeds(embeds)
                     .extra(new LootNotificationData(serializedItems, dropper, type))
                     .type(NotificationType.LOOT)
+                    .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
                     .build()
             );
         }

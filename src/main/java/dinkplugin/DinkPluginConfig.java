@@ -628,7 +628,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "lootIcons",
         name = "Show loot icons",
-        description = "Show icons for the loot obtained",
+        description = "Show icons for the loot obtained as additional embeds",
         position = 32,
         section = lootSection
     )
