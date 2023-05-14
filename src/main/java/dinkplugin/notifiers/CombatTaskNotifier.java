@@ -44,15 +44,15 @@ public class CombatTaskNotifier extends BaseNotifier {
         String player = Utils.getPlayerName(client);
         String message = StringUtils.replaceEach(
             config.combatTaskMessage(),
-            new String[] { "%USERNAME%", "%TIER%", "%TASK%" },
-            new String[] { player, tier.toString(), task }
+            new String[] { "%USERNAME%", "%TIER%", "%TASK%", "%POINTS%" },
+            new String[] { player, tier.toString(), task, String.valueOf(tier.getPoints()) }
         );
 
         createMessage(config.combatTaskSendImage(), NotificationBody.<CombatAchievementData>builder()
             .type(NotificationType.COMBAT_ACHIEVEMENT)
             .text(message)
             .playerName(player)
-            .extra(new CombatAchievementData(tier, task))
+            .extra(new CombatAchievementData(tier, task, tier.getPoints()))
             .build());
     }
 

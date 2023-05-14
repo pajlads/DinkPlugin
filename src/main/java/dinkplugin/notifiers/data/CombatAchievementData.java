@@ -9,4 +9,5 @@ import lombok.Value;
 public class CombatAchievementData extends NotificationData {
     CombatAchievementTier tier;
     String task;
+    int taskPoints;
 }

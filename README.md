@@ -410,6 +410,8 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
 
 `%TASK%` will be replaced with the name of the combat task (e.g., Peach Conjurer)
 
+`%POINTS%` will be replaced with the number of points you earned from the combat achievement.
+
 <details>
   <summary>JSON for Combat Achievement Notifications:</summary>
 
@@ -418,7 +420,8 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "content": "%USERNAME% has completed %TIER% combat task: %TASK%",
   "extra": {
     "tier": "GRANDMASTER",
-    "task": "Peach Conjurer"
+    "task": "Peach Conjurer",
+    "taskPoints": 6
   },
   "type": "COMBAT_ACHIEVEMENT"
 }
