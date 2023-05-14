@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Remove points suffix from combat achievement name. (#235)
 - Minor: Use item image as rich embed thumbnail for loot notifications. (#234)
 
 ## 1.5.0
