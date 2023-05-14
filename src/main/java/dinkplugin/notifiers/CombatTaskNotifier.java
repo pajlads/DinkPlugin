@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 public class CombatTaskNotifier extends BaseNotifier {
     private static final Pattern ACHIEVEMENT_PATTERN = Pattern.compile("Congratulations, you've completed an? (?<tier>\\w+) combat task: (?<task>.+)\\.");
+    private static final Pattern TASK_POINTS = Pattern.compile("\\s+\\(\\d+ points\\)$");
     public static final String REPEAT_WARNING = "Combat Task notifier will fire duplicates unless you disable the game setting: Combat Achievement Tasks - Repeat completion";
 
     @Varbit
@@ -61,6 +62,11 @@ public class CombatTaskNotifier extends BaseNotifier {
         if (!matcher.find()) return Optional.empty();
         return Optional.of(matcher.group("tier"))
             .map(CombatAchievementTier.TIER_BY_LOWER_NAME::get)
-            .map(tier -> Pair.of(tier, matcher.group("task")));
+            .map(tier -> Pair.of(
+                tier,
+                TASK_POINTS.matcher(
+                    matcher.group("task")
+                ).replaceFirst("") // remove points suffix
+            ));
     }
 }
