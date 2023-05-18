@@ -19,7 +19,7 @@ public class CombatAchievementData extends NotificationData {
     public List<Field> getFields() {
         List<Field> fields = new ArrayList<>(1);
         fields.add(
-            new Field("Points Earned", Field.formatBlock("diff", "+" + taskPoints))
+            new Field("Points Earned", Field.formatBlock(null, String.valueOf(taskPoints)))
         );
         return fields;
     }
