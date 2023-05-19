@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add combat achievement points as rich embed field. (#235)
 - Minor: Use item image as rich embed thumbnail for loot notifications. (#234)
 
 ## 1.5.0

@@ -69,6 +69,10 @@ class CombatTaskMatcherTest {
                 Arguments.of(
                     "Congratulations, you've completed a grandmaster combat task: Inferno Grandmaster.",
                     Pair.of(GRANDMASTER, "Inferno Grandmaster")
+                ),
+                Arguments.of(
+                    "Congratulations, you've completed a hard combat task: I Can't Reach That (3 points).",
+                    Pair.of(HARD, "I Can't Reach That")
                 )
             );
         }
