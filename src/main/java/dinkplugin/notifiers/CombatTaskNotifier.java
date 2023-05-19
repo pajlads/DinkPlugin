@@ -137,7 +137,7 @@ public class CombatTaskNotifier extends BaseNotifier {
     }
 
     static {
-        // noinspection UnstableApiUsage
+        // noinspection UnstableApiUsage (builderWithExpectedSize is no longer @Beta in snapshot guava)
         CUM_POINTS_VARBIT_BY_TIER = ImmutableMap.<CombatAchievementTier, Integer>builderWithExpectedSize(6)
             .put(CombatAchievementTier.EASY, 4132) // 33 = 33 * 1
             .put(CombatAchievementTier.MEDIUM, 10660) // 115 = 33 + 41 * 2

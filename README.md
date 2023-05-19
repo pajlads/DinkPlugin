@@ -426,8 +426,28 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
     "taskPoints": 6,
     "totalPoints": 1337,
     "tierProgress": 517,
-    "tierTotalPoints": 645,
-    "justCompletedTier": null
+    "tierTotalPoints": 645
+  },
+  "type": "COMBAT_ACHIEVEMENT"
+}
+```
+
+</details>
+
+<details>
+  <summary>JSON for Combat Achievement Tier Completion Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has unlocked the rewards for the %COMPLETED% tier, by completing the combat task: %TASK%",
+  "extra": {
+    "tier": "GRANDMASTER",
+    "task": "Peach Conjurer",
+    "taskPoints": 6,
+    "totalPoints": 1465,
+    "tierProgress": 0,
+    "tierTotalPoints": 540,
+    "justCompletedTier": "MASTER"
   },
   "type": "COMBAT_ACHIEVEMENT"
 }
