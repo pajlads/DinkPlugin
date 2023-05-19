@@ -2,10 +2,11 @@ package dinkplugin.util;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import dinkplugin.domain.AccountType;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.vars.AccountType;
+import net.runelite.api.Varbits;
 import net.runelite.client.util.ColorUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -43,6 +44,10 @@ public class Utils {
     public final Color GREEN = ColorUtil.fromHex("006c4c"); // dark shade of PINK in CIELCh_uv color space
     public final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
     public final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
+
+    public AccountType getAccountType(@NotNull Client client) {
+        return AccountType.get(client.getVarbitValue(Varbits.ACCOUNT_TYPE));
+    }
 
     /**
      * Converts text into "upper case first" form, as is used by OSRS for item names.
@@ -85,6 +90,8 @@ public class Utils {
                 return WIKI_IMG_BASE_URL + "Group_ironman_chat_badge.png";
             case HARDCORE_GROUP_IRONMAN:
                 return WIKI_IMG_BASE_URL + "Hardcore_group_ironman_chat_badge.png";
+            case UNRANKED_GROUP_IRONMAN:
+                return WIKI_IMG_BASE_URL + "Unranked_group_ironman_chat_badge";
             default:
                 return null;
         }

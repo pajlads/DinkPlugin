@@ -2,6 +2,7 @@ package dinkplugin.message;
 
 import com.google.gson.annotations.SerializedName;
 import dinkplugin.DinkPluginConfig;
+import dinkplugin.domain.AccountType;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.DiscordProfile;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.With;
-import net.runelite.api.vars.AccountType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

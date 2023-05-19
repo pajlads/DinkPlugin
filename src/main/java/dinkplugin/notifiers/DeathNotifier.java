@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.domain.AccountType;
 import dinkplugin.message.Embed;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
@@ -21,7 +22,6 @@ import net.runelite.api.Prayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
-import net.runelite.api.vars.AccountType;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
 import org.apache.commons.lang3.ArrayUtils;
@@ -207,7 +207,7 @@ public class DeathNotifier extends BaseNotifier {
      * @return the number of items the player would keep on an unsafe death
      */
     private int getKeepCount() {
-        if (client.getAccountType() == AccountType.ULTIMATE_IRONMAN)
+        if (Utils.getAccountType(client) == AccountType.ULTIMATE_IRONMAN)
             return 0;
 
         int keepCount;
