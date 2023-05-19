@@ -45,10 +45,6 @@ public class Utils {
     public final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
     public final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
 
-    public AccountType getAccountType(@NotNull Client client) {
-        return AccountType.get(client.getVarbitValue(Varbits.ACCOUNT_TYPE));
-    }
-
     /**
      * Converts text into "upper case first" form, as is used by OSRS for item names.
      *
@@ -73,8 +69,23 @@ public class Utils {
         }
     }
 
+    /**
+     * @param client {@link Client}
+     * @return the name of the local player
+     */
     public String getPlayerName(Client client) {
         return client.getLocalPlayer().getName();
+    }
+
+    /**
+     * Transforms the value from {@link Varbits#ACCOUNT_TYPE} to a convenient enum.
+     *
+     * @param client {@link Client}
+     * @return {@link AccountType}
+     * @apiNote This function should only be called from the client thread.
+     */
+    public AccountType getAccountType(@NotNull Client client) {
+        return AccountType.get(client.getVarbitValue(Varbits.ACCOUNT_TYPE));
     }
 
     @Nullable
