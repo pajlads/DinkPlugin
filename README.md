@@ -414,6 +414,8 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
 
 `%TOTAL_POINTS%` will be replaced with the total points that have been earned across tasks.
 
+If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replaced with the tier that was completed.
+
 <details>
   <summary>JSON for Combat Achievement Notifications:</summary>
 
