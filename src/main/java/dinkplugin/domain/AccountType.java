@@ -16,7 +16,7 @@ public enum AccountType {
      * @return the equivalent enum value
      */
     public static AccountType get(int varbitValue) {
-        if (varbitValue < 0 || varbitValue > TYPES.length) return null;
+        if (varbitValue < 0 || varbitValue >= TYPES.length) return null;
         return TYPES[varbitValue];
     }
 }
