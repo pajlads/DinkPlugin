@@ -208,6 +208,27 @@ class LevelNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyCombatDisabledLevelNotifier() {
+        // The combat level notification shouldn't fire when notifyLevel is disabled
+
+        // update config mocks
+        when(config.notifyLevel()).thenReturn(false);
+        when(config.levelInterval())
+            .thenReturn(
+                18); // won't trigger on hp @ 13, will trigger on combat level @ 36
+
+        // fire skill event
+        when(client.getRealSkillLevel(Skill.HITPOINTS)).thenReturn(13);
+        plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testIgnoreInterval() {
         // fire skill event
         plugin.onStatChanged(new StatChanged(Skill.AGILITY, 100, 2, 2));
