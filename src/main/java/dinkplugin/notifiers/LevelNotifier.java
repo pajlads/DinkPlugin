@@ -109,7 +109,7 @@ public class LevelNotifier extends BaseNotifier {
         if (COMBAT_COMPONENTS.contains(skill)) {
             int combatLevel = calculateCombatLevel();
             Integer previousCombatLevel = currentLevels.put(COMBAT_NAME, combatLevel);
-            checkLevelUp(config.levelNotifyCombat(), COMBAT_NAME, previousCombatLevel, combatLevel);
+            checkLevelUp(config.notifyLevel() && config.levelNotifyCombat(), COMBAT_NAME, previousCombatLevel, combatLevel);
         }
     }
 
