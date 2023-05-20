@@ -412,6 +412,10 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
 
 `%POINTS%` will be replaced with the number of points you earned from the combat achievement.
 
+`%TOTAL_POINTS%` will be replaced with the total points that have been earned across tasks.
+
+If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replaced with the tier that was completed.
+
 <details>
   <summary>JSON for Combat Achievement Notifications:</summary>
 
@@ -421,7 +425,31 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
   "extra": {
     "tier": "GRANDMASTER",
     "task": "Peach Conjurer",
-    "taskPoints": 6
+    "taskPoints": 6,
+    "totalPoints": 1337,
+    "tierProgress": 517,
+    "tierTotalPoints": 645
+  },
+  "type": "COMBAT_ACHIEVEMENT"
+}
+```
+
+</details>
+
+<details>
+  <summary>JSON for Combat Achievement Tier Completion Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% has unlocked the rewards for the %COMPLETED% tier, by completing the combat task: %TASK%",
+  "extra": {
+    "tier": "GRANDMASTER",
+    "task": "Peach Conjurer",
+    "taskPoints": 6,
+    "totalPoints": 1465,
+    "tierProgress": 0,
+    "tierTotalPoints": 540,
+    "justCompletedTier": "MASTER"
   },
   "type": "COMBAT_ACHIEVEMENT"
 }

@@ -1140,12 +1140,31 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent to the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %TIER% to insert the task tier<br/>" +
-            "Use %TASK% to insert the task name",
+            "Use %TASK% to insert the task name<br/>" +
+            "Use %POINTS% to insert the task points<br/>" +
+            "Use %TOTAL_POINTS% to insert the total points earned across tasks",
         position = 103,
         section = combatTaskSection
     )
     default String combatTaskMessage() {
         return "%USERNAME% has completed %TIER% combat task: %TASK%";
+    }
+
+    @ConfigItem(
+        keyName = "combatTaskUnlockMessage",
+        name = "Reward Unlock Notification Message",
+        description = "The message to be sent to the webhook upon unlocking the rewards for a tier completion.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %TIER% to insert the task tier<br/>" +
+            "Use %TASK% to insert the task name<br/>" +
+            "Use %POINTS% to insert the task points<br/>" +
+            "Use %TOTAL_POINTS% to insert the total points earned across tasks<br/>" +
+            "Use %COMPLETED% to insert the completed tier",
+        position = 104,
+        section = combatTaskSection
+    )
+    default String combatTaskUnlockMessage() {
+        return "%USERNAME% has unlocked the rewards for the %COMPLETED% tier, by completing the combat task: %TASK%";
     }
 
     @ConfigItem(
