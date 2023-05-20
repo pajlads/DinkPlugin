@@ -143,6 +143,7 @@ public class DinkPlugin extends Plugin {
         clueNotifier.onTick();
         slayerNotifier.onTick();
         levelNotifier.onTick();
+        combatTaskNotifier.onTick();
         diaryNotifier.onTick();
         killCountNotifier.onTick();
         pkNotifier.onTick();
