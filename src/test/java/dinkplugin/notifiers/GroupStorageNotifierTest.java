@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.domain.AccountType;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.GroupStorageNotificationData;
@@ -9,11 +10,11 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
+import net.runelite.api.Varbits;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetModalMode;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,7 +66,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         when(itemManager.canonicalize(ItemID.TUNA_26149)).thenReturn(ItemID.TUNA);
 
         // init group mock
-        when(client.getAccountType()).thenReturn(AccountType.HARDCORE_GROUP_IRONMAN);
+        when(client.getVarbitValue(Varbits.ACCOUNT_TYPE)).thenReturn(AccountType.HARDCORE_GROUP_IRONMAN.ordinal());
         ClanChannel channel = mock(ClanChannel.class);
         when(channel.getName()).thenReturn(GROUP_NAME);
         when(client.getClanChannel(ClanID.GROUP_IRONMAN)).thenReturn(channel);

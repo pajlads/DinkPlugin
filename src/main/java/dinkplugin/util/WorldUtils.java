@@ -1,12 +1,12 @@
 package dinkplugin.util;
 
 import com.google.common.collect.ImmutableSet;
+import dinkplugin.domain.AccountType;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.vars.AccountType;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -108,7 +108,7 @@ public class WorldUtils {
         if (isBarbarianAssault(regionId) || isChambersOfXeric(regionId) || isInferno(regionId) ||
             isNightmareZone(regionId) || isTzHaarFightCave(regionId) || isPestControl(client)) {
             // All PvM activities are dangerous for Hardcore group iron players
-            return client.getAccountType() != AccountType.HARDCORE_GROUP_IRONMAN;
+            return Utils.getAccountType(client) != AccountType.HARDCORE_GROUP_IRONMAN;
         }
 
         return isCastleWars(regionId) || isClanWars(regionId) || isSoulWars(regionId) ||
