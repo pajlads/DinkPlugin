@@ -2,6 +2,7 @@
 
 - Minor: Add combat achievement points as rich embed field. (#235)
 - Minor: Use item image as rich embed thumbnail for loot notifications. (#234)
+- Bugfix: Prevent combat level notifications when the notifier is disabled. (#239)
 - Dev: Redefine account type enum to workaround upstream deprecation. (#238)
 
 ## 1.5.0
