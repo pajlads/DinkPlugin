@@ -100,7 +100,7 @@ public class DiscordMessageHandler {
             mBody = mBody.withPlayerName(Utils.getPlayerName(client));
 
         if (mBody.getAccountType() == null)
-            mBody = mBody.withAccountType(client.getAccountType());
+            mBody = mBody.withAccountType(Utils.getAccountType(client));
 
         if (config.sendDiscordUser())
             mBody = mBody.withDiscordUser(DiscordProfile.of(discordService.getCurrentUser()));

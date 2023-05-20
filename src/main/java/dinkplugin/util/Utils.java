@@ -2,10 +2,11 @@ package dinkplugin.util;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import dinkplugin.domain.AccountType;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.vars.AccountType;
+import net.runelite.api.Varbits;
 import net.runelite.client.util.ColorUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -68,8 +69,23 @@ public class Utils {
         }
     }
 
+    /**
+     * @param client {@link Client}
+     * @return the name of the local player
+     */
     public String getPlayerName(Client client) {
         return client.getLocalPlayer().getName();
+    }
+
+    /**
+     * Transforms the value from {@link Varbits#ACCOUNT_TYPE} to a convenient enum.
+     *
+     * @param client {@link Client}
+     * @return {@link AccountType}
+     * @apiNote This function should only be called from the client thread.
+     */
+    public AccountType getAccountType(@NotNull Client client) {
+        return AccountType.get(client.getVarbitValue(Varbits.ACCOUNT_TYPE));
     }
 
     @Nullable
@@ -85,6 +101,8 @@ public class Utils {
                 return WIKI_IMG_BASE_URL + "Group_ironman_chat_badge.png";
             case HARDCORE_GROUP_IRONMAN:
                 return WIKI_IMG_BASE_URL + "Hardcore_group_ironman_chat_badge.png";
+            case UNRANKED_GROUP_IRONMAN:
+                return WIKI_IMG_BASE_URL + "Unranked_group_ironman_chat_badge";
             default:
                 return null;
         }
