@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import static net.runelite.api.Experience.MAX_REAL_LEVEL;
+
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class LevelNotificationData extends NotificationData {
@@ -20,9 +22,9 @@ public class LevelNotificationData extends NotificationData {
 
     @Override
     public List<Field> getFields() {
-        if (levelledSkills.containsValue(99)) {
+        if (levelledSkills.containsValue(MAX_REAL_LEVEL)) {
             Collection<String> maxed = allSkills.entrySet().stream()
-                .filter(e -> e.getValue() >= 99)
+                .filter(e -> e.getValue() >= MAX_REAL_LEVEL)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toCollection(TreeSet::new));
 
