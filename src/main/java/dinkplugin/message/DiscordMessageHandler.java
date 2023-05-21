@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.PlayerLookupService;
+import dinkplugin.message.placeholder.WikiSearchPlaceholder;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.DiscordProfile;
 import dinkplugin.util.Utils;
@@ -61,10 +62,11 @@ public class DiscordMessageHandler {
     private final ScheduledExecutorService executor;
     private final ClientThread clientThread;
     private final DiscordService discordService;
+    private final WikiSearchPlaceholder placeholder;
 
     @Inject
     @VisibleForTesting
-    public DiscordMessageHandler(Gson gson, Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor, ClientThread clientThread, DiscordService discordService) {
+    public DiscordMessageHandler(Gson gson, Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor, ClientThread clientThread, DiscordService discordService, WikiSearchPlaceholder placeholder) {
         this.gson = gson;
         this.client = client;
         this.drawManager = drawManager;
@@ -72,6 +74,7 @@ public class DiscordMessageHandler {
         this.executor = executor;
         this.clientThread = clientThread;
         this.discordService = discordService;
+        this.placeholder = placeholder;
         this.httpClient = httpClient.newBuilder()
             .addInterceptor(chain -> {
                 Request request = chain.request().newBuilder()
@@ -106,9 +109,9 @@ public class DiscordMessageHandler {
             mBody = mBody.withDiscordUser(DiscordProfile.of(discordService.getCurrentUser()));
 
         if (config.discordRichEmbeds()) {
-            mBody = injectContent(mBody, sendImage, config);
+            mBody = injectContent(mBody, sendImage);
         } else {
-            mBody = mBody.withComputedDiscordContent(mBody.getText());
+            mBody = mBody.withComputedDiscordContent(this.placeholder.removePlaceholder(mBody.getText()));
         }
 
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
@@ -235,7 +238,7 @@ public class DiscordMessageHandler {
             });
     }
 
-    private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, DinkPluginConfig config) {
+    private NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot) {
         NotificationType type = body.getType();
         NotificationData extra = body.getExtra();
         String footerText = config.embedFooterText();
@@ -261,7 +264,10 @@ public class DiscordMessageHandler {
                 .author(author)
                 .color(Utils.PINK)
                 .title(type.getTitle())
-                .description(StringUtils.truncate(body.getText(), Embed.MAX_DESCRIPTION_LENGTH))
+                .description(StringUtils.truncate(
+                    this.placeholder.replacePlaceholder(body.getText()),
+                    Embed.MAX_DESCRIPTION_LENGTH
+                ))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(thumbnail))
                 .fields(extra != null ? extra.getFields() : Collections.emptyList())

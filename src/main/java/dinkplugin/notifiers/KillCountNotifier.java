@@ -109,7 +109,7 @@ public class KillCountNotifier extends BaseNotifier {
         String content = StringUtils.replaceEach(
             isPb ? config.killCountBestTimeMessage() : config.killCountMessage(),
             new String[] { "%USERNAME%", "%BOSS%", "%COUNT%", "%TIME%" },
-            new String[] { player, data.getBoss(), String.valueOf(data.getCount()), time }
+            new String[] { player, placeholder.asPlaceholder(data.getBoss()), String.valueOf(data.getCount()), time }
         );
 
         // Prepare body

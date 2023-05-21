@@ -111,7 +111,7 @@ public class CollectionNotifier extends BaseNotifier {
         String notifyMessage = StringUtils.replaceEach(
             config.collectionNotifyMessage(),
             new String[] { "%USERNAME%", "%ITEM%" },
-            new String[] { Utils.getPlayerName(client), itemName }
+            new String[] { Utils.getPlayerName(client), placeholder.asPlaceholder(itemName) }
         );
 
         // varp isn't updated for a few ticks, so we increment the count locally.

@@ -113,10 +113,14 @@ public class ClueNotifier extends BaseNotifier {
 
         if (totalPrice.get() >= config.clueMinValue()) {
             boolean screenshot = config.clueSendImage() && totalPrice.get() >= config.clueImageMinValue();
+
+            String cluePlaceholder = placeholder.asPlaceholder(clueType, "Clue scroll (" + clueType + ")");
             String notifyMessage = StringUtils.replaceEach(
                 config.clueNotifyMessage(),
-                new String[] { "%USERNAME%", "%CLUE%", "%COUNT%", "%TOTAL_VALUE%", "%LOOT%" },
-                new String[] { Utils.getPlayerName(client), clueType, clueCount, QuantityFormatter.quantityToStackSize(totalPrice.get()), lootMessage.toString() }
+                new String[]{"%USERNAME%", "%CLUE%", "%COUNT%", "%TOTAL_VALUE%", "%LOOT%"},
+                new String[]{Utils.getPlayerName(client),
+                    cluePlaceholder,
+                    clueCount, QuantityFormatter.quantityToStackSize(totalPrice.get()), lootMessage.toString()}
             );
             createMessage(screenshot,
                 NotificationBody.builder()
@@ -134,7 +138,7 @@ public class ClueNotifier extends BaseNotifier {
     private String getItemMessage(SerializedItemStack item, Collection<Embed> embeds) {
         if (config.clueShowItems())
             embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
-        return ItemUtils.formatStack(item);
+        return ItemUtils.formatStack(item, this.placeholder);
     }
 
     private boolean checkClueTier(String clueType) {

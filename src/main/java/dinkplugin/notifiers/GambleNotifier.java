@@ -3,6 +3,7 @@ package dinkplugin.notifiers;
 import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.placeholder.WikiSearchPlaceholder;
 import dinkplugin.notifiers.data.GambleNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemSearcher;
@@ -80,8 +81,8 @@ public class GambleNotifier extends BaseNotifier {
             .build());
     }
 
-    private static String lootSummary(List<SerializedItemStack> items) {
-        return items.stream().map(ItemUtils::formatStack).collect(Collectors.joining("\n"));
+    private String lootSummary(List<SerializedItemStack> items) {
+        return items.stream().map(item -> ItemUtils.formatStack(item, placeholder)).collect(Collectors.joining("\n"));
     }
 
     private List<SerializedItemStack> serializeItems(ParsedData data) {

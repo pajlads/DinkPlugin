@@ -9,8 +9,10 @@ import dinkplugin.SettingsManager;
 import dinkplugin.domain.AccountType;
 import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.message.DiscordMessageHandler;
+import dinkplugin.message.placeholder.WikiSearchPlaceholder;
 import dinkplugin.util.BlockingClientThread;
 import dinkplugin.util.BlockingExecutor;
+import dinkplugin.util.ItemUtils;
 import dinkplugin.util.TestImageUtil;
 import net.runelite.api.Client;
 import net.runelite.api.ItemComposition;
@@ -92,7 +94,10 @@ abstract class MockedNotifierTest extends MockedTestBase {
     protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(gson, client, clientThread, plugin, config, configManager));
 
     @Bind
-    protected DiscordMessageHandler messageHandler = Mockito.spy(new DiscordMessageHandler(gson, client, drawManager, httpClient, config, executor, clientThread, discordService));
+    protected WikiSearchPlaceholder placeholder = new WikiSearchPlaceholder();
+
+    @Bind
+    protected DiscordMessageHandler messageHandler = Mockito.spy(new DiscordMessageHandler(gson, client, drawManager, httpClient, config, executor, clientThread, discordService, placeholder));
 
     @Override
     protected void setUp() {

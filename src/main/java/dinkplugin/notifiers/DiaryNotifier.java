@@ -152,7 +152,9 @@ public class DiaryNotifier extends BaseNotifier {
         String message = StringUtils.replaceEach(
             config.diaryNotifyMessage(),
             new String[] { "%USERNAME%", "%DIFFICULTY%", "%AREA%", "%TOTAL%" },
-            new String[] { player, difficulty.toString(), area, String.valueOf(total) }
+            new String[] { player, difficulty.toString(),
+                placeholder.asPlaceholder(area, difficulty + " " + area + " diary"),
+                String.valueOf(total) }
         );
 
         createMessage(config.diarySendImage(), NotificationBody.builder()

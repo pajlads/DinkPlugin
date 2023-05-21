@@ -96,10 +96,12 @@ public class SlayerNotifier extends BaseNotifier {
 
         int threshold = config.slayerPointThreshold();
         if (threshold <= 0 || Integer.parseInt(slayerPoints.replace(",", "")) >= threshold) {
+            Matcher matcher = Pattern.compile("(<taskcount>\\d*)\\s+(<taskmonster>.+)").matcher(task);
+            String taskAsPlaceholder = matcher.group("taskcount") + " " + placeholder.asPlaceholder(matcher.group("taskmonster"));
             String notifyMessage = StringUtils.replaceEach(
                 config.slayerNotifyMessage(),
                 new String[] { "%USERNAME%", "%TASK%", "%TASKCOUNT%", "%POINTS%" },
-                new String[] { Utils.getPlayerName(client), task, slayerCompleted, slayerPoints }
+                new String[] { Utils.getPlayerName(client), taskAsPlaceholder, slayerCompleted, slayerPoints }
             );
 
             createMessage(config.slayerSendImage(), NotificationBody.builder()

@@ -125,7 +125,7 @@ public class LootNotifier extends BaseNotifier {
             if (totalPrice >= minValue) {
                 sendMessage = true;
                 if (lootMessage.length() > 0) lootMessage.append("\n");
-                lootMessage.append(ItemUtils.formatStack(stack));
+                lootMessage.append(ItemUtils.formatStack(stack, placeholder));
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
                 if (max == null || totalPrice > max.getTotalPrice()) {
                     max = stack;

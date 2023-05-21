@@ -3,6 +3,7 @@ package dinkplugin.util;
 import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.Embed;
 import dinkplugin.message.Field;
+import dinkplugin.message.placeholder.WikiSearchPlaceholder;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
@@ -16,6 +17,7 @@ import net.runelite.client.util.QuantityFormatter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -120,7 +122,14 @@ public class ItemUtils {
     }
 
     public String formatStack(SerializedItemStack item) {
-        return String.format("%d x %s (%s)", item.getQuantity(), item.getName(), QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
+        return formatStack(item, null);
+    }
+
+    public String formatStack(SerializedItemStack item, @Nullable WikiSearchPlaceholder placeholder) {
+        return String.format("%d x %s (%s)",
+            item.getQuantity(),
+            placeholder != null ? placeholder.asPlaceholder(item.getName()) : item.getName(),
+            QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
     }
 
     public String getItemImageUrl(int itemId) {

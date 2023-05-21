@@ -102,7 +102,10 @@ public class CombatTaskNotifier extends BaseNotifier {
             String message = StringUtils.replaceEach(
                 crossedThreshold ? config.combatTaskUnlockMessage() : config.combatTaskMessage(),
                 new String[] { "%USERNAME%", "%TIER%", "%TASK%", "%POINTS%", "%TOTAL_POINTS%", "%COMPLETED%" },
-                new String[] { player, tier.toString(), task, String.valueOf(taskPoints), String.valueOf(totalPoints), completedTierName }
+                new String[] { player, tier.toString(),
+                    this.placeholder.asPlaceholder(task),
+                    String.valueOf(taskPoints), String.valueOf(totalPoints),
+                    completedTierName }
             );
 
             createMessage(config.combatTaskSendImage(), NotificationBody.<CombatAchievementData>builder()

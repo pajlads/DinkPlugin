@@ -1,5 +1,6 @@
 package dinkplugin.util;
 
+import com.google.common.net.UrlEscapers;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dinkplugin.domain.AccountType;
@@ -15,6 +16,7 @@ import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -194,4 +196,7 @@ public class Utils {
         return future;
     }
 
+    public static String getWikiSearchUrl(String search) {
+        return "https://oldschool.runescape.wiki/w/Special:Search?search=" + UrlEscapers.urlPathSegmentEscaper().escape(search);
+    }
 }

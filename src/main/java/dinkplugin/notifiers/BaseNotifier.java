@@ -4,6 +4,7 @@ import dinkplugin.DinkPluginConfig;
 import dinkplugin.SettingsManager;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
+import dinkplugin.message.placeholder.WikiSearchPlaceholder;
 import dinkplugin.util.WorldUtils;
 import net.runelite.api.Client;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,8 @@ public abstract class BaseNotifier {
 
     @Inject
     protected SettingsManager settingsManager;
+    @Inject
+    protected WikiSearchPlaceholder placeholder;
 
     @Inject
     protected Client client;
