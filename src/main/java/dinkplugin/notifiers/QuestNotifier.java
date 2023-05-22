@@ -2,6 +2,8 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.util.QuestUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.QuestNotificationData;
@@ -11,7 +13,6 @@ import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
@@ -70,11 +71,11 @@ public class QuestNotifier extends BaseNotifier {
         String parsed = QuestUtils.parseQuestWidget(questText);
         if (parsed == null) return;
 
-        String notifyMessage = StringUtils.replaceEach(
-            config.questNotifyMessage(),
-            new String[] { "%USERNAME%", "%QUEST%" },
-            new String[] { Utils.getPlayerName(client), parsed }
-        );
+        Template notifyMessage = Template.builder()
+            .template(config.questNotifyMessage())
+            .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+            .replacement("%QUEST%", Replacements.ofText(parsed))
+            .build();
 
         QuestNotificationData extra = new QuestNotificationData(
             parsed,

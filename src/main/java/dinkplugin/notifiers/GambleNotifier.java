@@ -3,6 +3,8 @@ package dinkplugin.notifiers;
 import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GambleNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemSearcher;
@@ -68,11 +70,12 @@ public class GambleNotifier extends BaseNotifier {
         }
         String player = Utils.getPlayerName(client);
         List<SerializedItemStack> items = serializeItems(data);
-        String message = StringUtils.replaceEach(
-            messageFormat,
-            new String[] { "%USERNAME%", "%COUNT%", "%LOOT%" },
-            new String[] { player, String.valueOf(data.gambleCount), lootSummary(items) }
-        );
+        Template message = Template.builder()
+            .template(messageFormat)
+            .replacement("%USERNAME%", Replacements.ofText(player))
+            .replacement("%COUNT%", Replacements.ofText(String.valueOf(data.gambleCount)))
+            .replacement("%LOOT%", Replacements.ofText(lootSummary(items)))
+            .build();
         createMessage(config.gambleSendImage(), NotificationBody.builder()
             .text(message)
             .extra(new GambleNotificationData(data.gambleCount, items))

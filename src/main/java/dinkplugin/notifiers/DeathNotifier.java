@@ -2,6 +2,8 @@ package dinkplugin.notifiers;
 
 import dinkplugin.domain.AccountType;
 import dinkplugin.message.Embed;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.message.NotificationBody;
@@ -150,7 +152,7 @@ public class DeathNotifier extends BaseNotifier {
         boolean pk = killer instanceof Player;
         boolean npc = killer instanceof NPC;
         String killerName = killer != null ? StringUtils.defaultIfEmpty(killer.getName(), "?") : null;
-        String notifyMessage = buildMessage(killerName, losePrice, pk, npc);
+        Template notifyMessage = buildMessage(killerName, losePrice, pk, npc);
 
         List<SerializedItemStack> lostStacks = getStacks(itemManager, lostItems, true);
         List<SerializedItemStack> keptStacks = getStacks(itemManager, keptItems, false);
@@ -185,22 +187,24 @@ public class DeathNotifier extends BaseNotifier {
             .build());
     }
 
-    private String buildMessage(String killer, long losePrice, boolean pk, boolean npc) {
+    private Template buildMessage(String killer, long losePrice, boolean pk, boolean npc) {
         boolean pvp = pk && config.deathNotifPvpEnabled();
         String template;
         if (pvp)
             template = config.deathNotifPvpMessage();
         else
             template = config.deathNotifyMessage();
-        String notifyMessage = template
-            .replace("%USERNAME%", Utils.getPlayerName(client))
-            .replace("%VALUELOST%", String.valueOf(losePrice));
+
+        Template.TemplateBuilder builder = Template.builder()
+            .template(template)
+            .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+            .replacement("%VALUELOST%", Replacements.ofText(String.valueOf(losePrice)));
         if (pvp) {
-            notifyMessage = notifyMessage.replace("%PKER%", killer);
+            builder.replacement("%PKER%", Replacements.ofText(killer));
         } else if (npc) {
-            notifyMessage = notifyMessage.replace("%NPC%", killer);
+            builder.replacement("%NPC%", Replacements.ofText(killer));
         }
-        return notifyMessage;
+        return builder.build();
     }
 
     /**

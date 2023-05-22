@@ -2,6 +2,8 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.PlayerKillNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
@@ -114,9 +116,11 @@ public class PlayerKillNotifier extends BaseNotifier {
         );
 
         String localPlayer = client.getLocalPlayer().getName();
-        String message = config.pkNotifyMessage()
-            .replace("%USERNAME%", localPlayer)
-            .replace("%TARGET%", target.getName());
+        Template message = Template.builder()
+            .template(config.pkNotifyMessage())
+            .replacement("%USERNAME%", Replacements.ofText(localPlayer))
+            .replacement("%TARGET%", Replacements.ofText(target.getName()))
+            .build();
 
         createMessage(config.pkSendImage(), NotificationBody.builder()
             .type(NotificationType.PLAYER_KILL)

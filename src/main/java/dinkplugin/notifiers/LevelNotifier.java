@@ -3,6 +3,8 @@ package dinkplugin.notifiers;
 import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LevelNotificationData;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +13,6 @@ import net.runelite.api.GameState;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -191,11 +192,11 @@ public class LevelNotifier extends BaseNotifier {
         }
 
         // Populate message template
-        String fullNotification = StringUtils.replaceEach(
-            config.levelNotifyMessage(),
-            new String[] { "%USERNAME%", "%SKILL%" },
-            new String[] { Utils.getPlayerName(client), skillMessage.toString() }
-        );
+        Template fullNotification = Template.builder()
+            .template(config.levelNotifyMessage())
+            .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+            .replacement("%SKILL%", Replacements.ofText(skillMessage.toString()))
+            .build();
 
         // Fire notification
         createMessage(config.levelSendImage(), NotificationBody.builder()

@@ -4,6 +4,8 @@ import dinkplugin.domain.ClueTier;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.ClueNotificationData;
@@ -15,7 +17,6 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.util.QuantityFormatter;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -113,11 +114,14 @@ public class ClueNotifier extends BaseNotifier {
 
         if (totalPrice.get() >= config.clueMinValue()) {
             boolean screenshot = config.clueSendImage() && totalPrice.get() >= config.clueImageMinValue();
-            String notifyMessage = StringUtils.replaceEach(
-                config.clueNotifyMessage(),
-                new String[] { "%USERNAME%", "%CLUE%", "%COUNT%", "%TOTAL_VALUE%", "%LOOT%" },
-                new String[] { Utils.getPlayerName(client), clueType, clueCount, QuantityFormatter.quantityToStackSize(totalPrice.get()), lootMessage.toString() }
-            );
+            Template notifyMessage = Template.builder()
+                .template(config.clueNotifyMessage())
+                .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+                .replacement("%CLUE%", Replacements.ofText(clueType))
+                .replacement("%COUNT%", Replacements.ofText(clueCount))
+                .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalPrice.get())))
+                .replacement("%LOOT%", Replacements.ofText(lootMessage.toString()))
+                .build();
             createMessage(screenshot,
                 NotificationBody.builder()
                     .text(notifyMessage)

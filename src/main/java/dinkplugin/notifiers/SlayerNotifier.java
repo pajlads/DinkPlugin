@@ -2,9 +2,10 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.SlayerNotificationData;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Singleton;
@@ -96,11 +97,13 @@ public class SlayerNotifier extends BaseNotifier {
 
         int threshold = config.slayerPointThreshold();
         if (threshold <= 0 || Integer.parseInt(slayerPoints.replace(",", "")) >= threshold) {
-            String notifyMessage = StringUtils.replaceEach(
-                config.slayerNotifyMessage(),
-                new String[] { "%USERNAME%", "%TASK%", "%TASKCOUNT%", "%POINTS%" },
-                new String[] { Utils.getPlayerName(client), task, slayerCompleted, slayerPoints }
-            );
+            Template notifyMessage = Template.builder()
+                .template(config.slayerNotifyMessage())
+                .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+                .replacement("%TASK%", Replacements.ofText(task))
+                .replacement("%TASKCOUNT%", Replacements.ofText(slayerCompleted))
+                .replacement("%POINTS%", Replacements.ofText(slayerPoints))
+                .build();
 
             createMessage(config.slayerSendImage(), NotificationBody.builder()
                 .text(notifyMessage)

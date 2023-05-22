@@ -3,6 +3,8 @@ package dinkplugin.notifiers;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
@@ -137,11 +139,13 @@ public class LootNotifier extends BaseNotifier {
 
         if (sendMessage) {
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
-            String notifyMessage = StringUtils.replaceEach(
-                config.lootNotifyMessage(),
-                new String[] { "%USERNAME%", "%LOOT%", "%TOTAL_VALUE%", "%SOURCE%" },
-                new String[] { Utils.getPlayerName(client), lootMessage.toString(), QuantityFormatter.quantityToStackSize(totalStackValue), dropper }
-            );
+            Template notifyMessage = Template.builder()
+                .template(config.lootNotifyMessage())
+                .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+                .replacement("%LOOT%", Replacements.ofText(lootMessage.toString()))
+                .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))
+                .replacement("%SOURCE%", Replacements.ofText(dropper))
+                .build();
             createMessage(screenshot,
                 NotificationBody.builder()
                     .text(notifyMessage)

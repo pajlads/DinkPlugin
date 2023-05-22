@@ -1,6 +1,7 @@
 package dinkplugin.message.templating;
 
 import com.google.common.net.UrlEscapers;
+import dinkplugin.message.Field;
 import lombok.Value;
 import lombok.experimental.UtilityClass;
 
@@ -23,6 +24,10 @@ public class Replacements {
         return ofWiki(phrase, phrase);
     }
 
+    public Evaluable ofBlock(String language, String content) {
+        return new CodeBlock(language, content);
+    }
+
     @Value
     private static class Text implements Evaluable {
         String text;
@@ -41,6 +46,17 @@ public class Replacements {
         @Override
         public String evaluate(boolean rich) {
             return rich ? String.format("[%s](%s)", text, link) : text;
+        }
+    }
+
+    @Value
+    private static class CodeBlock implements Evaluable {
+        String language;
+        String text;
+
+        @Override
+        public String evaluate(boolean rich) {
+            return rich ? Field.formatBlock(language, text) : text;
         }
     }
 

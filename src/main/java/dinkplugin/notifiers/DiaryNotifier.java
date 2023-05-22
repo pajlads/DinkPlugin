@@ -3,13 +3,14 @@ package dinkplugin.notifiers;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.DiaryNotificationData;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Singleton;
@@ -149,11 +150,13 @@ public class DiaryNotifier extends BaseNotifier {
 
         int total = getTotalCompleted();
         String player = Utils.getPlayerName(client);
-        String message = StringUtils.replaceEach(
-            config.diaryNotifyMessage(),
-            new String[] { "%USERNAME%", "%DIFFICULTY%", "%AREA%", "%TOTAL%" },
-            new String[] { player, difficulty.toString(), area, String.valueOf(total) }
-        );
+        Template message = Template.builder()
+            .template(config.diaryNotifyMessage())
+            .replacement("%USERNAME%", Replacements.ofText(player))
+            .replacement("%DIFFICULTY%", Replacements.ofText(difficulty.toString()))
+            .replacement("%AREA%", Replacements.ofText(area))
+            .replacement("%TOTAL%", Replacements.ofText(String.valueOf(total)))
+            .build();
 
         createMessage(config.diarySendImage(), NotificationBody.builder()
             .type(NotificationType.ACHIEVEMENT_DIARY)

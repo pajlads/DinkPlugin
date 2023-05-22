@@ -2,6 +2,8 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.util.QuestUtils;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.util.Utils;
@@ -54,11 +56,13 @@ public class SpeedrunNotifier extends BaseNotifier {
         }
 
         // pb or notifying on non-pb; take the right string and format placeholders
-        String notifyMessage = StringUtils.replaceEach(
-            isPb ? config.speedrunPBMessage() : config.speedrunMessage(),
-            new String[] { "%USERNAME%", "%QUEST%", "%TIME%", "%BEST%" },
-            new String[] { Utils.getPlayerName(client), questName, duration, pb }
-        );
+        Template notifyMessage = Template.builder()
+            .template(isPb ? config.speedrunPBMessage() : config.speedrunMessage())
+            .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+            .replacement("%QUEST%", Replacements.ofText(questName))
+            .replacement("%TIME%", Replacements.ofText(duration))
+            .replacement("%BEST%", Replacements.ofText(pb))
+            .build();
 
         createMessage(config.speedrunSendImage(), NotificationBody.builder()
             .text(notifyMessage)

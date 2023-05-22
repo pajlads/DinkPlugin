@@ -1,6 +1,8 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.message.Embed;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.util.Utils;
@@ -10,7 +12,6 @@ import dinkplugin.notifiers.data.BossNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.api.annotations.Varbit;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -106,11 +107,13 @@ public class KillCountNotifier extends BaseNotifier {
         boolean isPb = data.isPersonalBest() == Boolean.TRUE;
         String player = Utils.getPlayerName(client);
         String time = TimeUtils.format(data.getTime(), TimeUtils.isPreciseTiming(client));
-        String content = StringUtils.replaceEach(
-            isPb ? config.killCountBestTimeMessage() : config.killCountMessage(),
-            new String[] { "%USERNAME%", "%BOSS%", "%COUNT%", "%TIME%" },
-            new String[] { player, data.getBoss(), String.valueOf(data.getCount()), time }
-        );
+        Template content = Template.builder()
+            .template(isPb ? config.killCountBestTimeMessage() : config.killCountMessage())
+            .replacement("%USERNAME%", Replacements.ofText(player))
+            .replacement("%BOSS%", Replacements.ofText(data.getBoss()))
+            .replacement("%COUNT%", Replacements.ofText(String.valueOf(data.getCount())))
+            .replacement("%TIME%", Replacements.ofText(time))
+            .build();
 
         // Prepare body
         NotificationBody.NotificationBodyBuilder<BossNotificationData> body =
