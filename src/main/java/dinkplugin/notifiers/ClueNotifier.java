@@ -118,7 +118,7 @@ public class ClueNotifier extends BaseNotifier {
             Template notifyMessage = Template.builder()
                 .template(config.clueNotifyMessage())
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
-                .replacement("%CLUE%", Replacements.ofText(clueType))
+                .replacement("%CLUE%", Replacements.ofWiki(clueType, "Clue scroll (" + clueType + ")"))
                 .replacement("%COUNT%", Replacements.ofText(clueCount))
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalPrice.get())))
                 .replacement("%LOOT%", lootMessage.build())

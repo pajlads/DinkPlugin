@@ -81,7 +81,8 @@ class ClueNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(
                     Template.builder()
-                        .template(String.format("%s has completed a %s clue, for a total of %d. They obtained: 1 x {{ruby}} (%d)", PLAYER_NAME, "medium", 1312, RUBY_PRICE))
+                        .template(String.format("%s has completed a {{tier}} clue, for a total of %d. They obtained: 1 x {{ruby}} (%d)", PLAYER_NAME, 1312, RUBY_PRICE))
+                        .replacement("{{tier}}", Replacements.ofWiki("medium", "Clue scroll (medium)"))
                         .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
                         .build()
                 )
