@@ -19,6 +19,10 @@ public class Replacements {
         return ofLink(text, "https://oldschool.runescape.wiki/w/Special:Search?search=" + UrlEscapers.urlPathSegmentEscaper().escape(searchPhrase));
     }
 
+    public Evaluable ofWiki(String phrase) {
+        return ofWiki(phrase, phrase);
+    }
+
     @Value
     private static class Text implements Evaluable {
         String text;
