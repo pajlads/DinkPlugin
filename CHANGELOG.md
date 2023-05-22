@@ -3,6 +3,7 @@
 - Minor: Track points progress towards next combat achievement tier rewards unlock. (#236)
 - Minor: Add combat achievement points as rich embed field. (#235)
 - Minor: Use item image as rich embed thumbnail for loot notifications. (#234)
+- Bugfix: Avoid combat level up notifications when combat level did not change. (#240)
 - Bugfix: Prevent combat level notifications when the notifier is disabled. (#239)
 - Dev: Redefine account type enum to workaround upstream deprecation. (#238)
 
