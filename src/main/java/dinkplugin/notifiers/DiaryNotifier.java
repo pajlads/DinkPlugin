@@ -154,7 +154,7 @@ public class DiaryNotifier extends BaseNotifier {
             .template(config.diaryNotifyMessage())
             .replacement("%USERNAME%", Replacements.ofText(player))
             .replacement("%DIFFICULTY%", Replacements.ofText(difficulty.toString()))
-            .replacement("%AREA%", Replacements.ofText(area))
+            .replacement("%AREA%", Replacements.ofWiki(area, area + " Diary"))
             .replacement("%TOTAL%", Replacements.ofText(String.valueOf(total)))
             .build();
 

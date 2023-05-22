@@ -4,6 +4,8 @@ import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.DiaryNotificationData;
 import net.runelite.api.GameState;
 import net.runelite.api.Varbits;
@@ -61,7 +63,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.ELITE, "Desert", 1)))
+                .text(buildTemplate(AchievementDiary.Difficulty.ELITE, "Desert", 1))
                 .extra(new DiaryNotificationData("Desert", AchievementDiary.Difficulty.ELITE, 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
@@ -87,7 +89,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Karamja", total + 1)))
+                .text(buildTemplate(AchievementDiary.Difficulty.HARD, "Karamja", total + 1))
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
@@ -112,7 +114,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Karamja", total + 1)))
+                .text(buildTemplate(AchievementDiary.Difficulty.HARD, "Karamja", total + 1))
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
@@ -138,7 +140,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Western Provinces", total + 1)))
+                .text(buildTemplate(AchievementDiary.Difficulty.HARD, "Western Provinces", total + 1))
                 .extra(new DiaryNotificationData("Western Provinces", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
@@ -164,7 +166,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Karamja", total + 1)))
+                .text(buildTemplate(AchievementDiary.Difficulty.HARD, "Karamja", total + 1))
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
@@ -262,4 +264,10 @@ class DiaryNotifierTest extends MockedNotifierTest {
         return event;
     }
 
+    private static Template buildTemplate(AchievementDiary.Difficulty difficulty, String area, int total) {
+        return Template.builder()
+            .template(String.format("%s has completed the %s {{area}} Diary, for a total of %d", PLAYER_NAME, difficulty, total))
+            .replacement("{{area}}", Replacements.ofWiki(area, area + " Diary"))
+            .build();
+    }
 }
