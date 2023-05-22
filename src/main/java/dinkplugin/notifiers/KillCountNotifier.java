@@ -110,7 +110,7 @@ public class KillCountNotifier extends BaseNotifier {
         Template content = Template.builder()
             .template(isPb ? config.killCountBestTimeMessage() : config.killCountMessage())
             .replacement("%USERNAME%", Replacements.ofText(player))
-            .replacement("%BOSS%", Replacements.ofText(data.getBoss()))
+            .replacement("%BOSS%", Replacements.ofWiki(data.getBoss()))
             .replacement("%COUNT%", Replacements.ofText(String.valueOf(data.getCount())))
             .replacement("%TIME%", Replacements.ofText(time))
             .build();
