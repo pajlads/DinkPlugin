@@ -4,6 +4,8 @@ import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.CombatAchievementData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -65,7 +67,12 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has completed %s combat task: %s", PLAYER_NAME, "Hard", "Whack-a-Mole")))
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has completed %s combat task: {{task}}", PLAYER_NAME, "Hard"))
+                        .replacement("{{task}}", Replacements.ofWiki("Whack-a-Mole"))
+                        .build()
+                )
                 .extra(new CombatAchievementData(CombatAchievementTier.HARD, "Whack-a-Mole", 3, 200, 85, 189, null))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
@@ -92,7 +99,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has unlocked the rewards for the %s tier, by completing the combat task: %s", PLAYER_NAME, "Master", "No Pressure")))
+                .text(buildUnlockTemplate("Master", "No Pressure"))
                 .extra(new CombatAchievementData(CombatAchievementTier.GRANDMASTER, "No Pressure", 6, 1466, 1466 - 1465, 2005 - 1465, CombatAchievementTier.MASTER))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
@@ -119,7 +126,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has unlocked the rewards for the %s tier, by completing the combat task: %s", PLAYER_NAME, "Grandmaster", "No Pressure")))
+                .text(buildUnlockTemplate("Grandmaster", "No Pressure"))
                 .extra(new CombatAchievementData(CombatAchievementTier.GRANDMASTER, "No Pressure", 6, 2005, null, null, CombatAchievementTier.GRANDMASTER))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
@@ -157,4 +164,10 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
+    private static Template buildUnlockTemplate(String tier, String task) {
+        return Template.builder()
+            .template(String.format("%s has unlocked the rewards for the %s tier, by completing the combat task: {{task}}", PLAYER_NAME, tier))
+            .replacement("{{task}}", Replacements.ofWiki(task))
+            .build();
+    }
 }

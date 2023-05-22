@@ -104,7 +104,7 @@ public class CombatTaskNotifier extends BaseNotifier {
                 .template(crossedThreshold ? config.combatTaskUnlockMessage() : config.combatTaskMessage())
                 .replacement("%USERNAME%", Replacements.ofText(player))
                 .replacement("%TIER%", Replacements.ofText(tier.toString()))
-                .replacement("%TASK%", Replacements.ofText(task))
+                .replacement("%TASK%", Replacements.ofWiki(task))
                 .replacement("%POINTS%", Replacements.ofText(String.valueOf(taskPoints)))
                 .replacement("%TOTAL_POINTS%", Replacements.ofText(String.valueOf(totalPoints)))
                 .replacement("%COMPLETED%", Replacements.ofText(completedTierName))
