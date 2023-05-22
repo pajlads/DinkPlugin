@@ -43,7 +43,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed: %s, getting %d points for a total %d tasks completed", PLAYER_NAME, "1 TzTok-Jad", 10, 100))
+                .text(buildTemplate(String.format("%s has completed: %s, getting %d points for a total %d tasks completed", PLAYER_NAME, "1 TzTok-Jad", 10, 100)))
                 .extra(new SlayerNotificationData("1 TzTok-Jad", "100", "10"))
                 .type(NotificationType.SLAYER)
                 .build()
@@ -63,7 +63,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed: %s, getting %s points for a total %s tasks completed", PLAYER_NAME, "245 Cave Kraken", "1,000", "1,000"))
+                .text(buildTemplate(String.format("%s has completed: %s, getting %s points for a total %s tasks completed", PLAYER_NAME, "245 Cave Kraken", "1,000", "1,000")))
                 .extra(new SlayerNotificationData("245 Cave Kraken", "1,000", "1,000"))
                 .type(NotificationType.SLAYER)
                 .build()
@@ -82,7 +82,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed: %s, getting %d points for a total %d tasks completed", PLAYER_NAME, "50 Cave Kraken", 10, 150))
+                .text(buildTemplate(String.format("%s has completed: %s, getting %d points for a total %d tasks completed", PLAYER_NAME, "50 Cave Kraken", 10, 150)))
                 .extra(new SlayerNotificationData("50 Cave Kraken", "150", "10"))
                 .type(NotificationType.SLAYER)
                 .build()
@@ -101,7 +101,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed: %s, getting %d points for a total %d tasks completed", PLAYER_NAME, "36 Barrows brothers", 20, 881))
+                .text(buildTemplate(String.format("%s has completed: %s, getting %d points for a total %d tasks completed", PLAYER_NAME, "36 Barrows brothers", 20, 881)))
                 .extra(new SlayerNotificationData("36 Barrows brothers", "881", "20"))
                 .type(NotificationType.SLAYER)
                 .build()
@@ -120,7 +120,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed: %s, getting %d points for a total %d tasks completed", PLAYER_NAME, "11 Chaos Elemental", 15, 242))
+                .text(buildTemplate(String.format("%s has completed: %s, getting %d points for a total %d tasks completed", PLAYER_NAME, "11 Chaos Elemental", 15, 242)))
                 .extra(new SlayerNotificationData("11 Chaos Elemental", "242", "15"))
                 .type(NotificationType.SLAYER)
                 .build()

@@ -95,7 +95,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
+                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
                 .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
@@ -140,7 +140,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE))
+                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
                 .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
                 .type(NotificationType.DEATH)
                 .embeds(embeds)
@@ -166,7 +166,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
+                .text(buildTemplate(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0)))
                 .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
@@ -193,7 +193,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0))
+                .text(buildTemplate(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0)))
                 .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
@@ -217,7 +217,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
+                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
                 .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
@@ -259,7 +259,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
+                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
                 .extra(new DeathNotificationData(0L, false, null, name, NpcID.GUARD, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()
@@ -300,7 +300,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE))
+                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
                 .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
                 .type(NotificationType.DEATH)
                 .build()
@@ -340,7 +340,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has died, losing %d gp", PLAYER_NAME, 0))
+                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
                 .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()

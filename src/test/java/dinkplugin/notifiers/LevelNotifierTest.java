@@ -67,7 +67,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Agility to 5")
+                .text(buildTemplate(PLAYER_NAME + " has levelled Agility to 5"))
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5), ImmutableMap.of("Agility", 5, "Attack", 99, "Hitpoints", 10, "Hunter", 4), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -87,7 +87,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Hunter to 6")
+                .text(buildTemplate(PLAYER_NAME + " has levelled Hunter to 6"))
                 .extra(new LevelNotificationData(ImmutableMap.of("Hunter", 6), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 10, "Hunter", 6), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -107,7 +107,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Attack to 100")
+                .text(buildTemplate(PLAYER_NAME + " has levelled Attack to 100"))
                 .extra(new LevelNotificationData(ImmutableMap.of("Attack", 100), ImmutableMap.of("Agility", 1, "Attack", 100, "Hitpoints", 10, "Hunter", 4), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -128,7 +128,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Agility to 5 and Hunter to 99")
+                .text(buildTemplate(PLAYER_NAME + " has levelled Agility to 5 and Hunter to 99"))
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Hunter", 99), ImmutableMap.of("Agility", 5, "Attack", 99, "Hitpoints", 10, "Hunter", 99), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -150,7 +150,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Agility to 5, Attack to 100, and Hunter to 5")
+                .text(buildTemplate(PLAYER_NAME + " has levelled Agility to 5, Attack to 100, and Hunter to 5"))
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5), ImmutableMap.of("Agility", 5, "Attack", 100, "Hitpoints", 10, "Hunter", 5), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -175,7 +175,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Combat to 36")
+                .text(buildTemplate(PLAYER_NAME + " has levelled Combat to 36"))
                 .extra(new LevelNotificationData(Collections.emptyMap(), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 13, "Hunter", 4), combatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -200,7 +200,7 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Hitpoints to 13 and Combat to 36")
+                .text(buildTemplate(PLAYER_NAME + " has levelled Hitpoints to 13 and Combat to 36"))
                 .extra(new LevelNotificationData(ImmutableMap.of("Hitpoints", 13), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 13, "Hunter", 4), combatLevel))
                 .type(NotificationType.LEVEL)
                 .build()

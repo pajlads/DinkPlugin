@@ -61,7 +61,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.ELITE, "Desert", 1))
+                .text(buildTemplate(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.ELITE, "Desert", 1)))
                 .extra(new DiaryNotificationData("Desert", AchievementDiary.Difficulty.ELITE, 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
@@ -87,7 +87,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Karamja", total + 1))
+                .text(buildTemplate(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Karamja", total + 1)))
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
@@ -112,7 +112,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Karamja", total + 1))
+                .text(buildTemplate(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Karamja", total + 1)))
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
@@ -138,7 +138,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Western Provinces", total + 1))
+                .text(buildTemplate(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Western Provinces", total + 1)))
                 .extra(new DiaryNotificationData("Western Provinces", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
@@ -164,7 +164,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Karamja", total + 1))
+                .text(buildTemplate(String.format("%s has completed the %s %s Diary, for a total of %d", PLAYER_NAME, AchievementDiary.Difficulty.HARD, "Karamja", total + 1)))
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)

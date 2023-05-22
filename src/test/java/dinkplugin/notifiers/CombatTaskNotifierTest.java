@@ -65,7 +65,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed %s combat task: %s", PLAYER_NAME, "Hard", "Whack-a-Mole"))
+                .text(buildTemplate(String.format("%s has completed %s combat task: %s", PLAYER_NAME, "Hard", "Whack-a-Mole")))
                 .extra(new CombatAchievementData(CombatAchievementTier.HARD, "Whack-a-Mole", 3, 200, 85, 189, null))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
@@ -92,7 +92,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has unlocked the rewards for the %s tier, by completing the combat task: %s", PLAYER_NAME, "Master", "No Pressure"))
+                .text(buildTemplate(String.format("%s has unlocked the rewards for the %s tier, by completing the combat task: %s", PLAYER_NAME, "Master", "No Pressure")))
                 .extra(new CombatAchievementData(CombatAchievementTier.GRANDMASTER, "No Pressure", 6, 1466, 1466 - 1465, 2005 - 1465, CombatAchievementTier.MASTER))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
@@ -119,7 +119,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has unlocked the rewards for the %s tier, by completing the combat task: %s", PLAYER_NAME, "Grandmaster", "No Pressure"))
+                .text(buildTemplate(String.format("%s has unlocked the rewards for the %s tier, by completing the combat task: %s", PLAYER_NAME, "Grandmaster", "No Pressure")))
                 .extra(new CombatAchievementData(CombatAchievementTier.GRANDMASTER, "No Pressure", 6, 2005, null, null, CombatAchievementTier.GRANDMASTER))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)

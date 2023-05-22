@@ -4,6 +4,8 @@ import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.domain.AccountType;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GroupStorageNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.InventoryID;
@@ -298,7 +300,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
 
     private void verifyNotification(GroupStorageNotificationData extra, String deposited, String withdrawn) {
         String text = String.format(
-            "```diff\n%s has deposited:\n%s\n\n%s has withdrawn:\n%s\n```",
+            "%s has deposited:\n%s\n\n%s has withdrawn:\n%s",
             PLAYER_NAME, deposited, PLAYER_NAME, withdrawn
         );
 
@@ -306,7 +308,12 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(text)
+                .text(
+                    Template.builder()
+                        .template("{{x}}")
+                        .replacement("{{x}}", Replacements.ofBlock("diff", text))
+                        .build()
+                )
                 .extra(extra)
                 .type(NotificationType.GROUP_STORAGE)
                 .playerName(PLAYER_NAME)

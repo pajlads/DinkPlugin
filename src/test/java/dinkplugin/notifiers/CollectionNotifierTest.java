@@ -3,6 +3,7 @@ package dinkplugin.notifiers;
 import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.CollectionNotificationData;
 import dinkplugin.util.ItemSearcher;
 import net.runelite.api.GameState;
@@ -62,7 +63,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has added %s to their collection", PLAYER_NAME, item))
+                .text(buildTemplate(String.format("%s has added %s to their collection", PLAYER_NAME, item)))
                 .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES))
                 .type(NotificationType.COLLECTION)
                 .build()

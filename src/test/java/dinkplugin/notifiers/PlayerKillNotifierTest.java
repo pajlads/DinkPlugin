@@ -87,7 +87,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has PK'd %s", PLAYER_NAME, TARGET))
+                .text(buildTemplate(String.format("%s has PK'd %s", PLAYER_NAME, TARGET)))
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
                 .extra(new PlayerKillNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, damage))
@@ -110,7 +110,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has PK'd %s", PLAYER_NAME, TARGET))
+                .text(buildTemplate(String.format("%s has PK'd %s", PLAYER_NAME, TARGET)))
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
                 .extra(new PlayerKillNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, 12))
@@ -137,7 +137,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has PK'd %s", PLAYER_NAME, TARGET))
+                .text(buildTemplate(String.format("%s has PK'd %s", PLAYER_NAME, TARGET)))
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
                 .extra(new PlayerKillNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, damage))

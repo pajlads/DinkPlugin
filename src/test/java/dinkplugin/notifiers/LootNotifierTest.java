@@ -84,7 +84,7 @@ class LootNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has looted: %s from %s for %d gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", name, RUBY_PRICE))
+                .text(buildTemplate(String.format("%s has looted: %s from %s for %d gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", name, RUBY_PRICE)))
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), name, LootRecordType.NPC))
                 .type(NotificationType.LOOT)
                 .build()
@@ -116,7 +116,7 @@ class LootNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has looted: %s from %s for %d gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", LOOTED_NAME, RUBY_PRICE))
+                .text(buildTemplate(String.format("%s has looted: %s from %s for %d gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", LOOTED_NAME, RUBY_PRICE)))
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), LOOTED_NAME, LootRecordType.PICKPOCKET))
                 .type(NotificationType.LOOT)
                 .build()
@@ -145,7 +145,7 @@ class LootNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has looted: %s from %s for %d gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", source, RUBY_PRICE))
+                .text(buildTemplate(String.format("%s has looted: %s from %s for %d gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", source, RUBY_PRICE)))
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT))
                 .type(NotificationType.LOOT)
                 .build()
@@ -180,7 +180,7 @@ class LootNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", LOOTED_NAME, QuantityFormatter.quantityToStackSize(RUBY_PRICE + TUNA_PRICE)))
+                .text(buildTemplate(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, "1 x Ruby (" + RUBY_PRICE + ")", LOOTED_NAME, QuantityFormatter.quantityToStackSize(RUBY_PRICE + TUNA_PRICE))))
                 .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER))
                 .type(NotificationType.LOOT)
                 .build()
@@ -225,7 +225,7 @@ class LootNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, loot, LOOTED_NAME, QuantityFormatter.quantityToStackSize(total)))
+                .text(buildTemplate(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, loot, LOOTED_NAME, QuantityFormatter.quantityToStackSize(total))))
                 .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.EVENT))
                 .type(NotificationType.LOOT)
                 .build()
@@ -257,7 +257,7 @@ class LootNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, loot, LOOTED_NAME, QuantityFormatter.quantityToStackSize(total)))
+                .text(buildTemplate(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, loot, LOOTED_NAME, QuantityFormatter.quantityToStackSize(total))))
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 5, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.EVENT))
                 .type(NotificationType.LOOT)
                 .build()
@@ -289,7 +289,7 @@ class LootNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, "1 x Abyssal Whip (" + formattedPrice + ")", source, formattedPrice))
+                .text(buildTemplate(String.format("%s has looted: %s from %s for %s gp", PLAYER_NAME, "1 x Abyssal Whip (" + formattedPrice + ")", source, formattedPrice)))
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.ABYSSAL_WHIP, 1, whipPrice, "Abyssal Whip")), source, LootRecordType.EVENT))
                 .type(NotificationType.LOOT)
                 .build()
