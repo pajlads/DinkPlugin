@@ -2,8 +2,11 @@ package dinkplugin.message.templating;
 
 import com.google.common.net.UrlEscapers;
 import dinkplugin.message.Field;
+import dinkplugin.message.templating.impl.JoiningReplacement;
 import lombok.Value;
 import lombok.experimental.UtilityClass;
+
+import java.util.Arrays;
 
 @UtilityClass
 public class Replacements {
@@ -26,6 +29,13 @@ public class Replacements {
 
     public Evaluable ofBlock(String language, String content) {
         return new CodeBlock(language, content);
+    }
+
+    public Evaluable ofMultiple(String delim, Evaluable... components) {
+        return JoiningReplacement.builder()
+            .delimiter(delim)
+            .components(Arrays.asList(components))
+            .build();
     }
 
     @Value

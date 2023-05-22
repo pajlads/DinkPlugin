@@ -4,8 +4,10 @@ import dinkplugin.domain.ClueTier;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Evaluable;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
+import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.ClueNotificationData;
@@ -99,17 +101,16 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Map<Integer, Integer> clueItems) {
-        StringBuilder lootMessage = new StringBuilder();
+        JoiningReplacement.JoiningReplacementBuilder lootMessage = JoiningReplacement.builder().delimiter("\n");
         AtomicLong totalPrice = new AtomicLong();
         List<SerializedItemStack> itemStacks = new ArrayList<>(clueItems.size());
         List<Embed> embeds = new ArrayList<>(config.clueShowItems() ? clueItems.size() : 0);
 
         clueItems.forEach((itemId, quantity) -> {
-            if (lootMessage.length() > 0) lootMessage.append('\n');
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, itemId, quantity);
             totalPrice.addAndGet(stack.getTotalPrice());
             itemStacks.add(stack);
-            lootMessage.append(getItemMessage(stack, embeds));
+            lootMessage.component(getItemMessage(stack, embeds));
         });
 
         if (totalPrice.get() >= config.clueMinValue()) {
@@ -120,7 +121,7 @@ public class ClueNotifier extends BaseNotifier {
                 .replacement("%CLUE%", Replacements.ofText(clueType))
                 .replacement("%COUNT%", Replacements.ofText(clueCount))
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalPrice.get())))
-                .replacement("%LOOT%", Replacements.ofText(lootMessage.toString()))
+                .replacement("%LOOT%", lootMessage.build())
                 .build();
             createMessage(screenshot,
                 NotificationBody.builder()
@@ -135,10 +136,10 @@ public class ClueNotifier extends BaseNotifier {
         this.reset();
     }
 
-    private String getItemMessage(SerializedItemStack item, Collection<Embed> embeds) {
+    private Evaluable getItemMessage(SerializedItemStack item, Collection<Embed> embeds) {
         if (config.clueShowItems())
             embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
-        return ItemUtils.formatStack(item);
+        return ItemUtils.templateStack(item);
     }
 
     private boolean checkClueTier(String clueType) {

@@ -112,7 +112,7 @@ public class CollectionNotifier extends BaseNotifier {
         Template notifyMessage = Template.builder()
             .template(config.collectionNotifyMessage())
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
-            .replacement("%ITEM%", Replacements.ofText(itemName))
+            .replacement("%ITEM%", Replacements.ofWiki(itemName))
             .build();
 
         // varp isn't updated for a few ticks, so we increment the count locally.

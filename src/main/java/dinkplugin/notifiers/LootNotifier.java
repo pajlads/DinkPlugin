@@ -5,6 +5,7 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
+import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
@@ -116,7 +117,7 @@ public class LootNotifier extends BaseNotifier {
         List<SerializedItemStack> serializedItems = new ArrayList<>(reduced.size());
         List<Embed> embeds = new ArrayList<>(icons ? reduced.size() : 0);
 
-        StringBuilder lootMessage = new StringBuilder();
+        JoiningReplacement.JoiningReplacementBuilder lootMessage = JoiningReplacement.builder().delimiter("\n");
         long totalStackValue = 0;
         boolean sendMessage = false;
         SerializedItemStack max = null;
@@ -126,8 +127,7 @@ public class LootNotifier extends BaseNotifier {
             long totalPrice = stack.getTotalPrice();
             if (totalPrice >= minValue) {
                 sendMessage = true;
-                if (lootMessage.length() > 0) lootMessage.append("\n");
-                lootMessage.append(ItemUtils.formatStack(stack));
+                lootMessage.component(ItemUtils.templateStack(stack));
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
                 if (max == null || totalPrice > max.getTotalPrice()) {
                     max = stack;
@@ -142,7 +142,7 @@ public class LootNotifier extends BaseNotifier {
             Template notifyMessage = Template.builder()
                 .template(config.lootNotifyMessage())
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
-                .replacement("%LOOT%", Replacements.ofText(lootMessage.toString()))
+                .replacement("%LOOT%", lootMessage.build())
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))
                 .replacement("%SOURCE%", Replacements.ofText(dropper))
                 .build();

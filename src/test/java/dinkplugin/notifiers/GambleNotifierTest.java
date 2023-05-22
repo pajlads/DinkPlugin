@@ -3,6 +3,8 @@ package dinkplugin.notifiers;
 import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GambleNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemSearcher;
@@ -101,7 +103,12 @@ public class GambleNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
-                .text(buildTemplate(PLAYER_NAME + " has received rare loot at gamble count 11: \n\n1 x Dragon chainbody (150K)"))
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has received rare loot at gamble count 11: \n\n1 x {{dchain}} (150K)")
+                        .replacement("{{dchain}}", Replacements.ofWiki("Dragon chainbody"))
+                        .build()
+                )
                 .extra(new GambleNotificationData(11, Collections.singletonList(new SerializedItemStack(ItemID.DRAGON_CHAINBODY, 1, DRAGON_CHAINBODY_PRICE, "Dragon chainbody"))))
                 .type(NotificationType.BARBARIAN_ASSAULT_GAMBLE)
                 .build()

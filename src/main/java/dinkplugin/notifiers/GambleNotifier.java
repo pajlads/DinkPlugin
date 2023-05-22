@@ -3,8 +3,10 @@ package dinkplugin.notifiers;
 import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Evaluable;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
+import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.GambleNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemSearcher;
@@ -74,7 +76,7 @@ public class GambleNotifier extends BaseNotifier {
             .template(messageFormat)
             .replacement("%USERNAME%", Replacements.ofText(player))
             .replacement("%COUNT%", Replacements.ofText(String.valueOf(data.gambleCount)))
-            .replacement("%LOOT%", Replacements.ofText(lootSummary(items)))
+            .replacement("%LOOT%", lootSummary(items))
             .build();
         createMessage(config.gambleSendImage(), NotificationBody.builder()
             .text(message)
@@ -83,8 +85,10 @@ public class GambleNotifier extends BaseNotifier {
             .build());
     }
 
-    private static String lootSummary(List<SerializedItemStack> items) {
-        return items.stream().map(ItemUtils::formatStack).collect(Collectors.joining("\n"));
+    private static Evaluable lootSummary(List<SerializedItemStack> items) {
+        JoiningReplacement.JoiningReplacementBuilder builder = JoiningReplacement.builder().delimiter("\n");
+        items.forEach(item -> builder.component(ItemUtils.templateStack(item)));
+        return builder.build();
     }
 
     private List<SerializedItemStack> serializeItems(ParsedData data) {
