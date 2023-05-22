@@ -2,6 +2,7 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Evaluable;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.util.Utils;
@@ -20,6 +21,7 @@ public class SlayerNotifier extends BaseNotifier {
     @VisibleForTesting
     static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
     private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>[\\d,]+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
+    private static final Pattern TASK_MONSTER_REGEX = Pattern.compile("^(?<count>\\d*)\\s*(?<monster>.+)$");
 
     private final AtomicReference<String> slayerTask = new AtomicReference<>("");
     private final AtomicInteger badTicks = new AtomicInteger(); // used to prevent notifs from using stale data
@@ -100,7 +102,7 @@ public class SlayerNotifier extends BaseNotifier {
             Template notifyMessage = Template.builder()
                 .template(config.slayerNotifyMessage())
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
-                .replacement("%TASK%", Replacements.ofText(task))
+                .replacement("%TASK%", buildTask(task))
                 .replacement("%TASKCOUNT%", Replacements.ofText(slayerCompleted))
                 .replacement("%POINTS%", Replacements.ofText(slayerPoints))
                 .build();
@@ -118,5 +120,12 @@ public class SlayerNotifier extends BaseNotifier {
     public void reset() {
         slayerTask.set("");
         badTicks.set(0);
+    }
+
+    private static Evaluable buildTask(String task) {
+        Matcher m = TASK_MONSTER_REGEX.matcher(task);
+        return m.find()
+            ? Replacements.ofWiki(task, m.group("monster"))
+            : Replacements.ofText(task);
     }
 }
