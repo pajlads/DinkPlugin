@@ -56,6 +56,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         when(config.discordRichEmbeds()).thenReturn(true);
         when(config.notifyGroupStorage()).thenReturn(true);
         when(config.groupStorageSendImage()).thenReturn(false);
+        when(config.groupStorageIncludeClan()).thenReturn(true);
         when(config.groupStorageNotifyMessage())
             .thenReturn("%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%");
 

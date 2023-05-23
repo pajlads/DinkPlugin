@@ -1403,13 +1403,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "groupStorageIncludeClan",
+        name = "Include Group Name",
+        description = "Whether notifications should include the GIM clan name",
+        position = 143,
+        section = groupStorageSection
+    )
+    default boolean groupStorageIncludeClan() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "groupStorageNotifyMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %DEPOSITED% to insert the list of deposited items<br/>" +
             "Use %WITHDRAWN% to insert the list of withdrawn items",
-        position = 143,
+        position = 144,
         section = groupStorageSection
     )
     default String groupStorageNotifyMessage() {
