@@ -25,6 +25,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static net.runelite.api.Experience.MAX_REAL_LEVEL;
+
 @Slf4j
 @Singleton
 public class LevelNotifier extends BaseNotifier {
@@ -87,7 +89,7 @@ public class LevelNotifier extends BaseNotifier {
     private void handleLevelUp(String skill, int level, int xp) {
         if (!isEnabled()) return;
 
-        int virtualLevel = level < 99 ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
+        int virtualLevel = level < MAX_REAL_LEVEL ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
         Integer previousLevel = currentLevels.put(skill, virtualLevel);
 
         if (previousLevel != null && virtualLevel < previousLevel) {
@@ -211,11 +213,11 @@ public class LevelNotifier extends BaseNotifier {
         if (level < config.levelMinValue())
             return false;
 
-        if (!skipVirtualCheck && level > 99 && !config.levelNotifyVirtual())
+        if (!skipVirtualCheck && level > MAX_REAL_LEVEL && !config.levelNotifyVirtual())
             return false;
 
         int interval = config.levelInterval();
-        if (interval <= 1 || level == 99)
+        if (interval <= 1 || level == MAX_REAL_LEVEL)
             return true;
 
         // Check levels in (previous, current] for divisibility by interval
@@ -226,14 +228,21 @@ public class LevelNotifier extends BaseNotifier {
 
     private int calculateCombatLevel() {
         return Experience.getCombatLevel(
-            client.getRealSkillLevel(Skill.ATTACK),
-            client.getRealSkillLevel(Skill.STRENGTH),
-            client.getRealSkillLevel(Skill.DEFENCE),
-            client.getRealSkillLevel(Skill.HITPOINTS),
-            client.getRealSkillLevel(Skill.MAGIC),
-            client.getRealSkillLevel(Skill.RANGED),
-            client.getRealSkillLevel(Skill.PRAYER)
+            getRealLevel(Skill.ATTACK),
+            getRealLevel(Skill.STRENGTH),
+            getRealLevel(Skill.DEFENCE),
+            getRealLevel(Skill.HITPOINTS),
+            getRealLevel(Skill.MAGIC),
+            getRealLevel(Skill.RANGED),
+            getRealLevel(Skill.PRAYER)
         );
+    }
+
+    private int getRealLevel(Skill skill) {
+        Integer cachedLevel = currentLevels.get(skill.getName());
+        return cachedLevel != null
+            ? Math.min(cachedLevel, MAX_REAL_LEVEL)
+            : client.getRealSkillLevel(skill);
     }
 
     private static String getSkillIcon(String skillName) {
