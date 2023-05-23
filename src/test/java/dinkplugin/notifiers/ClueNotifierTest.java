@@ -4,6 +4,8 @@ import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.ClueNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.ItemID;
@@ -77,7 +79,13 @@ class ClueNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(String.format("%s has completed a %s clue, for a total of %d. They obtained: %s", PLAYER_NAME, "medium", 1312, "1 x Ruby (" + RUBY_PRICE + ")"))
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has completed a {{tier}} clue, for a total of %d. They obtained: 1 x {{ruby}} (%d)", PLAYER_NAME, 1312, RUBY_PRICE))
+                        .replacement("{{tier}}", Replacements.ofWiki("medium", "Clue scroll (medium)"))
+                        .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
+                        .build()
+                )
                 .extra(new ClueNotificationData("medium", 1312, Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"))))
                 .type(NotificationType.CLUE)
                 .build()

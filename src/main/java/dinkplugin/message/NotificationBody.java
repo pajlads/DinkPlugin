@@ -3,6 +3,7 @@ package dinkplugin.message;
 import com.google.gson.annotations.SerializedName;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.AccountType;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.DiscordProfile;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,7 @@ public class NotificationBody<T extends NotificationData> {
     T extra;
     @NotNull
     @EqualsAndHashCode.Include
-    transient String text;
+    transient Template text;
 
     /*
      * Discord fields

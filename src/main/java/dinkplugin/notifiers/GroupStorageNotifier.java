@@ -1,8 +1,9 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.message.Field;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GroupStorageNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
@@ -176,7 +177,10 @@ public class GroupStorageNotifier extends BaseNotifier {
             new String[] { "%USERNAME%", "%DEPOSITED%", "%WITHDRAWN%" },
             new String[] { playerName, depositString, withdrawalString }
         );
-        String formattedText = config.discordRichEmbeds() ? Field.formatBlock("diff", content) : content;
+        Template formattedText = Template.builder()
+            .template("{{s}}")
+            .replacement("{{s}}", Replacements.ofBlock("diff", content))
+            .build();
 
         // Populate metadata
         GroupStorageNotificationData extra = new GroupStorageNotificationData(

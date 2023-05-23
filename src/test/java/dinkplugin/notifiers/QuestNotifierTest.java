@@ -3,6 +3,8 @@ package dinkplugin.notifiers;
 import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.QuestNotificationData;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.events.WidgetLoaded;
@@ -59,7 +61,12 @@ class QuestNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has completed: Dragon Slayer I")
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has completed: {{quest}}")
+                        .replacement("{{quest}}", Replacements.ofWiki("Dragon Slayer I"))
+                        .build()
+                )
                 .extra(new QuestNotificationData("Dragon Slayer I", 22, 156, 44, 293))
                 .type(NotificationType.QUEST)
                 .build()

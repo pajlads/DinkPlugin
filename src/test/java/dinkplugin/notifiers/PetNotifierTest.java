@@ -54,7 +54,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(null, null))
-                .text(PLAYER_NAME + " got a pet")
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .type(NotificationType.PET)
                 .build()
         );
@@ -79,7 +79,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(petName, null))
-                .text(PLAYER_NAME + " got a pet")
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
                 .build()
@@ -105,7 +105,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(petName, null))
-                .text(PLAYER_NAME + " got a pet")
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
                 .build()
@@ -128,7 +128,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(null, null))
-                .text(PLAYER_NAME + " got a pet")
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
                 .build()
@@ -167,7 +167,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(petName, "50 killcount"))
-                .text(PLAYER_NAME + " got a pet")
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
                 .build()
@@ -205,7 +205,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(petName, "50 killcount"))
-                .text(PLAYER_NAME + " got a pet")
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
                 .build()
@@ -227,7 +227,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(null, null))
-                .text(PLAYER_NAME + " got a pet")
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .type(NotificationType.PET)
                 .build()
         );
@@ -272,7 +272,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(null, null))
-                .text(PLAYER_NAME + " got a pet")
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .type(NotificationType.PET)
                 .build()
         );

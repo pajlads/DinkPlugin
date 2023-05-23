@@ -3,6 +3,8 @@ package dinkplugin.util;
 import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.Embed;
 import dinkplugin.message.Field;
+import dinkplugin.message.templating.Evaluable;
+import dinkplugin.message.templating.Replacements;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
@@ -121,6 +123,15 @@ public class ItemUtils {
 
     public String formatStack(SerializedItemStack item) {
         return String.format("%d x %s (%s)", item.getQuantity(), item.getName(), QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
+    }
+
+    public Evaluable templateStack(SerializedItemStack item) {
+        return Replacements.ofMultiple("",
+            Replacements.ofText(String.valueOf(item.getQuantity())),
+            Replacements.ofText(" x "),
+            Replacements.ofWiki(item.getName()),
+            Replacements.ofText(" (" + QuantityFormatter.quantityToStackSize(item.getTotalPrice()) + ")")
+        );
     }
 
     public String getItemImageUrl(int itemId) {

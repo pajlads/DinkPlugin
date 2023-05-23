@@ -4,11 +4,14 @@ import com.google.common.collect.ImmutableMap;
 import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LevelNotificationData;
 import net.runelite.api.Experience;
 import net.runelite.api.Skill;
 import net.runelite.api.events.StatChanged;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
@@ -67,7 +70,12 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Agility to 5")
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{skill}} to 5")
+                        .replacement("{{skill}}", Replacements.ofWiki("Agility"))
+                        .build()
+                )
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5), ImmutableMap.of("Agility", 5, "Attack", 99, "Hitpoints", 10, "Hunter", 4), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -87,7 +95,12 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Hunter to 6")
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{skill}} to 6")
+                        .replacement("{{skill}}", Replacements.ofWiki("Hunter"))
+                        .build()
+                )
                 .extra(new LevelNotificationData(ImmutableMap.of("Hunter", 6), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 10, "Hunter", 6), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -107,7 +120,12 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Attack to 100")
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{skill}} to 100")
+                        .replacement("{{skill}}", Replacements.ofWiki("Attack"))
+                        .build()
+                )
                 .extra(new LevelNotificationData(ImmutableMap.of("Attack", 100), ImmutableMap.of("Agility", 1, "Attack", 100, "Hitpoints", 10, "Hunter", 4), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -128,7 +146,13 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Agility to 5 and Hunter to 99")
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{s1}} to 5 and {{s2}} to 99")
+                        .replacement("{{s1}}", Replacements.ofWiki("Agility"))
+                        .replacement("{{s2}}", Replacements.ofWiki("Hunter"))
+                        .build()
+                )
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Hunter", 99), ImmutableMap.of("Agility", 5, "Attack", 99, "Hitpoints", 10, "Hunter", 99), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -150,7 +174,14 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Agility to 5, Attack to 100, and Hunter to 5")
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{s1}} to 5, {{s2}} to 100, and {{s3}} to 5")
+                        .replacement("{{s1}}", Replacements.ofWiki("Agility"))
+                        .replacement("{{s2}}", Replacements.ofWiki("Attack"))
+                        .replacement("{{s3}}", Replacements.ofWiki("Hunter"))
+                        .build()
+                )
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5), ImmutableMap.of("Agility", 5, "Attack", 100, "Hitpoints", 10, "Hunter", 5), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -175,7 +206,12 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Combat to 36")
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{skill}} to 36")
+                        .replacement("{{skill}}", Replacements.ofWiki("Combat", "Combat level"))
+                        .build()
+                )
                 .extra(new LevelNotificationData(Collections.emptyMap(), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 13, "Hunter", 4), combatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -200,7 +236,13 @@ class LevelNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(PLAYER_NAME + " has levelled Hitpoints to 13 and Combat to 36")
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{s1}} to 13 and {{s2}} to 36")
+                        .replacement("{{s1}}", Replacements.ofWiki("Hitpoints"))
+                        .replacement("{{s2}}", Replacements.ofWiki("Combat", "Combat level"))
+                        .build()
+                )
                 .extra(new LevelNotificationData(ImmutableMap.of("Hitpoints", 13), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 13, "Hunter", 4), combatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
@@ -208,9 +250,8 @@ class LevelNotifierTest extends MockedNotifierTest {
     }
 
     @Test
-    void testNotifyCombatDisabledLevelNotifier() {
-        // The combat level notification shouldn't fire when notifyLevel is disabled
-
+    @DisplayName("Ensure the combat level notification isn't fired when notifyLevel is disabled")
+    void testDisabledCombatLevel() {
         // update config mocks
         when(config.notifyLevel()).thenReturn(false);
         when(config.levelInterval())

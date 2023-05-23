@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include relevant wiki links in rich embed content. (#243)
+
 ## 1.5.1
 
 - Minor: Track points progress towards next combat achievement tier rewards unlock. (#236)

@@ -4,6 +4,10 @@ import dinkplugin.domain.ClueTier;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Evaluable;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
+import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.ClueNotificationData;
@@ -15,7 +19,6 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.util.QuantityFormatter;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -98,26 +101,28 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Map<Integer, Integer> clueItems) {
-        StringBuilder lootMessage = new StringBuilder();
+        JoiningReplacement.JoiningReplacementBuilder lootMessage = JoiningReplacement.builder().delimiter("\n");
         AtomicLong totalPrice = new AtomicLong();
         List<SerializedItemStack> itemStacks = new ArrayList<>(clueItems.size());
         List<Embed> embeds = new ArrayList<>(config.clueShowItems() ? clueItems.size() : 0);
 
         clueItems.forEach((itemId, quantity) -> {
-            if (lootMessage.length() > 0) lootMessage.append('\n');
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, itemId, quantity);
             totalPrice.addAndGet(stack.getTotalPrice());
             itemStacks.add(stack);
-            lootMessage.append(getItemMessage(stack, embeds));
+            lootMessage.component(getItemMessage(stack, embeds));
         });
 
         if (totalPrice.get() >= config.clueMinValue()) {
             boolean screenshot = config.clueSendImage() && totalPrice.get() >= config.clueImageMinValue();
-            String notifyMessage = StringUtils.replaceEach(
-                config.clueNotifyMessage(),
-                new String[] { "%USERNAME%", "%CLUE%", "%COUNT%", "%TOTAL_VALUE%", "%LOOT%" },
-                new String[] { Utils.getPlayerName(client), clueType, clueCount, QuantityFormatter.quantityToStackSize(totalPrice.get()), lootMessage.toString() }
-            );
+            Template notifyMessage = Template.builder()
+                .template(config.clueNotifyMessage())
+                .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+                .replacement("%CLUE%", Replacements.ofWiki(clueType, "Clue scroll (" + clueType + ")"))
+                .replacement("%COUNT%", Replacements.ofText(clueCount))
+                .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalPrice.get())))
+                .replacement("%LOOT%", lootMessage.build())
+                .build();
             createMessage(screenshot,
                 NotificationBody.builder()
                     .text(notifyMessage)
@@ -131,10 +136,10 @@ public class ClueNotifier extends BaseNotifier {
         this.reset();
     }
 
-    private String getItemMessage(SerializedItemStack item, Collection<Embed> embeds) {
+    private Evaluable getItemMessage(SerializedItemStack item, Collection<Embed> embeds) {
         if (config.clueShowItems())
             embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
-        return ItemUtils.formatStack(item);
+        return ItemUtils.templateStack(item);
     }
 
     private boolean checkClueTier(String clueType) {

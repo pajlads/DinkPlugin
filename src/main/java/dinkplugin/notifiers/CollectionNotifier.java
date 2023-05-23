@@ -2,6 +2,8 @@ package dinkplugin.notifiers;
 
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
@@ -14,7 +16,6 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
@@ -108,11 +109,11 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     private void handleNotify(String itemName) {
-        String notifyMessage = StringUtils.replaceEach(
-            config.collectionNotifyMessage(),
-            new String[] { "%USERNAME%", "%ITEM%" },
-            new String[] { Utils.getPlayerName(client), itemName }
-        );
+        Template notifyMessage = Template.builder()
+            .template(config.collectionNotifyMessage())
+            .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+            .replacement("%ITEM%", Replacements.ofWiki(itemName))
+            .build();
 
         // varp isn't updated for a few ticks, so we increment the count locally.
         // this approach also has the benefit of yielding incrementing values even when

@@ -108,7 +108,7 @@ public class DiscordMessageHandler {
         if (config.discordRichEmbeds()) {
             mBody = injectContent(mBody, sendImage, config);
         } else {
-            mBody = mBody.withComputedDiscordContent(mBody.getText());
+            mBody = mBody.withComputedDiscordContent(mBody.getText().evaluate(false));
         }
 
         MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
@@ -261,7 +261,7 @@ public class DiscordMessageHandler {
                 .author(author)
                 .color(Utils.PINK)
                 .title(type.getTitle())
-                .description(StringUtils.truncate(body.getText(), Embed.MAX_DESCRIPTION_LENGTH))
+                .description(StringUtils.truncate(body.getText().evaluate(config.discordRichEmbeds()), Embed.MAX_DESCRIPTION_LENGTH))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(thumbnail))
                 .fields(extra != null ? extra.getFields() : Collections.emptyList())

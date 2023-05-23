@@ -3,6 +3,8 @@ package dinkplugin.notifiers;
 import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.PetNotificationData;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
@@ -127,8 +129,10 @@ public class PetNotifier extends BaseNotifier {
     }
 
     private void handleNotify() {
-        String notifyMessage = config.petNotifyMessage()
-            .replace("%USERNAME%", Utils.getPlayerName(client));
+        Template notifyMessage = Template.builder()
+            .template(config.petNotifyMessage())
+            .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+            .build();
 
         String thumbnail = Optional.ofNullable(petName)
             .filter(s -> !s.isEmpty())

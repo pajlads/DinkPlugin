@@ -9,6 +9,7 @@ import dinkplugin.SettingsManager;
 import dinkplugin.domain.AccountType;
 import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.message.DiscordMessageHandler;
+import dinkplugin.message.templating.Template;
 import dinkplugin.util.BlockingClientThread;
 import dinkplugin.util.BlockingExecutor;
 import dinkplugin.util.TestImageUtil;
@@ -133,6 +134,10 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(item.getName()).thenReturn(name);
         when(itemManager.getItemComposition(id)).thenReturn(item);
         when(itemManager.canonicalize(id)).thenReturn(id);
+    }
+
+    protected static Template buildTemplate(String text) {
+        return Template.builder().template(text).build();
     }
 
 }

@@ -3,6 +3,10 @@ package dinkplugin.notifiers;
 import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Evaluable;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
+import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.GambleNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemSearcher;
@@ -68,11 +72,12 @@ public class GambleNotifier extends BaseNotifier {
         }
         String player = Utils.getPlayerName(client);
         List<SerializedItemStack> items = serializeItems(data);
-        String message = StringUtils.replaceEach(
-            messageFormat,
-            new String[] { "%USERNAME%", "%COUNT%", "%LOOT%" },
-            new String[] { player, String.valueOf(data.gambleCount), lootSummary(items) }
-        );
+        Template message = Template.builder()
+            .template(messageFormat)
+            .replacement("%USERNAME%", Replacements.ofText(player))
+            .replacement("%COUNT%", Replacements.ofText(String.valueOf(data.gambleCount)))
+            .replacement("%LOOT%", lootSummary(items))
+            .build();
         createMessage(config.gambleSendImage(), NotificationBody.builder()
             .text(message)
             .extra(new GambleNotificationData(data.gambleCount, items))
@@ -80,8 +85,10 @@ public class GambleNotifier extends BaseNotifier {
             .build());
     }
 
-    private static String lootSummary(List<SerializedItemStack> items) {
-        return items.stream().map(ItemUtils::formatStack).collect(Collectors.joining("\n"));
+    private static Evaluable lootSummary(List<SerializedItemStack> items) {
+        JoiningReplacement.JoiningReplacementBuilder builder = JoiningReplacement.builder().delimiter("\n");
+        items.forEach(item -> builder.component(ItemUtils.templateStack(item)));
+        return builder.build();
     }
 
     private List<SerializedItemStack> serializeItems(ParsedData data) {

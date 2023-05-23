@@ -1,6 +1,8 @@
 package dinkplugin.notifiers;
 
 import com.google.common.collect.ImmutableMap;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.util.Utils;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.message.NotificationBody;
@@ -8,7 +10,6 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.CombatAchievementData;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.client.callback.ClientThread;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -99,11 +100,15 @@ public class CombatTaskNotifier extends BaseNotifier {
             String completedTierName = completedTier != null ? completedTier.getDisplayName() : "N/A";
 
             String player = Utils.getPlayerName(client);
-            String message = StringUtils.replaceEach(
-                crossedThreshold ? config.combatTaskUnlockMessage() : config.combatTaskMessage(),
-                new String[] { "%USERNAME%", "%TIER%", "%TASK%", "%POINTS%", "%TOTAL_POINTS%", "%COMPLETED%" },
-                new String[] { player, tier.toString(), task, String.valueOf(taskPoints), String.valueOf(totalPoints), completedTierName }
-            );
+            Template message = Template.builder()
+                .template(crossedThreshold ? config.combatTaskUnlockMessage() : config.combatTaskMessage())
+                .replacement("%USERNAME%", Replacements.ofText(player))
+                .replacement("%TIER%", Replacements.ofText(tier.toString()))
+                .replacement("%TASK%", Replacements.ofWiki(task))
+                .replacement("%POINTS%", Replacements.ofText(String.valueOf(taskPoints)))
+                .replacement("%TOTAL_POINTS%", Replacements.ofText(String.valueOf(totalPoints)))
+                .replacement("%COMPLETED%", Replacements.ofText(completedTierName))
+                .build();
 
             createMessage(config.combatTaskSendImage(), NotificationBody.<CombatAchievementData>builder()
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
