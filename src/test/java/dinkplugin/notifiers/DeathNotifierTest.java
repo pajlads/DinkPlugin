@@ -4,6 +4,8 @@ import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
@@ -250,6 +252,7 @@ class DeathNotifierTest extends MockedNotifierTest {
 
         when(npcManager.getHealth(NpcID.GUARD)).thenReturn(22);
         when(client.getCachedNPCs()).thenReturn(new NPC[] { other });
+        when(config.deathNotifyMessage()).thenReturn("%USERNAME% has died to %NPC%");
 
         // fire event
         plugin.onActorDeath(new ActorDeath(localPlayer));
@@ -259,7 +262,12 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has died to {{npc}}")
+                        .replacement("{{npc}}", Replacements.ofWiki(name))
+                        .build()
+                )
                 .extra(new DeathNotificationData(0L, false, null, name, NpcID.GUARD, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
                 .build()

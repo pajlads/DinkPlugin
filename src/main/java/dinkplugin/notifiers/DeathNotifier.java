@@ -202,7 +202,7 @@ public class DeathNotifier extends BaseNotifier {
         if (pvp) {
             builder.replacement("%PKER%", Replacements.ofText(killer));
         } else if (npc) {
-            builder.replacement("%NPC%", Replacements.ofText(killer));
+            builder.replacement("%NPC%", Replacements.ofWiki(killer));
         }
         return builder.build();
     }
