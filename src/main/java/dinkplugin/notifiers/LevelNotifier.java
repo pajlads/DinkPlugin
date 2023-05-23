@@ -5,6 +5,7 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
+import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.LevelNotificationData;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -149,20 +150,22 @@ public class LevelNotifier extends BaseNotifier {
         Map<String, Integer> currentLevels = new HashMap<>(this.currentLevels);
 
         // Build skillMessage and populate lSkills
-        StringBuilder skillMessage = new StringBuilder();
+        JoiningReplacement.JoiningReplacementBuilder skillMessage = JoiningReplacement.builder();
         for (int index = 0; index < count; index++) {
             String skill = levelled.get(index);
             if (index > 0) {
                 if (count > 2) {
-                    skillMessage.append(',');
+                    skillMessage.component(Replacements.ofText(","));
                 }
-                skillMessage.append(' ');
+                skillMessage.component(Replacements.ofText(" "));
                 if (index + 1 == count) {
-                    skillMessage.append("and ");
+                    skillMessage.component(Replacements.ofText("and "));
                 }
             }
             Integer level = currentLevels.get(skill);
-            skillMessage.append(String.format("%s to %s", skill, level));
+            skillMessage
+                .component(Replacements.ofWiki(skill, COMBAT_NAME.equals(skill) ? "Combat level" : skill))
+                .component(Replacements.ofText(" to " + level));
             lSkills.put(skill, level);
         }
 
@@ -197,7 +200,7 @@ public class LevelNotifier extends BaseNotifier {
         Template fullNotification = Template.builder()
             .template(config.levelNotifyMessage())
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
-            .replacement("%SKILL%", Replacements.ofText(skillMessage.toString()))
+            .replacement("%SKILL%", skillMessage.build())
             .build();
 
         // Fire notification
