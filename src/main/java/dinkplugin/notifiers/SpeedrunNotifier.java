@@ -59,7 +59,7 @@ public class SpeedrunNotifier extends BaseNotifier {
         Template notifyMessage = Template.builder()
             .template(isPb ? config.speedrunPBMessage() : config.speedrunMessage())
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
-            .replacement("%QUEST%", Replacements.ofText(questName))
+            .replacement("%QUEST%", Replacements.ofWiki(questName))
             .replacement("%TIME%", Replacements.ofText(duration))
             .replacement("%BEST%", Replacements.ofText(pb))
             .build();

@@ -3,6 +3,8 @@ package dinkplugin.notifiers;
 import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.SpeedrunNotificationData;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
@@ -69,7 +71,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has beat their PB of %s with a time of %s", PLAYER_NAME, QUEST_NAME, latest)))
+                .text(buildTemplate(QUEST_NAME, latest))
                 .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString()))
                 .type(NotificationType.SPEEDRUN)
                 .build()
@@ -129,7 +131,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has beat their PB of %s with a time of %s", PLAYER_NAME, QUEST_NAME, latest)))
+                .text(buildTemplate(QUEST_NAME, latest))
                 .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString()))
                 .type(NotificationType.SPEEDRUN)
                 .build()
@@ -160,4 +162,10 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         return event;
     }
 
+    private static Template buildTemplate(String quest, String time) {
+        return Template.builder()
+            .template(String.format("%s has beat their PB of {{quest}} with a time of %s", PLAYER_NAME, time))
+            .replacement("{{quest}}", Replacements.ofWiki(quest))
+            .build();
+    }
 }
