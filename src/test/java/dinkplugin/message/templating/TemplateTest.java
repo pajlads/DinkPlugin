@@ -67,4 +67,16 @@ class TemplateTest {
         );
     }
 
+    @Test
+    void withRichLink() {
+        assertEquals(
+            "dank dank has pk'd [Forsen](https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1=Forsen)",
+            Template.builder()
+                .template("%USERNAME% has pk'd %TARGET%")
+                .replacement("%USERNAME%", Replacements.ofText("dank dank"))
+                .replacement("%TARGET%", Replacements.ofLink("Forsen", "https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1=Forsen"))
+                .build()
+                .evaluate(true)
+        );
+    }
 }
