@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add setting to exclude group name from GIM shared storage notifications. (#247)
 - Minor: Include relevant wiki links in rich embed content. (#243)
 
 ## 1.5.1

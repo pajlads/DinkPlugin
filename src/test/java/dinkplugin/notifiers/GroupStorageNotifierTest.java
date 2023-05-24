@@ -56,6 +56,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         when(config.discordRichEmbeds()).thenReturn(true);
         when(config.notifyGroupStorage()).thenReturn(true);
         when(config.groupStorageSendImage()).thenReturn(false);
+        when(config.groupStorageIncludeClan()).thenReturn(true);
         when(config.groupStorageNotifyMessage())
             .thenReturn("%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%");
 
@@ -220,6 +221,34 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         );
 
         verifyNotification(extra, EMPTY_TRANSACTION, "- 1 x Tuna (" + TUNA_PRICE + ")");
+    }
+
+    @Test
+    void testWithoutGroupName() {
+        // update config mocks
+        when(config.groupStorageIncludeClan()).thenReturn(false);
+
+        // mock initial inventory state
+        Item[] initialItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.TUNA, 1) };
+        mockContainer(initialItems);
+        notifier.onWidgetLoad(LOAD_EVENT);
+
+        // mock updated inventory
+        Item[] updatedItems = { new Item(ItemID.TUNA, 1), new Item(ItemID.OPAL, 1) };
+        mockContainer(updatedItems);
+
+        mockSaveWidget();
+        notifier.onWidgetClose(CLOSE_EVENT);
+
+        // verify notification message
+        GroupStorageNotificationData extra = new GroupStorageNotificationData(
+            Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")),
+            Collections.singletonList(new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal")),
+            RUBY_PRICE - OPAL_PRICE,
+            null
+        );
+
+        verifyNotification(extra, "+ 1 x Ruby (" + RUBY_PRICE + ")", "- 1 x Opal (" + OPAL_PRICE + ")");
     }
 
     @Test

@@ -205,6 +205,7 @@ public class GroupStorageNotifier extends BaseNotifier {
      * @return the name of the ironman group
      */
     private String getGroupName() {
+        if (!config.groupStorageIncludeClan()) return null;
         ClanChannel channel = client.getClanChannel(ClanID.GROUP_IRONMAN);
         return channel != null ? channel.getName() : null;
     }
