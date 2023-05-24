@@ -153,10 +153,9 @@ class SlayerNotifierTest extends MockedNotifierTest {
     }
 
     private static Template buildTemplate(int count, String monster, Object points, Object completed) {
-        String task = String.format("%d %s", count, monster);
         return Template.builder()
-            .template(String.format("%s has completed: {{task}}, getting %s points for a total %s tasks completed", PLAYER_NAME, points, completed))
-            .replacement("{{task}}", Replacements.ofWiki(task, monster))
+            .template(String.format("%s has completed: %d {{monster}}, getting %s points for a total %s tasks completed", PLAYER_NAME, count, points, completed))
+            .replacement("{{monster}}", Replacements.ofWiki(monster))
             .build();
     }
 }

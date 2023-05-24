@@ -5,11 +5,16 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Evaluable;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
+import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.SlayerNotificationData;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Singleton;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
@@ -99,10 +104,14 @@ public class SlayerNotifier extends BaseNotifier {
 
         int threshold = config.slayerPointThreshold();
         if (threshold <= 0 || Integer.parseInt(slayerPoints.replace(",", "")) >= threshold) {
+            Optional<Pair<Integer, String>> parsedTask = parseTask(task);
+            Integer marginalKillCount = parsedTask.map(Pair::getLeft).orElse(null);
+            String monster = parsedTask.map(Pair::getRight).orElse(null);
+
             Template notifyMessage = Template.builder()
                 .template(config.slayerNotifyMessage())
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
-                .replacement("%TASK%", buildTask(task))
+                .replacement("%TASK%", buildTask(task, monster, marginalKillCount))
                 .replacement("%TASKCOUNT%", Replacements.ofText(slayerCompleted))
                 .replacement("%POINTS%", Replacements.ofText(slayerPoints))
                 .build();
@@ -122,10 +131,22 @@ public class SlayerNotifier extends BaseNotifier {
         badTicks.set(0);
     }
 
-    private static Evaluable buildTask(String task) {
+    @NotNull
+    private static Evaluable buildTask(@NotNull String rawTask, @Nullable String monster, @Nullable Integer count) {
+        if (count == null || monster == null)
+            return Replacements.ofText(rawTask);
+
+        return JoiningReplacement.builder()
+            .component(Replacements.ofText(String.valueOf(count)))
+            .delimiter(" ")
+            .component(Replacements.ofWiki(monster))
+            .build();
+    }
+
+    @NotNull
+    private static Optional<Pair<Integer, String>> parseTask(@NotNull String task) {
         Matcher m = TASK_MONSTER_REGEX.matcher(task);
-        return m.find()
-            ? Replacements.ofWiki(task, m.group("monster"))
-            : Replacements.ofText(task);
+        if (!m.find()) return Optional.empty();
+        return Optional.of(Pair.of(Integer.parseInt(m.group("count")), m.group("monster")));
     }
 }
