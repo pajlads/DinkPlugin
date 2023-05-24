@@ -79,4 +79,16 @@ class TemplateTest {
                 .evaluate(true)
         );
     }
+
+    void withRichNullLink() {
+        assertEquals(
+            "dank dank has pk'd Forsen",
+            Template.builder()
+                .template("%USERNAME% has pk'd %TARGET%")
+                .replacement("%USERNAME%", Replacements.ofText("dank dank"))
+                .replacement("%TARGET%", Replacements.ofLink("Forsen", null))
+                .build()
+                .evaluate(true)
+        );
+    }
 }
