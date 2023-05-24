@@ -118,7 +118,7 @@ public class SlayerNotifier extends BaseNotifier {
 
             createMessage(config.slayerSendImage(), NotificationBody.builder()
                 .text(notifyMessage)
-                .extra(new SlayerNotificationData(task, slayerCompleted, slayerPoints))
+                .extra(new SlayerNotificationData(task, slayerCompleted, slayerPoints, marginalKillCount, monster))
                 .type(NotificationType.SLAYER)
                 .build());
         }
