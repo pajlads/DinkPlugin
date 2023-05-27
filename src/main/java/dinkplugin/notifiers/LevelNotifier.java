@@ -14,7 +14,9 @@ import net.runelite.api.GameState;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
+import net.runelite.client.callback.ClientThread;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.runelite.api.Experience.MAX_REAL_LEVEL;
@@ -34,8 +35,11 @@ public class LevelNotifier extends BaseNotifier {
     private static final String COMBAT_NAME = "Combat";
     private static final Set<String> COMBAT_COMPONENTS;
     private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(Skill.values().length);
-    private final Map<String, Integer> currentLevels = new ConcurrentHashMap<>();
+    private final Map<String, Integer> currentLevels = new HashMap<>();
     private final AtomicInteger ticksWaited = new AtomicInteger();
+
+    @Inject
+    private ClientThread clientThread;
 
     @Override
     protected String getWebhookUrl() {
@@ -43,20 +47,25 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void initLevels() {
-        if (client.getGameState() != GameState.LOGGED_IN) return;
-        for (Skill skill : Skill.values()) {
-            if (skill != Skill.OVERALL) {
-                // uses log(n) operation to support virtual levels
-                currentLevels.put(skill.getName(), Experience.getLevelForXp(client.getSkillExperience(skill)));
+        clientThread.invokeLater(() -> {
+            if (client.getGameState() != GameState.LOGGED_IN) return;
+            for (Skill skill : Skill.values()) {
+                if (skill != Skill.OVERALL) {
+                    // uses log(n) operation to support virtual levels
+                    currentLevels.put(skill.getName(), Experience.getLevelForXp(client.getSkillExperience(skill)));
+                }
             }
-        }
-        currentLevels.put(COMBAT_NAME, calculateCombatLevel());
+            currentLevels.put(COMBAT_NAME, calculateCombatLevel());
+            log.debug("Initialized current skill levels: {}", currentLevels);
+        });
     }
 
     public void reset() {
-        currentLevels.clear();
-        levelledSkills.clear();
-        ticksWaited.set(0);
+        clientThread.invoke(() -> {
+            currentLevels.clear();
+            levelledSkills.clear();
+            ticksWaited.set(0);
+        });
     }
 
     public void onTick() {
@@ -93,7 +102,12 @@ public class LevelNotifier extends BaseNotifier {
         int virtualLevel = level < MAX_REAL_LEVEL ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
         Integer previousLevel = currentLevels.put(skill, virtualLevel);
 
-        if (previousLevel != null && virtualLevel < previousLevel) {
+        if (previousLevel == null) {
+            initLevels();
+            return;
+        }
+
+        if (virtualLevel < previousLevel) {
             // base skill level should never regress; reset notifier state
             reset();
             return;
@@ -103,7 +117,7 @@ public class LevelNotifier extends BaseNotifier {
         checkLevelUp(config.notifyLevel(), skill, previousLevel, virtualLevel);
 
         // Skip combat level checking if no level up has occurred
-        if (previousLevel == null || virtualLevel <= previousLevel) {
+        if (virtualLevel <= previousLevel) {
             // only return if we don't need to initialize combat level for the first time
             if (currentLevels.containsKey(COMBAT_NAME))
                 return;
