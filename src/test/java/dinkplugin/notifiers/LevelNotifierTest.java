@@ -15,7 +15,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -47,8 +50,9 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // init base level
         when(client.getRealSkillLevel(any())).thenReturn(1);
-        when(client.getRealSkillLevel(Skill.ATTACK)).thenReturn(99);
-        when(client.getRealSkillLevel(Skill.HITPOINTS)).thenReturn(10);
+        mockLevel(Skill.ATTACK, 99);
+        mockLevel(Skill.HITPOINTS, 10);
+        mockLevel(Skill.HUNTER, 4);
         initialCombatLevel = Experience.getCombatLevel(99, 1, 1, 10, 1, 1, 1);
         unchangedCombatLevel = new LevelNotificationData.CombatLevel(initialCombatLevel, false);
         plugin.onStatChanged(new StatChanged(Skill.AGILITY, 0, 1, 1));
@@ -59,6 +63,8 @@ class LevelNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotify() {
+        Map<String, Integer> expectedSkills = skillsMap("Agility", 5);
+
         // fire skill event
         plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
 
@@ -76,7 +82,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{skill}}", Replacements.ofWiki("Agility"))
                         .build()
                 )
-                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5), ImmutableMap.of("Agility", 5, "Attack", 99, "Hitpoints", 10, "Hunter", 4), unchangedCombatLevel))
+                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5), expectedSkills, unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
@@ -84,6 +90,8 @@ class LevelNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyJump() {
+        Map<String, Integer> expectedSkills = skillsMap("Hunter", 6);
+
         // fire skill event (4 => 6, skipping 5 while 5 is level interval)
         plugin.onStatChanged(new StatChanged(Skill.HUNTER, 200, 6, 6));
 
@@ -101,7 +109,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{skill}}", Replacements.ofWiki("Hunter"))
                         .build()
                 )
-                .extra(new LevelNotificationData(ImmutableMap.of("Hunter", 6), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 10, "Hunter", 6), unchangedCombatLevel))
+                .extra(new LevelNotificationData(ImmutableMap.of("Hunter", 6), expectedSkills, unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
@@ -109,6 +117,8 @@ class LevelNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyVirtual() {
+        Map<String, Integer> expectedSkills = skillsMap("Attack", 100);
+
         // fire skill event
         plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
 
@@ -126,7 +136,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{skill}}", Replacements.ofWiki("Attack"))
                         .build()
                 )
-                .extra(new LevelNotificationData(ImmutableMap.of("Attack", 100), ImmutableMap.of("Agility", 1, "Attack", 100, "Hitpoints", 10, "Hunter", 4), unchangedCombatLevel))
+                .extra(new LevelNotificationData(ImmutableMap.of("Attack", 100), expectedSkills, unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
@@ -134,6 +144,11 @@ class LevelNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyTwo() {
+        Map<String, Integer> expectedSkills = skillsMap(
+            new String[] { "Agility", "Hunter" },
+            new int[] { 5, 99 }
+        );
+
         // fire skill events
         plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
         plugin.onStatChanged(new StatChanged(Skill.HUNTER, 14_000_000, 99, 99));
@@ -153,7 +168,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{s2}}", Replacements.ofWiki("Hunter"))
                         .build()
                 )
-                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Hunter", 99), ImmutableMap.of("Agility", 5, "Attack", 99, "Hitpoints", 10, "Hunter", 99), unchangedCombatLevel))
+                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Hunter", 99), expectedSkills, unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
@@ -161,6 +176,11 @@ class LevelNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyMany() {
+        Map<String, Integer> expectedSkills = skillsMap(
+            new String[] { "Agility", "Attack", "Hunter" },
+            new int[] { 5, 100, 5 }
+        );
+
         // fire skill events
         plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
         plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
@@ -182,7 +202,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{s3}}", Replacements.ofWiki("Hunter"))
                         .build()
                 )
-                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5), ImmutableMap.of("Agility", 5, "Attack", 100, "Hitpoints", 10, "Hunter", 5), unchangedCombatLevel))
+                .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5), expectedSkills, unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
@@ -190,11 +210,13 @@ class LevelNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyCombat() {
+        Map<String, Integer> expectedSkills = skillsMap("Hitpoints", 13);
+
         // update config mocks
         when(config.levelInterval()).thenReturn(18); // won't trigger on hp @ 13, will trigger on combat level @ 36
 
         // fire skill event
-        when(client.getRealSkillLevel(Skill.HITPOINTS)).thenReturn(13);
+        mockLevel(Skill.HITPOINTS, 13);
         plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
 
         // let ticks pass
@@ -212,7 +234,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{skill}}", Replacements.ofWiki("Combat", "Combat level"))
                         .build()
                 )
-                .extra(new LevelNotificationData(Collections.emptyMap(), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 13, "Hunter", 4), combatLevel))
+                .extra(new LevelNotificationData(Collections.emptyMap(), expectedSkills, combatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
@@ -220,11 +242,13 @@ class LevelNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyTwoCombat() {
+        Map<String, Integer> expectedSkills = skillsMap("Hitpoints", 13);
+
         // update config mocks
         when(config.levelInterval()).thenReturn(1);
 
         // fire skill event
-        when(client.getRealSkillLevel(Skill.HITPOINTS)).thenReturn(13);
+        mockLevel(Skill.HITPOINTS, 13);
         plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
 
         // let ticks pass
@@ -243,7 +267,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{s2}}", Replacements.ofWiki("Combat", "Combat level"))
                         .build()
                 )
-                .extra(new LevelNotificationData(ImmutableMap.of("Hitpoints", 13), ImmutableMap.of("Agility", 1, "Attack", 99, "Hitpoints", 13, "Hunter", 4), combatLevel))
+                .extra(new LevelNotificationData(ImmutableMap.of("Hitpoints", 13), expectedSkills, combatLevel))
                 .type(NotificationType.LEVEL)
                 .build()
         );
@@ -259,7 +283,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                 18); // won't trigger on hp @ 13, will trigger on combat level @ 36
 
         // fire skill event
-        when(client.getRealSkillLevel(Skill.HITPOINTS)).thenReturn(13);
+        mockLevel(Skill.HITPOINTS, 13);
         plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
 
         // let ticks pass
@@ -311,4 +335,22 @@ class LevelNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
+    private void mockLevel(Skill skill, int level) {
+        when(client.getRealSkillLevel(skill)).thenReturn(level);
+        when(client.getSkillExperience(skill)).thenReturn(Experience.getXpForLevel(level));
+    }
+
+    private Map<String, Integer> skillsMap(String skill, int level) {
+        return skillsMap(new String[] { skill }, new int[] { level });
+    }
+
+    private Map<String, Integer> skillsMap(String[] skills, int[] updatedLevels) {
+        Map<String, Integer> m = Arrays.stream(Skill.values())
+            .filter(s -> s != Skill.OVERALL)
+            .collect(Collectors.toMap(Skill::getName, client::getRealSkillLevel));
+        for (int i = 0; i < skills.length; i++) {
+            m.put(skills[i], updatedLevels[i]);
+        }
+        return m;
+    }
 }
