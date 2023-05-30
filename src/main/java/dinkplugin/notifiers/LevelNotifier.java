@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.runelite.api.Experience.MAX_REAL_LEVEL;
@@ -37,6 +38,7 @@ public class LevelNotifier extends BaseNotifier {
     private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(Skill.values().length);
     private final Map<String, Integer> currentLevels = new HashMap<>();
     private final AtomicInteger ticksWaited = new AtomicInteger();
+    private final AtomicBoolean initQueued = new AtomicBoolean();
 
     @Inject
     private ClientThread clientThread;
@@ -47,7 +49,11 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void initLevels() {
+        if (initQueued.getAndSet(true))
+            return; // init task is already queued
+
         clientThread.invokeLater(() -> {
+            initQueued.set(false); // allow another init to be queued in the future
             if (client.getGameState() != GameState.LOGGED_IN) return;
             for (Skill skill : Skill.values()) {
                 if (skill != Skill.OVERALL) {
