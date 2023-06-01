@@ -19,7 +19,7 @@ public class SlayerNotificationData extends NotificationData {
     String slayerPoints;
 
     @Nullable // if jagex changes format of slayerTask
-    Integer incrementalKills;
+    Integer killCount;
 
     @Nullable // if jagex changes format of slayerTask
     String monster;

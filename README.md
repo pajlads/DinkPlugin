@@ -314,7 +314,7 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
     "slayerTask": "Slayer task name",
     "slayerCompleted": "30",
     "slayerPoints": "15",
-    "incrementalKills": 135,
+    "killCount": 135,
     "monster": "Kalphite"
   },
   "type": "SLAYER"
