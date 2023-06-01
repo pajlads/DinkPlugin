@@ -18,7 +18,7 @@ import java.util.Set;
 @UtilityClass
 public class WorldUtils {
 
-    private final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
+    private final Set<WorldType> IGNORED_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.BETA_WORLD, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD);
 
     private final Set<Integer> BA_REGIONS = ImmutableSet.of(7508, 7509, 10322);
     private final Set<Integer> CASTLE_WARS_REGIONS = ImmutableSet.of(9520, 9620);
