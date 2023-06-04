@@ -46,7 +46,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(1, "TzTok-Jad", 10, 100))
-                .extra(new SlayerNotificationData("1 TzTok-Jad", "100", "10"))
+                .extra(new SlayerNotificationData("1 TzTok-Jad", "100", "10", 1, "TzTok-Jad"))
                 .type(NotificationType.SLAYER)
                 .build()
         );
@@ -66,7 +66,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(245, "Cave Kraken", "1,000", "1,000"))
-                .extra(new SlayerNotificationData("245 Cave Kraken", "1,000", "1,000"))
+                .extra(new SlayerNotificationData("245 Cave Kraken", "1,000", "1,000", 245, "Cave Kraken"))
                 .type(NotificationType.SLAYER)
                 .build()
         );
@@ -85,7 +85,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(50, "Cave Kraken", 10, 150))
-                .extra(new SlayerNotificationData("50 Cave Kraken", "150", "10"))
+                .extra(new SlayerNotificationData("50 Cave Kraken", "150", "10", 50, "Cave Kraken"))
                 .type(NotificationType.SLAYER)
                 .build()
         );
@@ -104,7 +104,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(36, "Barrows brothers", 20, 881))
-                .extra(new SlayerNotificationData("36 Barrows brothers", "881", "20"))
+                .extra(new SlayerNotificationData("36 Barrows brothers", "881", "20", 36, "Barrows brothers"))
                 .type(NotificationType.SLAYER)
                 .build()
         );
@@ -123,7 +123,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(11, "Chaos Elemental", 15, 242))
-                .extra(new SlayerNotificationData("11 Chaos Elemental", "242", "15"))
+                .extra(new SlayerNotificationData("11 Chaos Elemental", "242", "15", 11, "Chaos Elemental"))
                 .type(NotificationType.SLAYER)
                 .build()
         );
@@ -153,10 +153,9 @@ class SlayerNotifierTest extends MockedNotifierTest {
     }
 
     private static Template buildTemplate(int count, String monster, Object points, Object completed) {
-        String task = String.format("%d %s", count, monster);
         return Template.builder()
-            .template(String.format("%s has completed: {{task}}, getting %s points for a total %s tasks completed", PLAYER_NAME, points, completed))
-            .replacement("{{task}}", Replacements.ofWiki(task, monster))
+            .template(String.format("%s has completed: %d {{monster}}, getting %s points for a total %s tasks completed", PLAYER_NAME, count, points, completed))
+            .replacement("{{monster}}", Replacements.ofWiki(monster))
             .build();
     }
 }

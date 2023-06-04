@@ -14,6 +14,7 @@ import dinkplugin.util.BlockingClientThread;
 import dinkplugin.util.BlockingExecutor;
 import dinkplugin.util.TestImageUtil;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.Player;
 import net.runelite.api.Varbits;
@@ -104,6 +105,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(client.getVarbitValue(Varbits.ACCOUNT_TYPE)).thenReturn(AccountType.GROUP_IRONMAN.ordinal());
         when(client.isPrayerActive(any())).thenReturn(false);
         when(client.getLocalPlayer()).thenReturn(localPlayer);
+        when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
         when(localPlayer.getName()).thenReturn(PLAYER_NAME);
 
         doAnswer(invocation -> {
