@@ -16,7 +16,7 @@ public class Replacements {
     }
 
     public Evaluable ofLink(String text, String link) {
-        return new TextWithLink(text, link);
+        return link != null ? new TextWithLink(text, link) : ofText(text);
     }
 
     public Evaluable ofWiki(String text, String searchPhrase) {

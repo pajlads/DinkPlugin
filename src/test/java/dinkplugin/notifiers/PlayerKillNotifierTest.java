@@ -1,8 +1,11 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.PlayerKillNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.WorldUtils;
@@ -61,6 +64,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         when(config.pkMinValue()).thenReturn(EQUIPMENT_VALUE);
         when(config.pkIncludeLocation()).thenReturn(true);
         when(config.pkNotifyMessage()).thenReturn("%USERNAME% has PK'd %TARGET%");
+        when(config.playerLookupService()).thenReturn(PlayerLookupService.NONE);
 
         // init client mocks
         when(client.getWorld()).thenReturn(WORLD);
@@ -75,6 +79,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         // init mocks
+        when(config.playerLookupService()).thenReturn(PlayerLookupService.OSRS_HISCORE);
         Player target = mockPlayer();
 
         // fire event
@@ -87,7 +92,12 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has PK'd %s", PLAYER_NAME, TARGET)))
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has PK'd {{target}}")
+                        .replacement("{{target}}", Replacements.ofLink(TARGET, PlayerLookupService.OSRS_HISCORE.getPlayerUrl(TARGET)))
+                        .build()
+                )
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
                 .extra(new PlayerKillNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, damage))
