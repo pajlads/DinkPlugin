@@ -52,7 +52,7 @@ public class LevelNotifier extends BaseNotifier {
         if (initQueued.getAndSet(true))
             return; // init task is already queued
 
-        clientThread.invokeLater(() -> {
+        clientThread.invokeAtTickEnd(() -> {
             initQueued.set(false); // allow another init to be queued in the future
             if (client.getGameState() != GameState.LOGGED_IN) return;
             for (Skill skill : Skill.values()) {
