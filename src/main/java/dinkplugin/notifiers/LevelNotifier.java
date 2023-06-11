@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.runelite.api.Experience.MAX_REAL_LEVEL;
@@ -33,12 +32,13 @@ import static net.runelite.api.Experience.MAX_REAL_LEVEL;
 @Slf4j
 @Singleton
 public class LevelNotifier extends BaseNotifier {
+    private static final int INIT_CLIENT_TICKS = 10; // 200ms
     private static final String COMBAT_NAME = "Combat";
     private static final Set<String> COMBAT_COMPONENTS;
     private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(Skill.values().length);
     private final Map<String, Integer> currentLevels = new HashMap<>();
     private final AtomicInteger ticksWaited = new AtomicInteger();
-    private final AtomicBoolean initQueued = new AtomicBoolean();
+    private final AtomicInteger initTicks = new AtomicInteger();
 
     @Inject
     private ClientThread clientThread;
@@ -49,12 +49,16 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void initLevels() {
-        if (initQueued.getAndSet(true))
+        if (initTicks.getAndSet(INIT_CLIENT_TICKS) > 0)
             return; // init task is already queued
 
-        clientThread.invokeAtTickEnd(() -> {
-            initQueued.set(false); // allow another init to be queued in the future
-            if (client.getGameState() != GameState.LOGGED_IN) return;
+        clientThread.invokeLater(() -> {
+            if (client.getGameState() != GameState.LOGGED_IN)
+                return false;
+
+            if (initTicks.updateAndGet(i -> i - 1) > 0)
+                return false; // still need to wait more ticks
+
             for (Skill skill : Skill.values()) {
                 if (skill != Skill.OVERALL) {
                     // uses log(n) operation to support virtual levels
@@ -63,6 +67,7 @@ public class LevelNotifier extends BaseNotifier {
             }
             currentLevels.put(COMBAT_NAME, calculateCombatLevel());
             log.debug("Initialized current skill levels: {}", currentLevels);
+            return true;
         });
     }
 
