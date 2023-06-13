@@ -136,8 +136,6 @@ public class DeathNotifier extends BaseNotifier {
         }
         List<Pair<Item, Long>> keptItems = split.getLeft();
         List<Pair<Item, Long>> lostItems = split.getRight();
-        adjustPricesForQuantity(keptItems);
-        adjustPricesForQuantity(lostItems);
 
         long losePrice = lostItems.stream()
             .map(Pair::getRight)
@@ -295,17 +293,6 @@ public class DeathNotifier extends BaseNotifier {
             .map(item -> Pair.of(item, ItemUtils.getPrice(itemManager, item.getId())))
             .sorted(Comparator.<Pair<Item, Long>>comparingLong(Pair::getValue).reversed())
             .collect(Collectors.toCollection(() -> new ArrayList<>(items.size())));
-    }
-
-    private static void adjustPricesForQuantity(List<Pair<Item, Long>> items) {
-        final int n = items.size();
-        for (int i = 0; i < n; i++) {
-            Pair<Item, Long> pair = items.get(i);
-            Item item = pair.getKey();
-            if (item.getQuantity() > 1) {
-                items.set(i, Pair.of(item, pair.getValue() * item.getQuantity()));
-            }
-        }
     }
 
     /**

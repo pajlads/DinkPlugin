@@ -5,11 +5,8 @@ import net.runelite.api.ItemID;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static dinkplugin.notifiers.DeathNotifier.splitItemsByKept;
 import static java.util.Arrays.asList;
