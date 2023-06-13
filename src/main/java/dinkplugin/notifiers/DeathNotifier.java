@@ -292,7 +292,7 @@ public class DeathNotifier extends BaseNotifier {
         return items.stream()
             .map(item -> Pair.of(item, ItemUtils.getPrice(itemManager, item.getId())))
             .sorted(Comparator.<Pair<Item, Long>>comparingLong(Pair::getValue).reversed())
-            .collect(Collectors.toCollection(() -> new ArrayList<>(items.size())));
+            .collect(Collectors.toList());
     }
 
     /**
