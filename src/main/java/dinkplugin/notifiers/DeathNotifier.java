@@ -138,9 +138,8 @@ public class DeathNotifier extends BaseNotifier {
         List<Pair<Item, Long>> lostItems = split.getRight();
 
         long losePrice = lostItems.stream()
-            .map(Pair::getRight)
-            .reduce(Long::sum)
-            .orElse(0L);
+            .mapToLong(pair -> pair.getValue() * pair.getKey().getQuantity())
+            .sum();
 
         int valueThreshold = config.deathMinValue();
         if (danger == Danger.DANGEROUS && losePrice < valueThreshold) {
