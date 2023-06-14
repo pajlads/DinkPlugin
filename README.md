@@ -16,7 +16,7 @@ To use this plugin a webhook is required, you can obtain one from Discord with t
 2. Select the `Integrations` tab on the left side and click `Create/View Webhook(s)`.
 3. Click the newly created or existing webhook, and select `Copy Webhook URL`.
 4. Paste the copied link into the `Primary Webhook URLs` box.
-5. (Optional): If you would like only certain notifications sent to the discord in question, you can paste the link into each box in the `Webhook Overrides` section.
+5. (Optional): If you would like only certain notifications sent to the discord in question, you can instead paste the link into each box in the `Webhook Overrides` section.
 
 ## Notifiers
 
