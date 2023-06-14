@@ -6,7 +6,6 @@ This project was forked from UniversalDiscordNotifier, but has more features, re
 
 Have a suggestion (e.g., new notifier, additional data), bug report (as rare as it may be), or question? Let us know on our [issue tracker](https://github.com/pajlads/DinkPlugin/issues)!
 
-
 ## Basic Setup
 
 To use this plugin a webhook is required, you can obtain one from Discord with the following steps:
