@@ -224,6 +224,7 @@ public class LevelNotifier extends BaseNotifier {
         // Populate message template
         Template fullNotification = Template.builder()
             .template(config.levelNotifyMessage())
+            .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%SKILL%", skillMessage.build())
             .build();

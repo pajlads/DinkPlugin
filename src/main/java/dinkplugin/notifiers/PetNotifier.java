@@ -131,6 +131,7 @@ public class PetNotifier extends BaseNotifier {
     private void handleNotify() {
         Template notifyMessage = Template.builder()
             .template(config.petNotifyMessage())
+            .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .build();
 

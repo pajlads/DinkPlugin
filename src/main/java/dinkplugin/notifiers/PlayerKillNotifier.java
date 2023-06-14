@@ -118,6 +118,7 @@ public class PlayerKillNotifier extends BaseNotifier {
         String localPlayer = client.getLocalPlayer().getName();
         Template message = Template.builder()
             .template(config.pkNotifyMessage())
+            .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(localPlayer))
             .replacement("%TARGET%", Replacements.ofLink(target.getName(), config.playerLookupService().getPlayerUrl(target.getName())))
             .build();

@@ -152,6 +152,7 @@ public class DiaryNotifier extends BaseNotifier {
         String player = Utils.getPlayerName(client);
         Template message = Template.builder()
             .template(config.diaryNotifyMessage())
+            .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(player))
             .replacement("%DIFFICULTY%", Replacements.ofText(difficulty.toString()))
             .replacement("%AREA%", Replacements.ofWiki(area, area + " Diary"))

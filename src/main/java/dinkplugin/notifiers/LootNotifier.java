@@ -141,6 +141,7 @@ public class LootNotifier extends BaseNotifier {
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Template notifyMessage = Template.builder()
                 .template(config.lootNotifyMessage())
+                .replacementBoundary("%")
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
                 .replacement("%LOOT%", lootMessage.build())
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))

@@ -74,6 +74,7 @@ public class GambleNotifier extends BaseNotifier {
         List<SerializedItemStack> items = serializeItems(data);
         Template message = Template.builder()
             .template(messageFormat)
+            .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(player))
             .replacement("%COUNT%", Replacements.ofText(String.valueOf(data.gambleCount)))
             .replacement("%LOOT%", lootSummary(items))

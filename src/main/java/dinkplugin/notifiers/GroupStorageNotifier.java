@@ -178,8 +178,9 @@ public class GroupStorageNotifier extends BaseNotifier {
             new String[] { playerName, depositString, withdrawalString }
         );
         Template formattedText = Template.builder()
-            .template("{{s}}")
-            .replacement("{{s}}", Replacements.ofBlock("diff", content))
+            .template("$s$")
+            .replacementBoundary("$")
+            .replacement("$s$", Replacements.ofBlock("diff", content))
             .build();
 
         // Populate metadata

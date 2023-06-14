@@ -73,6 +73,7 @@ public class QuestNotifier extends BaseNotifier {
 
         Template notifyMessage = Template.builder()
             .template(config.questNotifyMessage())
+            .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%QUEST%", Replacements.ofWiki(parsed))
             .build();
