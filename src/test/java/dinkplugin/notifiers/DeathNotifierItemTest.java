@@ -25,6 +25,26 @@ class DeathNotifierItemTest {
     }
 
     @Test
+    void testSplitStackable() {
+        int total = 30, keep = 3;
+        long price = 2;
+        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(
+            singletonList(Pair.of(new Item(ItemID.FEATHER, total), price)),
+            keep
+        );
+
+        Pair<Item, Long> feather = Pair.of(new Item(ItemID.FEATHER, 1), price);
+        assertEquals(
+            asList(feather, feather, feather), // IntStream.range(0, keep).mapToObj(i -> feather).collect(Collectors.toList()),
+            split.getLeft()
+        );
+        assertEquals(
+            singletonList(Pair.of(new Item(ItemID.FEATHER, total - keep), price)),
+            split.getRight()
+        );
+    }
+
+    @Test
     void testSplitProtected() {
         Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split = splitItemsByKept(asList(EGG, GRAIN, POT, SALMON, TUNA), 4);
         assertEquals(asList(EGG, GRAIN, POT, SALMON), split.getLeft());
