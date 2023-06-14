@@ -8,7 +8,7 @@ Have a suggestion (e.g., new notifier, additional data), bug report (as rare as 
 
 ## Basic Setup
 
-To use this plugin, a webhook URL is required; you can obtain one from Discord with the following steps:
+To use this plugin, a webhook URL is required; you can obtain one from Discord with the following steps:  
 <sub>If you already have a link, skip to step 4.</sub>
 
 1. Click the server name (at the top-left of your screen) and select `Server Settings`.
