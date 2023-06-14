@@ -8,14 +8,14 @@ Have a suggestion (e.g., new notifier, additional data), bug report (as rare as 
 
 ## Basic Setup
 
-To use this plugin a webhook is required, you can obtain one from Discord with the following steps:
+To use this plugin, a webhook URL is required; you can obtain one from Discord with the following steps:
 <sub>If you already have a link, skip to step 4.</sub>
 
-1. Click the sever name top-left and select `Server Settings`.
-2. Select the `Integrations` tab on the left side and click `Create/View Webhook(s)`.
-3. Click the newly created or existing webhook, and select `Copy Webhook URL`.
-4. Paste the copied link into the `Primary Webhook URLs` box.
-5. (Optional): If you would like only certain notifications sent to the discord in question, you can instead paste the link into each box in the `Webhook Overrides` section.
+1. Click the server name (at the top-left of your screen) and select `Server Settings`.
+2. Select the `Integrations` tab on the left side and click `Create Webhook` (if other webhooks already exist, click `View Webhooks` and `New Webhook`).
+3. Click the newly created webhook, select the target Discord channel, and click `Copy Webhook URL`.
+4. Paste the copied link into the `Primary Webhook URLs` box in the Dink plugin settings.
+5. (Optional): If you would like different webhook URLs to receive different sets of notifications, you can instead paste the link into each relevant box in the `Webhook Overrides` section. Note: when a notifier has an override URL, the notifier ignores the primary URL box.
 
 ## Notifiers
 
