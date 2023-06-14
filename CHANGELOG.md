@@ -4,6 +4,7 @@
 - Minor: Add setting to exclude group name from GIM shared storage notifications. (#247)
 - Minor: Include relevant wiki links in rich embed content. (#243, #248)
 - Minor: Re-implemented README info for generating a Discord webhook. (#256, #257)
+- Bugfix: Improve kept or lost classification of stackable items for death notifications. (#255)
 - Bugfix: Ignore notifications from new beta worlds. (#253)
 - Bugfix: Avoid combat level notifications that don't conform to the configured interval. (#250, #251)
 

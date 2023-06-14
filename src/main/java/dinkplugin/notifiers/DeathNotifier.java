@@ -138,9 +138,8 @@ public class DeathNotifier extends BaseNotifier {
         List<Pair<Item, Long>> lostItems = split.getRight();
 
         long losePrice = lostItems.stream()
-            .map(Pair::getRight)
-            .reduce(Long::sum)
-            .orElse(0L);
+            .mapToLong(pair -> pair.getValue() * pair.getKey().getQuantity())
+            .sum();
 
         int valueThreshold = config.deathMinValue();
         if (danger == Danger.DANGEROUS && losePrice < valueThreshold) {
@@ -285,13 +284,13 @@ public class DeathNotifier extends BaseNotifier {
     /**
      * @param itemManager {@link ItemManager}
      * @param items       the items whose prices should be queried
-     * @return pairs of the passed items to their price, sorted by most expensive first
+     * @return pairs of the passed items to their price, sorted by most expensive unit price first
      */
     @NotNull
     private static List<Pair<Item, Long>> getPricedItems(ItemManager itemManager, Collection<Item> items) {
         return items.stream()
-            .map(item -> Pair.of(item, ItemUtils.getPrice(itemManager, item.getId()) * item.getQuantity()))
-            .sorted((a, b) -> Math.toIntExact(b.getRight() - a.getRight()))
+            .map(item -> Pair.of(item, ItemUtils.getPrice(itemManager, item.getId())))
+            .sorted(Comparator.<Pair<Item, Long>>comparingLong(Pair::getValue).reversed())
             .collect(Collectors.toList());
     }
 
@@ -301,17 +300,16 @@ public class DeathNotifier extends BaseNotifier {
      *
      * @param itemsByPrice inventory items transformed by {@link #getPricedItems(ItemManager, Collection)}
      * @param keepCount    the number of items kept on death
-     * @param <K>          the type of each entry; item paired with its unit price
      * @return the kept items on death (left) and lost items on death (right), in stable order, in separate lists
      */
     @NotNull
     @VisibleForTesting
-    static <K extends Pair<Item, Long>> Pair<List<K>, List<K>> splitItemsByKept(List<K> itemsByPrice, int keepCount) {
-        final List<K> keep = new ArrayList<>(keepCount);
-        final List<K> lost = new ArrayList<>(Math.max(itemsByPrice.size() - keepCount, 0));
+    static Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> splitItemsByKept(List<Pair<Item, Long>> itemsByPrice, int keepCount) {
+        final List<Pair<Item, Long>> keep = new ArrayList<>(keepCount);
+        final List<Pair<Item, Long>> lost = new ArrayList<>(Math.max(itemsByPrice.size() - keepCount, 0));
 
         int kept = 0;
-        for (K item : itemsByPrice) {
+        for (Pair<Item, Long> item : itemsByPrice) {
             int id = item.getKey().getId();
 
             if (id == ItemID.OLD_SCHOOL_BOND || id == ItemID.OLD_SCHOOL_BOND_UNTRADEABLE) {
@@ -320,11 +318,15 @@ public class DeathNotifier extends BaseNotifier {
                 continue;
             }
 
-            if (kept < keepCount && !ItemUtils.isItemNeverKeptOnDeath(id)) {
-                keep.add(item);
-                kept++;
-            } else {
-                lost.add(item);
+            boolean neverKept = ItemUtils.isItemNeverKeptOnDeath(id);
+            for (int i = 0; i < item.getKey().getQuantity(); i++) {
+                if (kept < keepCount && !neverKept) {
+                    keep.add(Pair.of(new Item(id, 1), item.getValue()));
+                    kept++;
+                } else {
+                    lost.add(Pair.of(new Item(id, item.getKey().getQuantity() - i), item.getValue()));
+                    break;
+                }
             }
         }
 
