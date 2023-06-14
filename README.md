@@ -6,6 +6,18 @@ This project was forked from UniversalDiscordNotifier, but has more features, re
 
 Have a suggestion (e.g., new notifier, additional data), bug report (as rare as it may be), or question? Let us know on our [issue tracker](https://github.com/pajlads/DinkPlugin/issues)!
 
+
+## Basic Setup
+
+To use this plugin a webhook is required, you can obtain one from Discord with the following steps:
+<sub>If you already have a link, skip to step 4.</sub>
+
+1. Click the sever name top-left and select `Server Settings`.
+2. Select the `Integrations` tab on the left side and click `Create/View Webhook(s)`.
+3. Click the newly created or existing webhook, and select `Copy Webhook URL`.
+4. Paste the copied link into the `Primary Webhook URLs` box.
+5. (Optional): If you would like only certain notifications sent to the discord in question, you can paste the link into each box in the `Webhook Overrides` section.
+
 ## Notifiers
 
 - [Death](#death): Send a webhook message upon dying (with special configuration for PK deaths)
