@@ -102,6 +102,7 @@ public class CombatTaskNotifier extends BaseNotifier {
             String player = Utils.getPlayerName(client);
             Template message = Template.builder()
                 .template(crossedThreshold ? config.combatTaskUnlockMessage() : config.combatTaskMessage())
+                .replacementBoundary("%")
                 .replacement("%USERNAME%", Replacements.ofText(player))
                 .replacement("%TIER%", Replacements.ofText(tier.toString()))
                 .replacement("%TASK%", Replacements.ofWiki(task))

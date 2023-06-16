@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Optimize notification templating engine performance. (#258)
+
 ## 1.5.2
 
 - Minor: Include link to killed player profile in PK notifier. (#246)

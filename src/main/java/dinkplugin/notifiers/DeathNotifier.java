@@ -196,6 +196,7 @@ public class DeathNotifier extends BaseNotifier {
 
         Template.TemplateBuilder builder = Template.builder()
             .template(template)
+            .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%VALUELOST%", Replacements.ofText(String.valueOf(losePrice)));
         if (pvp) {

@@ -117,6 +117,7 @@ public class ClueNotifier extends BaseNotifier {
             boolean screenshot = config.clueSendImage() && totalPrice.get() >= config.clueImageMinValue();
             Template notifyMessage = Template.builder()
                 .template(config.clueNotifyMessage())
+                .replacementBoundary("%")
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
                 .replacement("%CLUE%", Replacements.ofWiki(clueType, "Clue scroll (" + clueType + ")"))
                 .replacement("%COUNT%", Replacements.ofText(clueCount))

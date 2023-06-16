@@ -110,6 +110,7 @@ public class SlayerNotifier extends BaseNotifier {
 
             Template notifyMessage = Template.builder()
                 .template(config.slayerNotifyMessage())
+                .replacementBoundary("%")
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
                 .replacement("%TASK%", buildTask(task, monster, marginalKillCount))
                 .replacement("%TASKCOUNT%", Replacements.ofText(slayerCompleted))

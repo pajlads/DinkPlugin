@@ -58,6 +58,7 @@ public class SpeedrunNotifier extends BaseNotifier {
         // pb or notifying on non-pb; take the right string and format placeholders
         Template notifyMessage = Template.builder()
             .template(isPb ? config.speedrunPBMessage() : config.speedrunMessage())
+            .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%QUEST%", Replacements.ofWiki(questName))
             .replacement("%TIME%", Replacements.ofText(duration))

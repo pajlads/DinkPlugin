@@ -111,6 +111,7 @@ public class CollectionNotifier extends BaseNotifier {
     private void handleNotify(String itemName) {
         Template notifyMessage = Template.builder()
             .template(config.collectionNotifyMessage())
+            .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%ITEM%", Replacements.ofWiki(itemName))
             .build();
