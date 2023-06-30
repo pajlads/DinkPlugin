@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Dev: Update gradle wrapper to v8.2, which includes path traversal fixes. (#263)
 - Dev: Optimize notification templating engine performance. (#258)
 
 ## 1.5.2
