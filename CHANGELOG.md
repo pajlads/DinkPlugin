@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Increase level notifier initialization delay, as it sometimes occurred too early causing incorrect levelup notifications to trigger. (#264)
 - Dev: Optimize notification templating engine performance. (#258)
 
 ## 1.5.2
