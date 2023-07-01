@@ -11,8 +11,12 @@ repositories {
 }
 
 dependencies {
-    // old version and annotation processor approach due to runelite plugin hub verification restrictions
-    val lombokVersion = "1.18.20"
+    val lombokVersion = if (JavaVersion.current() >= JavaVersion.VERSION_17) {
+        "1.18.28" // JDK17 support was added in 1.18.22, but we can utilize latest since plugin-hub runs JDK11
+    } else {
+        "1.18.20" // Most recent version (only supports up to JDK16) that is verified by runelite
+    }
+    // old annotation processor approach due to runelite plugin hub verification restrictions
     compileOnly(group = "org.projectlombok", name = "lombok", version = lombokVersion)
     annotationProcessor(group = "org.projectlombok", name = "lombok", version = lombokVersion)
     testCompileOnly(group = "org.projectlombok", name = "lombok", version = lombokVersion)
