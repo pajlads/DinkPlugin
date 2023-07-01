@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Bugfix: Increase level notifier initialization delay, as it sometimes occurred too early causing incorrect levelup notifications to trigger. (#264)
+- Dev: Update gradle wrapper to v8.2, which includes path traversal fixes. (#263)
 - Dev: Optimize notification templating engine performance. (#258)
 
 ## 1.5.2
