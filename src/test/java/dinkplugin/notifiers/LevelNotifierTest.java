@@ -47,18 +47,21 @@ class LevelNotifierTest extends MockedNotifierTest {
         when(config.levelNotifyCombat()).thenReturn(true);
         when(config.levelInterval()).thenReturn(5);
         when(config.levelNotifyMessage()).thenReturn("%USERNAME% has levelled %SKILL%");
+        when(config.levelIntervalOverride()).thenReturn(95);
 
         // init base level
         when(client.getRealSkillLevel(any())).thenReturn(1);
         mockLevel(Skill.ATTACK, 99);
         mockLevel(Skill.HITPOINTS, 10);
         mockLevel(Skill.HUNTER, 4);
+        mockLevel(Skill.SLAYER, 96);
         initialCombatLevel = Experience.getCombatLevel(99, 1, 1, 10, 1, 1, 1);
         unchangedCombatLevel = new LevelNotificationData.CombatLevel(initialCombatLevel, false);
         plugin.onStatChanged(new StatChanged(Skill.AGILITY, 0, 1, 1));
         plugin.onStatChanged(new StatChanged(Skill.ATTACK, 14_000_000, 99, 99));
         plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 1200, 10, 10));
         plugin.onStatChanged(new StatChanged(Skill.HUNTER, 300, 4, 4));
+        plugin.onStatChanged(new StatChanged(Skill.SLAYER, 9_800_000, 96, 96));
     }
 
     @Test
@@ -303,6 +306,31 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testOverrideInterval() {
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(Skill.SLAYER, 10_695_000, 97, 97));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // ensure a notification occurred
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{skill}} to 97")
+                        .replacement("{{skill}}", Replacements.ofWiki("Slayer"))
+                        .build()
+                )
+                .extra(new LevelNotificationData(ImmutableMap.of("Slayer", 97), skillsMap("Slayer", 97), unchangedCombatLevel))
+                .type(NotificationType.LEVEL)
+                .build()
+        );
     }
 
     @Test
