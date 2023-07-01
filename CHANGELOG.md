@@ -2,6 +2,7 @@
 
 - Minor: Adds option to announce every level-up past a certain level. (#265)
 - Bugfix: Increase level notifier initialization delay, as it sometimes occurred too early causing incorrect levelup notifications to trigger. (#264)
+- Dev: Avoid compiler exception when building the plugin with JDK 17+. (#267)
 - Dev: Update gradle wrapper to v8.2, which includes path traversal fixes. (#263)
 - Dev: Optimize notification templating engine performance. (#258)
 
