@@ -247,6 +247,10 @@ public class LevelNotifier extends BaseNotifier {
         if (interval <= 1 || level == MAX_REAL_LEVEL)
             return true;
 
+        int intervalOverride = config.levelIntervalOverride();
+        if (intervalOverride > 0 && level >= intervalOverride) {
+            return true;
+        }
         // Check levels in (previous, current] for divisibility by interval
         // Allows for firing notification if jumping over a level that would've notified
         int remainder = level % interval;

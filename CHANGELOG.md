@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Adds option to announce every level-up past a certain level. (#265)
 - Bugfix: Increase level notifier initialization delay, as it sometimes occurred too early causing incorrect levelup notifications to trigger. (#264)
 - Dev: Remove references to deprecated Skill.OVERALL enum value. (#266)
 - Dev: Update gradle wrapper to v8.2, which includes path traversal fixes. (#263)
