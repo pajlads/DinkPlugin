@@ -346,7 +346,6 @@ class LevelNotifierTest extends MockedNotifierTest {
 
     private Map<String, Integer> skillsMap(String[] skills, int[] updatedLevels) {
         Map<String, Integer> m = Arrays.stream(Skill.values())
-            .filter(s -> s != Skill.OVERALL)
             .collect(Collectors.toMap(Skill::getName, client::getRealSkillLevel));
         for (int i = 0; i < skills.length; i++) {
             m.put(skills[i], updatedLevels[i]);
