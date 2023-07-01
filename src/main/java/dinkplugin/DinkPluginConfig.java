@@ -593,7 +593,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "levelIntervalOverride",
         name = "Interval Override Level",
-        description = "The minimum level after which all level ups send a notification.",
+        description = "The minimum level after which all level ups send a notification.<br/>" +
+            "Disabled when set to 0",
         position = 26,
         section = levelSection
     )
