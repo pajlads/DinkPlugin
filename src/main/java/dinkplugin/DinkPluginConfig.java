@@ -591,12 +591,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "levelIntervalOverride",
+        name = "Interval Override Level",
+        description = "All level ups starting from this override level send a notification, disregarding the configured Notify Interval.<br/>" +
+            "Disabled when set to 0",
+        position = 26,
+        section = levelSection
+    )
+    default int levelIntervalOverride() {
+        return 0;
+    }
+
+    @ConfigItem(
         keyName = "levelNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %SKILL% to insert the levelled skill(s)",
-        position = 26,
+        position = 27,
         section = levelSection
     )
     default String levelNotifyMessage() {
