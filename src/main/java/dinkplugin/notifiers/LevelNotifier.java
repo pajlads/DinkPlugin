@@ -60,8 +60,12 @@ public class LevelNotifier extends BaseNotifier {
                 return false; // still need to wait more ticks
 
             for (Skill skill : Skill.values()) {
-                // uses log(n) operation to support virtual levels
-                currentLevels.put(skill.getName(), Experience.getLevelForXp(client.getSkillExperience(skill)));
+                int level = client.getRealSkillLevel(skill); // O(1)
+                if (level >= MAX_REAL_LEVEL) {
+                    // uses log(n) operation to support virtual levels
+                    level = Experience.getLevelForXp(client.getSkillExperience(skill));
+                }
+                currentLevels.put(skill.getName(), level);
             }
             currentLevels.put(COMBAT_NAME, calculateCombatLevel());
             log.debug("Initialized current skill levels: {}", currentLevels);

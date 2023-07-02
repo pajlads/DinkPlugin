@@ -2,6 +2,7 @@
 
 - Minor: Adds option to announce every level-up past a certain level. (#265)
 - Bugfix: Increase level notifier initialization delay, as it sometimes occurred too early causing incorrect levelup notifications to trigger. (#264)
+- Dev: Optimize skill level initialization algorithm. (#269)
 - Dev: Add gradle 7.4 runner to ensure plugin hub compatibility. (#268)
 - Dev: Remove references to deprecated Skill.OVERALL enum value. (#266)
 - Dev: Avoid compiler exception when building the plugin with JDK 17+. (#267)
