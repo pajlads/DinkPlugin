@@ -35,7 +35,7 @@ public class LevelNotifier extends BaseNotifier {
     private static final int INIT_CLIENT_TICKS = 50; // 1000ms
     private static final String COMBAT_NAME = "Combat";
     private static final Set<String> COMBAT_COMPONENTS;
-    private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(Skill.values().length);
+    private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(Skill.values().length + 1);
     private final Map<String, Integer> currentLevels = new HashMap<>();
     private final AtomicInteger ticksWaited = new AtomicInteger();
     private final AtomicInteger initTicks = new AtomicInteger();
@@ -60,10 +60,8 @@ public class LevelNotifier extends BaseNotifier {
                 return false; // still need to wait more ticks
 
             for (Skill skill : Skill.values()) {
-                if (skill != Skill.OVERALL) {
-                    // uses log(n) operation to support virtual levels
-                    currentLevels.put(skill.getName(), Experience.getLevelForXp(client.getSkillExperience(skill)));
-                }
+                // uses log(n) operation to support virtual levels
+                currentLevels.put(skill.getName(), Experience.getLevelForXp(client.getSkillExperience(skill)));
             }
             currentLevels.put(COMBAT_NAME, calculateCombatLevel());
             log.debug("Initialized current skill levels: {}", currentLevels);
