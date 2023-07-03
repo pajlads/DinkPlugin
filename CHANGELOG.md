@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.5.3
+
 - Minor: Adds option to announce every level-up past a certain level. (#265)
 - Bugfix: Increase level notifier initialization delay, as it sometimes occurred too early causing incorrect levelup notifications to trigger. (#264)
 - Dev: Optimize skill level initialization algorithm. (#269)
