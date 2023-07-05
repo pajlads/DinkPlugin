@@ -146,6 +146,33 @@ class LevelNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyMaxExperience() {
+        Map<String, Integer> expectedSkills = skillsMap("Hunter", 127);
+
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 200_000_000, 99, 126));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{skill}} to Max XP (200M)")
+                        .replacement("{{skill}}", Replacements.ofWiki("Hunter"))
+                        .build()
+                )
+                .extra(new LevelNotificationData(ImmutableMap.of("Hunter", 127), expectedSkills, unchangedCombatLevel))
+                .type(NotificationType.LEVEL)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyTwo() {
         Map<String, Integer> expectedSkills = skillsMap(
             new String[] { "Agility", "Hunter" },
