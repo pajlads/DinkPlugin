@@ -376,6 +376,21 @@ class LevelNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnoreMaxExperience() {
+        // update config mock
+        when(config.levelNotifyVirtual()).thenReturn(false);
+
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 200_000_000, 99, 126));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testDisabled() {
         // disable notifier
         when(config.notifyLevel()).thenReturn(false);
