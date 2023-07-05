@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Fire level notification upon reaching max skill experience of 200M. (#273)
+
 ## 1.5.3
 
 - Minor: Adds option to announce every level-up past a certain level. (#265)
