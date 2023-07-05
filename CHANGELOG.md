@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include clan name in notificiation metadata. (#274)
+
 ## 1.5.3
 
 - Minor: Adds option to announce every level-up past a certain level. (#265)
