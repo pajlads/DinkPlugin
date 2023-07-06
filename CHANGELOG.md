@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Major: Add notifier for buying and selling items on the Grand Exchange. (#275)
+
 ## 1.5.3
 
 - Minor: Adds option to announce every level-up past a certain level. (#265)
