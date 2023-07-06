@@ -7,6 +7,7 @@ import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.DeathNotifier;
 import dinkplugin.notifiers.DiaryNotifier;
 import dinkplugin.notifiers.GambleNotifier;
+import dinkplugin.notifiers.GrandExchangeNotifier;
 import dinkplugin.notifiers.GroupStorageNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.LevelNotifier;
@@ -19,11 +20,13 @@ import dinkplugin.notifiers.SpeedrunNotifier;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
+import net.runelite.api.events.AccountHashChanged;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.events.GrandExchangeOfferChanged;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.StatChanged;
@@ -77,6 +80,7 @@ public class DinkPlugin extends Plugin {
     private @Inject GambleNotifier gambleNotifier;
     private @Inject PlayerKillNotifier pkNotifier;
     private @Inject GroupStorageNotifier groupStorageNotifier;
+    private @Inject GrandExchangeNotifier grandExchangeNotifier;
 
     @Override
     protected void startUp() {
@@ -108,6 +112,11 @@ public class DinkPlugin extends Plugin {
     }
 
     @Subscribe
+    public void onAccountHashChanged(AccountHashChanged event) {
+        grandExchangeNotifier.onAccountChange();
+    }
+
+    @Subscribe
     public void onCommandExecuted(CommandExecuted event) {
         settingsManager.onCommand(event);
     }
@@ -128,6 +137,7 @@ public class DinkPlugin extends Plugin {
         collectionNotifier.onGameState(gameStateChanged);
         levelNotifier.onGameStateChanged(gameStateChanged);
         diaryNotifier.onGameState(gameStateChanged);
+        grandExchangeNotifier.onGameStateChange(gameStateChanged);
     }
 
     @Subscribe
@@ -147,6 +157,7 @@ public class DinkPlugin extends Plugin {
         diaryNotifier.onTick();
         killCountNotifier.onTick();
         pkNotifier.onTick();
+        grandExchangeNotifier.onTick();
     }
 
     @Subscribe
@@ -181,6 +192,11 @@ public class DinkPlugin extends Plugin {
                 // do nothing
                 break;
         }
+    }
+
+    @Subscribe
+    public void onGrandExchangeOfferChanged(GrandExchangeOfferChanged event) {
+        grandExchangeNotifier.onOfferChange(event.getSlot(), event.getOffer());
     }
 
     @Subscribe
