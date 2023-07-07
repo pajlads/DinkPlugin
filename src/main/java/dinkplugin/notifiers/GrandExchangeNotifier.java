@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -9,11 +10,14 @@ import dinkplugin.notifiers.data.GrandExchangeNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GrandExchangeOfferState;
 import net.runelite.api.ItemComposition;
+import net.runelite.api.ItemID;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.game.ItemManager;
 
@@ -24,10 +28,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 public class GrandExchangeNotifier extends BaseNotifier {
+    private static final Set<Integer> TAX_EXEMPT_ITEMS;
     private static final int LOGIN_DELAY = 2;
     private final AtomicInteger initTicks = new AtomicInteger();
     private final Map<Integer, Instant> progressNotificationTimeBySlot = new HashMap<>();
@@ -71,6 +77,8 @@ public class GrandExchangeNotifier extends BaseNotifier {
         ItemComposition comp = itemManager.getItemComposition(offer.getItemId());
         SerializedItemStack item = new SerializedItemStack(offer.getItemId(), offer.getQuantitySold(), getUnitPrice(offer), comp.getMembersName());
         long marketPrice = ItemUtils.getPrice(itemManager, offer.getItemId());
+        OfferType type = getType(offer.getState());
+        Long tax = type == OfferType.SELL ? calculateTax(item.getPriceEach(), item.getQuantity(), item.getId()) : null;
 
         List<Embed> embeds;
         if (config.grandExchangeSendImage()) {
@@ -84,7 +92,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
             .template(config.grandExchangeNotifyMessage())
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
-            .replacement("%TYPE%", Replacements.ofText(getHumanType(offer.getState())))
+            .replacement("%TYPE%", Replacements.ofText(type.getDisplayName()))
             .replacement("%ITEM%", ItemUtils.templateStack(item))
             .replacement("%STATUS%", Replacements.ofText(getHumanStatus(offer.getState())))
             .build();
@@ -92,7 +100,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
             .type(NotificationType.GRAND_EXCHANGE)
             .text(message)
             .embeds(embeds)
-            .extra(new GrandExchangeNotificationData(slot + 1, offer.getState(), item, marketPrice, offer.getTotalQuantity()))
+            .extra(new GrandExchangeNotificationData(slot + 1, offer.getState(), item, marketPrice, offer.getTotalQuantity(), tax))
             .playerName(playerName)
             .build());
     }
@@ -165,17 +173,17 @@ public class GrandExchangeNotifier extends BaseNotifier {
         }
     }
 
-    private static String getHumanType(GrandExchangeOfferState state) {
+    private static OfferType getType(GrandExchangeOfferState state) {
         switch (state) {
             case BUYING:
             case CANCELLED_BUY:
             case BOUGHT:
-                return "bought";
+                return OfferType.BUY;
 
             case SELLING:
             case CANCELLED_SELL:
             case SOLD:
-                return "sold";
+                return OfferType.SELL;
 
             default:
                 return null;
@@ -191,5 +199,35 @@ public class GrandExchangeNotifier extends BaseNotifier {
         int quantity = offer.getQuantitySold();
         int spent = offer.getSpent();
         return quantity > 0 && spent > 0 ? spent / quantity : offer.getPrice();
+    }
+
+    private static long calculateTax(int unitPrice, int quantity, int itemId) {
+        // https://secure.runescape.com/m=news/grand-exchange-tax--item-sink?oldschool=1
+        if (unitPrice < 100 || TAX_EXEMPT_ITEMS.contains(itemId)) {
+            return 0L;
+        }
+        int price = Math.min(unitPrice, 500_000_000);
+        int unitTax = (int) Math.floor(price * 0.01);
+        return (long) unitTax * quantity;
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    private enum OfferType {
+        BUY("bought"),
+        SELL("sold");
+
+        private final String displayName;
+    }
+
+    static {
+        // https://oldschool.runescape.wiki/w/Category:Items_exempt_from_Grand_Exchange_tax
+        TAX_EXEMPT_ITEMS = ImmutableSet.of(
+            ItemID.CHISEL, ItemID.SEED_DIBBER, ItemID.GARDENING_TROWEL,
+            ItemID.GLASSBLOWING_PIPE, ItemID.HAMMER, ItemID.NEEDLE,
+            ItemID.PESTLE_AND_MORTAR, ItemID.RAKE, ItemID.SAW,
+            ItemID.SECATEURS, ItemID.SHEARS, ItemID.SPADE,
+            ItemID.WATERING_CAN, ItemID.OLD_SCHOOL_BOND
+        );
     }
 }

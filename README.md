@@ -712,7 +712,7 @@ Note: `world` and `location` are _not_ sent if the user has disabled the "Includ
   "accountType": "NORMAL",
   "extra": {
     "slot": 1,
-    "status": "BOUGHT",
+    "status": "SOLD",
     "item": {
       "id": 314,
       "quantity": 2,
@@ -720,7 +720,8 @@ Note: `world` and `location` are _not_ sent if the user has disabled the "Includ
       "name": "Feather"
     },
     "marketPrice": 2,
-    "targetQuantity": 2
+    "targetQuantity": 2,
+    "sellerTax": 0
   }
 }
 ```
