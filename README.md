@@ -725,6 +725,9 @@ Note: `world` and `location` are _not_ sent if the user has disabled the "Includ
 }
 ```
 
+Unlike `GrandExchangeOfferChanged#getSlot`, `extra.slot` is one-indexed;
+values can range from 1 to 8 (inclusive) for members, and 1 to 3 (inclusive) for F2P.
+
 See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/GrandExchangeOfferState.html) for the possible values of `extra.status`.
 
 </details>

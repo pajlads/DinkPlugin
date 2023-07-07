@@ -92,7 +92,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
             .type(NotificationType.GRAND_EXCHANGE)
             .text(message)
             .embeds(embeds)
-            .extra(new GrandExchangeNotificationData(slot, offer.getState(), item, marketPrice, offer.getTotalQuantity()))
+            .extra(new GrandExchangeNotificationData(slot + 1, offer.getState(), item, marketPrice, offer.getTotalQuantity()))
             .playerName(playerName)
             .build());
     }
