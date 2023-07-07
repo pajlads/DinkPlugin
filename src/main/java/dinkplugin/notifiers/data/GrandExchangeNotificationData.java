@@ -6,6 +6,7 @@ import dinkplugin.util.ItemUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.runelite.api.GrandExchangeOfferState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -14,12 +15,45 @@ import java.util.List;
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class GrandExchangeNotificationData extends NotificationData {
+
+    /**
+     * The slot index (one-based) for this transaction.
+     * This ranges from 1 to 8 (inclusive) for members, and 1 to 3 (inclusive) for F2P.
+     */
     int slot;
+
+    /**
+     * The trade offer status.
+     * Will not be {@link GrandExchangeOfferState#EMPTY}.
+     */
+    @NotNull
     GrandExchangeOfferState status;
+
+    /**
+     * The transacted item, including the number of items transacted and the pre-tax average price.
+     */
+    @NotNull
     SerializedItemStack item;
+
+    /**
+     * The current market price for the transacted item, according to wiki data.
+     * This can differ from the transacted price contained in {@link #getItem()}.
+     */
     long marketPrice;
+
+    /**
+     * The total number of items that the player wishes to buy within this slot.
+     * When {@link #getStatus()} is {@link GrandExchangeOfferState#BOUGHT} or {@link GrandExchangeOfferState#SOLD},
+     * this quantity is equivalent to the quantity contained within {@link #getItem()}.
+     */
     int targetQuantity;
-    @Nullable Long sellerTax;
+
+    /**
+     * GP corresponding to the 1 percent tax that is levied on the seller for this transaction.
+     * This field is not included when purchasing items.
+     */
+    @Nullable
+    Long sellerTax;
 
     @Override
     public List<Field> getFields() {
