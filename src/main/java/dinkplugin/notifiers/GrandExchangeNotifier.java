@@ -131,9 +131,12 @@ public class GrandExchangeNotifier extends BaseNotifier {
                 if (spacing < 0)
                     return false; // negative => no in-progress notifications allowed
 
+                // convert minutes to seconds, but treat 0 minutes as 2 seconds to workaround duplicate RL events
+                long spacingSeconds = spacing > 0 ? spacing * 60L : 2L;
+
                 Instant now = Instant.now();
                 Instant prior = progressNotificationTimeBySlot.get(slot);
-                if (prior == null || Duration.between(prior, now).toMinutes() >= spacing) {
+                if (prior == null || Duration.between(prior, now).getSeconds() >= spacingSeconds) {
                     return progressNotificationTimeBySlot.put(slot, now) == prior;
                 }
                 return false;
