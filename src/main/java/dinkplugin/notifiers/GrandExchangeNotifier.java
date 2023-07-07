@@ -188,7 +188,8 @@ public class GrandExchangeNotifier extends BaseNotifier {
     }
 
     private static int getUnitPrice(GrandExchangeOffer offer) {
-        int price = offer.getPrice();
-        return price > 0 ? price : offer.getSpent() / offer.getQuantitySold();
+        int quantity = offer.getQuantitySold();
+        int spent = offer.getSpent();
+        return quantity > 0 && spent > 0 ? spent / quantity : offer.getPrice();
     }
 }
