@@ -109,6 +109,9 @@ public class GrandExchangeNotifier extends BaseNotifier {
         if (initTicks.get() > 0)
             return false;
 
+        if (!isEnabled())
+            return false;
+
         boolean valuable = getTransactedValue(offer) >= config.grandExchangeMinValue();
 
         switch (offer.getState()) {
