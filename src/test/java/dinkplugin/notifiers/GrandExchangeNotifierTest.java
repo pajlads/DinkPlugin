@@ -56,7 +56,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(0, offer);
 
         // verify notification
-        verifyNotification(0, offer, "bought", "Ruby", null);
+        verifyNotification(0, offer, "bought", "Ruby", RUBY_PRICE, null);
     }
 
     @Test
@@ -66,7 +66,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(1, offer);
 
         // verify notification
-        verifyNotification(1, offer, "sold", "Opal", 10 * 7L);
+        verifyNotification(1, offer, "sold", "Opal", OPAL_PRICE, 10 * 7L);
     }
 
     @Test
@@ -109,14 +109,14 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(1, offer);
 
         // verify notification
-        verifyNotification(1, offer, "bought", "Ruby", null);
+        verifyNotification(1, offer, "bought", "Ruby", RUBY_PRICE, null);
 
         // fire second event without spacing
         Offer offer2 = new Offer(22, ItemID.OPAL, 60, OPAL_PRICE, 15_000, GrandExchangeOfferState.BUYING);
         notifier.onOfferChange(2, offer2);
 
         // verify second notification
-        verifyNotification(2, offer2, "bought", "Opal", null);
+        verifyNotification(2, offer2, "bought", "Opal", OPAL_PRICE, null);
     }
 
     @Test
@@ -129,7 +129,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(0, offer);
 
         // verify notification
-        verifyNotification(0, offer, "bought", "Ruby", null);
+        verifyNotification(0, offer, "bought", "Ruby", RUBY_PRICE, null);
 
         // allow time to pass
         Thread.sleep(2500);
@@ -139,7 +139,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(0, offer2);
 
         // verify second notification
-        verifyNotification(0, offer2, "bought", "Ruby", null);
+        verifyNotification(0, offer2, "bought", "Ruby", RUBY_PRICE, null);
     }
 
     @Test
@@ -152,7 +152,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(0, offer);
 
         // verify notification
-        verifyNotification(0, offer, "bought", "Ruby", null);
+        verifyNotification(0, offer, "bought", "Ruby", RUBY_PRICE, null);
 
         // fire second event without spacing
         Offer offer2 = new Offer(20, ItemID.RUBY, 50, RUBY_PRICE, 10_000, GrandExchangeOfferState.BUYING);
@@ -172,7 +172,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(0, offer);
 
         // verify notification
-        verifyNotification(0, offer, "bought", "Ruby", null);
+        verifyNotification(0, offer, "bought", "Ruby", RUBY_PRICE, null);
     }
 
     @Test
@@ -211,7 +211,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
-    private void verifyNotification(int slot, Offer offer, String type, String itemName, Long tax) {
+    private void verifyNotification(int slot, Offer offer, String type, String itemName, long marketPrice, Long tax) {
         SerializedItemStack item = new SerializedItemStack(offer.getItemId(), offer.getQuantitySold(), offer.getSpent() / offer.getQuantitySold(), itemName);
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
@@ -228,7 +228,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
                         .build()
                 )
                 .embeds(Collections.singletonList(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId()))))
-                .extra(new GrandExchangeNotificationData(slot + 1, offer.getState(), item, offer.getPrice(), offer.getTotalQuantity(), tax))
+                .extra(new GrandExchangeNotificationData(slot + 1, offer.getState(), item, marketPrice, offer.getPrice(), offer.getTotalQuantity(), tax))
                 .playerName(PLAYER_NAME)
                 .build()
         );

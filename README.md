@@ -720,6 +720,7 @@ Note: `world` and `location` are _not_ sent if the user has disabled the "Includ
       "name": "Feather"
     },
     "marketPrice": 2,
+    "targetPrice": 3,
     "targetQuantity": 2,
     "sellerTax": 0
   }

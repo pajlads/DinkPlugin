@@ -42,6 +42,12 @@ public class GrandExchangeNotificationData extends NotificationData {
     long marketPrice;
 
     /**
+     * The limit order price selected by the user for the offer.
+     * For sell (buy) offers, this is a lower (upper) bound on the price contained in {@link #getItem()}.
+     */
+    long targetPrice;
+
+    /**
      * The total number of items that the player wishes to buy within this slot.
      * When {@link #getStatus()} is {@link GrandExchangeOfferState#BOUGHT} or {@link GrandExchangeOfferState#SOLD},
      * this quantity is equivalent to the quantity contained within {@link #getItem()}.

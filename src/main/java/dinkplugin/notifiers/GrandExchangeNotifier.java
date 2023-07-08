@@ -71,8 +71,8 @@ public class GrandExchangeNotifier extends BaseNotifier {
     }
 
     private void handleNotify(int slot, GrandExchangeOffer offer) {
-        log.debug("Notifying for slot={}, item={}, quantity={}, price={}, state={}",
-            slot, offer.getItemId(), offer.getQuantitySold(), offer.getPrice(), offer.getState());
+        log.debug("Notifying for slot={}, item={}, quantity={}, targetPrice={}, spent={}, state={}",
+            slot, offer.getItemId(), offer.getQuantitySold(), offer.getPrice(), offer.getSpent(), offer.getState());
 
         ItemComposition comp = itemManager.getItemComposition(offer.getItemId());
         SerializedItemStack item = new SerializedItemStack(offer.getItemId(), offer.getQuantitySold(), getUnitPrice(offer), comp.getMembersName());
@@ -100,7 +100,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
             .type(NotificationType.GRAND_EXCHANGE)
             .text(message)
             .embeds(embeds)
-            .extra(new GrandExchangeNotificationData(slot + 1, offer.getState(), item, marketPrice, offer.getTotalQuantity(), tax))
+            .extra(new GrandExchangeNotificationData(slot + 1, offer.getState(), item, marketPrice, offer.getPrice(), offer.getTotalQuantity(), tax))
             .playerName(playerName)
             .build());
     }
