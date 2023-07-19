@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Major: Add notifier for buying and selling items on the Grand Exchange. (#275)
+- Major: Add notifier for when items are bought or sold on the Grand Exchange. (#275)
 
 ## 1.5.3
 
