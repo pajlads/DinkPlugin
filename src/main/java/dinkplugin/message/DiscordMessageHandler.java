@@ -10,6 +10,8 @@ import dinkplugin.util.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.clan.ClanChannel;
+import net.runelite.api.clan.ClanID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
@@ -104,6 +106,20 @@ public class DiscordMessageHandler {
 
         if (config.sendDiscordUser())
             mBody = mBody.withDiscordUser(DiscordProfile.of(discordService.getCurrentUser()));
+
+        if (config.sendClanName()) {
+            ClanChannel clan = client.getClanChannel(ClanID.CLAN);
+            if (clan != null) {
+                mBody = mBody.withClanName(clan.getName());
+            }
+        }
+
+        if (config.sendGroupIronClanName()) {
+            ClanChannel gim = client.getClanChannel(ClanID.GROUP_IRONMAN);
+            if (gim != null) {
+                mBody = mBody.withGroupIronClanName(gim.getName());
+            }
+        }
 
         if (config.discordRichEmbeds()) {
             mBody = injectContent(mBody, sendImage, config);

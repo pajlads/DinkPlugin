@@ -146,6 +146,33 @@ class LevelNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyMaxExperience() {
+        Map<String, Integer> expectedSkills = skillsMap("Hunter", 127);
+
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 200_000_000, 99, 126));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{skill}} to Max XP (200M)")
+                        .replacement("{{skill}}", Replacements.ofWiki("Hunter"))
+                        .build()
+                )
+                .extra(new LevelNotificationData(ImmutableMap.of("Hunter", 127), expectedSkills, unchangedCombatLevel))
+                .type(NotificationType.LEVEL)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyTwo() {
         Map<String, Integer> expectedSkills = skillsMap(
             new String[] { "Agility", "Hunter" },
@@ -340,6 +367,41 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // fire skill event
         plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreMaxExperience() {
+        // update config mock
+        when(config.levelNotifyVirtual()).thenReturn(false);
+
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 200_000_000, 99, 126));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreAlreadyMaxExperience() {
+        // update skill mocks
+        Skill skill = Skill.CONSTRUCTION;
+        when(client.getRealSkillLevel(skill)).thenReturn(99);
+        when(client.getSkillExperience(skill)).thenReturn(Experience.MAX_SKILL_XP);
+        when(config.levelNotifyVirtual()).thenReturn(false);
+        plugin.onStatChanged(new StatChanged(skill, Experience.MAX_SKILL_XP, 99, 126));
+        when(config.levelNotifyVirtual()).thenReturn(true);
+
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(skill, 200_000_001, 99, 126));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());

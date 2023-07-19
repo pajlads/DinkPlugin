@@ -286,6 +286,28 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "sendClanName",
+        name = "Send Clan Name",
+        description = "Whether to send your clan information to the webhook server via metadata",
+        position = 1011,
+        section = advancedSection
+    )
+    default boolean sendClanName() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "sendGroupIronClanName",
+        name = "Send GIM Clan Name",
+        description = "Whether to send your group ironman clan information to the webhook server via metadata",
+        position = 1012,
+        section = advancedSection
+    )
+    default boolean sendGroupIronClanName() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +

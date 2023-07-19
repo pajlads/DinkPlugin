@@ -32,6 +32,7 @@ import static net.runelite.api.Experience.MAX_REAL_LEVEL;
 @Slf4j
 @Singleton
 public class LevelNotifier extends BaseNotifier {
+    public static final int LEVEL_FOR_MAX_XP = Experience.MAX_VIRT_LEVEL + 1; // 127
     private static final int INIT_CLIENT_TICKS = 50; // 1000ms
     private static final String COMBAT_NAME = "Combat";
     private static final Set<String> COMBAT_COMPONENTS;
@@ -62,8 +63,7 @@ public class LevelNotifier extends BaseNotifier {
             for (Skill skill : Skill.values()) {
                 int level = client.getRealSkillLevel(skill); // O(1)
                 if (level >= MAX_REAL_LEVEL) {
-                    // uses log(n) operation to support virtual levels
-                    level = Experience.getLevelForXp(client.getSkillExperience(skill));
+                    level = getLevel(client.getSkillExperience(skill));
                 }
                 currentLevels.put(skill.getName(), level);
             }
@@ -112,7 +112,7 @@ public class LevelNotifier extends BaseNotifier {
     private void handleLevelUp(String skill, int level, int xp) {
         if (!isEnabled()) return;
 
-        int virtualLevel = level < MAX_REAL_LEVEL ? level : Experience.getLevelForXp(xp); // avoid log(n) query when not needed
+        int virtualLevel = level < MAX_REAL_LEVEL ? level : getLevel(xp); // avoid log(n) query when not needed
         Integer previousLevel = currentLevels.put(skill, virtualLevel);
 
         if (previousLevel == null) {
@@ -192,7 +192,7 @@ public class LevelNotifier extends BaseNotifier {
             Integer level = currentLevels.get(skill);
             skillMessage
                 .component(Replacements.ofWiki(skill, COMBAT_NAME.equals(skill) ? "Combat level" : skill))
-                .component(Replacements.ofText(" to " + level));
+                .component(Replacements.ofText(" to " + (level < LEVEL_FOR_MAX_XP ? level : "Max XP (200M)")));
             lSkills.put(skill, level);
         }
 
@@ -248,7 +248,7 @@ public class LevelNotifier extends BaseNotifier {
             return false;
 
         int interval = config.levelInterval();
-        if (interval <= 1 || level == MAX_REAL_LEVEL)
+        if (interval <= 1 || level == MAX_REAL_LEVEL || level == LEVEL_FOR_MAX_XP)
             return true;
 
         int intervalOverride = config.levelIntervalOverride();
@@ -278,6 +278,15 @@ public class LevelNotifier extends BaseNotifier {
         return cachedLevel != null
             ? Math.min(cachedLevel, MAX_REAL_LEVEL)
             : client.getRealSkillLevel(skill);
+    }
+
+    private int getLevel(int xp) {
+        // treat 200M XP as level 127
+        if (xp >= Experience.MAX_SKILL_XP)
+            return LEVEL_FOR_MAX_XP;
+
+        // log(n) operation to support virtual levels
+        return Experience.getLevelForXp(xp);
     }
 
     private static String getSkillIcon(String skillName) {
