@@ -143,6 +143,14 @@ public interface DinkPluginConfig extends Config {
     String groupStorageSection = "Group Storage";
 
     @ConfigSection(
+        name = "Grand Exchange",
+        description = "Settings for notifying when you buy or sell items from the Grand Exchange",
+        position = 150,
+        closedByDefault = true
+    )
+    String grandExchangeSection = "Grand Exchange";
+
+    @ConfigSection(
         name = "Advanced",
         description = "Do not modify without fully understanding these settings",
         position = 1000,
@@ -472,6 +480,17 @@ public interface DinkPluginConfig extends Config {
         section = webhookSection
     )
     default String groupStorageWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "grandExchangeWebhook",
+        name = "Grand Exchange Webhook Override",
+        description = "If non-empty, Grand Exchange messages are sent to this URL, instead of the primary URL",
+        position = -4,
+        section = webhookSection
+    )
+    default String grandExchangeWebhook() {
         return "";
     }
 
@@ -1459,6 +1478,81 @@ public interface DinkPluginConfig extends Config {
     )
     default String groupStorageNotifyMessage() {
         return "%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%";
+    }
+
+    @ConfigItem(
+        keyName = "notifyGrandExchange",
+        name = "Enable GE Transactions",
+        description = "Enable notifications upon grand exchange transactions",
+        position = 150,
+        section = grandExchangeSection
+    )
+    default boolean notifyGrandExchange() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "grandExchangeSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 151,
+        section = grandExchangeSection
+    )
+    default boolean grandExchangeSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "grandExchangeIncludeCancelled",
+        name = "Include Cancelled",
+        description = "Enable notifications upon cancelling offers.<br/>" +
+            "Cancellation events require the trade's partial progress to exceed the configured minimum value.<br/>" +
+            "If 'Min Value' is set to 0, then cancellation events will also fire for completely unfilled orders",
+        position = 152,
+        section = grandExchangeSection
+    )
+    default boolean grandExchangeIncludeCancelled() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "grandExchangeMinValue",
+        name = "Min Value",
+        description = "The minimum value of the transacted items to send a notification",
+        position = 153,
+        section = grandExchangeSection
+    )
+    default int grandExchangeMinValue() {
+        return 100_000;
+    }
+
+    @Range(min = -1)
+    @Units(Units.MINUTES)
+    @ConfigItem(
+        keyName = "grandExchangeProgressSpacingMinutes",
+        name = "In Progress Spacing",
+        description = "The number of minutes that must pass since the last notification to notify for an in-progress trade.<br/>" +
+            "Set to -1 to never notify for in-progress trades",
+        position = 154,
+        section = grandExchangeSection
+    )
+    default int grandExchangeProgressSpacingMinutes() {
+        return -1; // corresponds to no notifications for partial progress
+    }
+
+    @ConfigItem(
+        keyName = "grandExchangeNotifyMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %TYPE% to insert the type of transaction (bought or sold)<br/>" +
+            "Use %ITEM% to insert the transacted item<br/>" +
+            "Use %STATUS% to insert the trade status (e.g., Completed, In Progress, Cancelled)",
+        position = 155,
+        section = grandExchangeSection
+    )
+    default String grandExchangeNotifyMessage() {
+        return "%USERNAME% %TYPE% %ITEM% on the GE";
     }
 
 }

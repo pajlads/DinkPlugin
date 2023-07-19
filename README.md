@@ -34,6 +34,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 - [BA Gambles](#ba-gambles): Sends a webhook message upon receiving high level gambles from Barbarian Assault
 - [Player Kills](#player-kills): Sends a webhook message upon killing another player (while hitsplats are still visible)
 - [Group Storage](#group-storage): Sends a webhook message upon Group Ironman Shared Bank transactions (i.e., depositing or withdrawing items)
+- [Grand Exchange](#grand-exchange): Sends a webhook message upon buying or selling items on the GE (with customizable value threshold)
 
 ## Other Setup
 
@@ -691,6 +692,47 @@ Note: `world` and `location` are _not_ sent if the user has disabled the "Includ
   }
 }
 ```
+
+</details>
+
+### Grand Exchange:
+
+`%TYPE%` will be replaced with the transaction type (i.e., bought or sold)
+
+`%ITEM%` will be replaced with the transacted item
+
+`%STATUS%` will be replaced with the offer status (i.e., Completed, In Progress, or Cancelled)
+
+<details>
+  <summary>JSON for GE Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% %TYPE% %ITEM% on the GE",
+  "type": "GRAND_EXCHANGE",
+  "playerName": "%USERNAME%",
+  "accountType": "NORMAL",
+  "extra": {
+    "slot": 1,
+    "status": "SOLD",
+    "item": {
+      "id": 314,
+      "quantity": 2,
+      "priceEach": 3,
+      "name": "Feather"
+    },
+    "marketPrice": 2,
+    "targetPrice": 3,
+    "targetQuantity": 2,
+    "sellerTax": 0
+  }
+}
+```
+
+Unlike `GrandExchangeOfferChanged#getSlot`, `extra.slot` is one-indexed;
+values can range from 1 to 8 (inclusive) for members, and 1 to 3 (inclusive) for F2P.
+
+See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/GrandExchangeOfferState.html) for the possible values of `extra.status`.
 
 </details>
 
