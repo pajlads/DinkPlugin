@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include clan name in notificiation metadata. (#274)
 - Dev: Update gradle wrapper to v8.2.1 patch version. (#276)
 
 ## 1.5.3
