@@ -1505,7 +1505,9 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "grandExchangeIncludeCancelled",
         name = "Include Cancelled",
-        description = "Enable notifications for cancelled offers, given the progress exceeds the configured minimum value",
+        description = "Enable notifications upon cancelling offers.<br/>" +
+            "Cancellation events require the trade's partial progress to exceed the configured minimum value.<br/>" +
+            "If 'Min Value' is set to 0, then cancellation events will also fire for completely unfilled orders",
         position = 152,
         section = grandExchangeSection
     )
