@@ -1515,7 +1515,6 @@ public interface DinkPluginConfig extends Config {
         return false;
     }
 
-    @Range(min = 1)
     @ConfigItem(
         keyName = "grandExchangeMinValue",
         name = "Min Value",

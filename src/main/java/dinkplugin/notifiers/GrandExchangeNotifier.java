@@ -132,7 +132,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
 
             case BUYING:
             case SELLING:
-                if (!valuable)
+                if (!valuable || offer.getQuantitySold() <= 0)
                     return false;
 
                 if (offer.getQuantitySold() >= offer.getTotalQuantity())
