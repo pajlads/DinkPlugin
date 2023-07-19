@@ -31,6 +31,10 @@ public class NotificationBody<T extends NotificationData> {
     String playerName;
     AccountType accountType;
     @Nullable
+    String clanName;
+    @Nullable
+    String groupIronClanName;
+    @Nullable
     T extra;
     @NotNull
     @EqualsAndHashCode.Include
