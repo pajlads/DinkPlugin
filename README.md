@@ -270,6 +270,8 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
 }
 ```
 
+Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M).
+
 </details>
 
 ### Loot:
