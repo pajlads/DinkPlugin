@@ -126,7 +126,8 @@ public class GrandExchangeNotifier extends BaseNotifier {
             if (offer.getState() != GrandExchangeOfferState.BOUGHT && offer.getState() != GrandExchangeOfferState.SOLD)
                 return false;
 
-            // require GE plugin to be enabled to be sure observed trades are written to config
+            // require GE plugin to be enabled so that observed trades are written to config
+            // however: not bullet-proof since GE plugin could've been disabled during the initial trade completion
             if ("false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, RL_GE_PLUGIN_NAME)))
                 return false;
 
