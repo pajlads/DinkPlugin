@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.6.0
+
 - Major: Add notifier for when items are bought or sold on the Grand Exchange. (#275, #277)
 - Minor: Fire level notification upon reaching max skill experience of 200M. (#273)
 - Minor: Include clan name in notificiation metadata. (#274)
