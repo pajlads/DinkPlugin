@@ -120,7 +120,8 @@ public class GrandExchangeNotifier extends BaseNotifier {
     }
 
     private boolean shouldNotify(int slot, GrandExchangeOffer offer) {
-        // On login, ignore updates if they aren't completions that haven't been observed before
+        // During login, we only care about offers that have been completed, and that were *not* observed by the RuneLite GE plugin
+        // This makes sure we don't fire any duplicate notifications for offers that were finished while we were online
         if (initTicks.get() > 0) {
             // check if offer is a completion
             if (offer.getState() != GrandExchangeOfferState.BOUGHT && offer.getState() != GrandExchangeOfferState.SOLD)
