@@ -1,6 +1,8 @@
 package dinkplugin.notifiers;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -9,6 +11,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GrandExchangeNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.util.SerializedOffer;
 import dinkplugin.util.Utils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +22,10 @@ import net.runelite.api.GrandExchangeOfferState;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemID;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.plugins.grandexchange.GrandExchangePlugin;
 
 import javax.inject.Inject;
 import java.time.Duration;
@@ -28,6 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,8 +42,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GrandExchangeNotifier extends BaseNotifier {
     private static final Set<Integer> TAX_EXEMPT_ITEMS;
     private static final int LOGIN_DELAY = 2;
+    private static final String RL_GE_PLUGIN_NAME = GrandExchangePlugin.class.getSimpleName().toLowerCase();
     private final AtomicInteger initTicks = new AtomicInteger();
     private final Map<Integer, Instant> progressNotificationTimeBySlot = new HashMap<>();
+
+    @Inject
+    private Gson gson;
+
+    @Inject
+    private ConfigManager configManager;
 
     @Inject
     private ItemManager itemManager;
@@ -106,8 +120,22 @@ public class GrandExchangeNotifier extends BaseNotifier {
     }
 
     private boolean shouldNotify(int slot, GrandExchangeOffer offer) {
-        if (initTicks.get() > 0)
-            return false;
+        // During login, we only care about offers that have been completed, and that were *not* observed by the RuneLite GE plugin
+        // This makes sure we don't fire any duplicate notifications for offers that were finished while we were online
+        if (initTicks.get() > 0) {
+            // check if offer is a completion
+            if (offer.getState() != GrandExchangeOfferState.BOUGHT && offer.getState() != GrandExchangeOfferState.SOLD)
+                return false;
+
+            // require GE plugin to be enabled so that observed trades are written to config
+            // however: not bullet-proof since GE plugin could've been disabled during the initial trade completion
+            if ("false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, RL_GE_PLUGIN_NAME)))
+                return false;
+
+            // check whether the completion has already been observed
+            if (getSavedOffer(slot).filter(saved -> saved.equals(offer)).isPresent())
+                return false;
+        }
 
         if (!isEnabled())
             return false;
@@ -155,6 +183,18 @@ public class GrandExchangeNotifier extends BaseNotifier {
             default:
                 return false;
         }
+    }
+
+    private Optional<SerializedOffer> getSavedOffer(int slot) {
+        return Optional.ofNullable(configManager.getRSProfileConfiguration("geoffer", String.valueOf(slot)))
+            .map(json -> {
+                try {
+                    return gson.fromJson(json, SerializedOffer.class);
+                } catch (JsonSyntaxException e) {
+                    log.warn("Failed to read saved GE offer", e);
+                    return null;
+                }
+            });
     }
 
     public static String getHumanStatus(GrandExchangeOfferState state) {

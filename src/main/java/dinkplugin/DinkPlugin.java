@@ -194,7 +194,7 @@ public class DinkPlugin extends Plugin {
         }
     }
 
-    @Subscribe
+    @Subscribe(priority = 1) // run before the base GE plugin
     public void onGrandExchangeOfferChanged(GrandExchangeOfferChanged event) {
         grandExchangeNotifier.onOfferChange(event.getSlot(), event.getOffer());
     }
