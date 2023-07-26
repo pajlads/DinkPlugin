@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include new Baron pet name in notification metadata. 
+
 ## 1.6.0
 
 - Major: Add notifier for when items are bought or sold on the Grand Exchange. (#275, #277)
