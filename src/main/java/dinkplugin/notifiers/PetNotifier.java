@@ -176,6 +176,7 @@ public class PetNotifier extends BaseNotifier {
             "Abyssal protector",
             "Baby chinchompa",
             "Baby mole",
+            "Baron",
             "Beaver",
             "Bloodhound",
             "Callisto cub",
