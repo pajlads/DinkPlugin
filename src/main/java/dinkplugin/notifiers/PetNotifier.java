@@ -177,6 +177,7 @@ public class PetNotifier extends BaseNotifier {
             "Baby chinchompa",
             "Baby mole",
             "Baron",
+            "Butch",
             "Beaver",
             "Bloodhound",
             "Callisto cub",
@@ -191,6 +192,7 @@ public class PetNotifier extends BaseNotifier {
             "Kalphite princess",
             "Lil' creator",
             "Lil' zik",
+            "Lil'viathan",
             "Little nightmare",
             "Muphin",
             "Nexling",
@@ -212,6 +214,7 @@ public class PetNotifier extends BaseNotifier {
             "Venenatis spiderling",
             "Vet'ion jr.",
             "Vorki",
+            "Wisp",
             "Youngllef"
         );
     }
