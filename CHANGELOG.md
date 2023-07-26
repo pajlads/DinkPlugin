@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Minor: Include new Baron pet name in notification metadata. 
+- Minor: Include new pet names from Desert Treasure II bosses in notification metadata. (#279)
 
 ## 1.6.0
 
