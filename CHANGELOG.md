@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include new pet names from Desert Treasure II bosses in notification metadata. (#279)
+
 ## 1.6.0
 
 - Major: Add notifier for when items are bought or sold on the Grand Exchange. (#275, #277)
