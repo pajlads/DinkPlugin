@@ -45,7 +45,10 @@ public class ConfigUtil {
         "killCountWebhook",
         "combatTaskWebhook",
         "diaryWebhook",
-        "gambleWebhook"
+        "gambleWebhook",
+        "pkWebhook",
+        "groupStorageWebhook",
+        "grandExchangeWebhook"
     );
 
     public Stream<String> readDelimited(String value) {
