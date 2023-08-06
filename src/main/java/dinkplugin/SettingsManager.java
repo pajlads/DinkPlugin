@@ -107,7 +107,10 @@ public class SettingsManager {
                 ).add(key);
             }
         });
-        webhookConfigKeys = keysBySection.get(DinkPluginConfig.webhookSection.toLowerCase().replace(" ", ""));
+        webhookConfigKeys = ImmutableSet.<String>builder()
+            .add("discordWebhook") // DinkPluginConfig#primaryWebhook
+            .addAll(keysBySection.get(DinkPluginConfig.webhookSection.toLowerCase().replace(" ", "")))
+            .build();
     }
 
     void onCommand(CommandExecuted event) {
