@@ -1,6 +1,5 @@
 package dinkplugin.util;
 
-import com.google.common.collect.ImmutableSet;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
@@ -14,7 +13,6 @@ import java.awt.Color;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -22,31 +20,6 @@ import java.util.stream.Stream;
 public class ConfigUtil {
 
     private final Pattern DELIM = Pattern.compile("[,;\\n]");
-
-    /**
-     * Set of our config keys that correspond to webhook URL lists.
-     * <p>
-     * These are used in {@link dinkplugin.SettingsManager} for special logic
-     * to merge the previous value with the new value during config imports.
-     *
-     * @see dinkplugin.DinkPluginConfig
-     */
-    public final Collection<String> WEBHOOK_CONFIG_KEYS = ImmutableSet.of(
-        "discordWebhook",
-        "collectionWebhook",
-        "petWebhook",
-        "levelWebhook",
-        "lootWebhook",
-        "deathWebhook",
-        "slayerWebhook",
-        "questWebhook",
-        "clueWebhook",
-        "speedrunWebhook",
-        "killCountWebhook",
-        "combatTaskWebhook",
-        "diaryWebhook",
-        "gambleWebhook"
-    );
 
     public Stream<String> readDelimited(String value) {
         if (value == null) return Stream.empty();

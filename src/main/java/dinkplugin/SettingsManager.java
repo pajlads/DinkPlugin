@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -59,6 +60,13 @@ public class SettingsManager {
      * Maps section names to the corresponding config item keys to allow for selective export.
      */
     private final Map<String, Collection<String>> keysBySection = new HashMap<>();
+
+    /**
+     * Set of our config keys that correspond to webhook URL lists.
+     * <p>
+     * These are used for special logic to merge the previous value with the new value during config imports.
+     */
+    private Collection<String> webhookConfigKeys;
 
     /**
      * User-specified RSNs that should not trigger webhook notifications.
@@ -100,6 +108,10 @@ public class SettingsManager {
                 ).add(key);
             }
         });
+        webhookConfigKeys = ImmutableSet.<String>builder()
+            .add("discordWebhook") // DinkPluginConfig#primaryWebhook
+            .addAll(keysBySection.getOrDefault(DinkPluginConfig.webhookSection.toLowerCase().replace(" ", ""), Collections.emptySet()))
+            .build();
     }
 
     void onCommand(CommandExecuted event) {
@@ -111,7 +123,7 @@ public class SettingsManager {
 
             Predicate<String> includeKey;
             if (args == null || args.length == 0) {
-                includeKey = k -> !WEBHOOK_CONFIG_KEYS.contains(k);
+                includeKey = k -> !webhookConfigKeys.contains(k);
             } else {
                 includeKey = k -> false;
 
@@ -120,7 +132,7 @@ public class SettingsManager {
                         includeKey = k -> true;
                         break;
                     } else if ("webhooks".equalsIgnoreCase(arg)) {
-                        includeKey = includeKey.or(WEBHOOK_CONFIG_KEYS::contains);
+                        includeKey = includeKey.or(webhookConfigKeys::contains);
                     } else {
                         Collection<String> sectionKeys = keysBySection.get(arg.toLowerCase());
                         if (sectionKeys != null) {
@@ -289,7 +301,7 @@ public class SettingsManager {
             .filter(pair -> pair.getValue() != null)
             .filter(pair -> {
                 // only serialize webhook urls if they are not blank
-                if (WEBHOOK_CONFIG_KEYS.contains(pair.getKey())) {
+                if (webhookConfigKeys.contains(pair.getKey())) {
                     Object value = pair.getValue();
                     return value instanceof String && StringUtils.isNotBlank((String) value);
                 }
@@ -362,7 +374,7 @@ public class SettingsManager {
             Object prevValue = configManager.getConfiguration(CONFIG_GROUP, key, valueType);
             Object newValue;
 
-            if (WEBHOOK_CONFIG_KEYS.contains(key) || "ignoredNames".equals(key)) {
+            if (webhookConfigKeys.contains(key) || "ignoredNames".equals(key)) {
                 // special case: multi-line configs that should be merged (rather than replaced)
                 assert prevValue == null || prevValue instanceof String;
                 Collection<String> lines = readDelimited((String) prevValue).collect(Collectors.toCollection(LinkedHashSet::new));

@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Include new pet names from Desert Treasure II bosses in notification metadata. (#279)
+- Bugfix: Classify webhook overrides for player kill, grand exchange, and group storage notifiers appropriately for config exports. (#284)
 
 ## 1.6.0
 
