@@ -23,6 +23,7 @@ import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
@@ -99,9 +100,8 @@ class LootNotifierTest extends MockedNotifierTest {
         );
     }
 
-    // Ensure abnormal lootReceived npc loot event for The Whisperer boss fires a notification
-    // See https://github.com/pajlads/DinkPlugin/pull/286 for more context
     @Test
+    @DisplayName("Ensure LootReceived event for The Whisperer fires a notification - https://github.com/pajlads/DinkPlugin/pull/286")
     void testNotifyWhisperer() {
         String name = "The Whisperer";
 
@@ -126,10 +126,9 @@ class LootNotifierTest extends MockedNotifierTest {
         );
     }
 
-    // Ensure normal npc loot event for The Whisperer boss doesn't fire a notification
-    // See https://github.com/pajlads/DinkPlugin/pull/286 for more context
     @Test
-    void testNotifyWhispererNPCLootIgnored() {
+    @DisplayName("Ensure NpcLootReceived for The Whisperer doesn't fire a notification - https://github.com/pajlads/DinkPlugin/pull/286")
+    void testIgnoreWhispererNpcLootReceived() {
         // prepare mocks
         NPC npc = mock(NPC.class);
         String name = "The Whisperer";
@@ -140,7 +139,7 @@ class LootNotifierTest extends MockedNotifierTest {
         NpcLootReceived event = new NpcLootReceived(npc, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)));
         plugin.onNpcLootReceived(event);
 
-        // verify notification message
+        // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
