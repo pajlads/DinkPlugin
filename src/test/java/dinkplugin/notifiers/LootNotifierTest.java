@@ -9,6 +9,7 @@ import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
+import net.runelite.api.NpcID;
 import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.WidgetLoaded;
@@ -33,6 +34,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 class LootNotifierTest extends MockedNotifierTest {
@@ -82,6 +84,33 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onNpcLootReceived(event);
 
         // verify notification message
+        verify(messageHandler, times(1)).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: 1 x {{ruby}} (%d) from %s for %d gp", PLAYER_NAME, RUBY_PRICE, name, RUBY_PRICE))
+                        .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
+                        .build()
+                )
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), name, LootRecordType.NPC))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    // Ensure abnormal lootReceived npc loot event for The Whisperer boss fires a notification
+    // See https://github.com/pajlads/DinkPlugin/pull/286 for more context
+    @Test
+    void testNotifyWhisperer() {
+        String name = "The Whisperer";
+
+        // fire event
+        LootReceived event = new LootReceived(name, 99, LootRecordType.NPC, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), 1);
+        plugin.onLootReceived(event);
+
+        // verify notification message
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             false,
@@ -96,6 +125,24 @@ class LootNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.LOOT)
                 .build()
         );
+    }
+
+    // Ensure normal npc loot event for The Whisperer boss doesn't fire a notification
+    // See https://github.com/pajlads/DinkPlugin/pull/286 for more context
+    @Test
+    void testNotifyWhispererNPCLootIgnored() {
+        // prepare mocks
+        NPC npc = mock(NPC.class);
+        String name = "The Whisperer";
+        when(npc.getName()).thenReturn(name);
+        when(npc.getId()).thenReturn(NpcID.THE_WHISPERER);
+
+        // fire event
+        NpcLootReceived event = new NpcLootReceived(npc, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)));
+        plugin.onNpcLootReceived(event);
+
+        // verify notification message
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
