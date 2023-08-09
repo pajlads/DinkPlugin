@@ -54,6 +54,8 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void onNpcLootReceived(NpcLootReceived event) {
+        if (!isEnabled()) return;
+
         NPC npc = event.getNpc();
         int id = npc.getId();
         if (id == NpcID.THE_WHISPERER || id == NpcID.THE_WHISPERER_12205 || id == NpcID.THE_WHISPERER_12206 || id == NpcID.THE_WHISPERER_12207) {
@@ -61,9 +63,8 @@ public class LootNotifier extends BaseNotifier {
             // So, we use LootReceived instead (and return here just in case they change their implementation).
             return;
         }
-        if (isEnabled()) {
-            this.handleNotify(event.getItems(), npc.getName(), LootRecordType.NPC);
-        }
+
+        this.handleNotify(event.getItems(), npc.getName(), LootRecordType.NPC);
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
