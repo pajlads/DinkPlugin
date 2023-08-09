@@ -34,7 +34,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 class LootNotifierTest extends MockedNotifierTest {
@@ -84,7 +83,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onNpcLootReceived(event);
 
         // verify notification message
-        verify(messageHandler, times(1)).createMessage(
+        verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
