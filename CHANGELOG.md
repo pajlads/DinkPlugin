@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.6.1
+
 - Minor: Include new pet names from Desert Treasure II bosses in notification metadata. (#279)
 - Bugfix: Fire loot notifications for The Whisperer kills. (#286)
 - Bugfix: Classify webhook overrides for player kill, grand exchange, and group storage notifiers appropriately for config exports. (#284)
