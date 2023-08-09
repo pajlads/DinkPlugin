@@ -57,7 +57,7 @@ public class LootNotifier extends BaseNotifier {
         NPC npc = event.getNpc();
         int id = npc.getId();
         if (id == NpcID.THE_WHISPERER || id == NpcID.THE_WHISPERER_12205 || id == NpcID.THE_WHISPERER_12206 || id == NpcID.THE_WHISPERER_12207) {
-            // Upstream neglects to fire NpcLootReceived for the whisperer, which they assert is intentional.
+            // Upstream does not fire NpcLootReceived for the whisperer, since they do not hold a reference to the NPC.
             // So, we use LootReceived instead (and return here just in case they change their implementation).
             return;
         }
