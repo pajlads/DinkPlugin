@@ -12,6 +12,8 @@ import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.NPC;
+import net.runelite.api.NpcID;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
@@ -52,8 +54,16 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void onNpcLootReceived(NpcLootReceived event) {
-        if (isEnabled())
-            this.handleNotify(event.getItems(), event.getNpc().getName(), LootRecordType.NPC);
+        NPC npc = event.getNpc();
+        int id = npc.getId();
+        if (id == NpcID.THE_WHISPERER || id == NpcID.THE_WHISPERER_12205 || id == NpcID.THE_WHISPERER_12206 || id == NpcID.THE_WHISPERER_12207) {
+            // Upstream neglects to fire NpcLootReceived for the whisperer, which they assert is intentional.
+            // So, we use LootReceived instead (and return here just in case they change their implementation).
+            return;
+        }
+        if (isEnabled()) {
+            this.handleNotify(event.getItems(), npc.getName(), LootRecordType.NPC);
+        }
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
@@ -74,6 +84,9 @@ public class LootNotifier extends BaseNotifier {
                 return;
             }
 
+            this.handleNotify(lootReceived.getItems(), lootReceived.getName(), lootReceived.getType());
+        } else if (lootReceived.getType() == LootRecordType.NPC && "The Whisperer".equalsIgnoreCase(lootReceived.getName())) {
+            // Special case: upstream fires LootReceived for the whisperer, but not NpcLootReceived
             this.handleNotify(lootReceived.getItems(), lootReceived.getName(), lootReceived.getType());
         }
     }
