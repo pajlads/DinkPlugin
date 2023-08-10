@@ -170,6 +170,9 @@ public class GrandExchangeNotifier extends BaseNotifier {
                 if (spacing < 0)
                     return false; // negative => no in-progress notifications allowed
 
+                if (getSavedOffer(slot).filter(saved -> saved.equals(offer)).isPresent())
+                    return false; // ignore since quantity already observed (relevant when trade limit is binding)
+
                 // convert minutes to seconds, but treat 0 minutes as 2 seconds to workaround duplicate RL events
                 long spacingSeconds = spacing > 0 ? spacing * 60L : 2L;
 
