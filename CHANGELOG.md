@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.6.2
+
 - Bugfix: Avoid duplicate grand exchange notifications for partial transactions at trade limit.
 
 ## 1.6.1
