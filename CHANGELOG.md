@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Avoid duplicate grand exchange notifications for partial transactions at trade limit.
+
 ## 1.6.1
 
 - Minor: Include new pet names from Desert Treasure II bosses in notification metadata. (#279)
