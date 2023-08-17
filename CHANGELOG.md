@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Update gradle wrapper to v8.3 minor version. (#293)
+
 ## 1.6.2
 
 - Bugfix: Avoid duplicate grand exchange notifications for partial transactions at trade limit.
