@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add `%TOTAL_LEVEL%` message template for level notifications. (#300)
 - Dev: Update gradle wrapper to v8.3 minor version. (#293)
 
 ## 1.6.2
