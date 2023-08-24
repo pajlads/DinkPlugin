@@ -188,7 +188,8 @@ public class GroupStorageNotifier extends BaseNotifier {
             deposits,
             withdrawals,
             netValue,
-            getGroupName()
+            getGroupName(),
+            config.groupStorageIncludePrice()
         );
 
         // Fire notification (delayed by a tick for screenshotHideChat reliability)

@@ -95,7 +95,8 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")),
             Collections.singletonList(new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal")),
             RUBY_PRICE - OPAL_PRICE,
-            GROUP_NAME
+            GROUP_NAME,
+            true
         );
 
         verifyNotification(extra, "+ 1 x Ruby (" + RUBY_PRICE + ")", "- 1 x Opal (" + OPAL_PRICE + ")");
@@ -122,7 +123,8 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 2, RUBY_PRICE, "Ruby")),
             Collections.singletonList(new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal")),
             (2*RUBY_PRICE) - OPAL_PRICE,
-            GROUP_NAME
+            GROUP_NAME,
+            false
         );
 
         verifyNotification(extra, "+ 2 x Ruby", "- 1 x Opal");
@@ -147,7 +149,8 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             Collections.emptyList(),
             Collections.singletonList(new SerializedItemStack(ItemID.COINS_995, 900, 1, "Coins")),
             -900,
-            GROUP_NAME
+            GROUP_NAME,
+            true
         );
 
         verifyNotification(extra, EMPTY_TRANSACTION, "- 900 x Coins (900)");
@@ -172,7 +175,8 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             Collections.emptyList(),
             Collections.singletonList(new SerializedItemStack(ItemID.COINS_995, 800, 1, "Coins")),
             -800,
-            GROUP_NAME
+            GROUP_NAME,
+            true
         );
 
         verifyNotification(extra, EMPTY_TRANSACTION, "- 800 x Coins (800)");
@@ -196,7 +200,8 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal")),
             Collections.emptyList(),
             RUBY_PRICE + OPAL_PRICE,
-            GROUP_NAME
+            GROUP_NAME,
+            true
         );
 
         verifyNotification(extra, "+ 1 x Ruby (" + RUBY_PRICE + ")\n+ 1 x Opal (" + OPAL_PRICE + ")", EMPTY_TRANSACTION);
@@ -220,7 +225,8 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             Collections.emptyList(),
             Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal")),
             -(RUBY_PRICE + OPAL_PRICE),
-            GROUP_NAME
+            GROUP_NAME,
+            true
         );
 
         verifyNotification(extra, EMPTY_TRANSACTION, "- 1 x Ruby (" + RUBY_PRICE + ")\n- 1 x Opal (" + OPAL_PRICE + ")");
@@ -245,7 +251,8 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             Collections.emptyList(),
             Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")),
             -TUNA_PRICE,
-            GROUP_NAME
+            GROUP_NAME,
+            true
         );
 
         verifyNotification(extra, EMPTY_TRANSACTION, "- 1 x Tuna (" + TUNA_PRICE + ")");
@@ -273,7 +280,8 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")),
             Collections.singletonList(new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal")),
             RUBY_PRICE - OPAL_PRICE,
-            null
+            null,
+            true
         );
 
         verifyNotification(extra, "+ 1 x Ruby (" + RUBY_PRICE + ")", "- 1 x Opal (" + OPAL_PRICE + ")");

@@ -17,13 +17,16 @@ public class GroupStorageNotificationData extends NotificationData {
     Collection<SerializedItemStack> withdrawals;
     long netValue;
     String groupName;
+    boolean includePrice;
 
     @Override
     public List<Field> getFields() {
         List<Field> fields = new ArrayList<>(2);
         if (StringUtils.isNotBlank(groupName))
             fields.add(new Field("Group", Field.formatBlock(null, groupName)));
-        fields.add(new Field("Net Value (GE)", ItemUtils.formatGold(netValue)));
+        if (includePrice) {
+            fields.add(new Field("Net Value (GE)", ItemUtils.formatGold(netValue)));
+        }
         return fields;
     }
 }
