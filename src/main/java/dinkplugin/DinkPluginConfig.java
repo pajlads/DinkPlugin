@@ -1469,7 +1469,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "groupStorageIncludePrice",
         name = "Include Price",
-        description = "Whether price should be included on individual items,\nand a Net Value field generated for notifications",
+        description = "Whether price should be included on individual items,<br/>" +
+            "and a Net Value field generated for notifications",
         position = 144,
         section = groupStorageSection
     )
