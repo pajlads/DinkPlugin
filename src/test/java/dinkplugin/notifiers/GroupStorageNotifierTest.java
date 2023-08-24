@@ -8,6 +8,7 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GroupStorageNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.domain.PriceType;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -57,6 +58,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         when(config.notifyGroupStorage()).thenReturn(true);
         when(config.groupStorageSendImage()).thenReturn(false);
         when(config.groupStorageIncludeClan()).thenReturn(true);
+        when(config.groupStoragePriceType()).thenReturn(PriceType.GrandExchange);
         when(config.groupStorageNotifyMessage())
             .thenReturn("%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%");
 
@@ -98,6 +100,33 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         );
 
         verifyNotification(extra, "+ 1 x Ruby (" + RUBY_PRICE + ")", "- 1 x Opal (" + OPAL_PRICE + ")");
+    }
+
+    @Test
+    void testNotifyNonePrice() {
+        when(config.groupStoragePriceType()).thenReturn(PriceType.None);
+
+        // mock initial inventory state
+        Item[] initialItems = { new Item(ItemID.RUBY, 2), new Item(ItemID.TUNA, 1) };
+        mockContainer(initialItems);
+        notifier.onWidgetLoad(LOAD_EVENT);
+
+        // mock updated inventory
+        Item[] updatedItems = { new Item(ItemID.TUNA, 1), new Item(ItemID.OPAL, 1) };
+        mockContainer(updatedItems);
+
+        mockSaveWidget();
+        notifier.onWidgetClose(CLOSE_EVENT);
+
+        // verify notification message
+        GroupStorageNotificationData extra = new GroupStorageNotificationData(
+            Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 2, RUBY_PRICE, "Ruby")),
+            Collections.singletonList(new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal")),
+            (2*RUBY_PRICE) - OPAL_PRICE,
+            GROUP_NAME
+        );
+
+        verifyNotification(extra, "+ 2 x Ruby", "- 1 x Opal");
     }
 
     @Test

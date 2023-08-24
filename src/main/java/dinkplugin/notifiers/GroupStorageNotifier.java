@@ -7,6 +7,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GroupStorageNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.domain.PriceType;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -165,7 +166,7 @@ public class GroupStorageNotifier extends BaseNotifier {
         BiFunction<Collection<SerializedItemStack>, String, String> formatItems = (items, linePrefix) -> {
             if (items.isEmpty()) return EMPTY_TRANSACTION;
             return items.stream()
-                .map(ItemUtils::formatStack)
+                .map(n -> ItemUtils.formatStack(n, config.groupStoragePriceType()))
                 .collect(Collectors.joining('\n' + linePrefix, linePrefix, ""));
         };
         String depositString = formatItems.apply(deposits, "+ ");

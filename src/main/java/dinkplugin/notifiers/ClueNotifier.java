@@ -9,6 +9,7 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.domain.PriceType;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.ClueNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
@@ -140,7 +141,7 @@ public class ClueNotifier extends BaseNotifier {
     private Evaluable getItemMessage(SerializedItemStack item, Collection<Embed> embeds) {
         if (config.clueShowItems())
             embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
-        return ItemUtils.templateStack(item);
+        return ItemUtils.templateStack(item, PriceType.GrandExchange);
     }
 
     private boolean checkClueTier(String clueType) {

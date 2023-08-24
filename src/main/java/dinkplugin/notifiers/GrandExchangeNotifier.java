@@ -11,6 +11,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GrandExchangeNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.domain.PriceType;
 import dinkplugin.util.SerializedOffer;
 import dinkplugin.util.Utils;
 import lombok.Getter;
@@ -107,7 +108,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%TYPE%", Replacements.ofText(type.getDisplayName()))
-            .replacement("%ITEM%", ItemUtils.templateStack(item))
+            .replacement("%ITEM%", ItemUtils.templateStack(item, PriceType.GrandExchange))
             .replacement("%STATUS%", Replacements.ofText(getHumanStatus(offer.getState())))
             .build();
         createMessage(config.grandExchangeSendImage(), NotificationBody.builder()

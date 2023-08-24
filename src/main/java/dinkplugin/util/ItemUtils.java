@@ -1,6 +1,7 @@
 package dinkplugin.util;
 
 import com.google.common.collect.ImmutableSet;
+import dinkplugin.domain.PriceType;
 import dinkplugin.message.Embed;
 import dinkplugin.message.Field;
 import dinkplugin.message.templating.Evaluable;
@@ -121,16 +122,35 @@ public class ItemUtils {
         return new SerializedItemStack(id, quantity, price, composition.getName());
     }
 
-    public String formatStack(SerializedItemStack item) {
-        return String.format("%d x %s (%s)", item.getQuantity(), item.getName(), QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
+    public String formatStack(SerializedItemStack item, PriceType priceType) {
+        switch (priceType) {
+            case GrandExchange:
+                return String.format("%d x %s (%s)", item.getQuantity(), item.getName(), QuantityFormatter.quantityToStackSize(item.getTotalPrice()));
+
+            case None:
+                // fallthrough
+        }
+
+        return String.format("%d x %s", item.getQuantity(), item.getName());
     }
 
-    public Evaluable templateStack(SerializedItemStack item) {
+    public Evaluable templateStack(SerializedItemStack item, PriceType priceType) {
+        switch (priceType) {
+            case GrandExchange:
+                return Replacements.ofMultiple("",
+                    Replacements.ofText(String.valueOf(item.getQuantity())),
+                    Replacements.ofText(" x "),
+                    Replacements.ofWiki(item.getName()),
+                    Replacements.ofText(" (" + QuantityFormatter.quantityToStackSize(item.getTotalPrice()) + ")")
+                );
+
+            case None:
+                // fallthrough
+        }
         return Replacements.ofMultiple("",
             Replacements.ofText(String.valueOf(item.getQuantity())),
             Replacements.ofText(" x "),
-            Replacements.ofWiki(item.getName()),
-            Replacements.ofText(" (" + QuantityFormatter.quantityToStackSize(item.getTotalPrice()) + ")")
+            Replacements.ofWiki(item.getName())
         );
     }
 

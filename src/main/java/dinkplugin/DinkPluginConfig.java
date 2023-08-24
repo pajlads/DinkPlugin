@@ -4,6 +4,7 @@ import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.domain.PlayerLookupService;
+import dinkplugin.domain.PriceType;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -1467,13 +1468,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "groupStoragePriceType",
+        name = "Price Type",
+        description = "The type of price shown in notifications",
+        position = 144,
+        section = groupStorageSection
+    )
+    default PriceType groupStoragePriceType() {
+        return PriceType.GrandExchange;
+    }
+
+    @ConfigItem(
         keyName = "groupStorageNotifyMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %DEPOSITED% to insert the list of deposited items<br/>" +
             "Use %WITHDRAWN% to insert the list of withdrawn items",
-        position = 144,
+        position = 145,
         section = groupStorageSection
     )
     default String groupStorageNotifyMessage() {
