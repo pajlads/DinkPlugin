@@ -214,7 +214,7 @@ public class DinkPlugin extends Plugin {
         deathNotifier.onInteraction(event);
     }
 
-    @Subscribe
+    @Subscribe(priority = -1) // run after the base loot tracker plugin
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
         lootNotifier.onNpcLootReceived(npcLootReceived);
     }

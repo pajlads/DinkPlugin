@@ -1,5 +1,7 @@
 package dinkplugin.notifiers;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -9,6 +11,7 @@ import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.util.SerializedLoot;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +22,13 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.loottracker.LootReceived;
+import net.runelite.client.plugins.loottracker.LootTrackerConfig;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
@@ -38,10 +43,16 @@ import java.util.List;
 public class LootNotifier extends BaseNotifier {
 
     @Inject
+    private Gson gson;
+
+    @Inject
     private ItemManager itemManager;
 
     @Inject
     private ClientThread clientThread;
+
+    @Inject
+    private ConfigManager configManager;
 
     @Override
     public boolean isEnabled() {
@@ -152,6 +163,7 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
+            Integer kc = type == LootRecordType.NPC ? getKillCount(dropper) : null;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Template notifyMessage = Template.builder()
                 .template(config.lootNotifyMessage())
@@ -165,11 +177,27 @@ public class LootNotifier extends BaseNotifier {
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
-                    .extra(new LootNotificationData(serializedItems, dropper, type))
+                    .extra(new LootNotificationData(serializedItems, dropper, type, kc))
                     .type(NotificationType.LOOT)
                     .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
                     .build()
             );
+        }
+    }
+
+    private Integer getKillCount(String npcName) {
+        String json = configManager.getConfiguration(LootTrackerConfig.GROUP,
+            configManager.getRSProfileKey(),
+            "drops_NPC_" + npcName
+        );
+        if (json == null) {
+            return null;
+        }
+        try {
+            return gson.fromJson(json, SerializedLoot.class).getKills();
+        } catch (JsonSyntaxException e) {
+            log.warn("Failed to read kills from loot tracker config", e);
+            return null;
         }
     }
 
