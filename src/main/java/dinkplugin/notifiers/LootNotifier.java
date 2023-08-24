@@ -9,7 +9,6 @@ import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
-import dinkplugin.domain.PriceType;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -142,7 +141,7 @@ public class LootNotifier extends BaseNotifier {
             long totalPrice = stack.getTotalPrice();
             if (totalPrice >= minValue) {
                 sendMessage = true;
-                lootMessage.component(ItemUtils.templateStack(stack, PriceType.GrandExchange));
+                lootMessage.component(ItemUtils.templateStack(stack, true));
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
                 if (max == null || totalPrice > max.getTotalPrice()) {
                     max = stack;

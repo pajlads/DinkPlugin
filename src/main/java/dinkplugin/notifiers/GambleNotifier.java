@@ -11,7 +11,6 @@ import dinkplugin.notifiers.data.GambleNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
-import dinkplugin.domain.PriceType;
 import dinkplugin.util.Utils;
 import lombok.NonNull;
 import lombok.Value;
@@ -89,7 +88,7 @@ public class GambleNotifier extends BaseNotifier {
 
     private static Evaluable lootSummary(List<SerializedItemStack> items) {
         JoiningReplacement.JoiningReplacementBuilder builder = JoiningReplacement.builder().delimiter("\n");
-        items.forEach(item -> builder.component(ItemUtils.templateStack(item, PriceType.GrandExchange)));
+        items.forEach(item -> builder.component(ItemUtils.templateStack(item, true)));
         return builder.build();
     }
 

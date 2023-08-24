@@ -4,7 +4,6 @@ import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.domain.PlayerLookupService;
-import dinkplugin.domain.PriceType;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -1468,14 +1467,14 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "groupStoragePriceType",
-        name = "Price Type",
-        description = "The type of price shown in notifications",
+        keyName = "groupStorageIncludePrice",
+        name = "Include Price",
+        description = "Whether price should be included on individual items,\nand a Net Value field generated for notifications",
         position = 144,
         section = groupStorageSection
     )
-    default PriceType groupStoragePriceType() {
-        return PriceType.GrandExchange;
+    default boolean groupStorageIncludePrice() {
+        return true;
     }
 
     @ConfigItem(

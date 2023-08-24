@@ -8,7 +8,6 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GroupStorageNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
-import dinkplugin.domain.PriceType;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -58,7 +57,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         when(config.notifyGroupStorage()).thenReturn(true);
         when(config.groupStorageSendImage()).thenReturn(false);
         when(config.groupStorageIncludeClan()).thenReturn(true);
-        when(config.groupStoragePriceType()).thenReturn(PriceType.GrandExchange);
+        when(config.groupStorageIncludePrice()).thenReturn(true);
         when(config.groupStorageNotifyMessage())
             .thenReturn("%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%");
 
@@ -104,7 +103,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyNonePrice() {
-        when(config.groupStoragePriceType()).thenReturn(PriceType.None);
+        when(config.groupStorageIncludePrice()).thenReturn(false);
 
         // mock initial inventory state
         Item[] initialItems = { new Item(ItemID.RUBY, 2), new Item(ItemID.TUNA, 1) };
