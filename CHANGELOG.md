@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include NPC kill count in loot notifications. (#299)
 - Dev: Update gradle wrapper to v8.3 minor version. (#293)
 
 ## 1.6.2
