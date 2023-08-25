@@ -107,7 +107,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%TYPE%", Replacements.ofText(type.getDisplayName()))
-            .replacement("%ITEM%", ItemUtils.templateStack(item))
+            .replacement("%ITEM%", ItemUtils.templateStack(item, true))
             .replacement("%STATUS%", Replacements.ofText(getHumanStatus(offer.getState())))
             .build();
         createMessage(config.grandExchangeSendImage(), NotificationBody.builder()
