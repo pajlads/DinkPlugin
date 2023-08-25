@@ -1,5 +1,7 @@
 package dinkplugin.notifiers;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dinkplugin.message.Embed;
@@ -23,12 +25,14 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.plugins.loottracker.LootTrackerConfig;
+import net.runelite.client.plugins.loottracker.LootTrackerPlugin;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
@@ -38,9 +42,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class LootNotifier extends BaseNotifier {
+
+    private static final String RL_LOOT_PLUGIN_NAME = LootTrackerPlugin.class.getSimpleName().toLowerCase();
 
     @Inject
     private Gson gson;
@@ -54,6 +61,10 @@ public class LootNotifier extends BaseNotifier {
     @Inject
     private ConfigManager configManager;
 
+    private final Cache<String, Integer> killCounts = CacheBuilder.newBuilder()
+        .expireAfterAccess(10, TimeUnit.MINUTES)
+        .build();
+
     @Override
     public boolean isEnabled() {
         return config.notifyLoot() && super.isEnabled();
@@ -64,8 +75,16 @@ public class LootNotifier extends BaseNotifier {
         return config.lootWebhook();
     }
 
+    public void reset() {
+        killCounts.invalidateAll();
+    }
+
     public void onNpcLootReceived(NpcLootReceived event) {
-        if (!isEnabled()) return;
+        if (!isEnabled()) {
+            // increment kill count
+            killCounts.asMap().computeIfPresent(event.getNpc().getName(), (k, v) -> v + 1);
+            return;
+        }
 
         NPC npc = event.getNpc();
         int id = npc.getId();
@@ -135,6 +154,7 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type) {
+        final Integer kc = type == LootRecordType.NPC ? getKillCount(dropper) : null;
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
 
@@ -163,7 +183,6 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
-            Integer kc = type == LootRecordType.NPC ? getKillCount(dropper) : null;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Template notifyMessage = Template.builder()
                 .template(config.lootNotifyMessage())
@@ -186,12 +205,29 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private Integer getKillCount(String npcName) {
+        Integer stored = getStoredKillCount(npcName);
+        if (stored == null) {
+            killCounts.asMap().computeIfPresent(npcName, (k, v) -> v + 1);
+            return null;
+        }
+        return killCounts.asMap().compute(npcName, (npc, cached) -> {
+            if (cached == null || cached < stored) {
+                return stored + 1;
+            }
+            return cached + 1;
+        });
+    }
+
+    private Integer getStoredKillCount(String npcName) {
+        if ("false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, RL_LOOT_PLUGIN_NAME))) {
+            return null;
+        }
         String json = configManager.getConfiguration(LootTrackerConfig.GROUP,
             configManager.getRSProfileKey(),
             "drops_NPC_" + npcName
         );
         if (json == null) {
-            return null;
+            return 0;
         }
         try {
             return gson.fromJson(json, SerializedLoot.class).getKills();
