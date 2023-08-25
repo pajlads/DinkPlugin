@@ -648,7 +648,8 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %SKILL% to insert the levelled skill(s)",
+            "Use %SKILL% to insert the levelled skill(s)<br/>" +
+            "Use %TOTAL_LEVEL% to insert the updated total level",
         position = 27,
         section = levelSection
     )
