@@ -246,6 +246,8 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
 
 `%SKILL%` will be replaced with the skill name and level that was achieved
 
+`%TOTAL_LEVEL%` will be replaced with the updated total level across all skills.
+
 <details>
   <summary>JSON for Levelups:</summary>
 

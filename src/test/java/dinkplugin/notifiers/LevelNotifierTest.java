@@ -67,6 +67,9 @@ class LevelNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         Map<String, Integer> expectedSkills = skillsMap("Agility", 5);
+        int totalLevel = expectedSkills.values().stream().mapToInt(i -> i).sum();
+        when(client.getTotalLevel()).thenReturn(totalLevel);
+        when(config.levelNotifyMessage()).thenReturn("%USERNAME% has levelled %SKILL%, achieving a total level of %TOTAL_LEVEL%");
 
         // fire skill event
         plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
@@ -81,8 +84,9 @@ class LevelNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(
                     Template.builder()
-                        .template(PLAYER_NAME + " has levelled {{skill}} to 5")
+                        .template(PLAYER_NAME + " has levelled {{skill}} to 5, achieving a total level of {{total}}")
                         .replacement("{{skill}}", Replacements.ofWiki("Agility"))
+                        .replacement("{{total}}", Replacements.ofText(String.valueOf(totalLevel)))
                         .build()
                 )
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5), expectedSkills, unchangedCombatLevel))
