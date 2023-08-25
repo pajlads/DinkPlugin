@@ -17,7 +17,7 @@ public class GroupStorageNotificationData extends NotificationData {
     Collection<SerializedItemStack> withdrawals;
     long netValue;
     String groupName;
-    boolean includePrice;
+    transient boolean includePrice;
 
     @Override
     public List<Field> getFields() {
