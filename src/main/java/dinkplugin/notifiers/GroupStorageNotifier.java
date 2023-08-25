@@ -165,7 +165,7 @@ public class GroupStorageNotifier extends BaseNotifier {
         BiFunction<Collection<SerializedItemStack>, String, String> formatItems = (items, linePrefix) -> {
             if (items.isEmpty()) return EMPTY_TRANSACTION;
             return items.stream()
-                .map(ItemUtils::formatStack)
+                .map(n -> ItemUtils.formatStack(n, config.groupStorageIncludePrice()))
                 .collect(Collectors.joining('\n' + linePrefix, linePrefix, ""));
         };
         String depositString = formatItems.apply(deposits, "+ ");
@@ -188,7 +188,8 @@ public class GroupStorageNotifier extends BaseNotifier {
             deposits,
             withdrawals,
             netValue,
-            getGroupName()
+            getGroupName(),
+            config.groupStorageIncludePrice()
         );
 
         // Fire notification (delayed by a tick for screenshotHideChat reliability)

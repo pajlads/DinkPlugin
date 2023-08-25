@@ -88,7 +88,7 @@ public class GambleNotifier extends BaseNotifier {
 
     private static Evaluable lootSummary(List<SerializedItemStack> items) {
         JoiningReplacement.JoiningReplacementBuilder builder = JoiningReplacement.builder().delimiter("\n");
-        items.forEach(item -> builder.component(ItemUtils.templateStack(item)));
+        items.forEach(item -> builder.component(ItemUtils.templateStack(item, true)));
         return builder.build();
     }
 
