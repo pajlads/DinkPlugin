@@ -1,5 +1,9 @@
 package dinkplugin.notifiers;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -9,6 +13,7 @@ import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.util.SerializedLoot;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -19,29 +24,48 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.loottracker.LootReceived;
+import net.runelite.client.plugins.loottracker.LootTrackerConfig;
+import net.runelite.client.plugins.loottracker.LootTrackerPlugin;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@Singleton
 public class LootNotifier extends BaseNotifier {
+
+    private static final String RL_LOOT_PLUGIN_NAME = LootTrackerPlugin.class.getSimpleName().toLowerCase();
+
+    @Inject
+    private Gson gson;
 
     @Inject
     private ItemManager itemManager;
 
     @Inject
     private ClientThread clientThread;
+
+    @Inject
+    private ConfigManager configManager;
+
+    private final Cache<String, Integer> killCounts = CacheBuilder.newBuilder()
+        .expireAfterAccess(10, TimeUnit.MINUTES)
+        .build();
 
     @Override
     public boolean isEnabled() {
@@ -53,8 +77,16 @@ public class LootNotifier extends BaseNotifier {
         return config.lootWebhook();
     }
 
+    public void reset() {
+        killCounts.invalidateAll();
+    }
+
     public void onNpcLootReceived(NpcLootReceived event) {
-        if (!isEnabled()) return;
+        if (!isEnabled()) {
+            // increment kill count
+            killCounts.asMap().computeIfPresent(event.getNpc().getName(), (k, v) -> v + 1);
+            return;
+        }
 
         NPC npc = event.getNpc();
         int id = npc.getId();
@@ -124,6 +156,7 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type) {
+        final Integer kc = type == LootRecordType.NPC ? incrementAndGetKillCount(dropper) : null;
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
 
@@ -165,11 +198,51 @@ public class LootNotifier extends BaseNotifier {
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
-                    .extra(new LootNotificationData(serializedItems, dropper, type))
+                    .extra(new LootNotificationData(serializedItems, dropper, type, kc))
                     .type(NotificationType.LOOT)
                     .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
                     .build()
             );
+        }
+    }
+
+    private Integer incrementAndGetKillCount(String npcName) {
+        Integer stored = getStoredKillCount(npcName);
+        if (stored == null) {
+            killCounts.asMap().computeIfPresent(npcName, (k, v) -> v + 1);
+            return null;
+        }
+        return killCounts.asMap().compute(npcName, (npc, cached) -> {
+            if (cached == null || cached < stored) {
+                return stored + 1;
+            }
+            return cached + 1;
+        });
+    }
+
+    /**
+     * @param npcName {@link NPC#getName()}
+     * @return the kill count stored by the base runelite loot tracker plugin
+     */
+    private Integer getStoredKillCount(String npcName) {
+        if ("false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, RL_LOOT_PLUGIN_NAME))) {
+            // assume stored kc is useless if loot tracker plugin is disabled
+            return null;
+        }
+        String json = configManager.getConfiguration(LootTrackerConfig.GROUP,
+            configManager.getRSProfileKey(),
+            "drops_NPC_" + npcName
+        );
+        if (json == null) {
+            // no kc stored implies first kill
+            return 0;
+        }
+        try {
+            return gson.fromJson(json, SerializedLoot.class).getKills();
+        } catch (JsonSyntaxException e) {
+            // should not occur unless loot tracker changes stored loot pojo structure
+            log.warn("Failed to read kills from loot tracker config", e);
+            return null;
         }
     }
 
