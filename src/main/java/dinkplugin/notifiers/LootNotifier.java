@@ -38,6 +38,7 @@ import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
+@Singleton
 public class LootNotifier extends BaseNotifier {
 
     private static final String RL_LOOT_PLUGIN_NAME = LootTrackerPlugin.class.getSimpleName().toLowerCase();
@@ -154,7 +156,7 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type) {
-        final Integer kc = type == LootRecordType.NPC ? getKillCount(dropper) : null;
+        final Integer kc = type == LootRecordType.NPC ? incrementAndGetKillCount(dropper) : null;
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
 
@@ -204,7 +206,7 @@ public class LootNotifier extends BaseNotifier {
         }
     }
 
-    private Integer getKillCount(String npcName) {
+    private Integer incrementAndGetKillCount(String npcName) {
         Integer stored = getStoredKillCount(npcName);
         if (stored == null) {
             killCounts.asMap().computeIfPresent(npcName, (k, v) -> v + 1);
@@ -218,8 +220,13 @@ public class LootNotifier extends BaseNotifier {
         });
     }
 
+    /**
+     * @param npcName {@link NPC#getName()}
+     * @return the kill count stored by the base runelite loot tracker plugin
+     */
     private Integer getStoredKillCount(String npcName) {
         if ("false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, RL_LOOT_PLUGIN_NAME))) {
+            // assume stored kc is useless if loot tracker plugin is disabled
             return null;
         }
         String json = configManager.getConfiguration(LootTrackerConfig.GROUP,
@@ -227,11 +234,13 @@ public class LootNotifier extends BaseNotifier {
             "drops_NPC_" + npcName
         );
         if (json == null) {
+            // no kc stored implies first kill
             return 0;
         }
         try {
             return gson.fromJson(json, SerializedLoot.class).getKills();
         } catch (JsonSyntaxException e) {
+            // should not occur unless loot tracker changes stored loot pojo structure
             log.warn("Failed to read kills from loot tracker config", e);
             return null;
         }
