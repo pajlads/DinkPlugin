@@ -140,7 +140,7 @@ public class ClueNotifier extends BaseNotifier {
     private Evaluable getItemMessage(SerializedItemStack item, Collection<Embed> embeds) {
         if (config.clueShowItems())
             embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
-        return ItemUtils.templateStack(item);
+        return ItemUtils.templateStack(item, true);
     }
 
     private boolean checkClueTier(String clueType) {

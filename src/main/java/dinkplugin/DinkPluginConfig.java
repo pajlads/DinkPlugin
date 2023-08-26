@@ -648,7 +648,8 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %SKILL% to insert the levelled skill(s)",
+            "Use %SKILL% to insert the levelled skill(s)<br/>" +
+            "Use %TOTAL_LEVEL% to insert the updated total level",
         position = 27,
         section = levelSection
     )
@@ -1467,13 +1468,25 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "groupStorageIncludePrice",
+        name = "Include Price",
+        description = "Whether price should be included on individual items,<br/>" +
+            "and a Net Value field generated for notifications",
+        position = 144,
+        section = groupStorageSection
+    )
+    default boolean groupStorageIncludePrice() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "groupStorageNotifyMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %DEPOSITED% to insert the list of deposited items<br/>" +
             "Use %WITHDRAWN% to insert the list of withdrawn items",
-        position = 144,
+        position = 145,
         section = groupStorageSection
     )
     default String groupStorageNotifyMessage() {

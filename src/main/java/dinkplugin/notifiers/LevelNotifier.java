@@ -170,6 +170,7 @@ public class LevelNotifier extends BaseNotifier {
 
     private void attemptNotify() {
         // Prepare level state
+        int totalLevel = client.getTotalLevel();
         List<String> levelled = new ArrayList<>(levelledSkills.size());
         levelledSkills.drainTo(levelled);
         int count = levelled.size();
@@ -229,6 +230,7 @@ public class LevelNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%SKILL%", skillMessage.build())
+            .replacement("%TOTAL_LEVEL%", Replacements.ofText(String.valueOf(totalLevel)))
             .build();
 
         // Fire notification
