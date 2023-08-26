@@ -129,6 +129,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onUsernameChanged(UsernameChanged usernameChanged) {
         levelNotifier.reset();
+        lootNotifier.reset();
     }
 
     @Subscribe
@@ -214,7 +215,7 @@ public class DinkPlugin extends Plugin {
         deathNotifier.onInteraction(event);
     }
 
-    @Subscribe
+    @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
         lootNotifier.onNpcLootReceived(npcLootReceived);
     }

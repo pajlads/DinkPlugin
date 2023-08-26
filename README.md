@@ -304,11 +304,14 @@ Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M
       }
     ],
     "source": "Giant rat",
-    "category": "NPC"
+    "category": "NPC",
+    "killCount": 60
   },
   "type": "LOOT"
 }
 ```
+
+Note: `killCount` is only specified for NPC loot with the base RuneLite Loot Tracker plugin enabled.
 
 </details>
 
