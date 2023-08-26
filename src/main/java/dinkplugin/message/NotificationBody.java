@@ -23,6 +23,8 @@ import java.util.List;
 @AllArgsConstructor
 public class NotificationBody<T extends NotificationData> {
 
+    static final int MAX_THREAD_NAME_LENGTH = 100; // not explicitly documented by Discord
+
     /*
      * Dink fields
      */
@@ -72,5 +74,14 @@ public class NotificationBody<T extends NotificationData> {
 
     @Builder.Default
     List<Embed> embeds = new LinkedList<>();
+
+    /**
+     * The thread name; must only be specified for forum channels when thread_id is not present
+     *
+     * @see #MAX_THREAD_NAME_LENGTH
+     */
+    @Nullable
+    @SerializedName("thread_name")
+    String threadName;
 
 }

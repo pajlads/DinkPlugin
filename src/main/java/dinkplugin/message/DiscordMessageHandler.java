@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.PlayerLookupService;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.DiscordProfile;
 import dinkplugin.util.Utils;
@@ -130,6 +132,19 @@ public class DiscordMessageHandler {
     }
 
     private void sendMessage(HttpUrl url, NotificationBody<?> mBody, @Nullable RequestBody image) {
+        Collection<String> queryParams = url.queryParameterNames();
+        if (queryParams.contains("forum") && !queryParams.contains("thread_id")) {
+            String threadName = Template.builder()
+                .template(config.threadNameTemplate())
+                .replacementBoundary("%")
+                .replacement("%TYPE%", Replacements.ofText(mBody.getType().getTitle()))
+                .replacement("%MESSAGE%", mBody.getText())
+                .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
+                .build()
+                .evaluate(false);
+            mBody = mBody.withThreadName(StringUtils.truncate(threadName, NotificationBody.MAX_THREAD_NAME_LENGTH));
+        }
+
         MultipartBody.Builder requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
             .addFormDataPart("payload_json", gson.toJson(mBody));
