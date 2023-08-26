@@ -29,6 +29,7 @@ import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.imageio.ImageIO;
@@ -89,7 +90,7 @@ public class DiscordMessageHandler {
             .build();
     }
 
-    public void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<?> mBody) {
+    public void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<?> inputBody) {
         if (StringUtils.isBlank(webhookUrl)) return;
 
         Collection<HttpUrl> urlList = Arrays.stream(StringUtils.split(webhookUrl, '\n'))
@@ -98,81 +99,52 @@ public class DiscordMessageHandler {
             .collect(Collectors.toList());
         if (urlList.isEmpty()) return;
 
-        if (mBody.getPlayerName() == null)
-            mBody = mBody.withPlayerName(Utils.getPlayerName(client));
-
-        if (mBody.getAccountType() == null)
-            mBody = mBody.withAccountType(Utils.getAccountType(client));
-
-        if (config.sendDiscordUser())
-            mBody = mBody.withDiscordUser(DiscordProfile.of(discordService.getCurrentUser()));
-
-        if (config.sendClanName()) {
-            ClanChannel clan = client.getClanChannel(ClanID.CLAN);
-            if (clan != null) {
-                mBody = mBody.withClanName(clan.getName());
-            }
-        }
-
-        if (config.sendGroupIronClanName()) {
-            ClanChannel gim = client.getClanChannel(ClanID.GROUP_IRONMAN);
-            if (gim != null) {
-                mBody = mBody.withGroupIronClanName(gim.getName());
-            }
-        }
-
-        if (config.discordRichEmbeds()) {
-            mBody = injectContent(mBody, sendImage, config);
-        } else {
-            mBody = mBody.withComputedDiscordContent(mBody.getText().evaluate(false));
-        }
-
-        MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("payload_json", gson.toJson(mBody));
-
+        NotificationBody<?> mBody = enrichBody(inputBody, sendImage);
         if (sendImage) {
             // optionally hide chat for privacy in screenshot
             boolean chatHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.CHATBOX);
             boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.PRIVATE_CHAT_MESSAGE);
 
-            String screenshotFile = mBody.getType().getScreenshot();
             captureScreenshot(drawManager, config.screenshotScale() / 100.0)
-                .thenApply(image -> reqBodyBuilder
-                    .addFormDataPart(
-                        "file",
-                        screenshotFile,
-                        RequestBody.create(
-                            MediaType.parse("image/" + image.getKey()),
-                            image.getValue()
-                        )
-                    )
+                .thenApply(image ->
+                    RequestBody.create(MediaType.parse("image/" + image.getKey()), image.getValue())
                 )
                 .exceptionally(e -> {
                     log.warn("There was an error creating bytes from captured image", e);
-                    return reqBodyBuilder;
+                    return null;
                 })
-                .thenApply(body -> {
+                .thenApply(image -> {
                     // unhide any widgets we hid
                     unhideWidget(chatHidden, client, clientThread, WidgetInfo.CHATBOX);
                     unhideWidget(whispersHidden, client, clientThread, WidgetInfo.PRIVATE_CHAT_MESSAGE);
-                    return body;
+                    return image;
                 })
-                .thenAccept(body -> sendToMultiple(urlList, body));
+                .thenAccept(image -> sendToMultiple(urlList, mBody, image));
         } else {
-            sendToMultiple(urlList, reqBodyBuilder);
+            sendToMultiple(urlList, mBody, null);
         }
     }
 
-    private void sendToMultiple(Collection<HttpUrl> urls, MultipartBody.Builder reqBodyBuilder) {
-        urls.forEach(url -> sendMessage(url, reqBodyBuilder, 0));
+    private void sendToMultiple(Collection<HttpUrl> urls, NotificationBody<?> body, @Nullable RequestBody image) {
+        urls.forEach(url -> sendMessage(url, body, image));
     }
 
-    private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody, int attempt) {
+    private void sendMessage(HttpUrl url, NotificationBody<?> mBody, @Nullable RequestBody image) {
+        MultipartBody.Builder requestBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("payload_json", gson.toJson(mBody));
+        if (image != null) {
+            String screenshotFileName = mBody.getType().getScreenshot();
+            requestBody.addFormDataPart("file", screenshotFileName, image);
+        }
+        this.sendMessage(url, requestBody.build(), 0);
+    }
+
+    private void sendMessage(HttpUrl url, MultipartBody requestBody, int attempt) {
         executor.execute(() -> {
             Request request = new Request.Builder()
                 .url(url)
-                .post(requestBody.build())
+                .post(requestBody)
                 .build();
 
             try (Response response = httpClient.newCall(request).execute()) {
@@ -206,6 +178,44 @@ public class DiscordMessageHandler {
                 }
             }
         });
+    }
+
+    private NotificationBody<?> enrichBody(NotificationBody<?> mBody, boolean sendImage) {
+        if (mBody.getPlayerName() == null) {
+            mBody = mBody.withPlayerName(Utils.getPlayerName(client));
+        }
+
+        if (mBody.getAccountType() == null) {
+            mBody = mBody.withAccountType(Utils.getAccountType(client));
+        }
+
+        NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
+
+        if (config.sendDiscordUser()) {
+            builder.discordUser(DiscordProfile.of(discordService.getCurrentUser()));
+        }
+
+        if (config.sendClanName()) {
+            ClanChannel clan = client.getClanChannel(ClanID.CLAN);
+            if (clan != null) {
+                builder.clanName(clan.getName());
+            }
+        }
+
+        if (config.sendGroupIronClanName()) {
+            ClanChannel gim = client.getClanChannel(ClanID.GROUP_IRONMAN);
+            if (gim != null) {
+                builder.groupIronClanName(gim.getName());
+            }
+        }
+
+        if (config.discordRichEmbeds()) {
+            builder.embeds(computeEmbeds(mBody, sendImage, config));
+        } else {
+            builder.computedDiscordContent(mBody.getText().evaluate(false));
+        }
+
+        return builder.build();
     }
 
     /**
@@ -251,7 +261,7 @@ public class DiscordMessageHandler {
             });
     }
 
-    private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, DinkPluginConfig config) {
+    private static List<Embed> computeEmbeds(@NotNull NotificationBody<?> body, boolean screenshot, DinkPluginConfig config) {
         NotificationType type = body.getType();
         NotificationData extra = body.getExtra();
         String footerText = config.embedFooterText();
@@ -285,7 +295,7 @@ public class DiscordMessageHandler {
                 .timestamp(footer != null ? Instant.now() : null)
                 .build()
         );
-        return body.withEmbeds(embeds);
+        return embeds;
     }
 
     private static boolean hideWidget(boolean shouldHide, Client client, WidgetInfo info) {

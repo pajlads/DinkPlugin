@@ -19,7 +19,7 @@ import java.util.List;
 
 @Value
 @With
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class NotificationBody<T extends NotificationData> {
 
