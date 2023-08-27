@@ -247,7 +247,7 @@ public class DiscordMessageHandler {
                 .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
                 .build()
                 .evaluate(false);
-            return mBody.withThreadName(StringUtils.truncate(threadName, NotificationBody.MAX_THREAD_NAME_LENGTH));
+            return mBody.withThreadName(Utils.truncate(threadName, NotificationBody.MAX_THREAD_NAME_LENGTH));
         }
         return mBody;
     }
@@ -319,7 +319,7 @@ public class DiscordMessageHandler {
             .iconUrl(Utils.getChatBadge(body.getAccountType()))
             .build();
         Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()
-            .text(StringUtils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
+            .text(Utils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
             .iconUrl(StringUtils.isBlank(footerIcon) ? null : footerIcon)
             .build();
         String thumbnail = body.getThumbnailUrl() != null
@@ -332,7 +332,7 @@ public class DiscordMessageHandler {
                 .author(author)
                 .color(Utils.PINK)
                 .title(type.getTitle())
-                .description(StringUtils.truncate(body.getText().evaluate(config.discordRichEmbeds()), Embed.MAX_DESCRIPTION_LENGTH))
+                .description(Utils.truncate(body.getText().evaluate(config.discordRichEmbeds()), Embed.MAX_DESCRIPTION_LENGTH))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(thumbnail))
                 .fields(extra != null ? extra.getFields() : Collections.emptyList())

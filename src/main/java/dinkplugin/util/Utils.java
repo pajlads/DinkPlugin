@@ -45,6 +45,26 @@ public class Utils {
     public final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
     public final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
 
+    private final char ELLIPSIS = '\u2026'; // '…'
+
+    /**
+     * Truncates text at the last space to conform with the specified max length.
+     *
+     * @param text      The text to be truncated
+     * @param maxLength The maximum allowed length of the text
+     * @return the truncated text
+     */
+    public String truncate(String text, int maxLength) {
+        if (text.length() <= maxLength) return text;
+
+        int lastSpace = text.lastIndexOf(' ', maxLength);
+        if (lastSpace <= 0) {
+            return text.substring(0, maxLength - 1) + ELLIPSIS;
+        } else {
+            return text.substring(0, lastSpace) + ELLIPSIS;
+        }
+    }
+
     /**
      * Converts text into "upper case first" form, as is used by OSRS for item names.
      *
