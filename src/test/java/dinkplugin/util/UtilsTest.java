@@ -17,6 +17,7 @@ class UtilsTest {
         assertEquals("Hello worldly…", Utils.truncate("Hello worldly beings", 16));
         assertEquals("Hello worldly…", Utils.truncate("Hello worldly beings", 15));
         assertEquals("Hello worldly…", Utils.truncate("Hello worldly beings", 14));
+        assertEquals("Hello…", Utils.truncate("Hello worldly beings", 13));
     }
 
 }

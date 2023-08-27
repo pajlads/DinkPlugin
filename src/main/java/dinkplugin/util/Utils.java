@@ -57,7 +57,7 @@ public class Utils {
     public String truncate(String text, int maxLength) {
         if (text.length() <= maxLength) return text;
 
-        int lastSpace = text.lastIndexOf(' ', maxLength);
+        int lastSpace = text.lastIndexOf(' ', maxLength - 1);
         if (lastSpace <= 0) {
             return text.substring(0, maxLength - 1) + ELLIPSIS;
         } else {
