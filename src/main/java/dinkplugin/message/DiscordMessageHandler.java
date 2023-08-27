@@ -53,6 +53,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -128,38 +129,38 @@ public class DiscordMessageHandler {
     }
 
     private void sendToMultiple(Collection<HttpUrl> urls, NotificationBody<?> body, @Nullable RequestBody image) {
-        urls.forEach(url -> sendMessage(url, body, image));
+        urls.forEach(url -> sendMessage(url, injectThreadName(url, body, false), image, 0));
     }
 
-    private void sendMessage(HttpUrl url, NotificationBody<?> mBody, @Nullable RequestBody image) {
-        Collection<String> queryParams = url.queryParameterNames();
-        if (queryParams.contains("forum") && !queryParams.contains("thread_id")) {
-            String threadName = Template.builder()
-                .template(config.threadNameTemplate())
-                .replacementBoundary("%")
-                .replacement("%TYPE%", Replacements.ofText(mBody.getType().getTitle()))
-                .replacement("%MESSAGE%", mBody.getText())
-                .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
-                .build()
-                .evaluate(false);
-            mBody = mBody.withThreadName(StringUtils.truncate(threadName, NotificationBody.MAX_THREAD_NAME_LENGTH));
-        }
+    private void sendMessage(HttpUrl url, NotificationBody<?> mBody, @Nullable RequestBody image, int attempt) {
+        BiConsumer<NotificationBody<?>, Throwable> retry = (body, e) -> {
+            log.trace(String.format("Failed to send webhook message to %s on attempt %d", url, attempt), e);
 
-        MultipartBody.Builder requestBody = new MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("payload_json", gson.toJson(mBody));
-        if (image != null) {
-            String screenshotFileName = mBody.getType().getScreenshot();
-            requestBody.addFormDataPart("file", screenshotFileName, image);
-        }
-        this.sendMessage(url, requestBody.build(), 0);
-    }
+            if (attempt == 0) {
+                log.warn("There was an error sending the webhook message", e);
+            }
 
-    private void sendMessage(HttpUrl url, MultipartBody requestBody, int attempt) {
+            int maxRetries = config.maxRetries();
+            if (attempt < maxRetries) {
+                long baseDelay = config.baseRetryDelay();
+                if (baseDelay > 0) {
+                    long delay = baseDelay * (1L << Math.min(attempt, 16)); // exponential backoff
+                    executor.schedule(() -> sendMessage(url, body, image, attempt + 1), delay, TimeUnit.MILLISECONDS);
+                    log.debug("Scheduled webhook message for retry in {} milliseconds", delay);
+                } else {
+                    log.debug("Skipping retry attempts for failed webhook since base delay is not positive");
+                }
+            } else if (maxRetries > 0) {
+                log.warn("Exhausted retry attempts when sending the webhook message", e);
+            } else {
+                log.debug("Skipping retry attempts for failed webhook since max retries is not positive");
+            }
+        };
+
         executor.execute(() -> {
             Request request = new Request.Builder()
                 .url(url)
-                .post(requestBody)
+                .post(createBody(mBody, image))
                 .build();
 
             try (Response response = httpClient.newCall(request).execute()) {
@@ -167,30 +168,32 @@ public class DiscordMessageHandler {
                     log.trace("Successfully sent webhook message to {} after {} attempts", url, attempt + 1);
                 } else {
                     String body = response.body() != null ? response.body().string() : null;
-                    throw new RuntimeException(String.format("Received unsuccessful http response: %d - %s - %s", response.code(), response.message(), body));
+
+                    // Update thread_name to comply with discord forum channel specification
+                    if (response.code() == 400 && "application/json".equals(response.header("Content-Type"))) {
+                        DiscordErrorMessage error = gson.fromJson(body, DiscordErrorMessage.class);
+
+                        // "Webhooks posted to forum channels must have a thread_name or thread_id"
+                        if (error.getCode() == 220001) {
+                            retry.accept(
+                                injectThreadName(url, mBody, true),
+                                new RuntimeException(error.getMessage())
+                            );
+                            return;
+                        }
+
+                        // "Webhooks can only create threads in forum channels"
+                        if (error.getCode() == 220003) {
+                            retry.accept(mBody.withThreadName(null), new RuntimeException(error.getMessage()));
+                            return;
+                        }
+                    }
+
+                    // retry with no change to NotificationBody
+                    retry.accept(mBody, new RuntimeException(String.format("Received unsuccessful http response: %d - %s - %s", response.code(), response.message(), body)));
                 }
             } catch (Exception e) {
-                log.trace(String.format("Failed to send webhook message to %s on attempt %d", url, attempt), e);
-
-                if (attempt == 0) {
-                    log.warn("There was an error sending the webhook message", e);
-                }
-
-                int maxRetries = config.maxRetries();
-                if (attempt < maxRetries) {
-                    long baseDelay = config.baseRetryDelay();
-                    if (baseDelay > 0) {
-                        long delay = baseDelay * (1L << Math.min(attempt, 16)); // exponential backoff
-                        executor.schedule(() -> sendMessage(url, requestBody, attempt + 1), delay, TimeUnit.MILLISECONDS);
-                        log.debug("Scheduled webhook message for retry in {} milliseconds", delay);
-                    } else {
-                        log.debug("Skipping retry attempts for failed webhook since base delay is not positive");
-                    }
-                } else if (maxRetries > 0) {
-                    log.warn("Exhausted retry attempts when sending the webhook message", e);
-                } else {
-                    log.debug("Skipping retry attempts for failed webhook since max retries is not positive");
-                }
+                retry.accept(mBody, e);
             }
         });
     }
@@ -231,6 +234,33 @@ public class DiscordMessageHandler {
         }
 
         return builder.build();
+    }
+
+    private NotificationBody<?> injectThreadName(HttpUrl url, NotificationBody<?> mBody, boolean force) {
+        Collection<String> queryParams = url.queryParameterNames();
+        if (force || (queryParams.contains("forum") && !queryParams.contains("thread_id"))) {
+            String threadName = Template.builder()
+                .template(config.threadNameTemplate())
+                .replacementBoundary("%")
+                .replacement("%TYPE%", Replacements.ofText(mBody.getType().getTitle()))
+                .replacement("%MESSAGE%", mBody.getText())
+                .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
+                .build()
+                .evaluate(false);
+            return mBody.withThreadName(StringUtils.truncate(threadName, NotificationBody.MAX_THREAD_NAME_LENGTH));
+        }
+        return mBody;
+    }
+
+    private MultipartBody createBody(NotificationBody<?> mBody, @Nullable RequestBody image) {
+        MultipartBody.Builder requestBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("payload_json", gson.toJson(mBody));
+        if (image != null) {
+            String screenshotFileName = mBody.getType().getScreenshot();
+            requestBody.addFormDataPart("file", screenshotFileName, image);
+        }
+        return requestBody.build();
     }
 
     /**
