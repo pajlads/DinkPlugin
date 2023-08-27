@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Send kill count notifications for Penance Queen kills. (#304)
 - Minor: Include NPC kill count in loot notifications. (#299)
 - Minor: Add option to disable price in Group Storage notifications. (#298)
 - Minor: Add `%TOTAL_LEVEL%` message template for level notifications. (#300)
