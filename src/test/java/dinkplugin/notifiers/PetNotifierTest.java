@@ -53,7 +53,25 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(null, null))
+                .extra(new PetNotificationData(null, null, false))
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyDuplicate() {
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you would have been followed...");
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(null, null, true))
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .type(NotificationType.PET)
                 .build()
@@ -78,7 +96,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(petName, null))
+                .extra(new PetNotificationData(petName, null, false))
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
@@ -104,7 +122,33 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(petName, null))
+                .extra(new PetNotificationData(petName, null, false))
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
+                .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyUntradeableDuplicate() {
+        String petName = "TzRek-Jad";
+        int itemId = ItemID.TZREKJAD;
+
+        // prepare mocks
+        when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);
+
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you would have been followed...");
+        notifier.onChatMessage("Untradeable drop: " + petName);
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(petName, null, true))
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
@@ -127,7 +171,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(null, null))
+                .extra(new PetNotificationData(null, null, false))
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
@@ -166,7 +210,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(petName, "50 killcount"))
+                .extra(new PetNotificationData(petName, "50 killcount", false))
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
@@ -204,7 +248,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(petName, "50 killcount"))
+                .extra(new PetNotificationData(petName, "50 killcount", false))
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
@@ -226,7 +270,7 @@ class PetNotifierTest extends MockedNotifierTest {
             "https://example.com",
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(null, null))
+                .extra(new PetNotificationData(null, null, false))
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .type(NotificationType.PET)
                 .build()
@@ -271,7 +315,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(null, null))
+                .extra(new PetNotificationData(null, null, false))
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .type(NotificationType.PET)
                 .build()

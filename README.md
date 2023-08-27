@@ -515,7 +515,8 @@ If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replac
   "content": "%USERNAME% has a funny feeling they are being followed",
   "extra": {
     "petName": "Ikkle hydra",
-    "milestone": "5,000 killcount"
+    "milestone": "5,000 killcount",
+    "duplicate": false
   },
   "type": "PET"
 }

@@ -71,6 +71,8 @@ public class PetNotifier extends BaseNotifier {
 
     private volatile String milestone = null;
 
+    private volatile boolean duplicate = false;
+
     @Override
     public boolean isEnabled() {
         return config.notifyPet() && super.isEnabled();
@@ -87,6 +89,7 @@ public class PetNotifier extends BaseNotifier {
                 if (PET_REGEX.matcher(chatMessage).matches()) {
                     // Prime the notifier to trigger next tick
                     this.petName = PRIMED_NAME;
+                    this.duplicate = chatMessage.contains("would have been");
                 }
             } else if (PRIMED_NAME.equals(petName)) {
                 parseItemFromGameMessage(chatMessage)
@@ -125,6 +128,7 @@ public class PetNotifier extends BaseNotifier {
     public void reset() {
         this.petName = null;
         this.milestone = null;
+        this.duplicate = false;
         this.ticksWaited.set(0);
     }
 
@@ -142,7 +146,7 @@ public class PetNotifier extends BaseNotifier {
             .map(ItemUtils::getItemImageUrl)
             .orElse(null);
 
-        PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null), milestone);
+        PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null), milestone, duplicate);
 
         createMessage(config.petSendImage(), NotificationBody.builder()
             .extra(extra)
