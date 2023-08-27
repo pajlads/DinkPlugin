@@ -1127,13 +1127,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "killCountPenanceQueen",
+        name = "Barbarian Assault",
+        description = "Notify for any Penance Queen kills",
+        position = 95,
+        section = killCountSection
+    )
+    default boolean killCountPenanceQueen() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "killCountMessage",
         name = "Notification Message",
         description = "The message to be sent to the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %BOSS% to insert the NPC name<br/>" +
             "Use %COUNT% to insert the kill count",
-        position = 95,
+        position = 96,
         section = killCountSection
     )
     default String killCountMessage() {
@@ -1148,7 +1159,7 @@ public interface DinkPluginConfig extends Config {
             "Use %BOSS% to insert the NPC name<br/>" +
             "Use %COUNT% to insert the kill count<br/>" +
             "Use %TIME% to insert the completion time",
-        position = 96,
+        position = 97,
         section = killCountSection
     )
     default String killCountBestTimeMessage() {

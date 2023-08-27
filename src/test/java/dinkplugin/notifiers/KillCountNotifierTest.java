@@ -1,24 +1,34 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.message.Embed;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
+import dinkplugin.util.ItemUtils;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
 import net.runelite.api.NPC;
+import net.runelite.api.NpcID;
+import net.runelite.api.Varbits;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.http.api.RuneLiteAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -409,6 +419,43 @@ class KillCountNotifierTest extends MockedNotifierTest {
                 .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(59).plusMillis(300), false))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyBarbarianAssault() {
+        // update mocks
+        int count = 420;
+        String boss = "Penance Queen";
+        when(config.killCountPenanceQueen()).thenReturn(true);
+        when(config.killCountSendImage()).thenReturn(false);
+        when(client.getVarbitValue(Varbits.BA_GC)).thenReturn(count);
+        Widget widget = mock(Widget.class);
+        when(widget.getText()).thenReturn("Reward:<br>80 Healer points<br>5 Defender points<br>5 Collector points<br>5 Attacker points");
+        when(client.getWidget(WidgetInfo.BA_REWARD_TEXT)).thenReturn(widget);
+
+        // fire event
+        WidgetLoaded event = new WidgetLoaded();
+        event.setGroupId(WidgetID.BA_REWARD_GROUP_ID);
+        notifier.onWidget(event);
+        notifier.onTick();
+
+        // check notification
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has defeated {{boss}} with a completion count of " + count + " high gambles")
+                        .replacement("{{boss}}", Replacements.ofWiki(boss))
+                        .build()
+                )
+                .extra(new BossNotificationData(boss, count, "The Queen is dead!", null, null))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .embeds(Collections.singletonList(Embed.ofImage(ItemUtils.getNpcImageUrl(NpcID.PENANCE_QUEEN))))
                 .build()
         );
     }
