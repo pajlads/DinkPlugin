@@ -247,7 +247,7 @@ public class DiscordMessageHandler {
                 .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
                 .build()
                 .evaluate(false);
-            return mBody.withThreadName(Utils.truncate(threadName, NotificationBody.MAX_THREAD_NAME_LENGTH));
+            return mBody.withThreadName(Utils.truncate(StringUtils.normalizeSpace(threadName), NotificationBody.MAX_THREAD_NAME_LENGTH));
         }
         return mBody;
     }
