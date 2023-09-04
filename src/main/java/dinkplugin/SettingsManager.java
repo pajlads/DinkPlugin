@@ -3,6 +3,7 @@ package dinkplugin;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import dinkplugin.domain.FilterMode;
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
@@ -69,9 +70,9 @@ public class SettingsManager {
     private Collection<String> webhookConfigKeys;
 
     /**
-     * User-specified RSNs that should not trigger webhook notifications.
+     * User-specified RSNs that should or should not (depending on filter mode) trigger webhook notifications.
      */
-    private final Collection<String> ignoredNames = new HashSet<>();
+    private final Collection<String> filteredNames = new HashSet<>();
 
     private final AtomicBoolean justLoggedIn = new AtomicBoolean();
 
@@ -83,19 +84,21 @@ public class SettingsManager {
     private final ConfigManager configManager;
 
     /**
-     * Check whether a username is not on the configured ignore list.
+     * Check whether a username adheres to the configured RSN filter list.
      *
      * @param name the local player's name
      * @return whether notifications for this player should be sent
      */
     @Synchronized
     public boolean isNamePermitted(String name) {
-        return name != null && !ignoredNames.contains(name.toLowerCase());
+        if (name == null) return false;
+        if (filteredNames.isEmpty()) return true;
+        return (config.nameFilterMode() == FilterMode.ALLOW) == filteredNames.contains(name.toLowerCase());
     }
 
     @VisibleForTesting
     public void init() {
-        setIgnoredNames(config.ignoredNames());
+        setFilteredNames(config.filteredNames());
         configManager.getConfigDescriptor(config).getItems().forEach(item -> {
             String key = item.key();
             configValueTypes.put(key, item.getType());
@@ -158,7 +161,7 @@ public class SettingsManager {
         String value = event.getNewValue();
 
         if ("ignoredNames".equals(key)) {
-            setIgnoredNames(value);
+            setFilteredNames(value);
             return;
         }
 
@@ -273,12 +276,12 @@ public class SettingsManager {
     }
 
     @Synchronized
-    private void setIgnoredNames(String configValue) {
-        ignoredNames.clear();
+    private void setFilteredNames(String configValue) {
+        filteredNames.clear();
         readDelimited(configValue)
             .map(String::toLowerCase)
-            .forEach(ignoredNames::add);
-        log.debug("Updated RSN Deny List to: {}", ignoredNames);
+            .forEach(filteredNames::add);
+        log.debug("Updated RSN Filter List to: {}", filteredNames);
 
         // clear any outdated notifier state
         plugin.resetNotifiers();

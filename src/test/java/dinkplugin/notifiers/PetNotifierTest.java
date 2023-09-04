@@ -303,7 +303,7 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyIrrelevantNameIgnore() {
         // ignore notifications for an irrelevant player
-        when(config.ignoredNames()).thenReturn("xqc");
+        when(config.filteredNames()).thenReturn("xqc");
         settingsManager.init();
 
         // send fake message
@@ -325,7 +325,7 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoredPlayerName() {
         // ignore notifications for our player name
-        when(config.ignoredNames()).thenReturn(PLAYER_NAME);
+        when(config.filteredNames()).thenReturn(PLAYER_NAME);
         settingsManager.init();
 
         // send fake message
