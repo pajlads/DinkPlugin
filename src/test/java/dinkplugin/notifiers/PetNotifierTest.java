@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.domain.FilterMode;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.PetNotificationData;
@@ -320,6 +321,43 @@ class PetNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.PET)
                 .build()
         );
+    }
+
+    @Test
+    void testNotifyNameAllowList() {
+        // only allow notifications for "dank dank"
+        when(config.nameFilterMode()).thenReturn(FilterMode.ALLOW);
+        when(config.filteredNames()).thenReturn(PLAYER_NAME);
+        settingsManager.init();
+
+        // send fake message
+        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(null, null, false))
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
+                .type(NotificationType.PET)
+                .build());
+    }
+
+    @Test
+    void testIgnoreNameAllowList() {
+        // only allow notifications for a different player
+        when(config.nameFilterMode()).thenReturn(FilterMode.ALLOW);
+        when(config.filteredNames()).thenReturn("xqc");
+        settingsManager.init();
+
+        // send fake message
+        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
