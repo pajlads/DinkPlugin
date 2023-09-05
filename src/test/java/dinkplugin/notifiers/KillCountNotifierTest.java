@@ -461,6 +461,25 @@ class KillCountNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnoreBarbarianAssault() {
+        // update mocks
+        when(config.killCountPenanceQueen()).thenReturn(false);
+        when(client.getVarbitValue(Varbits.BA_GC)).thenReturn(420);
+        Widget widget = mock(Widget.class);
+        when(widget.getText()).thenReturn("Reward:<br>80 Healer points<br>5 Defender points<br>5 Collector points<br>5 Attacker points");
+        when(client.getWidget(WidgetInfo.BA_REWARD_TEXT)).thenReturn(widget);
+
+        // fire event
+        WidgetLoaded event = new WidgetLoaded();
+        event.setGroupId(WidgetID.BA_REWARD_GROUP_ID);
+        notifier.onWidget(event);
+        notifier.onTick();
+
+        // ensure no message
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testIgnoreNoPb() {
         // more config
         when(config.killCountInterval()).thenReturn(99);
