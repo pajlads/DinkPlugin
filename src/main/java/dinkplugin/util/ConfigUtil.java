@@ -112,8 +112,8 @@ public class ConfigUtil {
     }
 
     public boolean isCollectionLogInvalid(int varbitValue) {
-        // we require chat notification for collection log notifier
-        return varbitValue != 1 && varbitValue != 3;
+        // collection log notifier requires chat or pop-up notification
+        return varbitValue == 0;
     }
 
     public boolean isRepeatPopupInvalid(int varbitValue) {

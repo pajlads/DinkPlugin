@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
 import net.runelite.client.util.ColorUtil;
+import net.runelite.client.util.Text;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -44,6 +45,11 @@ public class Utils {
     public final Color GREEN = ColorUtil.fromHex("006c4c"); // dark shade of PINK in CIELCh_uv color space
     public final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
     public final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
+
+    public String sanitize(String str) {
+        if (str == null || str.isEmpty()) return "";
+        return Text.removeTags(str.replace("<br>", "\n")).replace('\u00A0', ' ').trim();
+    }
 
     /**
      * Converts text into "upper case first" form, as is used by OSRS for item names.
