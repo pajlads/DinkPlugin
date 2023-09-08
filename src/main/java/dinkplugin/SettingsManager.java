@@ -48,7 +48,7 @@ import static dinkplugin.util.ConfigUtil.*;
 @Singleton
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class SettingsManager {
-    private static final String CONFIG_GROUP = "dinkplugin";
+    public static final String CONFIG_GROUP = "dinkplugin";
     private static final Set<Integer> PROBLEMATIC_VARBITS;
 
     /**
@@ -150,10 +150,6 @@ public class SettingsManager {
     }
 
     void onConfigChanged(ConfigChanged event) {
-        if (!CONFIG_GROUP.equals(event.getGroup())) {
-            return;
-        }
-
         String key = event.getKey();
         String value = event.getNewValue();
 
@@ -374,7 +370,7 @@ public class SettingsManager {
             Object prevValue = configManager.getConfiguration(CONFIG_GROUP, key, valueType);
             Object newValue;
 
-            if (webhookConfigKeys.contains(key) || "ignoredNames".equals(key)) {
+            if (webhookConfigKeys.contains(key) || "ignoredNames".equals(key) || "lootItemAllowlist".equals(key) || "lootItemDenylist".equals(key)) {
                 // special case: multi-line configs that should be merged (rather than replaced)
                 assert prevValue == null || prevValue instanceof String;
                 Collection<String> lines = readDelimited((String) prevValue).collect(Collectors.toCollection(LinkedHashSet::new));

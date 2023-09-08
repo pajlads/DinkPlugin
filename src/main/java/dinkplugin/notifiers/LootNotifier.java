@@ -12,6 +12,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.SerializedLoot;
 import dinkplugin.util.Utils;
@@ -42,7 +43,9 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -63,6 +66,9 @@ public class LootNotifier extends BaseNotifier {
     @Inject
     private ConfigManager configManager;
 
+    private final Set<String> itemNameAllowlist = new HashSet<>();
+    private final Set<String> itemNameDenylist = new HashSet<>();
+
     private final Cache<String, Integer> killCounts = CacheBuilder.newBuilder()
         .expireAfterAccess(10, TimeUnit.MINUTES)
         .build();
@@ -79,6 +85,42 @@ public class LootNotifier extends BaseNotifier {
 
     public void reset() {
         killCounts.invalidateAll();
+    }
+
+    public void init() {
+        synchronized (itemNameAllowlist) {
+            itemNameAllowlist.clear();
+            ConfigUtil.readDelimited(config.lootItemAllowlist())
+                .map(String::toLowerCase)
+                .forEach(itemNameAllowlist::add);
+        }
+
+        synchronized (itemNameDenylist) {
+            itemNameDenylist.clear();
+            ConfigUtil.readDelimited(config.lootItemDenylist())
+                .map(String::toLowerCase)
+                .forEach(itemNameDenylist::add);
+        }
+    }
+
+    public void onConfigChanged(String key, String value) {
+        Collection<String> itemNames;
+        if ("lootItemAllowlist".equals(key)) {
+            itemNames = itemNameAllowlist;
+        } else if ("lootItemDenylist".equals(key)) {
+            itemNames = itemNameDenylist;
+        } else {
+            return;
+        }
+
+        synchronized (itemNames) {
+            itemNames.clear();
+            ConfigUtil.readDelimited(value)
+                .map(String::toLowerCase)
+                .forEach(itemNames::add);
+        }
+
+        log.debug("{} is now {}", key, itemNames);
     }
 
     public void onNpcLootReceived(NpcLootReceived event) {
@@ -172,7 +214,9 @@ public class LootNotifier extends BaseNotifier {
         for (ItemStack item : reduced) {
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
             long totalPrice = stack.getTotalPrice();
-            if (totalPrice >= minValue) {
+            String lowerName = stack.getName().toLowerCase();
+            boolean worthy = totalPrice >= minValue || itemNameAllowlist.contains(lowerName);
+            if (worthy && !itemNameDenylist.contains(lowerName)) {
                 sendMessage = true;
                 lootMessage.component(ItemUtils.templateStack(stack, true));
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
