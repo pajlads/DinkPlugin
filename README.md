@@ -55,7 +55,7 @@ Some notifiers require in-game settings to be configured to send chat messages u
 - Screenshots can be individually configured for each notifier
 - Screenshots are compressed if needed to comply with Discord limits
 - The chat box (and private messages above chat) can be hidden from screenshots
-- The plugin can skip notifications if the current player name based on the user-configured RSN filter list
+- The plugin can skip notifications for player names that do not comply with the user-configured RSN filter list
 - Users can choose whether their webhook messages are sent in Discord's rich embed format or a traditional format
 - The player name in Discord rich embeds can be linked to various tracking services (from HiScores to Wise Old Man)
 - Discord rich embed footers can be customized with user-specified text and image url
