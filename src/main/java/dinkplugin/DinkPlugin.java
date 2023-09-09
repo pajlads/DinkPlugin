@@ -29,6 +29,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.GrandExchangeOfferChanged;
 import net.runelite.api.events.HitsplatApplied;
 import net.runelite.api.events.InteractingChanged;
+import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
@@ -46,7 +47,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.ColorUtil;
-import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
 import java.awt.Color;
@@ -169,7 +169,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onChatMessage(ChatMessage message) {
-        String chatMessage = Text.removeTags(message.getMessage().replace("<br>", "\n")).replace('\u00A0', ' ').trim();
+        String chatMessage = Utils.sanitize(message.getMessage());
         switch (message.getType()) {
             case GAMEMESSAGE:
                 collectionNotifier.onChatMessage(chatMessage);
@@ -221,6 +221,11 @@ public class DinkPlugin extends Plugin {
         deathNotifier.onInteraction(event);
     }
 
+    @Subscribe
+    public void onScriptPreFired(ScriptPreFired event) {
+        collectionNotifier.onScript(event.getScriptId());
+    }
+
     @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
         lootNotifier.onNpcLootReceived(npcLootReceived);
@@ -250,6 +255,7 @@ public class DinkPlugin extends Plugin {
         speedrunNotifier.onWidgetLoaded(event);
         lootNotifier.onWidgetLoaded(event);
         groupStorageNotifier.onWidgetLoad(event);
+        killCountNotifier.onWidget(event);
     }
 
     @Subscribe

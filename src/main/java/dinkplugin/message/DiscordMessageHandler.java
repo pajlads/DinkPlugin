@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.PlayerLookupService;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.DiscordProfile;
 import dinkplugin.util.Utils;
@@ -29,6 +31,7 @@ import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.imageio.ImageIO;
@@ -50,6 +53,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -89,7 +93,7 @@ public class DiscordMessageHandler {
             .build();
     }
 
-    public void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<?> mBody) {
+    public void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<?> inputBody) {
         if (StringUtils.isBlank(webhookUrl)) return;
 
         Collection<HttpUrl> urlList = Arrays.stream(StringUtils.split(webhookUrl, '\n'))
@@ -98,81 +102,65 @@ public class DiscordMessageHandler {
             .collect(Collectors.toList());
         if (urlList.isEmpty()) return;
 
-        if (mBody.getPlayerName() == null)
-            mBody = mBody.withPlayerName(Utils.getPlayerName(client));
-
-        if (mBody.getAccountType() == null)
-            mBody = mBody.withAccountType(Utils.getAccountType(client));
-
-        if (config.sendDiscordUser())
-            mBody = mBody.withDiscordUser(DiscordProfile.of(discordService.getCurrentUser()));
-
-        if (config.sendClanName()) {
-            ClanChannel clan = client.getClanChannel(ClanID.CLAN);
-            if (clan != null) {
-                mBody = mBody.withClanName(clan.getName());
-            }
-        }
-
-        if (config.sendGroupIronClanName()) {
-            ClanChannel gim = client.getClanChannel(ClanID.GROUP_IRONMAN);
-            if (gim != null) {
-                mBody = mBody.withGroupIronClanName(gim.getName());
-            }
-        }
-
-        if (config.discordRichEmbeds()) {
-            mBody = injectContent(mBody, sendImage, config);
-        } else {
-            mBody = mBody.withComputedDiscordContent(mBody.getText().evaluate(false));
-        }
-
-        MultipartBody.Builder reqBodyBuilder = new MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("payload_json", gson.toJson(mBody));
-
+        NotificationBody<?> mBody = enrichBody(inputBody, sendImage);
         if (sendImage) {
             // optionally hide chat for privacy in screenshot
             boolean chatHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.CHATBOX);
             boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.PRIVATE_CHAT_MESSAGE);
 
-            String screenshotFile = mBody.getType().getScreenshot();
             captureScreenshot(drawManager, config.screenshotScale() / 100.0)
-                .thenApply(image -> reqBodyBuilder
-                    .addFormDataPart(
-                        "file",
-                        screenshotFile,
-                        RequestBody.create(
-                            MediaType.parse("image/" + image.getKey()),
-                            image.getValue()
-                        )
-                    )
+                .thenApply(image ->
+                    RequestBody.create(MediaType.parse("image/" + image.getKey()), image.getValue())
                 )
                 .exceptionally(e -> {
                     log.warn("There was an error creating bytes from captured image", e);
-                    return reqBodyBuilder;
+                    return null;
                 })
-                .thenApply(body -> {
+                .thenApply(image -> {
                     // unhide any widgets we hid
                     unhideWidget(chatHidden, client, clientThread, WidgetInfo.CHATBOX);
                     unhideWidget(whispersHidden, client, clientThread, WidgetInfo.PRIVATE_CHAT_MESSAGE);
-                    return body;
+                    return image;
                 })
-                .thenAccept(body -> sendToMultiple(urlList, body));
+                .thenAccept(image -> sendToMultiple(urlList, mBody, image));
         } else {
-            sendToMultiple(urlList, reqBodyBuilder);
+            sendToMultiple(urlList, mBody, null);
         }
     }
 
-    private void sendToMultiple(Collection<HttpUrl> urls, MultipartBody.Builder reqBodyBuilder) {
-        urls.forEach(url -> sendMessage(url, reqBodyBuilder, 0));
+    private void sendToMultiple(Collection<HttpUrl> urls, NotificationBody<?> body, @Nullable RequestBody image) {
+        urls.forEach(url -> sendMessage(url, injectThreadName(url, body, false), image, 0));
     }
 
-    private void sendMessage(HttpUrl url, MultipartBody.Builder requestBody, int attempt) {
+    private void sendMessage(HttpUrl url, NotificationBody<?> mBody, @Nullable RequestBody image, int attempt) {
+        BiConsumer<NotificationBody<?>, Throwable> retry = (body, e) -> {
+            log.trace(String.format("Failed to send webhook message to %s on attempt %d", url, attempt), e);
+
+            if (attempt == 0) {
+                log.warn("There was an error sending the webhook message", e);
+            }
+
+            int maxRetries = config.maxRetries();
+            if (attempt < maxRetries) {
+                long baseDelay = config.baseRetryDelay();
+                if (baseDelay > 0) {
+                    long delay = baseDelay * (1L << Math.min(attempt, 16)); // exponential backoff
+                    executor.schedule(() -> sendMessage(url, body, image, attempt + 1), delay, TimeUnit.MILLISECONDS);
+                    log.debug("Scheduled webhook message for retry in {} milliseconds", delay);
+                } else {
+                    log.debug("Skipping retry attempts for failed webhook since base delay is not positive");
+                }
+            } else if (maxRetries > 0) {
+                log.warn("Exhausted retry attempts when sending the webhook message", e);
+            } else {
+                log.debug("Skipping retry attempts for failed webhook since max retries is not positive");
+            }
+        };
+
         executor.execute(() -> {
             Request request = new Request.Builder()
                 .url(url)
-                .post(requestBody.build())
+                .post(createBody(mBody, image))
                 .build();
 
             try (Response response = httpClient.newCall(request).execute()) {
@@ -180,32 +168,99 @@ public class DiscordMessageHandler {
                     log.trace("Successfully sent webhook message to {} after {} attempts", url, attempt + 1);
                 } else {
                     String body = response.body() != null ? response.body().string() : null;
-                    throw new RuntimeException(String.format("Received unsuccessful http response: %d - %s - %s", response.code(), response.message(), body));
+
+                    // Update thread_name to comply with discord forum channel specification
+                    if (response.code() == 400 && "application/json".equals(response.header("Content-Type"))) {
+                        DiscordErrorMessage error = gson.fromJson(body, DiscordErrorMessage.class);
+
+                        // "Webhooks posted to forum channels must have a thread_name or thread_id"
+                        if (error.getCode() == 220001) {
+                            retry.accept(
+                                injectThreadName(url, mBody, true),
+                                new RuntimeException(error.getMessage())
+                            );
+                            return;
+                        }
+
+                        // "Webhooks can only create threads in forum channels"
+                        if (error.getCode() == 220003) {
+                            retry.accept(mBody.withThreadName(null), new RuntimeException(error.getMessage()));
+                            return;
+                        }
+                    }
+
+                    // retry with no change to NotificationBody
+                    retry.accept(mBody, new RuntimeException(String.format("Received unsuccessful http response: %d - %s - %s", response.code(), response.message(), body)));
                 }
             } catch (Exception e) {
-                log.trace(String.format("Failed to send webhook message to %s on attempt %d", url, attempt), e);
-
-                if (attempt == 0) {
-                    log.warn("There was an error sending the webhook message", e);
-                }
-
-                int maxRetries = config.maxRetries();
-                if (attempt < maxRetries) {
-                    long baseDelay = config.baseRetryDelay();
-                    if (baseDelay > 0) {
-                        long delay = baseDelay * (1L << Math.min(attempt, 16)); // exponential backoff
-                        executor.schedule(() -> sendMessage(url, requestBody, attempt + 1), delay, TimeUnit.MILLISECONDS);
-                        log.debug("Scheduled webhook message for retry in {} milliseconds", delay);
-                    } else {
-                        log.debug("Skipping retry attempts for failed webhook since base delay is not positive");
-                    }
-                } else if (maxRetries > 0) {
-                    log.warn("Exhausted retry attempts when sending the webhook message", e);
-                } else {
-                    log.debug("Skipping retry attempts for failed webhook since max retries is not positive");
-                }
+                retry.accept(mBody, e);
             }
         });
+    }
+
+    private NotificationBody<?> enrichBody(NotificationBody<?> mBody, boolean sendImage) {
+        if (mBody.getPlayerName() == null) {
+            mBody = mBody.withPlayerName(Utils.getPlayerName(client));
+        }
+
+        if (mBody.getAccountType() == null) {
+            mBody = mBody.withAccountType(Utils.getAccountType(client));
+        }
+
+        NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
+
+        if (config.sendDiscordUser()) {
+            builder.discordUser(DiscordProfile.of(discordService.getCurrentUser()));
+        }
+
+        if (config.sendClanName()) {
+            ClanChannel clan = client.getClanChannel(ClanID.CLAN);
+            if (clan != null) {
+                builder.clanName(clan.getName());
+            }
+        }
+
+        if (config.sendGroupIronClanName()) {
+            ClanChannel gim = client.getClanChannel(ClanID.GROUP_IRONMAN);
+            if (gim != null) {
+                builder.groupIronClanName(gim.getName());
+            }
+        }
+
+        if (config.discordRichEmbeds()) {
+            builder.embeds(computeEmbeds(mBody, sendImage, config));
+        } else {
+            builder.computedDiscordContent(mBody.getText().evaluate(false));
+        }
+
+        return builder.build();
+    }
+
+    private NotificationBody<?> injectThreadName(HttpUrl url, NotificationBody<?> mBody, boolean force) {
+        Collection<String> queryParams = url.queryParameterNames();
+        if (force || (queryParams.contains("forum") && !queryParams.contains("thread_id"))) {
+            String threadName = Template.builder()
+                .template(config.threadNameTemplate())
+                .replacementBoundary("%")
+                .replacement("%TYPE%", Replacements.ofText(mBody.getType().getTitle()))
+                .replacement("%MESSAGE%", mBody.getText())
+                .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
+                .build()
+                .evaluate(false);
+            return mBody.withThreadName(Utils.truncate(StringUtils.normalizeSpace(threadName), NotificationBody.MAX_THREAD_NAME_LENGTH));
+        }
+        return mBody;
+    }
+
+    private MultipartBody createBody(NotificationBody<?> mBody, @Nullable RequestBody image) {
+        MultipartBody.Builder requestBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("payload_json", gson.toJson(mBody));
+        if (image != null) {
+            String screenshotFileName = mBody.getType().getScreenshot();
+            requestBody.addFormDataPart("file", screenshotFileName, image);
+        }
+        return requestBody.build();
     }
 
     /**
@@ -251,7 +306,7 @@ public class DiscordMessageHandler {
             });
     }
 
-    private static NotificationBody<?> injectContent(@NotNull NotificationBody<?> body, boolean screenshot, DinkPluginConfig config) {
+    private static List<Embed> computeEmbeds(@NotNull NotificationBody<?> body, boolean screenshot, DinkPluginConfig config) {
         NotificationType type = body.getType();
         NotificationData extra = body.getExtra();
         String footerText = config.embedFooterText();
@@ -264,7 +319,7 @@ public class DiscordMessageHandler {
             .iconUrl(Utils.getChatBadge(body.getAccountType()))
             .build();
         Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()
-            .text(StringUtils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
+            .text(Utils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
             .iconUrl(StringUtils.isBlank(footerIcon) ? null : footerIcon)
             .build();
         String thumbnail = body.getThumbnailUrl() != null
@@ -277,7 +332,7 @@ public class DiscordMessageHandler {
                 .author(author)
                 .color(Utils.PINK)
                 .title(type.getTitle())
-                .description(StringUtils.truncate(body.getText().evaluate(config.discordRichEmbeds()), Embed.MAX_DESCRIPTION_LENGTH))
+                .description(Utils.truncate(body.getText().evaluate(config.discordRichEmbeds()), Embed.MAX_DESCRIPTION_LENGTH))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(thumbnail))
                 .fields(extra != null ? extra.getFields() : Collections.emptyList())
@@ -285,7 +340,7 @@ public class DiscordMessageHandler {
                 .timestamp(footer != null ? Instant.now() : null)
                 .build()
         );
-        return body.withEmbeds(embeds);
+        return embeds;
     }
 
     private static boolean hideWidget(boolean shouldHide, Client client, WidgetInfo info) {

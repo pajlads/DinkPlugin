@@ -11,7 +11,13 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
+import net.runelite.api.NpcID;
+import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
+import net.runelite.api.widgets.WidgetInfo;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -40,6 +46,8 @@ public class KillCountNotifier extends BaseNotifier {
     private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion)\\s?count is: (?<value>\\d+)\\b");
     private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>\\d+)\\b");
     private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(.\\d+)?)\\.?", Pattern.CASE_INSENSITIVE);
+
+    private static final String BA_BOSS_NAME = "Penance Queen";
 
     /**
      * The maximum number of ticks to hold onto a fight duration without a corresponding boss name.
@@ -79,6 +87,21 @@ public class KillCountNotifier extends BaseNotifier {
             this.onGameMessage(message);
     }
 
+    public void onWidget(WidgetLoaded event) {
+        if (!isEnabled())
+            return;
+
+        // Barbarian Assault: Track Penance Queen kills
+        if (config.killCountPenanceQueen() && event.getGroupId() == WidgetID.BA_REWARD_GROUP_ID) {
+            Widget widget = client.getWidget(WidgetInfo.BA_REWARD_TEXT);
+            // https://oldschool.runescape.wiki/w/Barbarian_Assault/Rewards#Earning_Honour_points
+            if (widget != null && widget.getText().contains("80 ") && widget.getText().contains("5 ")) {
+                int gambleCount = client.getVarbitValue(Varbits.BA_GC);
+                this.data.set(new BossNotificationData(BA_BOSS_NAME, gambleCount, "The Queen is dead!", null, null));
+            }
+        }
+    }
+
     public void onTick() {
         BossNotificationData data = this.data.get();
         if (data != null) {
@@ -99,8 +122,9 @@ public class KillCountNotifier extends BaseNotifier {
         if (data.getBoss() == null || data.getCount() == null)
             return;
 
-        // ensure interval met or pb, depending on config
-        if (!checkKillInterval(data.getCount(), data.isPersonalBest()))
+        // ensure interval met or pb or ba, depending on config
+        boolean ba = data.getBoss().equals(BA_BOSS_NAME);
+        if (!checkKillInterval(data.getCount(), data.isPersonalBest()) && !ba)
             return;
 
         // Assemble content
@@ -112,7 +136,7 @@ public class KillCountNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(player))
             .replacement("%BOSS%", Replacements.ofWiki(data.getBoss()))
-            .replacement("%COUNT%", Replacements.ofText(String.valueOf(data.getCount())))
+            .replacement("%COUNT%", Replacements.ofText(data.getCount() + (ba ? " high gambles" : "")))
             .replacement("%TIME%", Replacements.ofText(time))
             .build();
 
@@ -126,16 +150,21 @@ public class KillCountNotifier extends BaseNotifier {
 
         // Add embed if not screenshotting
         boolean screenshot = config.killCountSendImage();
-        if (!screenshot)
-            Arrays.stream(client.getCachedNPCs())
-                .filter(Objects::nonNull)
-                .filter(npc -> data.getBoss().equalsIgnoreCase(npc.getName()))
-                .findAny()
-                .map(NPC::getId)
-                .map(ItemUtils::getNpcImageUrl)
-                .map(Embed::ofImage)
-                .map(Collections::singletonList)
-                .ifPresent(body::embeds);
+        if (!screenshot) {
+            if (ba) {
+                body.embeds(Collections.singletonList(Embed.ofImage(ItemUtils.getNpcImageUrl(NpcID.PENANCE_QUEEN))));
+            } else {
+                Arrays.stream(client.getCachedNPCs())
+                    .filter(Objects::nonNull)
+                    .filter(npc -> data.getBoss().equalsIgnoreCase(npc.getName()))
+                    .findAny()
+                    .map(NPC::getId)
+                    .map(ItemUtils::getNpcImageUrl)
+                    .map(Embed::ofImage)
+                    .map(Collections::singletonList)
+                    .ifPresent(body::embeds);
+            }
+        }
 
         // Call webhook
         createMessage(screenshot, body.build());

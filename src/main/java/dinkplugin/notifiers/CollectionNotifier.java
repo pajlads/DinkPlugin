@@ -11,6 +11,9 @@ import dinkplugin.notifiers.data.CollectionNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.ScriptID;
+import net.runelite.api.VarClientStr;
+import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varp;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
@@ -19,6 +22,7 @@ import net.runelite.client.game.ItemManager;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,6 +31,7 @@ import java.util.regex.Pattern;
 public class CollectionNotifier extends BaseNotifier {
     static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
+    private static final int POPUP_PREFIX_LENGTH = "New item:".length();
 
     /*
      * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
@@ -38,6 +43,8 @@ public class CollectionNotifier extends BaseNotifier {
      * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.
      */
     private final AtomicInteger completed = new AtomicInteger(-1);
+
+    private final AtomicBoolean popupStarted = new AtomicBoolean(false);
 
     @Inject
     private Client client;
@@ -65,6 +72,7 @@ public class CollectionNotifier extends BaseNotifier {
         // note: unlike other notifiers, we do not need to reset completed after each message
         // in fact, resetting would be problematic for an edge case with multiple completions in a single tick
         this.completed.set(-1);
+        this.popupStarted.set(false);
     }
 
     public void onGameState(GameStateChanged event) {
@@ -99,12 +107,27 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     public void onChatMessage(String chatMessage) {
-        if (!isEnabled()) return;
+        if (!isEnabled() || client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) != 1) {
+            // require notifier enabled without popup mode to use chat event
+            return;
+        }
 
         Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(chatMessage);
         if (collectionMatcher.find()) {
             String item = collectionMatcher.group("itemName");
             clientThread.invokeLater(() -> handleNotify(item));
+        }
+    }
+
+    public void onScript(int scriptId) {
+        if (scriptId == ScriptID.NOTIFICATION_START) {
+            popupStarted.set(true);
+        } else if (scriptId == ScriptID.NOTIFICATION_DELAY) {
+            String topText = client.getVarcStrValue(VarClientStr.NOTIFICATION_TOP_TEXT);
+            if (popupStarted.getAndSet(false) && "Collection log".equalsIgnoreCase(topText) && isEnabled()) {
+                String bottomText = Utils.sanitize(client.getVarcStrValue(VarClientStr.NOTIFICATION_BOTTOM_TEXT));
+                handleNotify(bottomText.substring(POPUP_PREFIX_LENGTH).trim());
+            }
         }
     }
 

@@ -7,6 +7,7 @@ import dinkplugin.DinkPluginConfig;
 import dinkplugin.MockedTestBase;
 import dinkplugin.SettingsManager;
 import dinkplugin.domain.AccountType;
+import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.templating.Template;
@@ -128,6 +129,8 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.embedFooterText()).thenReturn("Powered by Dink");
         when(config.embedFooterIcon()).thenReturn("https://github.com/pajlads/DinkPlugin/raw/master/icon.png");
         when(config.playerLookupService()).thenReturn(PlayerLookupService.OSRS_HISCORE);
+        when(config.threadNameTemplate()).thenReturn("[%TYPE%] %MESSAGE%");
+        when(config.nameFilterMode()).thenReturn(FilterMode.DENY);
     }
 
     protected void mockItem(int id, int price, String name) {

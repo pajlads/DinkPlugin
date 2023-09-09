@@ -73,6 +73,8 @@ public class PetNotifier extends BaseNotifier {
 
     private volatile boolean duplicate = false;
 
+    private volatile boolean backpack = false;
+
     @Override
     public boolean isEnabled() {
         return config.notifyPet() && super.isEnabled();
@@ -90,6 +92,7 @@ public class PetNotifier extends BaseNotifier {
                     // Prime the notifier to trigger next tick
                     this.petName = PRIMED_NAME;
                     this.duplicate = chatMessage.contains("would have been");
+                    this.backpack = chatMessage.contains(" backpack");
                 }
             } else if (PRIMED_NAME.equals(petName)) {
                 parseItemFromGameMessage(chatMessage)
@@ -129,14 +132,25 @@ public class PetNotifier extends BaseNotifier {
         this.petName = null;
         this.milestone = null;
         this.duplicate = false;
+        this.backpack = false;
         this.ticksWaited.set(0);
     }
 
     private void handleNotify() {
+        String gameMessage;
+        if (backpack) {
+            gameMessage = "feels something weird sneaking into their backpack";
+        } else if (duplicate) {
+            gameMessage = "has a funny feeling like they would have been followed...";
+        } else {
+            gameMessage = "has a funny feeling like they're being followed";
+        }
+
         Template notifyMessage = Template.builder()
             .template(config.petNotifyMessage())
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+            .replacement("%GAME_MESSAGE%", Replacements.ofText(gameMessage))
             .build();
 
         String thumbnail = Optional.ofNullable(petName)

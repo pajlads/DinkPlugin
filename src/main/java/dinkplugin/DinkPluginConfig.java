@@ -3,6 +3,7 @@ package dinkplugin;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
+import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.PlayerLookupService;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -241,21 +242,34 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "ignoredNames",
-        name = "Ignored RSNs",
-        description = "Prevent notifications from the following player names (One name per line)",
+        keyName = "ignoredNames", // historical name, preserved for backwards compatibility
+        name = "Filtered RSNs",
+        description = "Restrict what player names can trigger notifications (One name per line)<br/>" +
+            "This acts as an allowlist or denylist based on the 'RSN Filter Mode' setting below.",
         position = 1007,
         section = advancedSection
     )
-    default String ignoredNames() {
+    default String filteredNames() {
         return "";
+    }
+
+    @ConfigItem(
+        keyName = "nameFilterMode",
+        name = "RSN Filter Mode",
+        description = "Allow Mode: Only allow notifications for RSNs on the list above (discouraged).<br/>" +
+            "Deny Mode: Prevent notifications from RSNs on the list above (default/recommended).",
+        position = 1008,
+        section = advancedSection
+    )
+    default FilterMode nameFilterMode() {
+        return FilterMode.DENY;
     }
 
     @ConfigItem(
         keyName = "playerLookupService",
         name = "Player Lookup Service",
         description = "The service used to lookup a players account, to make their name clickable in Discord embeds",
-        position = 1008,
+        position = 1009,
         section = advancedSection
     )
     default PlayerLookupService playerLookupService() {
@@ -267,7 +281,7 @@ public interface DinkPluginConfig extends Config {
         name = "Hide Chat in Images",
         description = "Whether to hide the chat box and private messages when capturing screenshots.<br/>" +
             "Note: visually you may notice the chat box momentarily flicker as it is hidden for the screenshot.",
-        position = 1009,
+        position = 1010,
         section = advancedSection
     )
     default boolean screenshotHideChat() {
@@ -278,7 +292,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "sendDiscordUser",
         name = "Send Discord Profile",
         description = "Whether to send your discord user information to the webhook server via metadata",
-        position = 1010,
+        position = 1011,
         section = advancedSection
     )
     default boolean sendDiscordUser() {
@@ -289,7 +303,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "sendClanName",
         name = "Send Clan Name",
         description = "Whether to send your clan information to the webhook server via metadata",
-        position = 1011,
+        position = 1012,
         section = advancedSection
     )
     default boolean sendClanName() {
@@ -300,11 +314,25 @@ public interface DinkPluginConfig extends Config {
         keyName = "sendGroupIronClanName",
         name = "Send GIM Clan Name",
         description = "Whether to send your group ironman clan information to the webhook server via metadata",
-        position = 1012,
+        position = 1013,
         section = advancedSection
     )
     default boolean sendGroupIronClanName() {
         return true;
+    }
+
+    @ConfigItem(
+        keyName = "threadNameTemplate",
+        name = "Forum Thread Name",
+        description = "Thread name template to use for Discord Forum Channels<br/>" +
+            "Use %TYPE% to insert the notification type<br/>" +
+            "Use %MESSAGE% to insert the notification message<br/>" +
+            "Use %USERNAME% to insert the player name",
+        position = 1013,
+        section = advancedSection
+    )
+    default String threadNameTemplate() {
+        return "[%TYPE%] %MESSAGE%";
     }
 
     @ConfigItem(
@@ -556,12 +584,13 @@ public interface DinkPluginConfig extends Config {
         keyName = "petNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
-            "Use %USERNAME% to insert your username",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %GAME_MESSAGE% to insert the game message associated with this type of pet drop",
         position = 12,
         section = petSection
     )
     default String petNotifyMessage() {
-        return "%USERNAME% has a funny feeling they are being followed";
+        return "%USERNAME% %GAME_MESSAGE%";
     }
 
     @ConfigItem(
@@ -1151,13 +1180,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "killCountPenanceQueen",
+        name = "Barbarian Assault",
+        description = "Notify for any Penance Queen kills",
+        position = 95,
+        section = killCountSection
+    )
+    default boolean killCountPenanceQueen() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "killCountMessage",
         name = "Notification Message",
         description = "The message to be sent to the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %BOSS% to insert the NPC name<br/>" +
             "Use %COUNT% to insert the kill count",
-        position = 95,
+        position = 96,
         section = killCountSection
     )
     default String killCountMessage() {
@@ -1172,7 +1212,7 @@ public interface DinkPluginConfig extends Config {
             "Use %BOSS% to insert the NPC name<br/>" +
             "Use %COUNT% to insert the kill count<br/>" +
             "Use %TIME% to insert the completion time",
-        position = 96,
+        position = 97,
         section = killCountSection
     )
     default String killCountBestTimeMessage() {

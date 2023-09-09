@@ -40,7 +40,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 
 Some notifiers require in-game settings to be configured to send chat messages upon certain events (so these events can serve as triggers for webhook notifications).
 
-- Collection notifier requires `Settings > All Settings > Chat > Collection log - New addition notification` to be enabled
+- Collection notifier requires `Settings > All Settings > Chat > Collection log - New addition notification` (or `New addition popup`) to be enabled
 - Pet notifier recommends `Settings > All Settings > Chat > Untradeable loot notifications` to be enabled (which requires `Settings > All Settings > Chat > Loot drop notifications`) in order to determine the name of the pet
 - For Kill Count notifier, ensure you do _not_ enable `Settings > All Settings > Chat > Filter out boss kill-count with spam-filter` (note: this setting is already disabled by default by Jagex)
 
@@ -55,11 +55,12 @@ Some notifiers require in-game settings to be configured to send chat messages u
 - Screenshots can be individually configured for each notifier
 - Screenshots are compressed if needed to comply with Discord limits
 - The chat box (and private messages above chat) can be hidden from screenshots
-- The plugin can skip notifications if the current player name is on the user-configured RSN ignore list
+- The plugin can skip notifications for player names that do not comply with the user-configured RSN filter list
 - Users can choose whether their webhook messages are sent in Discord's rich embed format or a traditional format
 - The player name in Discord rich embeds can be linked to various tracking services (from HiScores to Wise Old Man)
 - Discord rich embed footers can be customized with user-specified text and image url
 - When network issues occur, Dink can make repeated attempts to send the webhook (with exponential backoff)
+- Notifications can be sent to [Discord Forum Channels](https://support.discord.com/hc/en-us/articles/6208479917079-Forum-Channels-FAQ); append `?forum` to the end of the webhook url to create a new thread per message or use `?thread_id=123456` to post to an existing forum thread (be sure to change `123456` with the actual thread ID)
 
 ## Chat Commands
 
@@ -93,7 +94,7 @@ For example: `::dinkexport pet` or `::dinkexport collectionlog`.
 With the output of the above command (`::dinkexport`) copied to your clipboard, you can merge these settings with your own via the `::dinkimport` chat command.
 
 This import can replace all of your notifier settings.
-However, webhook URL lists and ignored RSNs will be combined, rather than outright replaced.
+However, webhook URL lists and filtered RSNs will be combined, rather than outright replaced.
 If you would like all settings overwritten rather than merged during import, simply press the `Reset` button at the bottom of the plugin settings panel to clear out all settings (including URLs) before running `::dinkimport`.
 
 After an import, if the dink plugin settings panel was open, simply close and open it for the updated configuration to be reflected in the user interface.
@@ -422,6 +423,8 @@ Note: `killCount` is only specified for NPC loot with the base RuneLite Loot Tra
   "type": "KILL_COUNT"
 }
 ```
+
+Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble count, rather than kill count.
 
 </details>
 
