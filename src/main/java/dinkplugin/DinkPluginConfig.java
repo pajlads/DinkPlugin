@@ -3,6 +3,7 @@ package dinkplugin;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
+import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.PlayerLookupService;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -241,21 +242,34 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "ignoredNames",
-        name = "Ignored RSNs",
-        description = "Prevent notifications from the following player names (One name per line)",
+        keyName = "ignoredNames", // historical name, preserved for backwards compatibility
+        name = "Filtered RSNs",
+        description = "Restrict what player names can trigger notifications (One name per line)<br/>" +
+            "This acts as an allowlist or denylist based on the 'RSN Filter Mode' setting below.",
         position = 1007,
         section = advancedSection
     )
-    default String ignoredNames() {
+    default String filteredNames() {
         return "";
+    }
+
+    @ConfigItem(
+        keyName = "nameFilterMode",
+        name = "RSN Filter Mode",
+        description = "Allow Mode: Only allow notifications for RSNs on the list above (discouraged).<br/>" +
+            "Deny Mode: Prevent notifications from RSNs on the list above (default/recommended).",
+        position = 1008,
+        section = advancedSection
+    )
+    default FilterMode nameFilterMode() {
+        return FilterMode.DENY;
     }
 
     @ConfigItem(
         keyName = "playerLookupService",
         name = "Player Lookup Service",
         description = "The service used to lookup a players account, to make their name clickable in Discord embeds",
-        position = 1008,
+        position = 1009,
         section = advancedSection
     )
     default PlayerLookupService playerLookupService() {
@@ -267,7 +281,7 @@ public interface DinkPluginConfig extends Config {
         name = "Hide Chat in Images",
         description = "Whether to hide the chat box and private messages when capturing screenshots.<br/>" +
             "Note: visually you may notice the chat box momentarily flicker as it is hidden for the screenshot.",
-        position = 1009,
+        position = 1010,
         section = advancedSection
     )
     default boolean screenshotHideChat() {
@@ -278,7 +292,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "sendDiscordUser",
         name = "Send Discord Profile",
         description = "Whether to send your discord user information to the webhook server via metadata",
-        position = 1010,
+        position = 1011,
         section = advancedSection
     )
     default boolean sendDiscordUser() {
@@ -289,7 +303,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "sendClanName",
         name = "Send Clan Name",
         description = "Whether to send your clan information to the webhook server via metadata",
-        position = 1011,
+        position = 1012,
         section = advancedSection
     )
     default boolean sendClanName() {
@@ -300,7 +314,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "sendGroupIronClanName",
         name = "Send GIM Clan Name",
         description = "Whether to send your group ironman clan information to the webhook server via metadata",
-        position = 1012,
+        position = 1013,
         section = advancedSection
     )
     default boolean sendGroupIronClanName() {

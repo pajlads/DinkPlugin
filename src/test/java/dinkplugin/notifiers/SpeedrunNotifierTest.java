@@ -114,7 +114,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyDenyList() {
         // configure irrelevant deny list
-        when(config.ignoredNames()).thenReturn("pajlads");
+        when(config.filteredNames()).thenReturn("pajlads");
         settingsManager.init();
 
         // mock widget
@@ -141,7 +141,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreDenyList() {
         // configure deny list
-        when(config.ignoredNames()).thenReturn(PLAYER_NAME);
+        when(config.filteredNames()).thenReturn(PLAYER_NAME);
         settingsManager.init();
 
         // mock widget

@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.domain.FilterMode;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.PetNotificationData;
@@ -312,7 +313,7 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyIrrelevantNameIgnore() {
         // ignore notifications for an irrelevant player
-        when(config.ignoredNames()).thenReturn("xqc");
+        when(config.filteredNames()).thenReturn("xqc");
         settingsManager.init();
 
         // send fake message
@@ -332,9 +333,46 @@ class PetNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyNameAllowList() {
+        // only allow notifications for "dank dank"
+        when(config.nameFilterMode()).thenReturn(FilterMode.ALLOW);
+        when(config.filteredNames()).thenReturn(PLAYER_NAME);
+        settingsManager.init();
+
+        // send fake message
+        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(null, null, false))
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
+                .type(NotificationType.PET)
+                .build());
+    }
+
+    @Test
+    void testIgnoreNameAllowList() {
+        // only allow notifications for a different player
+        when(config.nameFilterMode()).thenReturn(FilterMode.ALLOW);
+        when(config.filteredNames()).thenReturn("xqc");
+        settingsManager.init();
+
+        // send fake message
+        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testIgnoredPlayerName() {
         // ignore notifications for our player name
-        when(config.ignoredNames()).thenReturn(PLAYER_NAME);
+        when(config.filteredNames()).thenReturn(PLAYER_NAME);
         settingsManager.init();
 
         // send fake message
