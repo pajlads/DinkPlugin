@@ -1,7 +1,7 @@
 ## Unreleased
 
 - Minor: Support new thread creation for Discord forum channels. (#302)
-- Minor: Indicate whether pets are already owned in pet notifications. (#303)
+- Minor: Indicate whether pets are already owned in pet notifications. (#303, #307)
 - Minor: Include NPC kill count in loot notifications. (#299)
 - Minor: Add option to disable price in Group Storage notifications. (#298)
 - Minor: Add `%TOTAL_LEVEL%` message template for level notifications. (#300)
