@@ -4,6 +4,7 @@
 - Minor: Include NPC kill count in loot notifications. (#299)
 - Minor: Add option to disable price in Group Storage notifications. (#298)
 - Minor: Add `%TOTAL_LEVEL%` message template for level notifications. (#300)
+- Minor: You can now specify an allowlist of RSNs to fire notifications for instead under the Advanced category. Use this setting with caution. (#306)
 - Dev: Update gradle wrapper to v8.3 minor version. (#293)
 
 ## 1.6.2
