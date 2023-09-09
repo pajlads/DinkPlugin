@@ -84,7 +84,7 @@ public class SettingsManager {
     private final ConfigManager configManager;
 
     /**
-     * Check whether a username adheres to the configured RSN filter list.
+     * Check whether a username complies with the configured RSN filter list.
      *
      * @param name the local player's name
      * @return whether notifications for this player should be sent
