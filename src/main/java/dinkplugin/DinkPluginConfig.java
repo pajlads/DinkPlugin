@@ -256,7 +256,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "nameFilterMode",
         name = "RSN Filter Mode",
-        description = "Allow Mode: Only allow notifications for RSNs on the list above.<br/>" +
+        description = "Allow Mode: Only allow notifications for RSNs on the list above (discouraged).<br/>" +
             "Deny Mode: Prevent notifications from RSNs on the list above (default/recommended).",
         position = 1008,
         section = advancedSection
