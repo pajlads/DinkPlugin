@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
 import net.runelite.client.util.ColorUtil;
+import net.runelite.client.util.Text;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -63,6 +64,11 @@ public class Utils {
         } else {
             return text.substring(0, lastSpace) + ELLIPSIS;
         }
+    }
+
+    public String sanitize(String str) {
+        if (str == null || str.isEmpty()) return "";
+        return Text.removeTags(str.replace("<br>", "\n")).replace('\u00A0', ' ').trim();
     }
 
     /**

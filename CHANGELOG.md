@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include popup notification widget in collection log screenshots. (#309)
 - Minor: Support new thread creation for Discord forum channels. (#302)
 - Minor: Indicate whether pets are already owned in pet notifications. (#303, #307)
 - Minor: Include NPC kill count in loot notifications. (#299)
