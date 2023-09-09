@@ -767,8 +767,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "lootItemAllowlist",
         name = "Item Allowlist",
-        description = "Always fire notifications for these items, despite value settings. " +
-            "(One name per line, case-insensitive)",
+        description = "Always fire notifications for these items, despite value settings.<br/>" +
+            "Place one item name per line (case-insensitive)",
         position = 37,
         section = lootSection
     )
@@ -779,8 +779,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "lootItemDenylist",
         name = "Item Denylist",
-        description = "Never fire notifications for these items, despite value settings. " +
-            "(One name per line, case-insensitive)",
+        description = "Never fire notifications for these items, despite value settings.<br/>" +
+            "Place one item name per line (case-insensitive)",
         position = 38,
         section = lootSection
     )
