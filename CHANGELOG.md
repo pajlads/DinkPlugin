@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add item name allowlist and denylist for loot notifications. (#310)
 - Minor: Add allowlist mode for Filtered RSNs under the Advanced category. Use this setting with caution. (#306)
 - Minor: Send kill count notifications for Penance Queen kills. (#304)
 - Minor: Include popup notification widget in collection log screenshots. (#309)
