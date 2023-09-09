@@ -424,6 +424,8 @@ Note: `killCount` is only specified for NPC loot with the base RuneLite Loot Tra
 }
 ```
 
+Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble count, rather than kill count.
+
 </details>
 
 ### Combat Achievements:

@@ -249,6 +249,7 @@ public class DinkPlugin extends Plugin {
         speedrunNotifier.onWidgetLoaded(event);
         lootNotifier.onWidgetLoaded(event);
         groupStorageNotifier.onWidgetLoad(event);
+        killCountNotifier.onWidget(event);
     }
 
     @Subscribe
