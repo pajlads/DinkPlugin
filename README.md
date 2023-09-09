@@ -40,7 +40,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 
 Some notifiers require in-game settings to be configured to send chat messages upon certain events (so these events can serve as triggers for webhook notifications).
 
-- Collection notifier requires `Settings > All Settings > Chat > Collection log - New addition notification` to be enabled
+- Collection notifier requires `Settings > All Settings > Chat > Collection log - New addition notification` (or `New addition popup`) to be enabled
 - Pet notifier recommends `Settings > All Settings > Chat > Untradeable loot notifications` to be enabled (which requires `Settings > All Settings > Chat > Loot drop notifications`) in order to determine the name of the pet
 - For Kill Count notifier, ensure you do _not_ enable `Settings > All Settings > Chat > Filter out boss kill-count with spam-filter` (note: this setting is already disabled by default by Jagex)
 
@@ -60,6 +60,7 @@ Some notifiers require in-game settings to be configured to send chat messages u
 - The player name in Discord rich embeds can be linked to various tracking services (from HiScores to Wise Old Man)
 - Discord rich embed footers can be customized with user-specified text and image url
 - When network issues occur, Dink can make repeated attempts to send the webhook (with exponential backoff)
+- Notifications can be sent to [Discord Forum Channels](https://support.discord.com/hc/en-us/articles/6208479917079-Forum-Channels-FAQ); append `?forum` to the end of the webhook url to create a new thread per message or use `?thread_id=123456` to post to an existing forum thread (be sure to change `123456` with the actual thread ID)
 
 ## Chat Commands
 

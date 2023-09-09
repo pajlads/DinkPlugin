@@ -44,6 +44,9 @@ class PetNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotify() {
+        // update mocks
+        when(config.petNotifyMessage()).thenReturn("%USERNAME% %GAME_MESSAGE%");
+
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
@@ -54,7 +57,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(null, null, false))
-                .text(buildTemplate(PLAYER_NAME + " got a pet"))
+                .text(buildTemplate(PLAYER_NAME + " feels something weird sneaking into their backpack"))
                 .type(NotificationType.PET)
                 .build()
         );
@@ -62,6 +65,9 @@ class PetNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyDuplicate() {
+        // update mocks
+        when(config.petNotifyMessage()).thenReturn("%USERNAME% %GAME_MESSAGE%");
+
         // send fake message
         notifier.onChatMessage("You have a funny feeling like you would have been followed...");
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
@@ -72,7 +78,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(null, null, true))
-                .text(buildTemplate(PLAYER_NAME + " got a pet"))
+                .text(buildTemplate(PLAYER_NAME + " has a funny feeling like they would have been followed..."))
                 .type(NotificationType.PET)
                 .build()
         );
@@ -258,11 +264,14 @@ class PetNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyOverride() {
+        // update mocks
+        when(config.petNotifyMessage()).thenReturn("%USERNAME% %GAME_MESSAGE%");
+
         // define url override
         when(config.petWebhook()).thenReturn("https://example.com");
 
         // send fake message
-        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        notifier.onChatMessage("You have a funny feeling like you're being followed.");
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled at override url
@@ -271,7 +280,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(null, null, false))
-                .text(buildTemplate(PLAYER_NAME + " got a pet"))
+                .text(buildTemplate(PLAYER_NAME + " has a funny feeling like they're being followed"))
                 .type(NotificationType.PET)
                 .build()
         );
