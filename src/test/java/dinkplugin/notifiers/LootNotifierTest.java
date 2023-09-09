@@ -137,7 +137,7 @@ class LootNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreDenylist() {
         // fire event
-        notifier.onConfigChanged("lootItemDenylist", "ruby");
+        notifier.onConfigChanged("lootItemDenylist", "Ruby");
         LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), 1);
         plugin.onLootReceived(event);
 
