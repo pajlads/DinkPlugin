@@ -308,6 +308,20 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "threadNameTemplate",
+        name = "Forum Thread Name",
+        description = "Thread name template to use for Discord Forum Channels<br/>" +
+            "Use %TYPE% to insert the notification type<br/>" +
+            "Use %MESSAGE% to insert the notification message<br/>" +
+            "Use %USERNAME% to insert the player name",
+        position = 1013,
+        section = advancedSection
+    )
+    default String threadNameTemplate() {
+        return "[%TYPE%] %MESSAGE%";
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
