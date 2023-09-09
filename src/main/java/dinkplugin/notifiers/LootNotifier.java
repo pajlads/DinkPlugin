@@ -66,8 +66,8 @@ public class LootNotifier extends BaseNotifier {
     @Inject
     private ConfigManager configManager;
 
-    private final Set<String> itemNameAllowlist = new HashSet<>();
-    private final Set<String> itemNameDenylist = new HashSet<>();
+    private final Set<String> itemLowerNameAllowlist = new HashSet<>();
+    private final Set<String> itemLowerNameDenylist = new HashSet<>();
 
     private final Cache<String, Integer> killCounts = CacheBuilder.newBuilder()
         .expireAfterAccess(10, TimeUnit.MINUTES)
@@ -88,27 +88,27 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void init() {
-        synchronized (itemNameAllowlist) {
-            itemNameAllowlist.clear();
+        synchronized (itemLowerNameAllowlist) {
+            itemLowerNameAllowlist.clear();
             ConfigUtil.readDelimited(config.lootItemAllowlist())
                 .map(String::toLowerCase)
-                .forEach(itemNameAllowlist::add);
+                .forEach(itemLowerNameAllowlist::add);
         }
 
-        synchronized (itemNameDenylist) {
-            itemNameDenylist.clear();
+        synchronized (itemLowerNameDenylist) {
+            itemLowerNameDenylist.clear();
             ConfigUtil.readDelimited(config.lootItemDenylist())
                 .map(String::toLowerCase)
-                .forEach(itemNameDenylist::add);
+                .forEach(itemLowerNameDenylist::add);
         }
     }
 
     public void onConfigChanged(String key, String value) {
         Collection<String> itemNames;
         if ("lootItemAllowlist".equals(key)) {
-            itemNames = itemNameAllowlist;
+            itemNames = itemLowerNameAllowlist;
         } else if ("lootItemDenylist".equals(key)) {
-            itemNames = itemNameDenylist;
+            itemNames = itemLowerNameDenylist;
         } else {
             return;
         }
@@ -215,8 +215,8 @@ public class LootNotifier extends BaseNotifier {
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
             long totalPrice = stack.getTotalPrice();
             String lowerName = stack.getName().toLowerCase();
-            boolean worthy = totalPrice >= minValue || itemNameAllowlist.contains(lowerName);
-            if (worthy && !itemNameDenylist.contains(lowerName)) {
+            boolean worthy = totalPrice >= minValue || itemLowerNameAllowlist.contains(lowerName);
+            if (worthy && !itemLowerNameDenylist.contains(lowerName)) {
                 sendMessage = true;
                 lootMessage.component(ItemUtils.templateStack(stack, true));
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
