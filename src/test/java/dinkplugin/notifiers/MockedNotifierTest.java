@@ -129,6 +129,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.embedFooterText()).thenReturn("Powered by Dink");
         when(config.embedFooterIcon()).thenReturn("https://github.com/pajlads/DinkPlugin/raw/master/icon.png");
         when(config.playerLookupService()).thenReturn(PlayerLookupService.OSRS_HISCORE);
+        when(config.threadNameTemplate()).thenReturn("[%TYPE%] %MESSAGE%");
         when(config.nameFilterMode()).thenReturn(FilterMode.DENY);
     }
 

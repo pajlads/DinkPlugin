@@ -322,6 +322,20 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "threadNameTemplate",
+        name = "Forum Thread Name",
+        description = "Thread name template to use for Discord Forum Channels<br/>" +
+            "Use %TYPE% to insert the notification type<br/>" +
+            "Use %MESSAGE% to insert the notification message<br/>" +
+            "Use %USERNAME% to insert the player name",
+        position = 1013,
+        section = advancedSection
+    )
+    default String threadNameTemplate() {
+        return "[%TYPE%] %MESSAGE%";
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
@@ -570,12 +584,13 @@ public interface DinkPluginConfig extends Config {
         keyName = "petNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
-            "Use %USERNAME% to insert your username",
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %GAME_MESSAGE% to insert the game message associated with this type of pet drop",
         position = 12,
         section = petSection
     )
     default String petNotifyMessage() {
-        return "%USERNAME% has a funny feeling they are being followed";
+        return "%USERNAME% %GAME_MESSAGE%";
     }
 
     @ConfigItem(
@@ -1141,13 +1156,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "killCountPenanceQueen",
+        name = "Barbarian Assault",
+        description = "Notify for any Penance Queen kills",
+        position = 95,
+        section = killCountSection
+    )
+    default boolean killCountPenanceQueen() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "killCountMessage",
         name = "Notification Message",
         description = "The message to be sent to the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %BOSS% to insert the NPC name<br/>" +
             "Use %COUNT% to insert the kill count",
-        position = 95,
+        position = 96,
         section = killCountSection
     )
     default String killCountMessage() {
@@ -1162,7 +1188,7 @@ public interface DinkPluginConfig extends Config {
             "Use %BOSS% to insert the NPC name<br/>" +
             "Use %COUNT% to insert the kill count<br/>" +
             "Use %TIME% to insert the completion time",
-        position = 96,
+        position = 97,
         section = killCountSection
     )
     default String killCountBestTimeMessage() {
