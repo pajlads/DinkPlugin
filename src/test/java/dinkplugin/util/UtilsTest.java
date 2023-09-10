@@ -70,6 +70,17 @@ class UtilsTest {
         assertTrue(f.matcher("Hi Hello world!!").find());
         assertTrue(f.matcher("Hi hello World!!").find());
         assertTrue(f.matcher("Hi Hello cruel world!!").find());
+
+        Pattern g = Utils.regexify("Membership's price is $12.49");
+        assertTrue(g.matcher("Membership's price is $12.49").find());
+        assertFalse(g.matcher("Membership's price is $12.499").find());
+        assertFalse(g.matcher("Membershipss price is $12.49").find());
+        assertFalse(g.matcher("Membership's price is $12349").find());
+
+        Pattern h = Utils.regexify("Membership's price is $12.49*");
+        assertTrue(h.matcher("Membership's price is $12.49").find());
+        assertTrue(h.matcher("Membership's price is $12.499").find());
+        assertFalse(h.matcher("A Membership's price is $12.49").find());
     }
 
 }
