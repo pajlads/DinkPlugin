@@ -12,7 +12,7 @@ import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 import net.runelite.client.config.Units;
 
-@ConfigGroup("dinkplugin")
+@ConfigGroup(SettingsManager.CONFIG_GROUP)
 public interface DinkPluginConfig extends Config {
 
     @ConfigSection(
@@ -765,13 +765,37 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootItemAllowlist",
+        name = "Item Allowlist",
+        description = "Always fire notifications for these items, despite value settings.<br/>" +
+            "Place one item name per line (case-insensitive)",
+        position = 37,
+        section = lootSection
+    )
+    default String lootItemAllowlist() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "lootItemDenylist",
+        name = "Item Denylist",
+        description = "Never fire notifications for these items, despite value settings.<br/>" +
+            "Place one item name per line (case-insensitive)",
+        position = 38,
+        section = lootSection
+    )
+    default String lootItemDenylist() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "lootNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %LOOT% to insert the loot<br/>" +
             "Use %SOURCE% to show the source of the loot",
-        position = 37,
+        position = 39,
         section = lootSection
     )
     default String lootNotifyMessage() {

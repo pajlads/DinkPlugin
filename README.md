@@ -94,7 +94,7 @@ For example: `::dinkexport pet` or `::dinkexport collectionlog`.
 With the output of the above command (`::dinkexport`) copied to your clipboard, you can merge these settings with your own via the `::dinkimport` chat command.
 
 This import can replace all of your notifier settings.
-However, webhook URL lists and filtered RSNs will be combined, rather than outright replaced.
+However, webhook URL lists, filtered RSNs, and filtered item names for the loot notifier would be combined, rather than outright replaced.
 If you would like all settings overwritten rather than merged during import, simply press the `Reset` button at the bottom of the plugin settings panel to clear out all settings (including URLs) before running `::dinkimport`.
 
 After an import, if the dink plugin settings panel was open, simply close and open it for the updated configuration to be reflected in the user interface.

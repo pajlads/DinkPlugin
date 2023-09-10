@@ -118,7 +118,7 @@ public class ItemUtils {
     public SerializedItemStack stackFromItem(ItemManager itemManager, int id, int quantity) {
         ItemComposition composition = itemManager.getItemComposition(id);
         int price = getPrice(itemManager, id, composition);
-        return new SerializedItemStack(id, quantity, price, composition.getName());
+        return new SerializedItemStack(id, quantity, price, String.valueOf(composition.getMembersName()));
     }
 
     public String formatStack(SerializedItemStack item, boolean includePrice) {

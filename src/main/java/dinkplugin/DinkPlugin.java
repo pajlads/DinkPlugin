@@ -86,6 +86,7 @@ public class DinkPlugin extends Plugin {
     protected void startUp() {
         log.info("Started up Dink");
         settingsManager.init();
+        lootNotifier.init();
         levelNotifier.initLevels();
     }
 
@@ -123,7 +124,12 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onConfigChanged(ConfigChanged event) {
+        if (!SettingsManager.CONFIG_GROUP.equals(event.getGroup())) {
+            return;
+        }
+
         settingsManager.onConfigChanged(event);
+        lootNotifier.onConfigChanged(event.getKey(), event.getNewValue());
     }
 
     @Subscribe
