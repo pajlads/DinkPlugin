@@ -146,6 +146,17 @@ class LootNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnoreDenylistWildcard() {
+        // fire event
+        notifier.onConfigChanged("lootItemDenylist", "Rub*");
+        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), 1);
+        plugin.onLootReceived(event);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     @DisplayName("Ensure LootReceived event for The Whisperer fires a notification - https://github.com/pajlads/DinkPlugin/pull/286")
     void testNotifyWhisperer() {
         String name = "The Whisperer";
