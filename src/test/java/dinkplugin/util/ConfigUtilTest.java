@@ -4,16 +4,15 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConfigUtilTest {
+
     @Test
     void readDelimited() {
-        assertEquals(Stream.empty().collect(Collectors.toList()), ConfigUtil.readDelimited(null).collect(Collectors.toList()));
+        assertEquals(Collections.emptyList(), ConfigUtil.readDelimited(null).collect(Collectors.toList()));
         assertEquals(Collections.singletonList("ruby"), ConfigUtil.readDelimited("ruby").collect(Collectors.toList()));
 
         // Empty lines are stripped
@@ -31,4 +30,5 @@ public class ConfigUtilTest {
         // Delimitations work with new line
         assertEquals(Arrays.asList("ruby", "blueberry"), ConfigUtil.readDelimited("ruby \n blueberry").collect(Collectors.toList()));
     }
+
 }
