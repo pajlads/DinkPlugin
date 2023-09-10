@@ -2,6 +2,7 @@ package dinkplugin.util;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.AccountType;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -83,6 +84,14 @@ public class Utils {
         return Character.toUpperCase(text.charAt(0)) + text.substring(1).toLowerCase();
     }
 
+    /**
+     * Converts simple patterns (asterisk is the only special character) into regexps.
+     *
+     * @param pattern a simple pattern (asterisks are wildcards, and the rest is a string literal)
+     * @return a compiled regular expression associated with the simple pattern
+     * @see DinkPluginConfig#lootItemAllowlist()
+     * @see DinkPluginConfig#lootItemDenylist()
+     */
     public Pattern regexify(@NotNull String pattern) {
         final int len = pattern.length();
         final StringBuilder sb = new StringBuilder(len + 2 + 4);
