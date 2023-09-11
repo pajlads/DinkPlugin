@@ -81,6 +81,35 @@ class UtilsTest {
         assertTrue(h.matcher("Membership's price is $12.49").find());
         assertTrue(h.matcher("Membership's price is $12.499").find());
         assertFalse(h.matcher("A Membership's price is $12.49").find());
+
+        Pattern i = Utils.regexify("dragon*");
+        assertTrue(i.matcher("dragon pickaxe").find());
+        assertTrue(i.matcher("dragon claws").find());
+        assertFalse(i.matcher("iron pickaxe").find());
+
+        Pattern j = Utils.regexify("*orb");
+        assertTrue(j.matcher("awakener's orb").find());
+        assertTrue(j.matcher("commorb").find());
+        assertFalse(j.matcher("commorb v2").find());
+
+        Pattern k = Utils.regexify("vorkath's head");
+        assertTrue(k.matcher("vorkath's head").find());
+        assertFalse(k.matcher("vorki").find());
+        assertFalse(k.matcher("iron pickaxe").find());
+
+        Pattern l = Utils.regexify("clue scroll*");
+        assertTrue(l.matcher("clue scroll (elite)").find());
+        assertTrue(l.matcher("clue scroll (beginner)").find());
+        assertTrue(l.matcher("clue scroll (easy)").find());
+        assertFalse(l.matcher("clue bottle (beginner)").find());
+        assertFalse(l.matcher("iron pickaxe").find());
+
+        Pattern m = Utils.regexify("jar of");
+        assertTrue(m.matcher("jar of dirt").find());
+        assertTrue(m.matcher("jar of smoke").find());
+        assertTrue(m.matcher("jar of dust").find());
+        assertTrue(m.matcher("jar of spirits").find());
+        assertFalse(m.matcher("iron pickaxe").find());
     }
 
 }
