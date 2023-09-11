@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -65,8 +66,8 @@ public class LootNotifier extends BaseNotifier {
     @Inject
     private ConfigManager configManager;
 
-    private final Collection<Pattern> itemNameAllowlist = new ArrayList<>();
-    private final Collection<Pattern> itemNameDenylist = new ArrayList<>();
+    private final Collection<Pattern> itemNameAllowlist = new CopyOnWriteArrayList<>();
+    private final Collection<Pattern> itemNameDenylist = new CopyOnWriteArrayList<>();
 
     private final Cache<String, Integer> killCounts = CacheBuilder.newBuilder()
         .expireAfterAccess(10, TimeUnit.MINUTES)
@@ -87,19 +88,15 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void init() {
-        synchronized (itemNameAllowlist) {
-            itemNameAllowlist.clear();
-            ConfigUtil.readDelimited(config.lootItemAllowlist())
-                .map(Utils::regexify)
-                .forEach(itemNameAllowlist::add);
-        }
+        itemNameAllowlist.clear();
+        ConfigUtil.readDelimited(config.lootItemAllowlist())
+            .map(Utils::regexify)
+            .forEach(itemNameAllowlist::add);
 
-        synchronized (itemNameDenylist) {
-            itemNameDenylist.clear();
-            ConfigUtil.readDelimited(config.lootItemDenylist())
-                .map(Utils::regexify)
-                .forEach(itemNameDenylist::add);
-        }
+        itemNameDenylist.clear();
+        ConfigUtil.readDelimited(config.lootItemDenylist())
+            .map(Utils::regexify)
+            .forEach(itemNameDenylist::add);
     }
 
     public void onConfigChanged(String key, String value) {
@@ -112,12 +109,10 @@ public class LootNotifier extends BaseNotifier {
             return;
         }
 
-        synchronized (itemNames) {
-            itemNames.clear();
-            ConfigUtil.readDelimited(value)
-                .map(Utils::regexify)
-                .forEach(itemNames::add);
-        }
+        itemNames.clear();
+        ConfigUtil.readDelimited(value)
+            .map(Utils::regexify)
+            .forEach(itemNames::add);
 
         log.debug("{} is now {}", key, itemNames);
     }
