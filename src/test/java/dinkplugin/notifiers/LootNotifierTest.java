@@ -135,6 +135,34 @@ class LootNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyAllowlistWildcard() {
+        // prepare mocks
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn(LOOTED_NAME);
+
+        // fire event
+        notifier.onConfigChanged("lootItemAllowlist", "salmon\nraw trout\ntun*\npike");
+        PlayerLootReceived event = new PlayerLootReceived(player, Collections.singletonList(new ItemStack(ItemID.TUNA, 1, null)));
+        plugin.onPlayerLootReceived(event);
+
+        // verify notification message
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: 1 x {{tuna}} (%d) from %s for %d gp", PLAYER_NAME, TUNA_PRICE, LOOTED_NAME, TUNA_PRICE))
+                        .replacement("{{tuna}}", Replacements.ofWiki("Tuna"))
+                        .build()
+                )
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, null))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    @Test
     void testIgnoreDenylist() {
         // fire event
         notifier.onConfigChanged("lootItemDenylist", "Ruby");
