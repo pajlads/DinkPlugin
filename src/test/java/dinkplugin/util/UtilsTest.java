@@ -104,7 +104,7 @@ class UtilsTest {
         assertFalse(l.matcher("clue bottle (beginner)").find());
         assertFalse(l.matcher("iron pickaxe").find());
 
-        Pattern m = Utils.regexify("jar of");
+        Pattern m = Utils.regexify("jar of*");
         assertTrue(m.matcher("jar of dirt").find());
         assertTrue(m.matcher("jar of smoke").find());
         assertTrue(m.matcher("jar of dust").find());
