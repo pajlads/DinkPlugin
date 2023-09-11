@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -89,14 +90,18 @@ public class LootNotifier extends BaseNotifier {
 
     public void init() {
         itemNameAllowlist.clear();
-        ConfigUtil.readDelimited(config.lootItemAllowlist())
-            .map(Utils::regexify)
-            .forEach(itemNameAllowlist::add);
+        itemNameAllowlist.addAll(
+            ConfigUtil.readDelimited(config.lootItemAllowlist())
+                .map(Utils::regexify)
+                .collect(Collectors.toList())
+        );
 
         itemNameDenylist.clear();
-        ConfigUtil.readDelimited(config.lootItemDenylist())
-            .map(Utils::regexify)
-            .forEach(itemNameDenylist::add);
+        itemNameDenylist.addAll(
+            ConfigUtil.readDelimited(config.lootItemDenylist())
+                .map(Utils::regexify)
+                .collect(Collectors.toList())
+        );
     }
 
     public void onConfigChanged(String key, String value) {
@@ -110,11 +115,11 @@ public class LootNotifier extends BaseNotifier {
         }
 
         itemNames.clear();
-        ConfigUtil.readDelimited(value)
-            .map(Utils::regexify)
-            .forEach(itemNames::add);
-
-        log.debug("{} is now {}", key, itemNames);
+        itemNames.addAll(
+            ConfigUtil.readDelimited(value)
+                .map(Utils::regexify)
+                .collect(Collectors.toList())
+        );
     }
 
     public void onNpcLootReceived(NpcLootReceived event) {
