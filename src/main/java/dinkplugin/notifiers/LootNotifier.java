@@ -43,10 +43,11 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -66,8 +67,8 @@ public class LootNotifier extends BaseNotifier {
     @Inject
     private ConfigManager configManager;
 
-    private final Set<String> itemLowerNameAllowlist = new HashSet<>();
-    private final Set<String> itemLowerNameDenylist = new HashSet<>();
+    private final Collection<Pattern> itemNameAllowlist = new CopyOnWriteArrayList<>();
+    private final Collection<Pattern> itemNameDenylist = new CopyOnWriteArrayList<>();
 
     private final Cache<String, Integer> killCounts = CacheBuilder.newBuilder()
         .expireAfterAccess(10, TimeUnit.MINUTES)
@@ -88,39 +89,37 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void init() {
-        synchronized (itemLowerNameAllowlist) {
-            itemLowerNameAllowlist.clear();
+        itemNameAllowlist.clear();
+        itemNameAllowlist.addAll(
             ConfigUtil.readDelimited(config.lootItemAllowlist())
-                .map(String::toLowerCase)
-                .forEach(itemLowerNameAllowlist::add);
-        }
+                .map(Utils::regexify)
+                .collect(Collectors.toList())
+        );
 
-        synchronized (itemLowerNameDenylist) {
-            itemLowerNameDenylist.clear();
+        itemNameDenylist.clear();
+        itemNameDenylist.addAll(
             ConfigUtil.readDelimited(config.lootItemDenylist())
-                .map(String::toLowerCase)
-                .forEach(itemLowerNameDenylist::add);
-        }
+                .map(Utils::regexify)
+                .collect(Collectors.toList())
+        );
     }
 
     public void onConfigChanged(String key, String value) {
-        Collection<String> itemNames;
+        Collection<Pattern> itemNames;
         if ("lootItemAllowlist".equals(key)) {
-            itemNames = itemLowerNameAllowlist;
+            itemNames = itemNameAllowlist;
         } else if ("lootItemDenylist".equals(key)) {
-            itemNames = itemLowerNameDenylist;
+            itemNames = itemNameDenylist;
         } else {
             return;
         }
 
-        synchronized (itemNames) {
-            itemNames.clear();
+        itemNames.clear();
+        itemNames.addAll(
             ConfigUtil.readDelimited(value)
-                .map(String::toLowerCase)
-                .forEach(itemNames::add);
-        }
-
-        log.debug("{} is now {}", key, itemNames);
+                .map(Utils::regexify)
+                .collect(Collectors.toList())
+        );
     }
 
     public void onNpcLootReceived(NpcLootReceived event) {
@@ -214,9 +213,8 @@ public class LootNotifier extends BaseNotifier {
         for (ItemStack item : reduced) {
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
             long totalPrice = stack.getTotalPrice();
-            String lowerName = stack.getName().toLowerCase();
-            boolean worthy = totalPrice >= minValue || itemLowerNameAllowlist.contains(lowerName);
-            if (worthy && !itemLowerNameDenylist.contains(lowerName)) {
+            boolean worthy = totalPrice >= minValue || matches(itemNameAllowlist, stack.getName());
+            if (worthy && !matches(itemNameDenylist, stack.getName())) {
                 sendMessage = true;
                 lootMessage.component(ItemUtils.templateStack(stack, true));
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
@@ -303,6 +301,14 @@ public class LootNotifier extends BaseNotifier {
 
     private static boolean hasItem(Widget widget) {
         return widget != null && widget.getItemId() >= 0;
+    }
+
+    private static boolean matches(Collection<Pattern> regexps, String input) {
+        for (Pattern regex : regexps) {
+            if (regex.matcher(input).find())
+                return true;
+        }
+        return false;
     }
 
 }

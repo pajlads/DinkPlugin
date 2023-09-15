@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Support wildcards in loot item name filters. (#312)
+
 ## 1.6.3
 
 - Minor: Add item name allowlist and denylist for loot notifications. (#310)

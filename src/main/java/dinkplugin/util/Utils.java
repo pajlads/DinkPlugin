@@ -2,6 +2,7 @@ package dinkplugin.util;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.AccountType;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 @Slf4j
 @UtilityClass
@@ -80,6 +82,41 @@ public class Utils {
     public String ucFirst(@NotNull String text) {
         if (text.length() < 2) return text.toUpperCase();
         return Character.toUpperCase(text.charAt(0)) + text.substring(1).toLowerCase();
+    }
+
+    /**
+     * Converts simple patterns (asterisk is the only special character) into regexps.
+     *
+     * @param pattern a simple pattern (asterisks are wildcards, and the rest is a string literal)
+     * @return a compiled regular expression associated with the simple pattern
+     * @see DinkPluginConfig#lootItemAllowlist()
+     * @see DinkPluginConfig#lootItemDenylist()
+     */
+    public Pattern regexify(@NotNull String pattern) {
+        final int len = pattern.length();
+        final StringBuilder sb = new StringBuilder(len + 2 + 4);
+        int startIndex = 0;
+
+        if (!pattern.startsWith("*")) {
+            sb.append('^');
+        } else {
+            startIndex++;
+        }
+
+        int i;
+        while ((i = pattern.indexOf('*', startIndex)) >= 0) {
+            String section = pattern.substring(startIndex, i);
+            sb.append(Pattern.quote(section));
+            sb.append(".*");
+            startIndex = i + 1;
+        }
+
+        if (startIndex < len) {
+            sb.append(Pattern.quote(pattern.substring(startIndex)));
+            sb.append('$');
+        }
+
+        return Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
     }
 
     /**
