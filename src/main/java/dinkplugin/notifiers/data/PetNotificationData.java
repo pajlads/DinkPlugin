@@ -48,11 +48,17 @@ public class PetNotificationData extends NotificationData {
 
         List<Field> fields = new ArrayList<>(3);
         fields.add(new Field("Name", Field.formatBlock("", petName)));
-        String status = duplicate ? "Already owned" : (previouslyOwned != null && previouslyOwned) ? "Previously owned" : null;
+        String status = getStatus();
         if (status != null)
             fields.add(new Field("Status", Field.formatBlock("", status)));
         if (milestone != null)
             fields.add(new Field("Milestone", Field.formatBlock("", milestone)));
         return fields;
+    }
+
+    private String getStatus() {
+        if (duplicate) return "Already owned";
+        if (previouslyOwned == null) return null;
+        return previouslyOwned ? "Previously owned" : "New!";
     }
 }
