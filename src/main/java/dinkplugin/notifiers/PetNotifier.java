@@ -11,10 +11,10 @@ import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import lombok.AccessLevel;
 import lombok.Setter;
+import lombok.Value;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
@@ -100,10 +100,10 @@ public class PetNotifier extends BaseNotifier {
                 }
             } else if (PRIMED_NAME.equals(petName) || !collection) {
                 parseItemFromGameMessage(chatMessage)
-                    .filter(item -> item.getKey().startsWith("Pet ") || PET_NAMES.contains(Utils.ucFirst(item.getKey())))
-                    .ifPresent(pair -> {
-                        setPetName(pair.getKey());
-                        if (pair.getValue()) {
+                    .filter(item -> item.getItemName().startsWith("Pet ") || PET_NAMES.contains(Utils.ucFirst(item.getItemName())))
+                    .ifPresent(parseResult -> {
+                        setPetName(parseResult.getItemName());
+                        if (parseResult.isCollectionLog()) {
                             this.collection = true;
                         }
                     });
@@ -192,18 +192,24 @@ public class PetNotifier extends BaseNotifier {
         reset();
     }
 
-    private static Optional<Pair<String, Boolean>> parseItemFromGameMessage(String message) {
+    private static Optional<ParseResult> parseItemFromGameMessage(String message) {
         Matcher untradeableMatcher = UNTRADEABLE_REGEX.matcher(message);
         if (untradeableMatcher.find()) {
-            return Optional.of(Pair.of(untradeableMatcher.group(1), false));
+            return Optional.of(new ParseResult(untradeableMatcher.group(1), false));
         }
 
         Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(message);
         if (collectionMatcher.find()) {
-            return Optional.of(Pair.of(collectionMatcher.group("itemName"), true));
+            return Optional.of(new ParseResult(collectionMatcher.group("itemName"), true));
         }
 
         return Optional.empty();
+    }
+
+    @Value
+    private static class ParseResult {
+        String itemName;
+        boolean collectionLog;
     }
 
     static {
