@@ -107,7 +107,7 @@ public class DeathNotifier extends BaseNotifier {
         boolean self = client.getLocalPlayer() == actor.getActor();
 
         if (self && isEnabled())
-            handleNotify();
+            handleNotify(null);
 
         if (self || actor.getActor() == lastTarget.get())
             lastTarget = new WeakReference<>(null);
@@ -116,7 +116,7 @@ public class DeathNotifier extends BaseNotifier {
     public void onGameMessage(String message) {
         if (config.deathIgnoreSafe() && message.contains("You failed to survive the Tombs of Amascut") && isEnabled()) {
             // https://github.com/pajlads/DinkPlugin/issues/316
-            handleNotify();
+            handleNotify(Danger.DANGEROUS);
         }
     }
 
@@ -126,8 +126,8 @@ public class DeathNotifier extends BaseNotifier {
         }
     }
 
-    private void handleNotify() {
-        Danger danger = getDangerLevel(client);
+    private void handleNotify(Danger dangerOverride) {
+        Danger danger = dangerOverride != null ? dangerOverride : getDangerLevel(client);
         if (danger == Danger.SAFE && config.deathIgnoreSafe())
             return;
 
