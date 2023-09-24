@@ -113,6 +113,13 @@ public class DeathNotifier extends BaseNotifier {
             lastTarget = new WeakReference<>(null);
     }
 
+    public void onGameMessage(String message) {
+        if (config.deathIgnoreSafe() && message.contains("You failed to survive the Tombs of Amascut") && isEnabled()) {
+            // https://github.com/pajlads/DinkPlugin/issues/316
+            handleNotify();
+        }
+    }
+
     public void onInteraction(InteractingChanged event) {
         if (event.getSource() == client.getLocalPlayer() && event.getTarget() != null && event.getTarget().getCombatLevel() > 0) {
             lastTarget = new WeakReference<>(event.getTarget());
