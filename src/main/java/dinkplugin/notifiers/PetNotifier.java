@@ -11,6 +11,8 @@ import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import lombok.AccessLevel;
 import lombok.Setter;
+import lombok.Value;
+import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -75,6 +77,8 @@ public class PetNotifier extends BaseNotifier {
 
     private volatile boolean backpack = false;
 
+    private volatile boolean collection = false;
+
     @Override
     public boolean isEnabled() {
         return config.notifyPet() && super.isEnabled();
@@ -94,10 +98,15 @@ public class PetNotifier extends BaseNotifier {
                     this.duplicate = chatMessage.contains("would have been");
                     this.backpack = chatMessage.contains(" backpack");
                 }
-            } else if (PRIMED_NAME.equals(petName)) {
+            } else if (PRIMED_NAME.equals(petName) || !collection) {
                 parseItemFromGameMessage(chatMessage)
-                    .filter(item -> item.startsWith("Pet ") || PET_NAMES.contains(Utils.ucFirst(item)))
-                    .ifPresent(this::setPetName);
+                    .filter(item -> item.getItemName().startsWith("Pet ") || PET_NAMES.contains(Utils.ucFirst(item.getItemName())))
+                    .ifPresent(parseResult -> {
+                        setPetName(parseResult.getItemName());
+                        if (parseResult.isCollectionLog()) {
+                            this.collection = true;
+                        }
+                    });
             } else {
                 // ignore; we already know the pet name
             }
@@ -133,14 +142,25 @@ public class PetNotifier extends BaseNotifier {
         this.milestone = null;
         this.duplicate = false;
         this.backpack = false;
+        this.collection = false;
         this.ticksWaited.set(0);
     }
 
     private void handleNotify() {
+        Boolean previouslyOwned;
+        if (duplicate) {
+            previouslyOwned = true;
+        } else if (client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) % 2 == 1) {
+            // when collection log chat notification is enabled, presence or absence of notification indicates ownership history
+            previouslyOwned = !collection;
+        } else {
+            previouslyOwned = null;
+        }
+
         String gameMessage;
         if (backpack) {
             gameMessage = "feels something weird sneaking into their backpack";
-        } else if (duplicate) {
+        } else if (previouslyOwned != null && previouslyOwned) {
             gameMessage = "has a funny feeling like they would have been followed...";
         } else {
             gameMessage = "has a funny feeling like they're being followed";
@@ -160,7 +180,7 @@ public class PetNotifier extends BaseNotifier {
             .map(ItemUtils::getItemImageUrl)
             .orElse(null);
 
-        PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null), milestone, duplicate);
+        PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null), milestone, duplicate, previouslyOwned);
 
         createMessage(config.petSendImage(), NotificationBody.builder()
             .extra(extra)
@@ -172,18 +192,24 @@ public class PetNotifier extends BaseNotifier {
         reset();
     }
 
-    private static Optional<String> parseItemFromGameMessage(String message) {
+    private static Optional<ParseResult> parseItemFromGameMessage(String message) {
         Matcher untradeableMatcher = UNTRADEABLE_REGEX.matcher(message);
         if (untradeableMatcher.find()) {
-            return Optional.of(untradeableMatcher.group(1));
+            return Optional.of(new ParseResult(untradeableMatcher.group(1), false));
         }
 
         Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(message);
         if (collectionMatcher.find()) {
-            return Optional.of(collectionMatcher.group("itemName"));
+            return Optional.of(new ParseResult(collectionMatcher.group("itemName"), true));
         }
 
         return Optional.empty();
+    }
+
+    @Value
+    private static class ParseResult {
+        String itemName;
+        boolean collectionLog;
     }
 
     static {

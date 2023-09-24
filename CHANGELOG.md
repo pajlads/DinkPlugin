@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Indicate in pet notification metadata when a pet was previously owned but lost. (#314)
 - Minor: Support wildcards in loot item name filters. (#312)
 
 ## 1.6.3
