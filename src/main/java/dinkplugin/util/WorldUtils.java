@@ -109,7 +109,8 @@ public class WorldUtils {
         if (isAmascutTombs(regionId)) {
             // ToA is technically a dangerous activity, but multiple attempts can be permitted
             // the real TOA death is detected via game message in death notifier
-            return true;
+            // However: any TOA death is still dangerous for hardcore (group) ironmen
+            return !Utils.getAccountType(client).isHardcore();
         }
 
         if (isBarbarianAssault(regionId) || isChambersOfXeric(regionId) || isInferno(regionId) ||

@@ -55,6 +55,8 @@ public class DeathNotifier extends BaseNotifier {
 
     private static final String ATTACK_OPTION = "Attack";
 
+    private static final String TOA_DEATH_MSG = "You failed to survive the Tombs of Amascut";
+
     /**
      * Checks whether the actor is alive and interacting with the specified player.
      */
@@ -114,8 +116,9 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     public void onGameMessage(String message) {
-        if (config.deathIgnoreSafe() && message.contains("You failed to survive the Tombs of Amascut") && isEnabled()) {
+        if (config.deathIgnoreSafe() && !Utils.getAccountType(client).isHardcore() && message.contains(TOA_DEATH_MSG) && isEnabled()) {
             // https://github.com/pajlads/DinkPlugin/issues/316
+            // though, hardcore (group) ironmen just use the normal ActorDeath trigger for TOA
             handleNotify(Danger.DANGEROUS);
         }
     }
