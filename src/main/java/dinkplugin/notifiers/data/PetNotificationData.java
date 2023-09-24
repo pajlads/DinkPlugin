@@ -14,7 +14,7 @@ public class PetNotificationData extends NotificationData {
 
     /**
      * The name of the pet.
-     * <p></p>
+     * <p>
      * This field is null when the name cannot be read from untradeable drop, collection log, or clan chat notification.
      */
     @Nullable
