@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.domain.AccountType;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -27,6 +28,7 @@ import net.runelite.api.events.InteractingChanged;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -431,6 +433,52 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.DEATH)
                 .build()
         );
+    }
+
+    @Test
+    void testNotifyAmascutHardcoreIron() {
+        // update mocks
+        when(client.getVarbitValue(Varbits.ACCOUNT_TYPE)).thenReturn(AccountType.HARDCORE_IRONMAN.ordinal());
+        when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(3520, 5120, 0));
+        when(config.deathEmbedKeptItems()).thenReturn(false);
+        when(client.isPrayerActive(Prayer.PROTECT_ITEM)).thenReturn(true);
+        Item[] items = {
+            new Item(ItemID.RUBY, 1),
+            new Item(ItemID.TUNA, 1),
+            new Item(ItemID.COAL, 1),
+            new Item(ItemID.SHARK, 1),
+            new Item(ItemID.OPAL, 1),
+        };
+        ItemContainer inv = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(inv.getItems()).thenReturn(items);
+
+        // fire event
+        plugin.onActorDeath(new ActorDeath(localPlayer));
+
+        // verify notification
+        List<SerializedItemStack> kept = Arrays.asList(
+            ItemUtils.stackFromItem(itemManager, items[0]),
+            ItemUtils.stackFromItem(itemManager, items[3]),
+            ItemUtils.stackFromItem(itemManager, items[4]),
+            ItemUtils.stackFromItem(itemManager, items[2])
+        );
+        List<SerializedItemStack> lost = Collections.singletonList(
+            ItemUtils.stackFromItem(itemManager, items[1])
+        );
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
+                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
+                .type(NotificationType.DEATH)
+                .build()
+        );
+
+        // ensure TOA death chat message is ignored for HCIM
+        notifier.onGameMessage("You failed to survive the Tombs of Amascut");
+        Mockito.verifyNoMoreInteractions(messageHandler);
     }
 
     @Test
