@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Classify deaths in Tombs of Abascut as safe or dangerous depending on the attempt invocations. (#317)
 - Minor: Support wildcards in loot item name filters. (#312)
 
 ## 1.6.3
