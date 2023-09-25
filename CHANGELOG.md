@@ -2,6 +2,7 @@
 
 - Minor: Indicate in pet notification metadata when a pet was previously owned but lost. (#314)
 - Minor: Support wildcards in loot item name filters. (#312)
+- Dev: Bump Java source & target compatability from 8 to 11. (#318)
 
 ## 1.6.3
 
