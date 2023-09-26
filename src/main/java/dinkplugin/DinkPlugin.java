@@ -178,6 +178,7 @@ public class DinkPlugin extends Plugin {
                 clueNotifier.onChatMessage(chatMessage);
                 killCountNotifier.onGameMessage(chatMessage);
                 combatTaskNotifier.onGameMessage(chatMessage);
+                deathNotifier.onGameMessage(chatMessage);
                 break;
 
             case FRIENDSCHATNOTIFICATION:

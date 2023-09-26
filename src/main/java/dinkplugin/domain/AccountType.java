@@ -11,6 +11,10 @@ public enum AccountType {
 
     private static final AccountType[] TYPES = values();
 
+    public boolean isHardcore() {
+        return this == HARDCORE_IRONMAN || this == HARDCORE_GROUP_IRONMAN;
+    }
+
     /**
      * @param varbitValue the value associated with {@link net.runelite.api.Varbits#ACCOUNT_TYPE}
      * @return the equivalent enum value

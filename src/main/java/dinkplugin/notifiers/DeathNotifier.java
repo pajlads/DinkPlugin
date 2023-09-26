@@ -55,6 +55,8 @@ public class DeathNotifier extends BaseNotifier {
 
     private static final String ATTACK_OPTION = "Attack";
 
+    private static final String TOA_DEATH_MSG = "You failed to survive the Tombs of Amascut";
+
     /**
      * Checks whether the actor is alive and interacting with the specified player.
      */
@@ -107,10 +109,18 @@ public class DeathNotifier extends BaseNotifier {
         boolean self = client.getLocalPlayer() == actor.getActor();
 
         if (self && isEnabled())
-            handleNotify();
+            handleNotify(null);
 
         if (self || actor.getActor() == lastTarget.get())
             lastTarget = new WeakReference<>(null);
+    }
+
+    public void onGameMessage(String message) {
+        if (config.deathIgnoreSafe() && !Utils.getAccountType(client).isHardcore() && message.contains(TOA_DEATH_MSG) && isEnabled()) {
+            // https://github.com/pajlads/DinkPlugin/issues/316
+            // though, hardcore (group) ironmen just use the normal ActorDeath trigger for TOA
+            handleNotify(Danger.DANGEROUS);
+        }
     }
 
     public void onInteraction(InteractingChanged event) {
@@ -119,8 +129,8 @@ public class DeathNotifier extends BaseNotifier {
         }
     }
 
-    private void handleNotify() {
-        Danger danger = getDangerLevel(client);
+    private void handleNotify(Danger dangerOverride) {
+        Danger danger = dangerOverride != null ? dangerOverride : getDangerLevel(client);
         if (danger == Danger.SAFE && config.deathIgnoreSafe())
             return;
 

@@ -27,6 +27,7 @@ public class WorldUtils {
     private final Set<Integer> LMS_REGIONS = ImmutableSet.of(13658, 13659, 13660, 13914, 13915, 13916, 13918, 13919, 13920, 14174, 14175, 14176, 14430, 14431, 14432);
     private final Set<Integer> POH_REGIONS = ImmutableSet.of(7257, 7513, 7514, 7769, 7770, 8025, 8026);
     private final Set<Integer> SOUL_REGIONS = ImmutableSet.of(8493, 8748, 8749, 9005);
+    private final Set<Integer> TOA_REGIONS = ImmutableSet.of(14160, 14162, 14164, 14674, 14676, 15184, 15186, 15188, 15696, 15698, 15700);
     private final int BURTHORPE_REGION = 8781;
     private final int INFERNO_REGION = 9043;
     private final int NMZ_REGION = 9033;
@@ -105,6 +106,13 @@ public class WorldUtils {
     public boolean isSafeArea(Client client) {
         int regionId = getLocation(client).getRegionID();
 
+        if (isAmascutTombs(regionId)) {
+            // ToA is technically a dangerous activity, but multiple attempts can be permitted
+            // the real TOA death is detected via game message in death notifier
+            // However: any TOA death is still dangerous for hardcore (group) ironmen
+            return !Utils.getAccountType(client).isHardcore();
+        }
+
         if (isBarbarianAssault(regionId) || isChambersOfXeric(regionId) || isInferno(regionId) ||
             isNightmareZone(regionId) || isTzHaarFightCave(regionId) || isPestControl(client)) {
             // All PvM activities are dangerous for Hardcore group iron players
@@ -117,6 +125,10 @@ public class WorldUtils {
 
     public boolean isSoulWars(int regionId) {
         return SOUL_REGIONS.contains(regionId);
+    }
+
+    public boolean isAmascutTombs(int regionId) {
+        return TOA_REGIONS.contains(regionId);
     }
 
     public boolean isTzHaarFightCave(int regionId) {
