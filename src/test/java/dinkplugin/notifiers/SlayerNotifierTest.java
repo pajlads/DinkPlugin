@@ -48,7 +48,8 @@ class SlayerNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(1, "TzTok-Jad", 10, 100))
                 .extra(new SlayerNotificationData("1 TzTok-Jad", "100", "10", 1, "TzTok-Jad"))
                 .type(NotificationType.SLAYER)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -68,7 +69,8 @@ class SlayerNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(245, "Cave Kraken", "1,000", "1,000"))
                 .extra(new SlayerNotificationData("245 Cave Kraken", "1,000", "1,000", 245, "Cave Kraken"))
                 .type(NotificationType.SLAYER)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -87,7 +89,8 @@ class SlayerNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(50, "Cave Kraken", 10, 150))
                 .extra(new SlayerNotificationData("50 Cave Kraken", "150", "10", 50, "Cave Kraken"))
                 .type(NotificationType.SLAYER)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -106,7 +109,8 @@ class SlayerNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(36, "Barrows brothers", 20, 881))
                 .extra(new SlayerNotificationData("36 Barrows brothers", "881", "20", 36, "Barrows brothers"))
                 .type(NotificationType.SLAYER)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -125,7 +129,8 @@ class SlayerNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(11, "Chaos Elemental", 15, 242))
                 .extra(new SlayerNotificationData("11 Chaos Elemental", "242", "15", 11, "Chaos Elemental"))
                 .type(NotificationType.SLAYER)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -136,7 +141,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You've completed 101 tasks and received 0 points, giving you a total of 200; return to a Slayer master.");
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -149,7 +154,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You've completed 100 tasks and received 10 points, giving you a total of 200; return to a Slayer master.");
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     private static Template buildTemplate(int count, String monster, Object points, Object completed) {

@@ -76,7 +76,8 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
                 .extra(new CombatAchievementData(CombatAchievementTier.HARD, "Whack-a-Mole", 3, 200, 85, 189, null))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -103,7 +104,8 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
                 .extra(new CombatAchievementData(CombatAchievementTier.GRANDMASTER, "No Pressure", 6, 1466, 1466 - 1465, 2005 - 1465, CombatAchievementTier.MASTER))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -130,7 +132,8 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
                 .extra(new CombatAchievementData(CombatAchievementTier.GRANDMASTER, "No Pressure", 6, 2005, null, null, CombatAchievementTier.GRANDMASTER))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -140,7 +143,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage("Congratulations, you've completed an easy combat task: A Slow Death.");
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -149,7 +152,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage("Congratulations, you've completed a gachi combat task: Swordfight with the homies.");
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -161,7 +164,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage("Congratulations, you've completed a hard combat task: Whack-a-Mole.");
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     private static Template buildUnlockTemplate(String tier, String task) {

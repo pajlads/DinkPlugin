@@ -102,7 +102,8 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
                 .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -148,7 +149,8 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
                 .type(NotificationType.DEATH)
                 .embeds(embeds)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -173,7 +175,8 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0)))
                 .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -200,7 +203,8 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0)))
                 .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -224,7 +228,8 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
                 .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -272,7 +277,8 @@ class DeathNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new DeathNotificationData(0L, false, null, name, NpcID.GUARD, Collections.emptyList(), Collections.emptyList()))
                 .type(NotificationType.DEATH)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -313,7 +319,8 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
                 .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
                 .type(NotificationType.DEATH)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -353,7 +360,8 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
                 .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList()))
                 .type(NotificationType.DEATH)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -375,7 +383,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(inv.getItems()).thenReturn(items);
 
         // fire event
-        notifier.onGameMessage("You failed to survive the Tombs of Amascut");
+        notifier.onGameMessage(DeathNotifier.TOA_DEATH_MSG);
 
         // verify notification
         List<SerializedItemStack> kept = Arrays.asList(
@@ -394,7 +402,8 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
                 .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
                 .type(NotificationType.DEATH)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -431,7 +440,8 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
                 .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList()))
                 .type(NotificationType.DEATH)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -473,11 +483,12 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
                 .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
                 .type(NotificationType.DEATH)
-                .build()
+                .build(),
+            null
         );
 
         // ensure TOA death chat message is ignored for HCIM
-        notifier.onGameMessage("You failed to survive the Tombs of Amascut");
+        notifier.onGameMessage(DeathNotifier.TOA_DEATH_MSG);
         Mockito.verifyNoMoreInteractions(messageHandler);
     }
 
@@ -501,7 +512,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -513,7 +524,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         plugin.onActorDeath(new ActorDeath(other));
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -525,7 +536,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -537,7 +548,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -560,7 +571,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
 }

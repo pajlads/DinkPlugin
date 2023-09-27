@@ -93,7 +93,7 @@ public class DiscordMessageHandler {
             .build();
     }
 
-    public void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<?> inputBody) {
+    public void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<?> inputBody, @Nullable CompletableFuture<Image> screenshot) {
         if (StringUtils.isBlank(webhookUrl)) return;
 
         Collection<HttpUrl> urlList = Arrays.stream(StringUtils.split(webhookUrl, '\n'))
@@ -108,7 +108,7 @@ public class DiscordMessageHandler {
             boolean chatHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.CHATBOX);
             boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.PRIVATE_CHAT_MESSAGE);
 
-            captureScreenshot(drawManager, config.screenshotScale() / 100.0)
+            captureScreenshot(screenshot, drawManager, config.screenshotScale() / 100.0)
                 .thenApply(image ->
                     RequestBody.create(MediaType.parse("image/" + image.getKey()), image.getValue())
                 )
@@ -267,15 +267,17 @@ public class DiscordMessageHandler {
      * Captures the next frame and applies the specified rescaling
      * while abiding by {@link Embed#MAX_IMAGE_SIZE}.
      *
+     * @param future       a screenshot that was already taken (optional)
      * @param drawManager  {@link DrawManager}
      * @param scalePercent {@link DinkPluginConfig#screenshotScale()} divided by 100.0
      * @return future of the image byte array by the image format name
      * @apiNote scalePercent should be in (0, 1]
      * @implNote the image format is either "png" (lossless) or "jpeg" (lossy), both of which can be used in MIME type
      */
-    private static CompletableFuture<Map.Entry<String, byte[]>> captureScreenshot(DrawManager drawManager, double scalePercent) {
-        CompletableFuture<Image> future = new CompletableFuture<>();
-        drawManager.requestNextFrameListener(future::complete);
+    private static CompletableFuture<Map.Entry<String, byte[]>> captureScreenshot(CompletableFuture<Image> future, DrawManager drawManager, double scalePercent) {
+        if (future == null) {
+            future = Utils.captureScreenshot(drawManager);
+        }
         return future.thenApply(ImageUtil::bufferedImageFromImage)
             .thenApply(input -> Utils.rescale(input, scalePercent))
             .thenApply(image -> {

@@ -67,7 +67,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
                 .extra(new DiaryNotificationData("Desert", AchievementDiary.Difficulty.ELITE, 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -93,7 +94,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -118,7 +120,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -144,7 +147,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
                 .extra(new DiaryNotificationData("Western Provinces", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -170,7 +174,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
 
         // trigger message box
@@ -193,7 +198,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -209,7 +214,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -219,7 +224,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -235,7 +240,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -254,7 +259,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     private static VarbitChanged event(int id, int value) {

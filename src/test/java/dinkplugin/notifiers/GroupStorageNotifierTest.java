@@ -302,7 +302,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         notifier.onWidgetClose(CLOSE_EVENT);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -323,7 +323,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         notifier.onWidgetClose(CLOSE_EVENT);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -341,7 +341,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         notifier.onWidgetClose(CLOSE_EVENT);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -360,7 +360,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         notifier.onWidgetClose(CLOSE_EVENT);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     private void verifyNotification(GroupStorageNotificationData extra, String deposited, String withdrawn) {
@@ -382,7 +382,8 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
                 .extra(extra)
                 .type(NotificationType.GROUP_STORAGE)
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
     }
 

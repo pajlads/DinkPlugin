@@ -77,7 +77,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES))
                 .type(NotificationType.COLLECTION)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -117,7 +118,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES))
                 .type(NotificationType.COLLECTION)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -127,7 +129,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("New item added to your backpack: weed");
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -140,7 +142,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("New item added to your collection log: " + item);
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
 }
