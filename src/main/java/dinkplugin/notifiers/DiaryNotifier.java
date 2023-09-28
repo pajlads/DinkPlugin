@@ -196,7 +196,7 @@ public class DiaryNotifier extends BaseNotifier {
         log.debug("Finished initializing current diary completions: {} out of {}", getTotalCompleted(), diaryCompletionById.size());
     }
 
-    private static boolean isComplete(int id, int value) {
+    public static boolean isComplete(int id, int value) {
         if (id == 3578 || id == 3599 || id == 3611) {
             // Karamja special case (except Elite): 0 = not started, 1 = started, 2 = completed tasks
             return value > 1;

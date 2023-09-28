@@ -336,6 +336,17 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "notifyLogin",
+        name = "Sync on Login",
+        description = "Sends character summary to custom webhook handlers on each login",
+        position = 1014,
+        section = collectionSection
+    )
+    default boolean notifyLogin() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +

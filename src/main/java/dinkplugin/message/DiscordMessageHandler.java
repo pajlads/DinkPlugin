@@ -49,6 +49,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -99,6 +100,8 @@ public class DiscordMessageHandler {
         Collection<HttpUrl> urlList = Arrays.stream(StringUtils.split(webhookUrl, '\n'))
             .filter(StringUtils::isNotBlank)
             .map(HttpUrl::parse)
+            .filter(Objects::nonNull)
+            .filter(url -> inputBody.getType().isSupportsDiscord() || !"discord.com".equalsIgnoreCase(url.host()))
             .collect(Collectors.toList());
         if (urlList.isEmpty()) return;
 
