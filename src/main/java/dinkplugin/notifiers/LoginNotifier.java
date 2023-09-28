@@ -40,7 +40,7 @@ public class LoginNotifier extends BaseNotifier {
     }
 
     public void onTick() {
-        if (ticks.getAndUpdate(i -> Math.min(-1, i - 1)) == 0 && isEnabled()) {
+        if (ticks.getAndUpdate(i -> Math.max(-1, i - 1)) == 0 && isEnabled()) {
             this.handleNotify();
         }
     }

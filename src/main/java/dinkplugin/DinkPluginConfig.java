@@ -340,7 +340,7 @@ public interface DinkPluginConfig extends Config {
         name = "Sync on Login",
         description = "Sends character summary to custom webhook handlers on each login",
         position = 1014,
-        section = collectionSection
+        section = advancedSection
     )
     default boolean notifyLogin() {
         return true;
