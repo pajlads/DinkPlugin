@@ -2,6 +2,7 @@ package dinkplugin.notifiers.data;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -10,11 +11,13 @@ import java.util.Map;
 public class LoginNotificationData extends NotificationData {
     int world;
 
-    int collectionCompleted;
-    int collectionTotal;
+    @Nullable // requires QUEST_TAB==0; i.e., character summary is selected
+    Integer collectionCompleted;
+    @Nullable // requires QUEST_TAB==0; i.e., character summary is selected
+    Integer collectionTotal;
 
-    int combatAchievementPoints;
-    int combatAchievementPointsTotal;
+    Integer combatAchievementPoints;
+    Integer combatAchievementPointsTotal;
 
     int diaryCompleted;
     int diaryTotal;
@@ -25,11 +28,11 @@ public class LoginNotificationData extends NotificationData {
     int levelTotal;
     Map<String, Integer> skillLevels;
 
-    int questsCompleted;
-    int questsTotal;
+    Integer questsCompleted;
+    Integer questsTotal;
 
-    int questPoints;
-    int questPointsTotal;
+    Integer questPoints;
+    Integer questPointsTotal;
 
     int slayerPoints;
     int slayerStreak;

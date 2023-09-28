@@ -88,12 +88,17 @@ public class LoginNotifier extends BaseNotifier {
             .build();
         LoginNotificationData extra = new LoginNotificationData(
             world,
-            collectionCompleted, collectionTotal,
-            combatAchievementPoints, combatAchievementPointsTotal,
+            collectionTotal > 0 ? collectionCompleted : null,
+            collectionTotal > 0 ? collectionTotal : null,
+            combatAchievementPointsTotal > 0 ? combatAchievementPoints : null,
+            combatAchievementPointsTotal > 0 ? combatAchievementPointsTotal : null,
             diaryCompleted, diaryTotal,
             gambleCount,
             experienceTotal, levelTotal, skillLevels,
-            questsCompleted, questsTotal, questPoints, questPointsTotal,
+            questsTotal > 0 ? questsCompleted : null,
+            questsTotal > 0 ? questsTotal : null,
+            questPointsTotal > 0 ? questPoints : null,
+            questPointsTotal > 0 ? questPointsTotal : null,
             slayerPoints, slayerStreak
         );
         createMessage(false, NotificationBody.builder()
