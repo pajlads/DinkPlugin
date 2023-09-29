@@ -12,28 +12,30 @@ public class LoginNotificationData extends NotificationData {
     int world;
 
     @Nullable // requires QUEST_TAB==0; i.e., character summary is selected
-    Integer collectionCompleted;
-    @Nullable // requires QUEST_TAB==0; i.e., character summary is selected
-    Integer collectionTotal;
+    Progress collectionLog;
+    Progress combatAchievementPoints;
+    Progress achievementDiary;
+    BarbarianAssault barbarianAssault;
+    SkillData skills;
+    Progress questCount;
+    Progress questPoints;
+    SlayerData slayer;
 
-    Integer combatAchievementPoints;
-    Integer combatAchievementPointsTotal;
+    @Value
+    public static class SkillData {
+        long totalExperience;
+        int totalLevel;
+        Map<String, Integer> levels;
+    }
 
-    int diaryCompleted;
-    int diaryTotal;
+    @Value
+    public static class BarbarianAssault {
+        int highGambleCount;
+    }
 
-    int gambleCount;
-
-    long experienceTotal;
-    int levelTotal;
-    Map<String, Integer> skillLevels;
-
-    Integer questsCompleted;
-    Integer questsTotal;
-
-    Integer questPoints;
-    Integer questPointsTotal;
-
-    int slayerPoints;
-    int slayerStreak;
+    @Value
+    public static class SlayerData {
+        int points;
+        int streak;
+    }
 }

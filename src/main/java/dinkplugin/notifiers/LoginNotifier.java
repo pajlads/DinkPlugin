@@ -6,6 +6,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LoginNotificationData;
+import dinkplugin.notifiers.data.Progress;
 import dinkplugin.util.Utils;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
@@ -88,18 +89,14 @@ public class LoginNotifier extends BaseNotifier {
             .build();
         LoginNotificationData extra = new LoginNotificationData(
             world,
-            collectionTotal > 0 ? collectionCompleted : null,
-            collectionTotal > 0 ? collectionTotal : null,
-            combatAchievementPointsTotal > 0 ? combatAchievementPoints : null,
-            combatAchievementPointsTotal > 0 ? combatAchievementPointsTotal : null,
-            diaryCompleted, diaryTotal,
-            gambleCount,
-            experienceTotal, levelTotal, skillLevels,
-            questsTotal > 0 ? questsCompleted : null,
-            questsTotal > 0 ? questsTotal : null,
-            questPointsTotal > 0 ? questPoints : null,
-            questPointsTotal > 0 ? questPointsTotal : null,
-            slayerPoints, slayerStreak
+            Progress.of(collectionCompleted, collectionTotal),
+            Progress.of(combatAchievementPoints, combatAchievementPointsTotal),
+            Progress.of(diaryCompleted, diaryTotal),
+            new LoginNotificationData.BarbarianAssault(gambleCount),
+            new LoginNotificationData.SkillData(experienceTotal, levelTotal, skillLevels),
+            Progress.of(questsCompleted, questsTotal),
+            Progress.of(questPoints, questPointsTotal),
+            new LoginNotificationData.SlayerData(slayerPoints, slayerStreak)
         );
         createMessage(false, NotificationBody.builder()
             .type(NotificationType.LOGIN)
