@@ -14,14 +14,17 @@ import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
+import org.jetbrains.annotations.VisibleForTesting;
 
+import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+@Singleton
 public class LoginNotifier extends BaseNotifier {
-    private static final int INIT_TICKS = 10; // 6 seconds after login
+    static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
     private final AtomicInteger ticks = new AtomicInteger(-1);
 
     @Override
