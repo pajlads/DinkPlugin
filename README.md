@@ -61,6 +61,7 @@ Some notifiers require in-game settings to be configured to send chat messages u
 - Discord rich embed footers can be customized with user-specified text and image url
 - When network issues occur, Dink can make repeated attempts to send the webhook (with exponential backoff)
 - Notifications can be sent to [Discord Forum Channels](https://support.discord.com/hc/en-us/articles/6208479917079-Forum-Channels-FAQ); append `?forum` to the end of the webhook url to create a new thread per message or use `?thread_id=123456` to post to an existing forum thread (be sure to change `123456` with the actual thread ID)
+- Character metadata can be sent to custom webhook handlers on login for tracking relevant statistics.
 
 ## Chat Commands
 

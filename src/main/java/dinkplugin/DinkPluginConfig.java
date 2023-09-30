@@ -339,7 +339,8 @@ public interface DinkPluginConfig extends Config {
         keyName = "metadataWebhook",
         name = "Custom Metadata Handler",
         description = "Webhook URL for custom handlers to receive regular information about the player.<br/>" +
-            "Not recommended for use with Discord webhooks, as it could cause spam.",
+            "Not recommended for use with Discord webhooks, as it could cause spam.<br/>" +
+            "You can target multiple webhooks by specifying their URLs on separate lines",
         position = 1014,
         section = advancedSection
     )
