@@ -101,7 +101,6 @@ public class DiscordMessageHandler {
             .filter(StringUtils::isNotBlank)
             .map(HttpUrl::parse)
             .filter(Objects::nonNull)
-            .filter(url -> inputBody.getType().isSupportsDiscord() || !"discord.com".equalsIgnoreCase(url.host()))
             .collect(Collectors.toList());
         if (urlList.isEmpty()) return;
 

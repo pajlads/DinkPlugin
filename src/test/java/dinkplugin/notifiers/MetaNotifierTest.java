@@ -11,6 +11,7 @@ import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -26,16 +27,17 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class LoginNotifierTest extends MockedNotifierTest {
+class MetaNotifierTest extends MockedNotifierTest {
 
     @Bind
     @InjectMocks
-    LoginNotifier notifier;
+    MetaNotifier notifier;
 
     int world = 420;
     int level = 50;
     long xp = Experience.getXpForLevel(level);
     int skillCount = Skill.values().length;
+    String url = StringUtils.isNotBlank(PRIMARY_WEBHOOK_URL) ? PRIMARY_WEBHOOK_URL : "https://example.com";
 
     @Override
     @BeforeEach
@@ -43,7 +45,7 @@ class LoginNotifierTest extends MockedNotifierTest {
         super.setUp();
 
         // update config mocks
-        when(config.notifyLogin()).thenReturn(true);
+        when(config.metadataWebhook()).thenReturn(url);
 
         // update client mocks
         when(client.getWorld()).thenReturn(world);
@@ -79,7 +81,7 @@ class LoginNotifierTest extends MockedNotifierTest {
         GameStateChanged event = new GameStateChanged();
         event.setGameState(GameState.LOGGED_IN);
         notifier.onGameState(event);
-        IntStream.rangeClosed(0, LoginNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
+        IntStream.rangeClosed(0, MetaNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
 
         // verify handled
         Map<String, Integer> levels = Arrays.stream(Skill.values())
@@ -94,7 +96,7 @@ class LoginNotifierTest extends MockedNotifierTest {
             new LoginNotificationData.SlayerData(2484, 300)
         );
         verify(messageHandler).createMessage(
-            PRIMARY_WEBHOOK_URL,
+            url,
             false,
             NotificationBody.builder()
                 .extra(extra)
@@ -115,7 +117,7 @@ class LoginNotifierTest extends MockedNotifierTest {
         GameStateChanged event = new GameStateChanged();
         event.setGameState(GameState.LOGGED_IN);
         notifier.onGameState(event);
-        IntStream.rangeClosed(0, LoginNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
+        IntStream.rangeClosed(0, MetaNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
 
         // verify handled
         Map<String, Integer> levels = Arrays.stream(Skill.values())
@@ -130,7 +132,7 @@ class LoginNotifierTest extends MockedNotifierTest {
             new LoginNotificationData.SlayerData(2484, 300)
         );
         verify(messageHandler).createMessage(
-            PRIMARY_WEBHOOK_URL,
+            url,
             false,
             NotificationBody.builder()
                 .extra(extra)
@@ -144,13 +146,13 @@ class LoginNotifierTest extends MockedNotifierTest {
     @Test
     void testDisabled() {
         // update config mock
-        when(config.notifyLogin()).thenReturn(false);
+        when(config.metadataWebhook()).thenReturn("");
 
         // fire event
         GameStateChanged event = new GameStateChanged();
         event.setGameState(GameState.LOGGED_IN);
         notifier.onGameState(event);
-        IntStream.rangeClosed(0, LoginNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
+        IntStream.rangeClosed(0, MetaNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());

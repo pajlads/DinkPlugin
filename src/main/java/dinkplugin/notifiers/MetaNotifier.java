@@ -14,6 +14,7 @@ import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Singleton;
@@ -23,33 +24,33 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Singleton
-public class LoginNotifier extends BaseNotifier {
+public class MetaNotifier extends BaseNotifier {
     static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
-    private final AtomicInteger ticks = new AtomicInteger(-1);
+    private final AtomicInteger loginTicks = new AtomicInteger(-1);
 
     @Override
     public boolean isEnabled() {
-        return config.notifyLogin() && super.isEnabled();
+        return StringUtils.isNotBlank(config.metadataWebhook()) && super.isEnabled();
     }
 
     @Override
     protected String getWebhookUrl() {
-        return null;
+        return config.metadataWebhook();
     }
 
     public void onGameState(GameStateChanged event) {
         if (event.getGameState() == GameState.LOGGED_IN) {
-            ticks.set(INIT_TICKS);
+            loginTicks.set(INIT_TICKS);
         }
     }
 
     public void onTick() {
-        if (ticks.getAndUpdate(i -> Math.max(-1, i - 1)) == 0 && isEnabled()) {
-            this.handleNotify();
+        if (loginTicks.getAndUpdate(i -> Math.max(-1, i - 1)) == 0 && isEnabled()) {
+            this.notifyLogin();
         }
     }
 
-    private void handleNotify() {
+    private void notifyLogin() {
         // Gather data points
         int world = client.getWorld();
 

@@ -24,7 +24,7 @@ public enum NotificationType {
     PLAYER_KILL("Player Kill", "playerKillImage.png", WIKI_IMG_BASE_URL + "Skull_(status)_icon.png"),
     GROUP_STORAGE("Group Shared Storage", "groupStorage.png", WIKI_IMG_BASE_URL + "Coins_10000.png"),
     GRAND_EXCHANGE("Grand Exchange", "grandExchange.png", WIKI_IMG_BASE_URL + "Grand_Exchange_icon.png"),
-    LOGIN("Player Login", "login.png", WIKI_IMG_BASE_URL + "Prop_sword.png", false);
+    LOGIN("Player Login", "login.png", WIKI_IMG_BASE_URL + "Prop_sword.png");
 
     private final String title;
 
@@ -38,12 +38,4 @@ public enum NotificationType {
      */
     private final String thumbnail;
 
-    /**
-     * Whether to send notifications of this type to discord webhook URLs.
-     */
-    private final boolean supportsDiscord;
-
-    NotificationType(String title, String screenshot, String thumbnail) {
-        this(title, screenshot, thumbnail, true);
-    }
 }

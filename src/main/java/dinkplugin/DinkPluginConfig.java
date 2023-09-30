@@ -336,14 +336,15 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "notifyLogin",
-        name = "Sync on Login",
-        description = "Sends character summary to custom webhook handlers on each login",
+        keyName = "metadataWebhook",
+        name = "Custom Metadata Handler",
+        description = "Webhook URL for custom handlers to receive regular information about the player.<br/>" +
+            "Not recommended for use with Discord webhooks, as it could cause spam.",
         position = 1014,
         section = advancedSection
     )
-    default boolean notifyLogin() {
-        return true;
+    default String metadataWebhook() {
+        return "";
     }
 
     @ConfigItem(
