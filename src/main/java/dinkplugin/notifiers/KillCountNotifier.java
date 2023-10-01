@@ -217,8 +217,7 @@ public class KillCountNotifier extends BaseNotifier {
         return Optional.empty();
     }
 
-    @VisibleForTesting
-    static Optional<Pair<String, Integer>> parseBoss(String message) {
+    public static Optional<Pair<String, Integer>> parseBoss(String message) {
         Matcher primary = PRIMARY_REGEX.matcher(message);
         Matcher secondary; // lazy init
         if (primary.find()) {

@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -66,6 +67,9 @@ public class LootNotifier extends BaseNotifier {
 
     @Inject
     private ConfigManager configManager;
+
+    @Inject
+    private ScheduledExecutorService executor;
 
     private final Collection<Pattern> itemNameAllowlist = new CopyOnWriteArrayList<>();
     private final Collection<Pattern> itemNameDenylist = new CopyOnWriteArrayList<>();
@@ -120,6 +124,19 @@ public class LootNotifier extends BaseNotifier {
                 .map(Utils::regexify)
                 .collect(Collectors.toList())
         );
+    }
+
+    public void onGameMessage(String message) {
+        // update cached KC via boss chat message.
+        KillCountNotifier.parseBoss(message).ifPresent(pair -> {
+            // due to inconsistent timing of chat message to loot appearance,
+            // we update cached kc well after loot event has been received.
+            // as a result, the first kill can have an incorrect kc reported, due to loot tracker plugin reliance.
+            // but, the first kill may not even have loot that exceeds the value threshold, so it's not a huge deal.
+            executor.schedule(() -> {
+                killCounts.asMap().merge(pair.getKey(), pair.getValue(), Math::max);
+            }, 15, TimeUnit.SECONDS);
+        });
     }
 
     public void onNpcLootReceived(NpcLootReceived event) {

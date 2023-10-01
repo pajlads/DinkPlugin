@@ -174,6 +174,7 @@ public class DinkPlugin extends Plugin {
             case GAMEMESSAGE:
                 collectionNotifier.onChatMessage(chatMessage);
                 petNotifier.onChatMessage(chatMessage);
+                lootNotifier.onGameMessage(chatMessage);
                 slayerNotifier.onChatMessage(chatMessage);
                 clueNotifier.onChatMessage(chatMessage);
                 killCountNotifier.onGameMessage(chatMessage);
