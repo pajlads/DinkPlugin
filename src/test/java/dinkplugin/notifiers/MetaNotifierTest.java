@@ -78,9 +78,9 @@ class MetaNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         // fire event
-        GameStateChanged event = new GameStateChanged();
-        event.setGameState(GameState.LOGGED_IN);
-        notifier.onGameState(event);
+        notifier.onGameState(event(GameState.LOGGING_IN));
+        notifier.onGameState(event(GameState.LOADING));
+        notifier.onGameState(event(GameState.LOGGED_IN));
         IntStream.rangeClosed(0, MetaNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
 
         // verify handled
@@ -113,10 +113,10 @@ class MetaNotifierTest extends MockedNotifierTest {
         when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
         when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(0);
 
-        // fire event
-        GameStateChanged event = new GameStateChanged();
-        event.setGameState(GameState.LOGGED_IN);
-        notifier.onGameState(event);
+        // fire events
+        notifier.onGameState(event(GameState.LOGGING_IN));
+        notifier.onGameState(event(GameState.LOADING));
+        notifier.onGameState(event(GameState.LOGGED_IN));
         IntStream.rangeClosed(0, MetaNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
 
         // verify handled
@@ -156,5 +156,11 @@ class MetaNotifierTest extends MockedNotifierTest {
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    private static GameStateChanged event(GameState state) {
+        GameStateChanged event = new GameStateChanged();
+        event.setGameState(state);
+        return event;
     }
 }

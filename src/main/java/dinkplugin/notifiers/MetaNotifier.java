@@ -21,12 +21,14 @@ import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Singleton
 public class MetaNotifier extends BaseNotifier {
     static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
     private final AtomicInteger loginTicks = new AtomicInteger(-1);
+    private final AtomicReference<GameState> gameState = new AtomicReference<>();
 
     @Override
     public boolean isEnabled() {
@@ -39,7 +41,13 @@ public class MetaNotifier extends BaseNotifier {
     }
 
     public void onGameState(GameStateChanged event) {
-        if (event.getGameState() == GameState.LOGGED_IN) {
+        GameState newState = event.getGameState();
+        if (newState == GameState.LOADING) {
+            // ignore this intermediate state
+            return;
+        }
+        GameState oldState = gameState.getAndSet(newState);
+        if (oldState == GameState.LOGGING_IN && newState == GameState.LOGGED_IN) {
             loginTicks.set(INIT_TICKS);
         }
     }
