@@ -63,7 +63,7 @@ Some notifiers require in-game settings to be configured to send chat messages u
 - Notifications can be sent to [Discord Forum Channels](https://support.discord.com/hc/en-us/articles/6208479917079-Forum-Channels-FAQ); append `?forum` to the end of the webhook url to create a new thread per message or use `?thread_id=123456` to post to an existing forum thread (be sure to change `123456` with the actual thread ID)
 - Character [metadata](#metadata) can be sent to custom webhook handlers on login for tracking relevant statistics.
 
-## Chat Commandsf
+## Chat Commands
 
 ### Export Current Configuration via `::dinkexport`
 
