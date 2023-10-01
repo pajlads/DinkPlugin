@@ -29,6 +29,17 @@ import java.util.stream.Collectors;
 @Singleton
 public class MetaNotifier extends BaseNotifier {
     static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
+
+    /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,script3971%5D.cs2">CS2 Reference</a>
+     */
+    private static final int ACHIEVEMENT_TASKS_COMPLETED_SCRIPT_ID = 3971;
+
+    /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,script3980%5D.cs2">CS2 Reference</a>
+     */
+    private static final int ACHIEVEMENT_TASKS_TOTAL_SCRIPT_ID = 3980;
+
     private final AtomicInteger loginTicks = new AtomicInteger(-1);
     private final AtomicReference<GameState> gameState = new AtomicReference<>();
 
@@ -78,9 +89,9 @@ public class MetaNotifier extends BaseNotifier {
             .mapToInt(id -> DiaryNotifier.isComplete(id, client.getVarbitValue(id)) ? 1 : 0)
             .sum();
         int diaryTotal = AchievementDiary.DIARIES.size();
-        client.runScript(3971);
+        client.runScript(ACHIEVEMENT_TASKS_COMPLETED_SCRIPT_ID);
         int diaryTaskCompleted = client.getIntStack()[0];
-        client.runScript(3980);
+        client.runScript(ACHIEVEMENT_TASKS_TOTAL_SCRIPT_ID);
         int diaryTaskTotal = client.getIntStack()[0];
 
         int gambleCount = client.getVarbitValue(Varbits.BA_GC);
