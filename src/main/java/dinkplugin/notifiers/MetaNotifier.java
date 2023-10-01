@@ -14,9 +14,11 @@ import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.callback.ClientThread;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Map;
@@ -29,6 +31,9 @@ public class MetaNotifier extends BaseNotifier {
     static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
     private final AtomicInteger loginTicks = new AtomicInteger(-1);
     private final AtomicReference<GameState> gameState = new AtomicReference<>();
+
+    @Inject
+    private ClientThread clientThread;
 
     @Override
     public boolean isEnabled() {
@@ -54,7 +59,7 @@ public class MetaNotifier extends BaseNotifier {
 
     public void onTick() {
         if (loginTicks.getAndUpdate(i -> Math.max(-1, i - 1)) == 0 && isEnabled()) {
-            this.notifyLogin();
+            clientThread.invokeLater(this::notifyLogin); // just 20ms later to be able to run client scripts cleanly
         }
     }
 
@@ -73,6 +78,10 @@ public class MetaNotifier extends BaseNotifier {
             .mapToInt(id -> DiaryNotifier.isComplete(id, client.getVarbitValue(id)) ? 1 : 0)
             .sum();
         int diaryTotal = AchievementDiary.DIARIES.size();
+        client.runScript(3971);
+        int diaryTaskCompleted = client.getIntStack()[0];
+        client.runScript(3980);
+        int diaryTaskTotal = client.getIntStack()[0];
 
         int gambleCount = client.getVarbitValue(Varbits.BA_GC);
 
@@ -104,6 +113,7 @@ public class MetaNotifier extends BaseNotifier {
             Progress.of(collectionCompleted, collectionTotal),
             Progress.of(combatAchievementPoints, combatAchievementPointsTotal),
             Progress.of(diaryCompleted, diaryTotal),
+            Progress.of(diaryTaskCompleted, diaryTaskTotal),
             new LoginNotificationData.BarbarianAssault(gambleCount),
             new LoginNotificationData.SkillData(experienceTotal, levelTotal, skillLevels),
             Progress.of(questsCompleted, questsTotal),

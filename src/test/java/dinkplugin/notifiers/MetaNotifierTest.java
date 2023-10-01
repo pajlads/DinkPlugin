@@ -73,6 +73,9 @@ class MetaNotifierTest extends MockedNotifierTest {
 
         when(client.getVarbitValue(Varbits.SLAYER_POINTS)).thenReturn(2484);
         when(client.getVarbitValue(Varbits.SLAYER_TASK_STREAK)).thenReturn(300);
+
+        // too lazy to mock script results, just return zero so excluded from serialization in tests
+        when(client.getIntStack()).thenReturn(new int[1]);
     }
 
     @Test
@@ -90,6 +93,7 @@ class MetaNotifierTest extends MockedNotifierTest {
             Progress.of(1312, 1477),
             Progress.of(1984, 2005),
             Progress.of(3, 48),
+            null,
             new LoginNotificationData.BarbarianAssault(666),
             new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels),
             Progress.of(21, 158), Progress.of(43, 300),
@@ -126,6 +130,7 @@ class MetaNotifierTest extends MockedNotifierTest {
             null, // collection log data should not be present
             Progress.of(1984, 2005),
             Progress.of(3, 48),
+            null,
             new LoginNotificationData.BarbarianAssault(666),
             new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels),
             Progress.of(21, 158), Progress.of(43, 300),

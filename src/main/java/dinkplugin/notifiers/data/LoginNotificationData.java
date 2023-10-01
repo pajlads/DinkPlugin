@@ -15,6 +15,7 @@ public class LoginNotificationData extends NotificationData {
     Progress collectionLog;
     Progress combatAchievementPoints;
     Progress achievementDiary;
+    Progress achievementDiaryTasks;
     BarbarianAssault barbarianAssault;
     SkillData skills;
     Progress questCount;
