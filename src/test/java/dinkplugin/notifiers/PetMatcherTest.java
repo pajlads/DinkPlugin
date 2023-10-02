@@ -69,6 +69,15 @@ class PetMatcherTest {
                 Arguments.of("[Log Dog LLC] Clipper has a funny feeling like he's being followed: Little nightmare at 2,678 killcount.", "Clipper", "Little nightmare"),
                 Arguments.of("[Muu] Majin Muu has a funny feeling like she's being followed: Herbi at 3,054 harvest count.", "Majin Muu", "Herbi"),
                 Arguments.of("[Dankermen] pajdank has a funny feeling like he's being followed: Rocky at 5,850,317 XP.", "pajdank", "Rocky"),
+                /*
+                You have a funny feeling like you're being followed.
+                New item added to your collection log: Lil' creator
+                CL Locked received a drop: Lil' creator
+                [Boss Locked] CL Locked has a funny feeling like he's being followed: Lil' creator at 22 crates.
+                [Boss Locked] CL Locked received a new collection log item: Lil' creator (86/1476)
+                From https://youtu.be/6jFmC8E0ypI?t=858
+                 */
+                Arguments.of("[Boss Locked] CL Locked has a funny feeling like he's being followed: Lil' creator at 22 crates.", "CL Locked", "Lil' creator"),
                 Arguments.of("[Outer Void] Dash Inc feels something weird sneaking into his backpack: Heron at 8,426,283 XP.", "Dash Inc", "Heron")
             );
         }
