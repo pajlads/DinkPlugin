@@ -505,6 +505,95 @@ class DeathNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyGauntletSafe() {
+        // update mocks
+        when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(1950, 5650, 0));
+        when(config.deathIgnoreSafe()).thenReturn(false);
+        when(config.deathEmbedKeptItems()).thenReturn(false);
+        when(client.isPrayerActive(Prayer.PROTECT_ITEM)).thenReturn(true);
+        Item[] items = {
+            new Item(ItemID.RUBY, 1),
+            new Item(ItemID.TUNA, 1),
+            new Item(ItemID.COAL, 1),
+            new Item(ItemID.SHARK, 1),
+            new Item(ItemID.OPAL, 1),
+        };
+        ItemContainer inv = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(inv.getItems()).thenReturn(items);
+
+        // fire event
+        plugin.onActorDeath(new ActorDeath(localPlayer));
+
+        // verify notification
+        List<SerializedItemStack> kept = Arrays.stream(items)
+            .map(i -> ItemUtils.stackFromItem(itemManager, i))
+            .sorted(Comparator.comparingLong(SerializedItemStack::getTotalPrice).reversed())
+            .collect(Collectors.toList());
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
+                .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList()))
+                .type(NotificationType.DEATH)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyGauntletHardcore() {
+        // update mocks
+        when(client.getVarbitValue(Varbits.ACCOUNT_TYPE)).thenReturn(3);
+        when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(1950, 5650, 0));
+        when(config.deathIgnoreSafe()).thenReturn(true);
+        when(config.deathEmbedKeptItems()).thenReturn(false);
+        when(client.isPrayerActive(Prayer.PROTECT_ITEM)).thenReturn(true);
+        Item[] items = {
+            new Item(ItemID.TUNA, 1),
+            new Item(ItemID.RUBY, 1),
+            new Item(ItemID.COAL, 1),
+            new Item(ItemID.SHARK, 1),
+            new Item(ItemID.OPAL, 1),
+        };
+        ItemContainer inv = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(inv.getItems()).thenReturn(items);
+
+        // fire event
+        plugin.onActorDeath(new ActorDeath(localPlayer));
+
+        // verify notification
+        List<SerializedItemStack> lost = Collections.singletonList(ItemUtils.stackFromItem(itemManager, items[0]));
+        List<SerializedItemStack> kept = Arrays.stream(items)
+            .skip(1) // tuna is lost (least valuable)
+            .map(i -> ItemUtils.stackFromItem(itemManager, i))
+            .sorted(Comparator.comparingLong(SerializedItemStack::getTotalPrice).reversed())
+            .collect(Collectors.toList());
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
+                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
+                .type(NotificationType.DEATH)
+                .build()
+        );
+    }
+
+    @Test
+    void testIgnoreGauntlet() {
+        // mock corrupted gauntlet
+        when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(1950, 5650, 0));
+
+        // fire event
+        plugin.onActorDeath(new ActorDeath(localPlayer));
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testIgnore() {
         // prepare mock
         Player other = mock(Player.class);
