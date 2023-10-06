@@ -127,15 +127,22 @@ public class LootNotifier extends BaseNotifier {
     }
 
     public void onGameMessage(String message) {
-        // update cached KC via boss chat message.
+        // update cached KC via boss chat message with robustness for chat event coming before OR after the loot event
         KillCountNotifier.parseBoss(message).ifPresent(pair -> {
-            // due to inconsistent timing of chat message to loot appearance,
-            // we update cached kc well after loot event has been received.
-            // as a result, the first kill can have an incorrect kc reported, due to loot tracker plugin reliance.
-            // but, the first kill may not even have loot that exceeds the value threshold, so it's not a huge deal.
-            executor.schedule(() -> {
-                killCounts.asMap().merge(pair.getKey(), pair.getValue(), Math::max);
-            }, 15, TimeUnit.SECONDS);
+            String boss = pair.getKey();
+            Integer kc = pair.getValue();
+
+            // Update cache if no mapping exists (i.e., this is the first boss kill & chat event occurred first)
+            // We store kc - 1 since incrementAndGetKillCount will increment; kc - 1 + 1 == kc
+            Integer existingMapping = killCounts.asMap().putIfAbsent(boss, kc - 1);
+            if (existingMapping != null) {
+                // KC already cached, but we don't know if this boss message appeared before/after the loot event.
+                // If after, we should store kc. If before, we should store kc - 1.
+                // Given this uncertainty, we wait so that the loot event has passed, and then we can store latest kc.
+                executor.schedule(() -> {
+                    killCounts.asMap().merge(boss, kc, Math::max);
+                }, 15, TimeUnit.SECONDS);
+            }
         });
     }
 
