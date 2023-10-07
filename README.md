@@ -544,7 +544,8 @@ Note: `petName` is only included if the game sent it to your chat via untradeabl
   "extra": {
     "questName": "Cook's Assistant",
     "personalBest": "1:13.20",
-    "currentTime": "1:13.20"
+    "currentTime": "1:13.20",
+    "isPersonalBest": true
   },
   "type": "SPEEDRUN"
 }
