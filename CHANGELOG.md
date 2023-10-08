@@ -3,7 +3,7 @@
 - Minor: Indicate in pet notification metadata when a pet was previously owned but lost. (#314)
 - Minor: Support wildcards in loot item name filters. (#312)
 - Minor: Add key in the Speedrun notifier extra object for whether the run is a personal best or not. (#329)
-- Bugfix: Don't treat personal best ties as personal bests for quest speedruns. (#329)
+- Bugfix: Don't treat personal best ties as personal bests for Speedrun notifications. (#329)
 - Bugfix: Classify Gauntlet deaths as safe, unless the player is a hardcore ironman. (#327)
 - Bugfix: Classify deaths in Tombs of Abascut as safe or dangerous depending on the attempt invocations. (#317)
 - Dev: Update gradle wrapper to v8.4 minor version. (#328)
