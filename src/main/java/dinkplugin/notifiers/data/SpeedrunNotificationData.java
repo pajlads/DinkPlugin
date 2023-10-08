@@ -1,8 +1,8 @@
 package dinkplugin.notifiers.data;
 
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.Value;
+import org.jetbrains.annotations.NotNull;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -10,19 +10,19 @@ public class SpeedrunNotificationData extends NotificationData {
     /**
      * The name of the quest (e.g. "Cook's Assistant")
      */
-    @NonNull
+    @NotNull
     String questName;
 
     /**
      * The player's personal best of this quest
      */
-    @NonNull
+    @NotNull
     String personalBest;
 
     /**
      * The time it took the player to finish the quest
      */
-    @NonNull
+    @NotNull
     String currentTime;
 
     /**
