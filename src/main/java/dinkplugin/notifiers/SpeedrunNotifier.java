@@ -75,6 +75,7 @@ public class SpeedrunNotifier extends BaseNotifier {
             .extra(new SpeedrunNotificationData(questName, bestTime.toString(), currentTime.toString(), isPersonalBest))
             .type(NotificationType.SPEEDRUN)
             .build());
+        this.reset();
     }
 
     public void onGameMessage(String chatMessage) {
