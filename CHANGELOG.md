@@ -1,8 +1,9 @@
 ## Unreleased
 
-- Bugfix: Classify deaths in Tombs of Abascut as safe or dangerous depending on the attempt invocations. (#317)
 - Minor: Indicate in pet notification metadata when a pet was previously owned but lost. (#314)
 - Minor: Support wildcards in loot item name filters. (#312)
+- Bugfix: Classify Gauntlet deaths as safe, unless the player is a hardcore ironman. (#327)
+- Bugfix: Classify deaths in Tombs of Abascut as safe or dangerous depending on the attempt invocations. (#317)
 - Dev: Update gradle wrapper to v8.4 minor version. (#328)
 - Dev: Add pet test for Lil' creator. (#325)
 
