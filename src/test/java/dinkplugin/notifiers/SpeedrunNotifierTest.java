@@ -34,6 +34,20 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
     @InjectMocks
     SpeedrunNotifier notifier;
 
+    private static Template buildTemplate(String quest, String time) {
+        return Template.builder()
+            .template(String.format("%s has beat their PB of {{quest}} with a time of %s", PLAYER_NAME, time))
+            .replacement("{{quest}}", Replacements.ofWiki(quest))
+            .build();
+    }
+
+    private static Template buildNonPersonalBestTemplate(String quest, String time) {
+        return Template.builder()
+            .template(String.format("%s has just finished a speedrun of {{quest}} with a time of %s (their PB is %s)", PLAYER_NAME, time, PERSONAL_BEST))
+            .replacement("{{quest}}", Replacements.ofWiki(quest))
+            .build();
+    }
+
     @Override
     @BeforeEach
     protected void setUp() {
@@ -196,19 +210,5 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         WidgetLoaded event = new WidgetLoaded();
         event.setGroupId(SPEEDRUN_COMPLETED_GROUP_ID);
         return event;
-    }
-
-    private static Template buildTemplate(String quest, String time) {
-        return Template.builder()
-            .template(String.format("%s has beat their PB of {{quest}} with a time of %s", PLAYER_NAME, time))
-            .replacement("{{quest}}", Replacements.ofWiki(quest))
-            .build();
-    }
-
-    private static Template buildNonPersonalBestTemplate(String quest, String time) {
-        return Template.builder()
-            .template(String.format("%s has just finished a speedrun of {{quest}} with a time of %s (their PB is %s)", PLAYER_NAME, time, PERSONAL_BEST))
-            .replacement("{{quest}}", Replacements.ofWiki(quest))
-            .build();
     }
 }
