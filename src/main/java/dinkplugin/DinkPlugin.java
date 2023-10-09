@@ -107,6 +107,7 @@ public class DinkPlugin extends Plugin {
         slayerNotifier.reset();
         killCountNotifier.reset();
         groupStorageNotifier.reset();
+        speedrunNotifier.reset();
     }
 
     @Provides
@@ -183,6 +184,7 @@ public class DinkPlugin extends Plugin {
                 killCountNotifier.onGameMessage(chatMessage);
                 combatTaskNotifier.onGameMessage(chatMessage);
                 deathNotifier.onGameMessage(chatMessage);
+                speedrunNotifier.onGameMessage(chatMessage);
                 break;
 
             case FRIENDSCHATNOTIFICATION:
