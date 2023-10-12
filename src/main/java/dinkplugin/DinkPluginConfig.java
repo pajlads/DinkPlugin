@@ -821,7 +821,7 @@ public interface DinkPluginConfig extends Config {
         section = deathSection
     )
     default boolean deathSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -916,7 +916,7 @@ public interface DinkPluginConfig extends Config {
         section = slayerSection
     )
     default boolean slayerSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -964,7 +964,7 @@ public interface DinkPluginConfig extends Config {
         section = questSection
     )
     default boolean questSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -999,7 +999,7 @@ public interface DinkPluginConfig extends Config {
         section = clueSection
     )
     default boolean clueSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -1143,7 +1143,7 @@ public interface DinkPluginConfig extends Config {
         section = killCountSection
     )
     default boolean killCountSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -1238,7 +1238,7 @@ public interface DinkPluginConfig extends Config {
         section = combatTaskSection
     )
     default boolean combatTaskSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -1304,7 +1304,7 @@ public interface DinkPluginConfig extends Config {
         section = diarySection
     )
     default boolean diarySendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
