@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Made the default setting for screenshots enabled for consistency across all notifiers. (#330)
 - Minor: Add key in the Speedrun notifier extra object for whether the run is a personal best or not. (#329)
 - Minor: Indicate in pet notification metadata when a pet was previously owned but lost. (#314)
 - Minor: Support wildcards in loot item name filters. (#312)
