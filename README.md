@@ -749,7 +749,7 @@ See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/Gra
 
 ### Metadata:
 
-On login, Dink can submit a character summary containing data that spans multiple notifiers to a custom webhook handler (configurable in the `Advanced` section).
+On login, Dink can submit a character summary containing data that spans multiple notifiers to a custom webhook handler (configurable in the `Advanced` section). This login notification is delayed by at least 5 seconds in order to gather all of the relevant data. However, `collectionLog` data can be missing if the user does not have the Character Summary tab selected (since the client otherwise is not sent that data).
 
 <details>
   <summary>JSON for Login Notifications:</summary>
@@ -760,6 +760,7 @@ On login, Dink can submit a character summary containing data that spans multipl
   "type": "LOGIN",
   "playerName": "%USERNAME%",
   "accountType": "NORMAL",
+  "clanName": "Dink QA",
   "extra": {
     "world": 338,
     "collectionLog": {
@@ -825,6 +826,8 @@ On login, Dink can submit a character summary containing data that spans multipl
   }
 }
 ```
+
+Note: `clanName` requires `Advanced > Send Clan Name` to be enabled (default: on). The `groupIronClanName` and `discordUser` fields also have similar toggles in the Advanced config section.
 
 </details>
 
