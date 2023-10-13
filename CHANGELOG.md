@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Send character information on login to custom handlers via advanced config. (#321)
 - Minor: Add key in the Speedrun notifier extra object for whether the run is a personal best or not. (#329)
 - Minor: Indicate in pet notification metadata when a pet was previously owned but lost. (#314)
 - Minor: Support wildcards in loot item name filters. (#312)

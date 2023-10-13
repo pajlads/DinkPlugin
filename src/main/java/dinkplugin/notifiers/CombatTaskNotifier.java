@@ -33,8 +33,10 @@ public class CombatTaskNotifier extends BaseNotifier {
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,ca_tasks_progress_bar%5D.cs2#L58">CS2 Reference</a>
      */
     @Varbit
-    @VisibleForTesting
     public static final int TOTAL_POINTS_ID = 14815;
+
+    @Varbit
+    public static final int GRANDMASTER_TOTAL_POINTS_ID = 14814;
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,ca_tasks_progress_bar%5D.cs2#L6-L11">CS2 Reference</a>
@@ -150,7 +152,7 @@ public class CombatTaskNotifier extends BaseNotifier {
             .put(CombatAchievementTier.HARD, 10661) // 304 = 115 + 63 * 3
             .put(CombatAchievementTier.ELITE, 14812) // 820 = 304 + 129 * 4
             .put(CombatAchievementTier.MASTER, 14813) // 1465 = 820 + 129 * 5
-            .put(CombatAchievementTier.GRANDMASTER, 14814) // 2005 = 1465 + 90 * 6
+            .put(CombatAchievementTier.GRANDMASTER, GRANDMASTER_TOTAL_POINTS_ID) // 2005 = 1465 + 90 * 6
             .build();
     }
 }
