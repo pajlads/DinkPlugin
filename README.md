@@ -61,6 +61,7 @@ Some notifiers require in-game settings to be configured to send chat messages u
 - Discord rich embed footers can be customized with user-specified text and image url
 - When network issues occur, Dink can make repeated attempts to send the webhook (with exponential backoff)
 - Notifications can be sent to [Discord Forum Channels](https://support.discord.com/hc/en-us/articles/6208479917079-Forum-Channels-FAQ); append `?forum` to the end of the webhook url to create a new thread per message or use `?thread_id=123456` to post to an existing forum thread (be sure to change `123456` with the actual thread ID)
+- Character [metadata](#metadata) can be sent to custom webhook handlers on login for tracking relevant statistics.
 
 ## Chat Commands
 
@@ -743,6 +744,90 @@ Unlike `GrandExchangeOfferChanged#getSlot`, `extra.slot` is one-indexed;
 values can range from 1 to 8 (inclusive) for members, and 1 to 3 (inclusive) for F2P.
 
 See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/GrandExchangeOfferState.html) for the possible values of `extra.status`.
+
+</details>
+
+### Metadata:
+
+On login, Dink can submit a character summary containing data that spans multiple notifiers to a custom webhook handler (configurable in the `Advanced` section). This login notification is delayed by at least 5 seconds in order to gather all of the relevant data. However, `collectionLog` data can be missing if the user does not have the Character Summary tab selected (since the client otherwise is not sent that data).
+
+<details>
+  <summary>JSON for Login Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% logged into World %WORLD%",
+  "type": "LOGIN",
+  "playerName": "%USERNAME%",
+  "accountType": "NORMAL",
+  "clanName": "Dink QA",
+  "extra": {
+    "world": 338,
+    "collectionLog": {
+      "completed": 651,
+      "total": 1477
+    },
+    "combatAchievementPoints": {
+      "completed": 503,
+      "total": 2005
+    },
+    "achievementDiary": {
+      "completed": 42,
+      "total": 48
+    },
+    "achievementDiaryTasks": {
+      "completed": 477,
+      "total": 492
+    },
+    "barbarianAssault": {
+      "highGambleCount": 0
+    },
+    "skills": {
+      "totalExperience": 337810454,
+      "totalLevel": 2164,
+      "levels": {
+        "Hunter": 90,
+        "Thieving": 86,
+        "Runecraft": 86,
+        "Construction": 86,
+        "Cooking": 103,
+        "Magic": 106,
+        "Fletching": 99,
+        "Herblore": 91,
+        "Firemaking": 100,
+        "Attack": 107,
+        "Fishing": 92,
+        "Crafting": 96,
+        "Hitpoints": 111,
+        "Ranged": 110,
+        "Mining": 88,
+        "Smithing": 91,
+        "Agility": 82,
+        "Woodcutting": 96,
+        "Slayer": 104,
+        "Defence": 103,
+        "Strength": 104,
+        "Prayer": 91,
+        "Farming": 100
+      }
+    },
+    "questCount": {
+      "completed": 156,
+      "total": 158
+    },
+    "questPoints": {
+      "completed": 296,
+      "total": 300
+    },
+    "slayer": {
+      "points": 2204,
+      "streak": 1074
+    }
+  }
+}
+```
+
+Note: `clanName` requires `Advanced > Send Clan Name` to be enabled (default: on). The `groupIronClanName` and `discordUser` fields also have similar toggles in the Advanced config section.
 
 </details>
 

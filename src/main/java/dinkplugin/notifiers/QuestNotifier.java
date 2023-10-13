@@ -25,8 +25,7 @@ public class QuestNotifier extends BaseNotifier {
      * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,questlist_completed%5D.cs2#L5
      */
     @Varbit
-    @VisibleForTesting
-    static final int COMPLETED_ID = 6347, TOTAL_ID = 11877;
+    public static final int COMPLETED_ID = 6347, TOTAL_ID = 11877;
 
     /*
      * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,questlist_qp%5D.cs2#L5
