@@ -11,6 +11,7 @@ import dinkplugin.notifiers.GrandExchangeNotifier;
 import dinkplugin.notifiers.GroupStorageNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.LevelNotifier;
+import dinkplugin.notifiers.MetaNotifier;
 import dinkplugin.notifiers.LootNotifier;
 import dinkplugin.notifiers.PetNotifier;
 import dinkplugin.notifiers.PlayerKillNotifier;
@@ -81,6 +82,7 @@ public class DinkPlugin extends Plugin {
     private @Inject PlayerKillNotifier pkNotifier;
     private @Inject GroupStorageNotifier groupStorageNotifier;
     private @Inject GrandExchangeNotifier grandExchangeNotifier;
+    private @Inject MetaNotifier metaNotifier;
 
     @Override
     protected void startUp() {
@@ -105,6 +107,7 @@ public class DinkPlugin extends Plugin {
         slayerNotifier.reset();
         killCountNotifier.reset();
         groupStorageNotifier.reset();
+        speedrunNotifier.reset();
     }
 
     @Provides
@@ -145,6 +148,7 @@ public class DinkPlugin extends Plugin {
         levelNotifier.onGameStateChanged(gameStateChanged);
         diaryNotifier.onGameState(gameStateChanged);
         grandExchangeNotifier.onGameStateChange(gameStateChanged);
+        metaNotifier.onGameState(gameStateChanged);
     }
 
     @Subscribe
@@ -165,6 +169,7 @@ public class DinkPlugin extends Plugin {
         killCountNotifier.onTick();
         pkNotifier.onTick();
         grandExchangeNotifier.onTick();
+        metaNotifier.onTick();
     }
 
     @Subscribe
@@ -179,6 +184,7 @@ public class DinkPlugin extends Plugin {
                 killCountNotifier.onGameMessage(chatMessage);
                 combatTaskNotifier.onGameMessage(chatMessage);
                 deathNotifier.onGameMessage(chatMessage);
+                speedrunNotifier.onGameMessage(chatMessage);
                 break;
 
             case FRIENDSCHATNOTIFICATION:

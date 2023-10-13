@@ -28,10 +28,25 @@ import static org.mockito.Mockito.when;
 class SpeedrunNotifierTest extends MockedNotifierTest {
 
     private static final String QUEST_NAME = "Cook's Assistant";
+    private static final String PERSONAL_BEST = "1:30.25";
 
     @Bind
     @InjectMocks
     SpeedrunNotifier notifier;
+
+    private static Template buildTemplate(String quest, String time) {
+        return Template.builder()
+            .template(String.format("%s has beat their PB of {{quest}} with a time of %s", PLAYER_NAME, time))
+            .replacement("{{quest}}", Replacements.ofWiki(quest))
+            .build();
+    }
+
+    private static Template buildNonPersonalBestTemplate(String quest, String time) {
+        return Template.builder()
+            .template(String.format("%s has just finished a speedrun of {{quest}} with a time of %s (their PB is %s)", PLAYER_NAME, time, PERSONAL_BEST))
+            .replacement("{{quest}}", Replacements.ofWiki(quest))
+            .build();
+    }
 
     @Override
     @BeforeEach
@@ -43,6 +58,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         when(config.speedrunPBOnly()).thenReturn(true);
         when(config.speedrunSendImage()).thenReturn(false);
         when(config.speedrunPBMessage()).thenReturn("%USERNAME% has beat their PB of %QUEST% with a time of %TIME%");
+        when(config.speedrunMessage()).thenReturn("%USERNAME% has just finished a speedrun of %QUEST% with a time of %TIME% (their PB is %BEST%)");
 
         // init common widget mocks
         Widget quest = mock(Widget.class);
@@ -51,7 +67,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
 
         Widget pb = mock(Widget.class);
         when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID)).thenReturn(pb);
-        when(pb.getText()).thenReturn("1:30.25");
+        when(pb.getText()).thenReturn(PERSONAL_BEST);
     }
 
     @Test
@@ -64,6 +80,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
+        notifier.onGameMessage(String.format("Speedrun duration: %s (new personal best)", latest));
         plugin.onWidgetLoaded(event());
 
         // check notification message
@@ -72,14 +89,40 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(QUEST_NAME, latest))
-                .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString()))
+                .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString(), true))
                 .type(NotificationType.SPEEDRUN)
                 .build()
         );
     }
 
     @Test
-    void testIgnore() {
+    void testNotifyNotPersonalBest() {
+        String latest = "1:40.30";
+
+        // mock widget
+        Widget time = mock(Widget.class);
+        when(config.speedrunPBOnly()).thenReturn(false);
+        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(time.getText()).thenReturn(latest);
+
+        // fire fake event
+        notifier.onGameMessage(String.format("Speedrun duration: %s", latest));
+        plugin.onWidgetLoaded(event());
+
+        // check notification message
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(buildNonPersonalBestTemplate(QUEST_NAME, latest))
+                .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(40).plusMillis(300).toString(), false))
+                .type(NotificationType.SPEEDRUN)
+                .build()
+        );
+    }
+
+    @Test
+    void testIgnoreNonPersonalBest() {
         String latest = "1:45.30";
 
         // mock widget
@@ -88,6 +131,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
+        notifier.onGameMessage(String.format("Speedrun duration: %s", latest));
         plugin.onWidgetLoaded(event());
 
         // ensure no notification
@@ -100,11 +144,13 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         when(config.notifySpeedrun()).thenReturn(false);
 
         // mock widget
+        String latest = "1:15.30";
         Widget time = mock(Widget.class);
         when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
-        when(time.getText()).thenReturn("1:15.30");
+        when(time.getText()).thenReturn(latest);
 
         // fire fake event
+        notifier.onGameMessage(String.format("Speedrun duration: %s (new personal best)", latest));
         plugin.onWidgetLoaded(event());
 
         // ensure no notification
@@ -124,6 +170,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
+        notifier.onGameMessage(String.format("Speedrun duration: %s (new personal best)", latest));
         plugin.onWidgetLoaded(event());
 
         // check notification message
@@ -132,7 +179,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(QUEST_NAME, latest))
-                .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString()))
+                .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString(), true))
                 .type(NotificationType.SPEEDRUN)
                 .build()
         );
@@ -140,6 +187,8 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
 
     @Test
     void testIgnoreDenyList() {
+        String latest = "1:15.30";
+
         // configure deny list
         when(config.filteredNames()).thenReturn(PLAYER_NAME);
         settingsManager.init();
@@ -147,9 +196,10 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         // mock widget
         Widget time = mock(Widget.class);
         when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
-        when(time.getText()).thenReturn("1:15.30");
+        when(time.getText()).thenReturn(latest);
 
         // fire fake event
+        notifier.onGameMessage(String.format("Speedrun duration: %s (new personal best)", latest));
         plugin.onWidgetLoaded(event());
 
         // ensure no notification
@@ -160,12 +210,5 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         WidgetLoaded event = new WidgetLoaded();
         event.setGroupId(SPEEDRUN_COMPLETED_GROUP_ID);
         return event;
-    }
-
-    private static Template buildTemplate(String quest, String time) {
-        return Template.builder()
-            .template(String.format("%s has beat their PB of {{quest}} with a time of %s", PLAYER_NAME, time))
-            .replacement("{{quest}}", Replacements.ofWiki(quest))
-            .build();
     }
 }

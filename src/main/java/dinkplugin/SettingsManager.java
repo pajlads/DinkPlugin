@@ -114,6 +114,7 @@ public class SettingsManager {
         webhookConfigKeys = ImmutableSet.<String>builder()
             .add("discordWebhook") // DinkPluginConfig#primaryWebhook
             .addAll(keysBySection.getOrDefault(DinkPluginConfig.webhookSection.toLowerCase().replace(" ", ""), Collections.emptySet()))
+            .add("metadataWebhook") // MetaNotifier's configuration is in the Advanced section
             .build();
     }
 

@@ -1,10 +1,16 @@
 ## Unreleased
 
-- Bugfix: Classify deaths in Tombs of Abascut as safe or dangerous depending on the attempt invocations. (#317)
+- Minor: Made the default setting for screenshots enabled for consistency across all notifiers. (#330)
+- Minor: Send character information on login to custom handlers via advanced config. (#321)
+- Minor: Add key in the Speedrun notifier extra object for whether the run is a personal best or not. (#329)
 - Minor: Indicate in pet notification metadata when a pet was previously owned but lost. (#314)
 - Minor: Support wildcards in loot item name filters. (#312)
-- Dev: Bump Java source & target compatability from 8 to 11. (#318)
+- Bugfix: Don't treat personal best ties as personal bests for Speedrun notifications. (#329)
+- Bugfix: Classify Gauntlet deaths as safe, unless the player is a hardcore ironman. (#327)
+- Bugfix: Classify deaths in Tombs of Abascut as safe or dangerous depending on the attempt invocations. (#317)
+- Dev: Update gradle wrapper to v8.4 minor version. (#328)
 - Dev: Add pet test for Lil' creator. (#325)
+- Dev: Bump Java source & target compatability from 8 to 11. (#318)
 
 ## 1.6.3
 

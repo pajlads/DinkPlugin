@@ -19,7 +19,6 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -36,8 +35,7 @@ public class CollectionNotifier extends BaseNotifier {
     /*
      * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
      */
-    @VisibleForTesting
-    static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
+    public static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
 
     /**
      * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.
