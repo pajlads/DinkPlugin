@@ -24,6 +24,7 @@ public class WorldUtils {
     private final Set<Integer> CASTLE_WARS_REGIONS = ImmutableSet.of(9520, 9620);
     private final Set<Integer> CLAN_WARS_REGIONS = ImmutableSet.of(12621, 12622, 12623, 13130, 13131, 13133, 13134, 13135, 13386, 13387, 13390, 13641, 13642, 13643, 13644, 13645, 13646, 13647, 13899, 13900, 14155, 14156);
     private final Set<Integer> COX_REGIONS = ImmutableSet.of(12889, 13136, 13137, 13138, 13139, 13140, 13141, 13145, 13393, 13394, 13395, 13396, 13397, 13401);
+    private final Set<Integer> GAUNTLET_REGIONS = ImmutableSet.of(7512, 7768, 12127); // includes CG
     private final Set<Integer> LMS_REGIONS = ImmutableSet.of(13658, 13659, 13660, 13914, 13915, 13916, 13918, 13919, 13920, 14174, 14175, 14176, 14430, 14431, 14432);
     private final Set<Integer> POH_REGIONS = ImmutableSet.of(7257, 7513, 7514, 7769, 7770, 8025, 8026);
     private final Set<Integer> SOUL_REGIONS = ImmutableSet.of(8493, 8748, 8749, 9005);
@@ -78,6 +79,10 @@ public class WorldUtils {
         return CLAN_WARS_REGIONS.contains(regionId);
     }
 
+    public boolean isGauntlet(int regionId) {
+        return GAUNTLET_REGIONS.contains(regionId);
+    }
+
     public boolean isInferno(int regionId) {
         return regionId == INFERNO_REGION;
     }
@@ -110,6 +115,12 @@ public class WorldUtils {
             // ToA is technically a dangerous activity, but multiple attempts can be permitted
             // the real TOA death is detected via game message in death notifier
             // However: any TOA death is still dangerous for hardcore (group) ironmen
+            return !Utils.getAccountType(client).isHardcore();
+        }
+
+        if (isGauntlet(regionId)) {
+            // Players can't take items in or out of (Corrupted) Gauntlet, so these deaths are effectively safe
+            // However: any Gauntlet death is still dangerous for hardcore (group) ironmen
             return !Utils.getAccountType(client).isHardcore();
         }
 

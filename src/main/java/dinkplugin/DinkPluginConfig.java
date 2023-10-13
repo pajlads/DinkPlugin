@@ -336,6 +336,19 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "metadataWebhook",
+        name = "Custom Metadata Handler",
+        description = "Webhook URL for custom handlers to receive regular information about the player.<br/>" +
+            "Not recommended for use with Discord webhooks, as it could cause spam.<br/>" +
+            "You can target multiple webhooks by specifying their URLs on separate lines",
+        position = 1014,
+        section = advancedSection
+    )
+    default String metadataWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
@@ -821,7 +834,7 @@ public interface DinkPluginConfig extends Config {
         section = deathSection
     )
     default boolean deathSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -916,7 +929,7 @@ public interface DinkPluginConfig extends Config {
         section = slayerSection
     )
     default boolean slayerSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -964,7 +977,7 @@ public interface DinkPluginConfig extends Config {
         section = questSection
     )
     default boolean questSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -999,7 +1012,7 @@ public interface DinkPluginConfig extends Config {
         section = clueSection
     )
     default boolean clueSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -1143,7 +1156,7 @@ public interface DinkPluginConfig extends Config {
         section = killCountSection
     )
     default boolean killCountSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -1238,7 +1251,7 @@ public interface DinkPluginConfig extends Config {
         section = combatTaskSection
     )
     default boolean combatTaskSendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -1304,7 +1317,7 @@ public interface DinkPluginConfig extends Config {
         section = diarySection
     )
     default boolean diarySendImage() {
-        return false;
+        return true;
     }
 
     @ConfigItem(

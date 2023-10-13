@@ -26,6 +26,17 @@ import static dinkplugin.domain.AchievementDiary.DIARIES;
 @Slf4j
 @Singleton
 public class DiaryNotifier extends BaseNotifier {
+
+    /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,script3971%5D.cs2">CS2 Reference</a>
+     */
+    static final int COMPLETED_TASKS_SCRIPT_ID = 3971;
+
+    /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,script3980%5D.cs2">CS2 Reference</a>
+     */
+    static final int TOTAL_TASKS_SCRIPT_ID = 3980;
+
     private static final Pattern COMPLETION_REGEX = Pattern.compile("Congratulations! You have completed all of the (?<difficulty>.+) tasks in the (?<area>.+) area");
     private final Map<Integer, Integer> diaryCompletionById = new ConcurrentHashMap<>();
     private final AtomicInteger initDelayTicks = new AtomicInteger();
@@ -196,7 +207,7 @@ public class DiaryNotifier extends BaseNotifier {
         log.debug("Finished initializing current diary completions: {} out of {}", getTotalCompleted(), diaryCompletionById.size());
     }
 
-    private static boolean isComplete(int id, int value) {
+    public static boolean isComplete(int id, int value) {
         if (id == 3578 || id == 3599 || id == 3611) {
             // Karamja special case (except Elite): 0 = not started, 1 = started, 2 = completed tasks
             return value > 1;

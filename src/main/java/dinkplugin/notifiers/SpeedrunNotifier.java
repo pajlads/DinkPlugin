@@ -4,14 +4,13 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
+import dinkplugin.notifiers.data.SpeedrunNotificationData;
 import dinkplugin.util.QuestUtils;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.util.Utils;
-import dinkplugin.notifiers.data.SpeedrunNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.time.Duration;
@@ -22,6 +21,7 @@ public class SpeedrunNotifier extends BaseNotifier {
     static final @VisibleForTesting int SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID = 4;
     static final @VisibleForTesting int SPEEDRUN_COMPLETED_DURATION_CHILD_ID = 10;
     static final @VisibleForTesting int SPEEDRUN_COMPLETED_PB_CHILD_ID = 12;
+    private boolean isPersonalBest = false;
 
     @Override
     public boolean isEnabled() {
@@ -32,6 +32,10 @@ public class SpeedrunNotifier extends BaseNotifier {
     @Override
     protected String getWebhookUrl() {
         return config.speedrunWebhook();
+    }
+
+    public void reset() {
+        isPersonalBest = false;
     }
 
     public void onWidgetLoaded(WidgetLoaded event) {
@@ -48,16 +52,13 @@ public class SpeedrunNotifier extends BaseNotifier {
     }
 
     private void attemptNotify(String questName, String duration, String pb) {
-        Duration bestTime = TimeUtils.parseTime(pb);
-        Duration currentTime = TimeUtils.parseTime(duration);
-        boolean isPb = bestTime.compareTo(currentTime) >= 0;
-        if (!isPb && config.speedrunPBOnly()) {
+        if (!isPersonalBest && config.speedrunPBOnly()) {
             return;
         }
 
         // pb or notifying on non-pb; take the right string and format placeholders
         Template notifyMessage = Template.builder()
-            .template(isPb ? config.speedrunPBMessage() : config.speedrunMessage())
+            .template(isPersonalBest ? config.speedrunPBMessage() : config.speedrunMessage())
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%QUEST%", Replacements.ofWiki(questName))
@@ -65,10 +66,25 @@ public class SpeedrunNotifier extends BaseNotifier {
             .replacement("%BEST%", Replacements.ofText(pb))
             .build();
 
+        // Reformat the durations for the extra object
+        Duration bestTime = TimeUtils.parseTime(pb);
+        Duration currentTime = TimeUtils.parseTime(duration);
+
         createMessage(config.speedrunSendImage(), NotificationBody.builder()
             .text(notifyMessage)
-            .extra(new SpeedrunNotificationData(questName, bestTime.toString(), currentTime.toString()))
+            .extra(new SpeedrunNotificationData(questName, bestTime.toString(), currentTime.toString(), isPersonalBest))
             .type(NotificationType.SPEEDRUN)
             .build());
+        this.reset();
+    }
+
+    public void onGameMessage(String chatMessage) {
+        if (!isEnabled()) {
+            return;
+        }
+
+        if (chatMessage.startsWith("Speedrun duration: ")) {
+            isPersonalBest = chatMessage.endsWith(" (new personal best)");
+        }
     }
 }
