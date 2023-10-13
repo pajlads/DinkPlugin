@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Use boss chat message for latest kill count in loot notifications. (#324)
 - Minor: Made the default setting for screenshots enabled for consistency across all notifiers. (#330)
 - Minor: Send character information on login to custom handlers via advanced config. (#321)
 - Minor: Add key in the Speedrun notifier extra object for whether the run is a personal best or not. (#329)
