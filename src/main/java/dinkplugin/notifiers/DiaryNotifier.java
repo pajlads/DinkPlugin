@@ -36,6 +36,16 @@ public class DiaryNotifier extends BaseNotifier {
      */
     static final int TOTAL_TASKS_SCRIPT_ID = 3980;
 
+    /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,summary_diary_completed%5D.cs2">CS2 Reference</a>
+     */
+    private static final int COMPLETED_AREA_TASKS_SCRIPT_ID = 4072;
+
+    /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,summary_diary_total%5D.cs2">CS2 Reference</a>
+     */
+    private static final int TOTAL_AREA_TASKS_SCRIPT_ID = 4073;
+
     private static final Pattern COMPLETION_REGEX = Pattern.compile("Congratulations! You have completed all of the (?<difficulty>.+) tasks in the (?<area>.+) area");
     private final Map<Integer, Integer> diaryCompletionById = new ConcurrentHashMap<>();
     private final AtomicInteger initDelayTicks = new AtomicInteger();
@@ -162,6 +172,11 @@ public class DiaryNotifier extends BaseNotifier {
         client.runScript(DiaryNotifier.TOTAL_TASKS_SCRIPT_ID);
         int totalTasks = client.getIntStack()[0];
 
+        client.runScript(COMPLETED_AREA_TASKS_SCRIPT_ID, diary.getAreaId());
+        int completedAreaTasks = client.getIntStack()[0];
+        client.runScript(TOTAL_AREA_TASKS_SCRIPT_ID, diary.getAreaId());
+        int totalAreaTasks = client.getIntStack()[0];
+
         int completedDiaries = getTotalCompleted();
         String player = Utils.getPlayerName(client);
         Template message = Template.builder()
@@ -173,12 +188,14 @@ public class DiaryNotifier extends BaseNotifier {
             .replacement("%TOTAL%", Replacements.ofText(String.valueOf(completedDiaries)))
             .replacement("%TASKS_COMPLETE%", Replacements.ofText(String.valueOf(completedTasks)))
             .replacement("%TASKS_TOTAL%", Replacements.ofText(String.valueOf(totalTasks)))
+            .replacement("%AREA_TASKS_COMPLETE%", Replacements.ofText(String.valueOf(completedAreaTasks)))
+            .replacement("%AREA_TASKS_TOTAL%", Replacements.ofText(String.valueOf(totalAreaTasks)))
             .build();
 
         createMessage(config.diarySendImage(), NotificationBody.builder()
             .type(NotificationType.ACHIEVEMENT_DIARY)
             .text(message)
-            .extra(new DiaryNotificationData(diary.getArea(), diary.getDifficulty(), completedDiaries, completedTasks, totalTasks))
+            .extra(new DiaryNotificationData(diary.getArea(), diary.getDifficulty(), completedDiaries, completedTasks, totalTasks, completedAreaTasks, totalAreaTasks))
             .playerName(player)
             .build());
     }

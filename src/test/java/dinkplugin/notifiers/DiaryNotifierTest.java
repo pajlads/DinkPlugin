@@ -30,6 +30,9 @@ class DiaryNotifierTest extends MockedNotifierTest {
     private static final int COMPLETED_TASKS = 469;
     private static final int TOTAL_TASKS = 492;
 
+    private static final int KARAMJA_TASKS_FROM_EASY_TO_HARD = 10 + 19 + 10;
+    private static final int KARAMJA_TOTAL_TASKS = KARAMJA_TASKS_FROM_EASY_TO_HARD + 5;
+
     @Bind
     @InjectMocks
     DiaryNotifier notifier;
@@ -48,8 +51,10 @@ class DiaryNotifierTest extends MockedNotifierTest {
         // init client mocks
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
         when(client.getIntStack()).thenReturn(
-            new int[]{COMPLETED_TASKS}, // first COMPLETED_TASKS_SCRIPT_ID is run
-            new int[]{TOTAL_TASKS} // then TOTAL_TASKS_SCRIPT_ID is run
+            new int[] { COMPLETED_TASKS }, // first COMPLETED_TASKS_SCRIPT_ID is run
+            new int[] { TOTAL_TASKS }, // then TOTAL_TASKS_SCRIPT_ID is run
+            new int[] { KARAMJA_TASKS_FROM_EASY_TO_HARD }, // then COMPLETED_AREA_TASKS_SCRIPT_ID
+            new int[] { KARAMJA_TOTAL_TASKS } // then TOTAL_AREA_TASKS_SCRIPT_ID
         );
     }
 
@@ -57,12 +62,21 @@ class DiaryNotifierTest extends MockedNotifierTest {
     void testNotifyFirst() {
         // initially 0 diary completions
         when(client.getVarbitValue(anyInt())).thenReturn(0);
+        when(config.minDiaryDifficulty()).thenReturn(AchievementDiary.Difficulty.EASY);
 
         // perform enough ticks to trigger diary initialization
         IntStream.range(0, 16).forEach(i -> notifier.onTick());
 
         // trigger diary completion
-        int id = Varbits.DIARY_DESERT_ELITE;
+        int tasksCompleted = 11;
+        int totalAreaTasks = 11 + 12 + 10 + 6;
+        when(client.getIntStack()).thenReturn(
+            new int[] { tasksCompleted }, // first COMPLETED_TASKS_SCRIPT_ID is run
+            new int[] { TOTAL_TASKS }, // then TOTAL_TASKS_SCRIPT_ID is run
+            new int[] { tasksCompleted }, // then COMPLETED_AREA_TASKS_SCRIPT_ID is run
+            new int[] { totalAreaTasks } // then TOTAL_TASKS_SCRIPT_ID is run
+        );
+        int id = Varbits.DIARY_DESERT_EASY;
         plugin.onVarbitChanged(event(id, 1));
 
         // verify notification message
@@ -70,8 +84,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(AchievementDiary.Difficulty.ELITE, "Desert", 1))
-                .extra(new DiaryNotificationData("Desert", AchievementDiary.Difficulty.ELITE, 1, COMPLETED_TASKS, TOTAL_TASKS))
+                .text(buildTemplate(AchievementDiary.Difficulty.EASY, "Desert", 1))
+                .extra(new DiaryNotificationData("Desert", AchievementDiary.Difficulty.EASY, 1, tasksCompleted, TOTAL_TASKS, tasksCompleted, totalAreaTasks))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
                 .build()
@@ -97,7 +111,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(AchievementDiary.Difficulty.HARD, "Karamja", total + 1))
-                .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS))
+                .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS, KARAMJA_TASKS_FROM_EASY_TO_HARD, KARAMJA_TOTAL_TASKS))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
                 .build()
@@ -122,7 +136,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(AchievementDiary.Difficulty.HARD, "Karamja", total + 1))
-                .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS))
+                .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS, KARAMJA_TASKS_FROM_EASY_TO_HARD, KARAMJA_TOTAL_TASKS))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
                 .build()
@@ -140,6 +154,14 @@ class DiaryNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 16).forEach(i -> notifier.onTick());
 
         // trigger diary completion
+        int westernTasksFromEasyToHard = 11 + 13 + 13;
+        int westernTasksTotal = westernTasksFromEasyToHard + 7;
+        when(client.getIntStack()).thenReturn(
+            new int[] { COMPLETED_TASKS }, // first COMPLETED_TASKS_SCRIPT_ID is run
+            new int[] { TOTAL_TASKS }, // then TOTAL_TASKS_SCRIPT_ID is run
+            new int[] { westernTasksFromEasyToHard }, // then COMPLETED_AREA_TASKS_SCRIPT_ID
+            new int[] { westernTasksTotal } // then TOTAL_AREA_TASKS_SCRIPT_ID
+        );
         notifier.onMessageBox("Congratulations! You have completed all of the hard tasks in the Western Province area. Speak to the Elder Gnome child at the Gnome Stronghold to claim your reward.");
 
         // verify notification message
@@ -148,7 +170,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(AchievementDiary.Difficulty.HARD, "Western Provinces", total + 1))
-                .extra(new DiaryNotificationData("Western Provinces", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS))
+                .extra(new DiaryNotificationData("Western Provinces", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS, westernTasksFromEasyToHard, westernTasksTotal))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
                 .build()
@@ -174,7 +196,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(AchievementDiary.Difficulty.HARD, "Karamja", total + 1))
-                .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS))
+                .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS, KARAMJA_TASKS_FROM_EASY_TO_HARD, KARAMJA_TOTAL_TASKS))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
                 .build()

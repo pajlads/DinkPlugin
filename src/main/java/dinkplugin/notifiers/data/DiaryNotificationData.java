@@ -5,7 +5,7 @@ import dinkplugin.message.Field;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 @Value
@@ -37,14 +37,32 @@ public class DiaryNotificationData extends NotificationData {
      */
     int tasksTotal;
 
+    /**
+     * The number of diary tasks completed within this specific area.
+     */
+    int areaTasksCompleted;
+
+    /**
+     * The total number of diary tasks possible within this specific area.
+     */
+    int areaTasksTotal;
+
     @Override
     public List<Field> getFields() {
+        List<Field> fields = new ArrayList<>(2);
+
+        if (areaTasksCompleted > 0 && areaTasksTotal > 0) {
+            fields.add(
+                new Field("Area Task Progress", Field.formatProgress(areaTasksCompleted, areaTasksTotal))
+            );
+        }
+
         if (tasksCompleted > 0 && tasksTotal > 0) {
-            return Collections.singletonList(
+            fields.add(
                 new Field("Overall Task Progress", Field.formatProgress(tasksCompleted, tasksTotal))
             );
         }
 
-        return super.getFields();
+        return fields;
     }
 }
