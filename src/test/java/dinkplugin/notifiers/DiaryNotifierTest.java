@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("MagicConstant")
 class DiaryNotifierTest extends MockedNotifierTest {
 
-    private static final int COMPLETED_TASKS = 369;
+    private static final int COMPLETED_TASKS = 469;
     private static final int TOTAL_TASKS = 492;
 
     @Bind
