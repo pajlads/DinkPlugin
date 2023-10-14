@@ -11,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.client.callback.ClientThread;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Map;
 import java.util.Optional;
@@ -50,6 +52,9 @@ public class DiaryNotifier extends BaseNotifier {
     private final Map<Integer, Integer> diaryCompletionById = new ConcurrentHashMap<>();
     private final AtomicInteger initDelayTicks = new AtomicInteger();
     private final AtomicInteger cooldownTicks = new AtomicInteger();
+
+    @Inject
+    private ClientThread clientThread;
 
     @Override
     public boolean isEnabled() {
@@ -114,7 +119,7 @@ public class DiaryNotifier extends BaseNotifier {
                 } else {
                     diaryCompletionById.put(varbitId, 2);
                 }
-                handle(diary);
+                clientThread.invokeLater(() -> handle(diary)); // 20ms delay to run scripts cleanly
             } else {
                 log.warn("Failed to match diary area: {}", area);
             }
@@ -150,7 +155,7 @@ public class DiaryNotifier extends BaseNotifier {
 
             if (isComplete(id, value)) {
                 if (checkDifficulty(diary.getDifficulty())) {
-                    handle(diary);
+                    clientThread.invokeLater(() -> handle(diary)); // 20ms delay to run scripts cleanly
                 } else {
                     log.debug("Skipping {} {} diary due to low difficulty", diary.getDifficulty(), diary.getArea());
                 }
