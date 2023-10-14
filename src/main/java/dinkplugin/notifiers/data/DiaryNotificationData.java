@@ -1,8 +1,12 @@
 package dinkplugin.notifiers.data;
 
 import dinkplugin.domain.AchievementDiary;
+import dinkplugin.message.Field;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+
+import java.util.Collections;
+import java.util.List;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -33,4 +37,14 @@ public class DiaryNotificationData extends NotificationData {
      */
     int tasksTotal;
 
+    @Override
+    public List<Field> getFields() {
+        if (tasksCompleted > 0 && tasksTotal > 0) {
+            return Collections.singletonList(
+                new Field("Overall Task Progress", Field.formatProgress(tasksCompleted, tasksTotal))
+            );
+        }
+
+        return super.getFields();
+    }
 }
