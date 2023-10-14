@@ -4,11 +4,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Getter
@@ -63,9 +63,8 @@ public enum AchievementDiary {
     WILDERNESS_HARD(Varbits.DIARY_WILDERNESS_HARD, "Wilderness", Difficulty.HARD),
     WILDERNESS_ELITE(Varbits.DIARY_WILDERNESS_ELITE, "Wilderness", Difficulty.ELITE);
 
-    public static final Map<Integer, Pair<String, Difficulty>> DIARIES = Collections.unmodifiableMap(
-        Arrays.stream(values())
-            .collect(Collectors.toMap(AchievementDiary::getId, diary -> Pair.of(diary.getArea(), diary.getDifficulty())))
+    public static final Map<Integer, AchievementDiary> DIARIES = Collections.unmodifiableMap(
+        Arrays.stream(values()).collect(Collectors.toMap(AchievementDiary::getId, Function.identity()))
     );
 
     @Varbit

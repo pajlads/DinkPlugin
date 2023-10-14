@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.inject.Singleton;
 import java.util.Map;
@@ -94,19 +93,18 @@ public class DiaryNotifier extends BaseNotifier {
             }
 
             String area = matcher.group("area").trim();
-            Optional<Pair<Integer, String>> found = DIARIES.entrySet().stream()
-                .filter(e -> e.getValue().getRight() == difficulty && Utils.containsEither(e.getValue().getLeft(), area))
-                .findAny()
-                .map(entry -> Pair.of(entry.getKey(), entry.getValue().getLeft()));
+            Optional<AchievementDiary> found = DIARIES.values().stream()
+                .filter(e -> e.getDifficulty() == difficulty && Utils.containsEither(e.getArea(), area))
+                .findAny();
             if (found.isPresent()) {
-                Pair<Integer, String> entry = found.get();
-                int varbitId = entry.getKey();
+                AchievementDiary diary = found.get();
+                int varbitId = diary.getId();
                 if (isComplete(varbitId, 1)) {
                     diaryCompletionById.put(varbitId, 1);
                 } else {
                     diaryCompletionById.put(varbitId, 2);
                 }
-                handle(entry.getValue(), difficulty);
+                handle(diary);
             } else {
                 log.warn("Failed to match diary area: {}", area);
             }
@@ -116,13 +114,13 @@ public class DiaryNotifier extends BaseNotifier {
     public void onVarbitChanged(VarbitChanged event) {
         int id = event.getVarbitId();
         if (id < 0) return;
-        Pair<String, AchievementDiary.Difficulty> diary = DIARIES.get(id);
+        AchievementDiary diary = DIARIES.get(id);
         if (diary == null) return;
         if (!super.isEnabled()) return;
         if (diaryCompletionById.isEmpty()) {
             if (client.getGameState() == GameState.LOGGED_IN && isComplete(id, event.getValue())) {
                 // this log only occurs in exceptional circumstances (i.e., completion within seconds of logging in or enabling the plugin)
-                log.info("Skipping {} {} diary completion that occurred before map initialization", diary.getRight(), diary.getLeft());
+                log.info("Skipping {} {} diary completion that occurred before map initialization", diary.getDifficulty(), diary.getArea());
             }
             return;
         }
@@ -131,31 +129,31 @@ public class DiaryNotifier extends BaseNotifier {
         Integer previous = diaryCompletionById.get(id);
         if (previous == null) {
             // this log should not occur, barring a jagex oddity
-            log.warn("Resetting since {} {} diary was not initialized with a valid value; received new value of {}", diary.getRight(), diary.getLeft(), value);
+            log.warn("Resetting since {} {} diary was not initialized with a valid value; received new value of {}", diary.getDifficulty(), diary.getArea(), value);
             reset();
         } else if (value < previous) {
             // this log should not occur, barring a jagex/runelite oddity
-            log.info("Resetting since it appears {} {} diary has lost progress from {}; received new value of {}", diary.getRight(), diary.getLeft(), previous, value);
+            log.info("Resetting since it appears {} {} diary has lost progress from {}; received new value of {}", diary.getDifficulty(), diary.getArea(), previous, value);
             reset();
         } else if (value > previous) {
             diaryCompletionById.put(id, value);
 
             if (isComplete(id, value)) {
-                if (checkDifficulty(diary.getRight())) {
-                    handle(diary.getLeft(), diary.getRight());
+                if (checkDifficulty(diary.getDifficulty())) {
+                    handle(diary);
                 } else {
-                    log.debug("Skipping {} {} diary due to low difficulty", diary.getRight(), diary.getLeft());
+                    log.debug("Skipping {} {} diary due to low difficulty", diary.getDifficulty(), diary.getArea());
                 }
             } else {
                 // Karamja special case
-                log.info("Skipping {} {} diary start (not a completion with value {})", diary.getRight(), diary.getLeft(), value);
+                log.info("Skipping {} {} diary start (not a completion with value {})", diary.getDifficulty(), diary.getArea(), value);
             }
         }
     }
 
-    private void handle(String area, AchievementDiary.Difficulty difficulty) {
+    private void handle(AchievementDiary diary) {
         if (cooldownTicks.getAndSet(2) > 0) {
-            log.debug("Skipping diary completion during cooldown: {} {}", difficulty, area);
+            log.debug("Skipping diary completion during cooldown: {} {}", diary.getDifficulty(), diary.getArea());
             return;
         }
 
@@ -170,8 +168,8 @@ public class DiaryNotifier extends BaseNotifier {
             .template(config.diaryNotifyMessage())
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(player))
-            .replacement("%DIFFICULTY%", Replacements.ofText(difficulty.toString()))
-            .replacement("%AREA%", Replacements.ofWiki(area, area + " Diary"))
+            .replacement("%DIFFICULTY%", Replacements.ofText(diary.getDifficulty().toString()))
+            .replacement("%AREA%", Replacements.ofWiki(diary.getArea(), diary.getArea() + " Diary"))
             .replacement("%TOTAL%", Replacements.ofText(String.valueOf(completedDiaries)))
             .replacement("%TASKS_COMPLETE%", Replacements.ofText(String.valueOf(completedTasks)))
             .replacement("%TASKS_TOTAL%", Replacements.ofText(String.valueOf(totalTasks)))
@@ -180,7 +178,7 @@ public class DiaryNotifier extends BaseNotifier {
         createMessage(config.diarySendImage(), NotificationBody.builder()
             .type(NotificationType.ACHIEVEMENT_DIARY)
             .text(message)
-            .extra(new DiaryNotificationData(area, difficulty, completedDiaries, completedTasks, totalTasks))
+            .extra(new DiaryNotificationData(diary.getArea(), diary.getDifficulty(), completedDiaries, completedTasks, totalTasks))
             .playerName(player)
             .build());
     }
