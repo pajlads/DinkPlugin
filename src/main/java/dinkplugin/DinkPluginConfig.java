@@ -1340,7 +1340,10 @@ public interface DinkPluginConfig extends Config {
             "Use %AREA% to insert the diary area<br/>" +
             "Use %TOTAL% to insert the total diaries completed<br/>" +
             "Use %TASKS_COMPLETE% to insert the tasks completed across all diaries<br/>" +
-            "Use %TASKS_TOTAL% to insert the total tasks possible across all diaries",
+            "Use %TASKS_TOTAL% to insert the total tasks possible across all diaries<br/>" +
+            "Use %TASKS_TOTAL% to insert the total tasks possible across all diaries<br/>" +
+            "Use %AREA_TASKS_COMPLETE% to insert the tasks completed within the area<br/>" +
+            "Use %AREA_TASKS_TOTAL% to insert the total tasks possible within the area",
         position = 113,
         section = diarySection
     )
