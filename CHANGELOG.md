@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add task progress metadata for diary notifications. (#331)
 - Minor: Made the default setting for screenshots enabled for consistency across all notifiers. (#330)
 - Minor: Send character information on login to custom handlers via advanced config. (#321)
 - Minor: Add key in the Speedrun notifier extra object for whether the run is a personal best or not. (#329)
