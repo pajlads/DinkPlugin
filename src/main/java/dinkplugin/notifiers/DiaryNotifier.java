@@ -159,7 +159,12 @@ public class DiaryNotifier extends BaseNotifier {
             return;
         }
 
-        int total = getTotalCompleted();
+        client.runScript(DiaryNotifier.COMPLETED_TASKS_SCRIPT_ID);
+        int completedTasks = client.getIntStack()[0];
+        client.runScript(DiaryNotifier.TOTAL_TASKS_SCRIPT_ID);
+        int totalTasks = client.getIntStack()[0];
+
+        int completedDiaries = getTotalCompleted();
         String player = Utils.getPlayerName(client);
         Template message = Template.builder()
             .template(config.diaryNotifyMessage())
@@ -167,13 +172,15 @@ public class DiaryNotifier extends BaseNotifier {
             .replacement("%USERNAME%", Replacements.ofText(player))
             .replacement("%DIFFICULTY%", Replacements.ofText(difficulty.toString()))
             .replacement("%AREA%", Replacements.ofWiki(area, area + " Diary"))
-            .replacement("%TOTAL%", Replacements.ofText(String.valueOf(total)))
+            .replacement("%TOTAL%", Replacements.ofText(String.valueOf(completedDiaries)))
+            .replacement("%TASKS_COMPLETE%", Replacements.ofText(String.valueOf(completedTasks)))
+            .replacement("%TASKS_TOTAL%", Replacements.ofText(String.valueOf(totalTasks)))
             .build();
 
         createMessage(config.diarySendImage(), NotificationBody.builder()
             .type(NotificationType.ACHIEVEMENT_DIARY)
             .text(message)
-            .extra(new DiaryNotificationData(area, difficulty, total))
+            .extra(new DiaryNotificationData(area, difficulty, completedDiaries, completedTasks, totalTasks))
             .playerName(player)
             .build());
     }
