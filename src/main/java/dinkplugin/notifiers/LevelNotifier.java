@@ -50,7 +50,8 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void initLevels() {
-        if (initTicks.getAndSet(INIT_CLIENT_TICKS) > 0)
+        // initTicks == 0 => set initTicks to INIT_CLIENT_TICKS & schedule level lookup
+        if (initTicks.getAndUpdate(i -> i <= 0 ? INIT_CLIENT_TICKS : i) > 0)
             return; // init task is already queued
 
         clientThread.invokeLater(() -> {
