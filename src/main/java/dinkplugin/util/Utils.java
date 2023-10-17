@@ -35,6 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -53,6 +54,17 @@ public class Utils {
     public final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
 
     private final char ELLIPSIS = '\u2026'; // '…'
+
+    /**
+     * Custom padding for applying SHA-256 to a long.
+     * SHA-256 adds 0 bits of padding such that L+1+K+64 mod 512 == 0.
+     * Long is 64 bits and this padding is 376 bits, so L = 440. Thus, minimal K = 7.
+     * This padding differentiates our hash results, and only incurs a ~1% performance penalty.
+     *
+     * @see #dinkHash(long)
+     */
+    private static final byte[] DINK_HASH_PADDING = "JennaRaidingDreamSeedZeroPercentOptionsForAnts!"
+        .getBytes(StandardCharsets.UTF_8); // DO NOT CHANGE
 
     /**
      * Truncates text at the last space to conform with the specified max length.
@@ -261,7 +273,7 @@ public class Utils {
         return future;
     }
 
-    public String sha224(long l) {
+    public String dinkHash(long l) {
         MessageDigest hash;
         try {
             hash = MessageDigest.getInstance("SHA-224");
@@ -269,7 +281,10 @@ public class Utils {
             log.warn("Account hash will not be included in notification metadata", e);
             return null;
         }
-        byte[] input = ByteBuffer.allocate(8).putLong(l).array();
+        byte[] input = ByteBuffer.allocate(8 + DINK_HASH_PADDING.length)
+            .putLong(l)
+            .put(DINK_HASH_PADDING)
+            .array();
         // noinspection UnstableApiUsage - no longer @Beta as of v32.0.0
         return HashCode.fromBytes(hash.digest(input)).toString();
     }

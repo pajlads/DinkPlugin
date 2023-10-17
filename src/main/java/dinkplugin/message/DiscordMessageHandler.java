@@ -212,8 +212,7 @@ public class DiscordMessageHandler {
         if (mBody.getDinkAccountHash() == null) {
             long id = client.getAccountHash();
             if (id != -1) {
-                int offset = 4_9_14_11; // dink but A=1, B=2, C=3, ...
-                mBody = mBody.withDinkAccountHash(Utils.sha224(id + offset));
+                mBody = mBody.withDinkAccountHash(Utils.dinkHash(id));
             }
         }
 
