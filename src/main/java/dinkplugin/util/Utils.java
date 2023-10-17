@@ -1,5 +1,6 @@
 package dinkplugin.util;
 
+import com.google.common.hash.HashCode;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dinkplugin.DinkPluginConfig;
@@ -33,6 +34,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -255,6 +259,19 @@ public class Utils {
             }
         });
         return future;
+    }
+
+    public String sha224(long l) {
+        MessageDigest hash;
+        try {
+            hash = MessageDigest.getInstance("SHA-224");
+        } catch (NoSuchAlgorithmException e) {
+            log.warn("Account hash will not be included in notification metadata", e);
+            return null;
+        }
+        byte[] input = ByteBuffer.allocate(8).putLong(l).array();
+        // noinspection UnstableApiUsage - no longer @Beta as of v32.0.0
+        return HashCode.fromBytes(hash.digest(input)).toString();
     }
 
 }
