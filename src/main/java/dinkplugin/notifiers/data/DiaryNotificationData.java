@@ -23,17 +23,17 @@ public class DiaryNotificationData extends NotificationData {
     AchievementDiary.Difficulty difficulty;
 
     /**
-     * The number of diaries that have been completed (across all regions and difficulties).
+     * The number of diaries that have been completed across all regions and difficulties.
      */
     int total;
 
     /**
-     * The number of diary tasks that have been completed (across all regions and difficulties).
+     * The number of diary tasks that have been completed across all regions and difficulties.
      */
     int tasksCompleted;
 
     /**
-     * The total number of diary tasks within the game (across all regions and difficulties).
+     * The total number of diary tasks within the game across all regions and difficulties.
      */
     int tasksTotal;
 
