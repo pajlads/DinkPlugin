@@ -57,7 +57,7 @@ public class Utils {
 
     /**
      * Custom padding for applying SHA-256 to a long.
-     * SHA-256 adds 0 bits of padding such that L+1+K+64 mod 512 == 0.
+     * SHA-256 adds '0' padding bits such that L+1+K+64 mod 512 == 0.
      * Long is 64 bits and this padding is 376 bits, so L = 440. Thus, minimal K = 7.
      * This padding differentiates our hash results, and only incurs a ~1% performance penalty.
      *
@@ -273,6 +273,11 @@ public class Utils {
         return future;
     }
 
+    /**
+     * @param l the long to hash
+     * @return SHA-224 with custom padding
+     * @see #DINK_HASH_PADDING
+     */
     public String dinkHash(long l) {
         MessageDigest hash;
         try {
