@@ -4,6 +4,8 @@ import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.util.ColorUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +28,10 @@ public class ConfigUtil {
         return DELIM.splitAsStream(value)
             .map(String::trim)
             .filter(StringUtils::isNotEmpty);
+    }
+
+    public boolean isPluginDisabled(ConfigManager configManager, String simpleLowerClassName) {
+        return "false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, simpleLowerClassName));
     }
 
     @Nullable

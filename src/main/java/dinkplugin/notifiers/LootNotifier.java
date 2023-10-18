@@ -26,11 +26,11 @@ import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
+import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.plugins.loottracker.LootTrackerConfig;
 import net.runelite.client.plugins.loottracker.LootTrackerPlugin;
@@ -53,6 +53,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class LootNotifier extends BaseNotifier {
 
+    private static final String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
     private static final String RL_LOOT_PLUGIN_NAME = LootTrackerPlugin.class.getSimpleName().toLowerCase();
 
     @Inject
@@ -264,10 +265,21 @@ public class LootNotifier extends BaseNotifier {
 
     /**
      * @param npcName {@link NPC#getName()}
-     * @return the kill count stored by the base runelite loot tracker plugin
+     * @return the kill count stored by the base runelite chat commands or loot tracker plugin
      */
     private Integer getStoredKillCount(String npcName) {
-        if ("false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, RL_LOOT_PLUGIN_NAME))) {
+        // Get kill count from base Chat Commands plugin, if enabled
+        if (!ConfigUtil.isPluginDisabled(configManager, RL_CHAT_CMD_PLUGIN_NAME)) {
+            String boss = "Barrows".equals(npcName) ? "barrows chests"
+                : StringUtils.remove(npcName.toLowerCase(), ':');
+            Integer kc = configManager.getRSProfileConfiguration("killcount", boss, int.class);
+            if (kc != null) {
+                // chat event typically occurs before loot event
+                return kc - 1;
+            }
+        }
+
+        if (ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
             // assume stored kc is useless if loot tracker plugin is disabled
             return null;
         }
