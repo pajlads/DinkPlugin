@@ -32,6 +32,7 @@ public class NotificationBody<T extends NotificationData> {
     NotificationType type;
     String playerName;
     AccountType accountType;
+    String dinkAccountHash;
     @Nullable
     String clanName;
     @Nullable
