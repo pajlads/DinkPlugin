@@ -11,6 +11,7 @@
 - Bugfix: Classify deaths in Tombs of Abascut as safe or dangerous depending on the attempt invocations. (#317)
 - Dev: Update gradle wrapper to v8.4 minor version. (#328)
 - Dev: Add pet test for Lil' creator. (#325)
+- Dev: Bump Java source & target compatability from 8 to 11. (#318)
 
 ## 1.6.3
 
