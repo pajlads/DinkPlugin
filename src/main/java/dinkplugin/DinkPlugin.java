@@ -151,7 +151,7 @@ public class DinkPlugin extends Plugin {
         metaNotifier.onGameState(gameStateChanged);
     }
 
-    @Subscribe
+    @Subscribe(priority = -1) // run AFTER Prestige plugin
     public void onStatChanged(StatChanged statChange) {
         levelNotifier.onStatChanged(statChange);
     }

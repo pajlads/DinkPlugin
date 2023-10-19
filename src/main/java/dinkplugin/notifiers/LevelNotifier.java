@@ -100,8 +100,12 @@ public class LevelNotifier extends BaseNotifier {
         }
     }
 
-    public void onStatChanged(StatChanged statChange) {
-        this.handleLevelUp(statChange.getSkill().getName(), statChange.getLevel(), statChange.getXp());
+    public void onStatChanged(StatChanged event) {
+        // we sometimes don't use the data within StatChanged for compatibility with Prestige plugin
+        Skill skill = event.getSkill();
+        int level = client.getRealSkillLevel(skill);
+        int xp = level == event.getLevel() ? event.getXp() : client.getSkillExperience(skill);
+        this.handleLevelUp(skill.getName(), level, xp);
     }
 
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
