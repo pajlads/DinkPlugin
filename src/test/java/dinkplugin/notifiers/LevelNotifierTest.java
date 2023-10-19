@@ -57,11 +57,11 @@ class LevelNotifierTest extends MockedNotifierTest {
         mockLevel(Skill.SLAYER, 96);
         initialCombatLevel = Experience.getCombatLevel(99, 1, 1, 10, 1, 1, 1);
         unchangedCombatLevel = new LevelNotificationData.CombatLevel(initialCombatLevel, false);
-        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 0, 1, 1));
-        plugin.onStatChanged(new StatChanged(Skill.ATTACK, 14_000_000, 99, 99));
-        plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 1200, 10, 10));
-        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 300, 4, 4));
-        plugin.onStatChanged(new StatChanged(Skill.SLAYER, 9_800_000, 96, 96));
+        statChange(new StatChanged(Skill.AGILITY, 0, 1, 1));
+        statChange(new StatChanged(Skill.ATTACK, 14_000_000, 99, 99));
+        statChange(new StatChanged(Skill.HITPOINTS, 1200, 10, 10));
+        statChange(new StatChanged(Skill.HUNTER, 300, 4, 4));
+        statChange(new StatChanged(Skill.SLAYER, 9_800_000, 96, 96));
     }
 
     @Test
@@ -72,7 +72,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         when(config.levelNotifyMessage()).thenReturn("%USERNAME% has levelled %SKILL%, achieving a total level of %TOTAL_LEVEL%");
 
         // fire skill event
-        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
+        statChange(new StatChanged(Skill.AGILITY, 400, 5, 5));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -100,7 +100,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         Map<String, Integer> expectedSkills = skillsMap("Hunter", 6);
 
         // fire skill event (4 => 6, skipping 5 while 5 is level interval)
-        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 200, 6, 6));
+        statChange(new StatChanged(Skill.HUNTER, 200, 6, 6));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -127,7 +127,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         Map<String, Integer> expectedSkills = skillsMap("Attack", 100);
 
         // fire skill event
-        plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
+        statChange(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -154,7 +154,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         Map<String, Integer> expectedSkills = skillsMap("Hunter", 127);
 
         // fire skill event
-        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 200_000_000, 99, 126));
+        statChange(new StatChanged(Skill.HUNTER, 200_000_000, 99, 126));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -184,8 +184,8 @@ class LevelNotifierTest extends MockedNotifierTest {
         );
 
         // fire skill events
-        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
-        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 14_000_000, 99, 99));
+        statChange(new StatChanged(Skill.AGILITY, 400, 5, 5));
+        statChange(new StatChanged(Skill.HUNTER, 14_000_000, 99, 99));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -216,9 +216,9 @@ class LevelNotifierTest extends MockedNotifierTest {
         );
 
         // fire skill events
-        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
-        plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
-        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 400, 5, 5));
+        statChange(new StatChanged(Skill.AGILITY, 400, 5, 5));
+        statChange(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
+        statChange(new StatChanged(Skill.HUNTER, 400, 5, 5));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -251,7 +251,7 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // fire skill event
         mockLevel(Skill.HITPOINTS, 13);
-        plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
+        statChange(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -283,7 +283,7 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // fire skill event
         mockLevel(Skill.HITPOINTS, 13);
-        plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
+        statChange(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -318,7 +318,7 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // fire skill event
         mockLevel(Skill.HITPOINTS, 13);
-        plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
+        statChange(new StatChanged(Skill.HITPOINTS, 2000, 13, 13));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -330,7 +330,7 @@ class LevelNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreInterval() {
         // fire skill event
-        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 100, 2, 2));
+        statChange(new StatChanged(Skill.AGILITY, 100, 2, 2));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -342,7 +342,7 @@ class LevelNotifierTest extends MockedNotifierTest {
     @Test
     void testOverrideInterval() {
         // fire skill event
-        plugin.onStatChanged(new StatChanged(Skill.SLAYER, 10_695_000, 97, 97));
+        statChange(new StatChanged(Skill.SLAYER, 10_695_000, 97, 97));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -370,7 +370,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         when(config.levelNotifyVirtual()).thenReturn(false);
 
         // fire skill event
-        plugin.onStatChanged(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
+        statChange(new StatChanged(Skill.ATTACK, 15_000_000, 99, 100));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -385,7 +385,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         when(config.levelNotifyVirtual()).thenReturn(false);
 
         // fire skill event
-        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 200_000_000, 99, 126));
+        statChange(new StatChanged(Skill.HUNTER, 200_000_000, 99, 126));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -401,11 +401,11 @@ class LevelNotifierTest extends MockedNotifierTest {
         when(client.getRealSkillLevel(skill)).thenReturn(99);
         when(client.getSkillExperience(skill)).thenReturn(Experience.MAX_SKILL_XP);
         when(config.levelNotifyVirtual()).thenReturn(false);
-        plugin.onStatChanged(new StatChanged(skill, Experience.MAX_SKILL_XP, 99, 126));
+        statChange(new StatChanged(skill, Experience.MAX_SKILL_XP, 99, 126));
         when(config.levelNotifyVirtual()).thenReturn(true);
 
         // fire skill event
-        plugin.onStatChanged(new StatChanged(skill, 200_000_001, 99, 126));
+        statChange(new StatChanged(skill, 200_000_001, 99, 126));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -420,13 +420,18 @@ class LevelNotifierTest extends MockedNotifierTest {
         when(config.notifyLevel()).thenReturn(false);
 
         // fire skill event
-        plugin.onStatChanged(new StatChanged(Skill.AGILITY, 400, 5, 5));
+        statChange(new StatChanged(Skill.AGILITY, 400, 5, 5));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    private void statChange(StatChanged event) {
+        when(client.getRealSkillLevel(event.getSkill())).thenReturn(event.getLevel());
+        plugin.onStatChanged(event);
     }
 
     private void mockLevel(Skill skill, int level) {
