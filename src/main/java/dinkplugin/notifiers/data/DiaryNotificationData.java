@@ -53,13 +53,13 @@ public class DiaryNotificationData extends NotificationData {
 
         if (areaTasksCompleted > 0 && areaTasksTotal > 0) {
             fields.add(
-                new Field("Area Task Progress", Field.formatProgress(areaTasksCompleted, areaTasksTotal))
+                new Field(area + " Progress", Field.formatProgress(areaTasksCompleted, areaTasksTotal))
             );
         }
 
         if (tasksCompleted > 0 && tasksTotal > 0) {
             fields.add(
-                new Field("Overall Task Progress", Field.formatProgress(tasksCompleted, tasksTotal))
+                new Field("Overall Progress", Field.formatProgress(tasksCompleted, tasksTotal))
             );
         }
 
