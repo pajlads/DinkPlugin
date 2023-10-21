@@ -198,7 +198,7 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type) {
-        final Integer kc = type == LootRecordType.NPC ? incrementAndGetKillCount(dropper) : null;
+        final Integer kc = incrementAndGetKillCount(dropper, type);
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
 
@@ -249,8 +249,9 @@ public class LootNotifier extends BaseNotifier {
         }
     }
 
-    private Integer incrementAndGetKillCount(String npcName) {
-        Integer stored = getStoredKillCount(npcName);
+    private Integer incrementAndGetKillCount(String npcName, LootRecordType type) {
+        if (type != LootRecordType.NPC && type != LootRecordType.EVENT) return null;
+        Integer stored = getStoredKillCount(npcName, type);
         if (stored == null) {
             killCounts.asMap().computeIfPresent(npcName, (k, v) -> v + 1);
             return null;
@@ -265,9 +266,10 @@ public class LootNotifier extends BaseNotifier {
 
     /**
      * @param npcName {@link NPC#getName()}
+     * @param type {@link LootReceived#getType()}
      * @return the kill count stored by the base runelite chat commands or loot tracker plugin
      */
-    private Integer getStoredKillCount(String npcName) {
+    private Integer getStoredKillCount(String npcName, LootRecordType type) {
         // Get kill count from base Chat Commands plugin, if enabled
         if (!ConfigUtil.isPluginDisabled(configManager, RL_CHAT_CMD_PLUGIN_NAME)) {
             String boss = "Barrows".equals(npcName) ? "barrows chests"
@@ -279,7 +281,7 @@ public class LootNotifier extends BaseNotifier {
             }
         }
 
-        if (ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
+        if (type != LootRecordType.NPC || ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
             // assume stored kc is useless if loot tracker plugin is disabled
             return null;
         }
