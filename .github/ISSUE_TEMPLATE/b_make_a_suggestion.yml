@@ -1,0 +1,37 @@
+name: Suggestion
+description: Make a suggestion for something that you think should be added to Dink.
+labels:
+  - enhancement
+body:
+  - type: checkboxes
+    id: acknowledgments
+    attributes:
+      label: Checklist
+      description: null
+      options:
+        - label: I've searched the [issues and pull
+            requests](https://github.com/pajlads/Dinkplugin/issues?q=) and the
+            `Unreleased` section of the
+            [changelog](https://github.com/pajlads/DinkPlugin/blob/master/CHANGELOG.md)
+            for similar looking suggestions.
+          required: true
+
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: Describe your Suggestion
+      description: |
+        Write a brief description of your feature suggestion.
+      placeholder: |
+        Examples:
+          // todo come up with suggestions
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: |
+        Include any information helpful for implementing your suggestion.
+      placeholder: Drag and drop them into this box.
