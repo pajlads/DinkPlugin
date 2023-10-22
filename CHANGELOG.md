@@ -6,6 +6,7 @@
 - Minor: Add key in the Speedrun notifier extra object for whether the run is a personal best or not. (#329)
 - Minor: Indicate in pet notification metadata when a pet was previously owned but lost. (#314)
 - Minor: Support wildcards in loot item name filters. (#312)
+- Bugfix: Use correct duration time for gauntlet minigame completions. (#341)
 - Bugfix: Allow the first xp drop after login to trigger level notifications. (#332)
 - Bugfix: Don't treat personal best ties as personal bests for Speedrun notifications. (#329)
 - Bugfix: Classify Gauntlet deaths as safe, unless the player is a hardcore ironman. (#327)
