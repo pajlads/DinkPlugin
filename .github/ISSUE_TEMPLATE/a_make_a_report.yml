@@ -57,7 +57,6 @@ body:
 
         You can find logs in one of two ways:
 
-
         ### 1. On Windows press `windowsKey+R` and open `%userprofile%\.runelite\logs`, on Linux and MacOS navigate to the `$HOME/.runelite/logs` folder.
 
         ### 2. Open the screenshot directory (by right-clicking the \"Camera\" button) and navigate one directory up and then open the `logs` folder
