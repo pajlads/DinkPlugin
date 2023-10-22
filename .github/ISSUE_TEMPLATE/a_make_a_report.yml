@@ -41,7 +41,7 @@ body:
       description: |
         While optional, it's highly encouraged to include screenshots or
         videos to illustrate what you mean.
-        Example: Kill Count notifications are not working for <newly added boss>
+        Example: Kill Count notifications are not working for (newly added boss)
           Include an image of the chat message(s) recieved when the boss dies.
       placeholder: Drag and drop them into this box.
 
