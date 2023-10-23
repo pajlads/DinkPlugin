@@ -12,7 +12,7 @@ body:
         - label: I've searched the [issues and pull
             requests](https://github.com/pajlads/Dinkplugin/issues?q=) for
             similar looking suggestions.
-          required:true
+          required: true
         - label: I've checked the `Unreleased` section of the
             [changelog](https://github.com/pajlads/DinkPlugin/blob/master/CHANGELOG.md)
             for newly added features that sound like my suggestion.
