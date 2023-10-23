@@ -55,7 +55,7 @@ body:
         Attaching log files is appreciated for bug reports, as the problem
         can often be mentioned in the logs.
 
-        You can find logs in one of two ways:
+        ### You can find logs in one of two ways:
 
         ### A) On Windows press `windowsKey+R` and open `%userprofile%\.runelite\logs`, on Linux and MacOS navigate to the `$HOME/.runelite/logs` folder.
 
