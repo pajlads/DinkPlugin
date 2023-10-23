@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Add task progress metadata for diary notifications. (#331)
+- Minor: Use boss chat message for latest kill count in loot notifications. (#324)
 - Minor: Include hashed account unique identifier in notification metadata. (#334)
 - Minor: Made the default setting for screenshots enabled for consistency across all notifiers. (#330)
 - Minor: Send character information on login to custom handlers via advanced config. (#321)
