@@ -201,6 +201,7 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private static Optional<BossNotificationData> parse(String message) {
+        if (message.startsWith("Preparation")) return Optional.empty();
         Optional<Pair<String, Integer>> boss = parseBoss(message);
         if (boss.isPresent())
             return boss.map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null));

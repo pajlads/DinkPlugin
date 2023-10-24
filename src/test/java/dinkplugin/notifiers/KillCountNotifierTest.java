@@ -334,6 +334,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
         // fire events
         notifier.onGameMessage("Challenge duration: 10:25 (new personal best).");
+        notifier.onGameMessage("Preparation time: 7:09.60. Hunllef kill time: 3:15.40.");
         String gameMessage = "Your Gauntlet completion count is: 10.";
         notifier.onGameMessage(gameMessage);
         notifier.onTick();
