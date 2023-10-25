@@ -52,6 +52,11 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.withType<AbstractArchiveTask>().configureEach {
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+}
+
 tasks.register(name = "shadowJar", type = Jar::class) {
     dependsOn(configurations.testRuntimeClasspath)
     manifest {
