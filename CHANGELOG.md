@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.6.4
+
 - Minor: Add task progress metadata for diary notifications. (#331)
 - Minor: Use boss chat message for latest kill count in loot notifications. (#324)
 - Minor: Include hashed account unique identifier in notification metadata. (#334)
