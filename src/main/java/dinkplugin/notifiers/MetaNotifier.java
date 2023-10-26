@@ -20,11 +20,10 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @Singleton
 public class MetaNotifier extends BaseNotifier {
@@ -88,12 +87,15 @@ public class MetaNotifier extends BaseNotifier {
 
         long experienceTotal = client.getOverallExperience();
         int levelTotal = client.getTotalLevel();
-        Map<String, Integer> skillLevels = Arrays.stream(Skill.values()).collect(Collectors.toMap(Skill::getName, skill -> {
+        Map<String, Integer> skillLevels = new HashMap<>();
+        Map<String, Integer> skillExperience = new HashMap<>();
+        for (Skill skill : Skill.values()) {
+            int xp = client.getSkillExperience(skill);
             int lvl = client.getRealSkillLevel(skill);
-            return lvl < 99 ? lvl : Experience.getLevelForXp(client.getSkillExperience(skill));
-        }));
-        Map<String, Integer> skillExperience = Arrays.stream(Skill.values())
-            .collect(Collectors.toMap(Skill::getName, client::getSkillExperience));
+            int virtualLevel = lvl < 99 ? lvl : Experience.getLevelForXp(xp);
+            skillExperience.put(skill.getName(), xp);
+            skillLevels.put(skill.getName(), virtualLevel);
+        }
 
         int questsCompleted = client.getVarbitValue(QuestNotifier.COMPLETED_ID);
         int questsTotal = client.getVarbitValue(QuestNotifier.TOTAL_ID);
