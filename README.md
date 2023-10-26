@@ -821,6 +821,31 @@ On login, Dink can submit a character summary containing data that spans multipl
         "Strength": 104,
         "Prayer": 91,
         "Farming": 100
+      },
+      "experience": {
+        "Hunter": 5420696,
+        "Thieving": 3696420,
+        "Runecraft": 3969420,
+        "Construction": 3680085,
+        "Cooking": 19696420,
+        "Magic": 28008135,
+        "Fletching": 13696420,
+        "Herblore": 5969420,
+        "Firemaking": 14420666,
+        "Attack": 30696420,
+        "Fishing": 6632248,
+        "Crafting": 9696420,
+        "Hitpoints": 46969666,
+        "Ranged": 42069420,
+        "Mining": 4696420,
+        "Smithing": 6428696,
+        "Agility": 2666420,
+        "Woodcutting": 9696666,
+        "Slayer": 21420696,
+        "Defence": 21212121,
+        "Strength": 23601337,
+        "Prayer": 6369666,
+        "Farming": 15666420
       }
     },
     "questCount": {
