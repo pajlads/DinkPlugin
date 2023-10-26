@@ -22,7 +22,7 @@ public class LoginNotificationData extends NotificationData {
     Progress questPoints;
     SlayerData slayer;
     @Nullable // requires Chat Commands plugin to be enabled
-    Map<Integer, String> petNamesById;
+    Map<Integer, String> pets;
 
     @Value
     public static class SkillData {
