@@ -161,7 +161,8 @@ public class LootNotifier extends BaseNotifier {
             return;
         }
 
-        this.handleNotify(event.getItems(), npc.getName(), LootRecordType.NPC);
+        // 20ms delay to increase likelihood of relevant chat message in screenshot
+        clientThread.invokeLater(() -> handleNotify(event.getItems(), npc.getName(), LootRecordType.NPC));
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
