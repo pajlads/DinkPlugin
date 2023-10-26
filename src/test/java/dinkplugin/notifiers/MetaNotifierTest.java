@@ -97,7 +97,8 @@ class MetaNotifierTest extends MockedNotifierTest {
             new LoginNotificationData.BarbarianAssault(666),
             new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels),
             Progress.of(21, 158), Progress.of(43, 300),
-            new LoginNotificationData.SlayerData(2484, 300)
+            new LoginNotificationData.SlayerData(2484, 300),
+            null
         );
         verify(messageHandler).createMessage(
             url,
@@ -134,7 +135,8 @@ class MetaNotifierTest extends MockedNotifierTest {
             new LoginNotificationData.BarbarianAssault(666),
             new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels),
             Progress.of(21, 158), Progress.of(43, 300),
-            new LoginNotificationData.SlayerData(2484, 300)
+            new LoginNotificationData.SlayerData(2484, 300),
+            null
         );
         verify(messageHandler).createMessage(
             url,
