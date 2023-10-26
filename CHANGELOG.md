@@ -1,10 +1,16 @@
 ## Unreleased
 
+## 1.6.4
+
+- Minor: Add task progress metadata for diary notifications. (#331)
+- Minor: Use boss chat message for latest kill count in loot notifications. This is only for "normal" bosses and won't yet work for things such as raids/barrows/hespori. (#324)
+- Minor: Include hashed account unique identifier in notification metadata. (#334)
 - Minor: Made the default setting for screenshots enabled for consistency across all notifiers. (#330)
 - Minor: Send character information on login to custom handlers via advanced config. (#321)
 - Minor: Add key in the Speedrun notifier extra object for whether the run is a personal best or not. (#329)
 - Minor: Indicate in pet notification metadata when a pet was previously owned but lost. (#314)
 - Minor: Support wildcards in loot item name filters. (#312)
+- Bugfix: Use correct duration time for gauntlet minigame completions. (#341)
 - Bugfix: Allow the first xp drop after login to trigger level notifications. (#332)
 - Bugfix: Don't treat personal best ties as personal bests for Speedrun notifications. (#329)
 - Bugfix: Classify Gauntlet deaths as safe, unless the player is a hardcore ironman. (#327)

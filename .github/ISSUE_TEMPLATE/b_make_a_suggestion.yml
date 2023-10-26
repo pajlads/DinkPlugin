@@ -1,0 +1,44 @@
+name: Suggestion
+description: Make a suggestion for something that you think should be added to Dink.
+labels:
+  - enhancement
+body:
+  - type: checkboxes
+    id: acknowledgments
+    attributes:
+      label: Checklist
+      description: null
+      options:
+        - label: I've searched the [issues and pull
+            requests](https://github.com/pajlads/Dinkplugin/issues?q=) for
+            similar looking suggestions.
+          required: true
+        - label: I've checked the `Unreleased` section of the
+            [changelog](https://github.com/pajlads/DinkPlugin/blob/master/CHANGELOG.md)
+            for newly added features that sound like my suggestion.
+          required: true
+
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: Describe your Suggestion
+      description: |
+        Write a brief description of your feature suggestion.
+      placeholder: |
+        Examples:
+          - Send notifications when ___ occurs
+          - Add a setting to change ___ in the ___ notifier
+          - Add additional data for ___ in the ___ notifier
+
+  - type: textarea
+    id: usecase
+    attributes:
+      label: Reasoning
+      description: |
+        Include any information arguing for implementing your suggestion.
+      placeholder: |
+        - I think this would be a good notifier because ___
+        - I think this setting would help with ___
+        - Sending this data would be helpful because ___

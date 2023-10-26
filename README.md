@@ -486,9 +486,17 @@ If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replac
 
 `%AREA%` will be replaced with the geographic area of the achievement diary tasks (e.g., Varrock)
 
-`%DIFFICULTY%` will be replaced with the level of the achievement diary (e.g., Elite)
+`%DIFFICULTY%` will be replaced with the level of the achievement diary (e.g., Hard)
 
 `%TOTAL%` will be replaced with the total number of achievement diaries completed across all locations and difficulties
+
+`%TASKS_COMPLETE%` will be replaced with the number of tasks completed across all locations and difficulties
+
+`%TASKS_TOTAL%` will be replaced with the total number of tasks possible across all locations and difficulties
+
+`%AREA_TASKS_COMPLETE%` will be replaced with the number of tasks completed within the area
+
+`%AREA_TASKS_TOTAL%` will be replaced with the total number of tasks possible within the area
 
 <details>
   <summary>JSON for Achievement Diary Notifications:</summary>
@@ -498,8 +506,12 @@ If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replac
   "content": "%USERNAME% has completed the %DIFFICULTY% %AREA% Achievement Diary, for a total of %TOTAL% diaries completed",
   "extra": {
     "area": "Varrock",
-    "difficulty": "ELITE",
-    "total": 36
+    "difficulty": "HARD",
+    "total": 15,
+    "tasksCompleted": 152,
+    "tasksTotal": 492,
+    "areaTasksCompleted": 37,
+    "areaTasksTotal": 42
   },
   "type": "ACHIEVEMENT_DIARY"
 }

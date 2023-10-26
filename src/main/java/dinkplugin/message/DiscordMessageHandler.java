@@ -209,6 +209,13 @@ public class DiscordMessageHandler {
             mBody = mBody.withAccountType(Utils.getAccountType(client));
         }
 
+        if (mBody.getDinkAccountHash() == null) {
+            long id = client.getAccountHash();
+            if (id != -1) {
+                mBody = mBody.withDinkAccountHash(Utils.dinkHash(id));
+            }
+        }
+
         NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
 
         if (config.sendDiscordUser()) {

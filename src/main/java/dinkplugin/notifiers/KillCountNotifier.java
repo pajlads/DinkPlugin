@@ -201,6 +201,7 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private static Optional<BossNotificationData> parse(String message) {
+        if (message.startsWith("Preparation")) return Optional.empty();
         Optional<Pair<String, Integer>> boss = parseBoss(message);
         if (boss.isPresent())
             return boss.map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null));
@@ -217,8 +218,7 @@ public class KillCountNotifier extends BaseNotifier {
         return Optional.empty();
     }
 
-    @VisibleForTesting
-    static Optional<Pair<String, Integer>> parseBoss(String message) {
+    public static Optional<Pair<String, Integer>> parseBoss(String message) {
         Matcher primary = PRIMARY_REGEX.matcher(message);
         Matcher secondary; // lazy init
         if (primary.find()) {

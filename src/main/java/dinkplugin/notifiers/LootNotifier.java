@@ -45,6 +45,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -67,6 +68,9 @@ public class LootNotifier extends BaseNotifier {
 
     @Inject
     private ConfigManager configManager;
+
+    @Inject
+    private ScheduledExecutorService executor;
 
     private final Collection<Pattern> itemNameAllowlist = new CopyOnWriteArrayList<>();
     private final Collection<Pattern> itemNameDenylist = new CopyOnWriteArrayList<>();
@@ -121,6 +125,26 @@ public class LootNotifier extends BaseNotifier {
                 .map(Utils::regexify)
                 .collect(Collectors.toList())
         );
+    }
+
+    public void onGameMessage(String message) {
+        // update cached KC via boss chat message with robustness for chat event coming before OR after the loot event
+        KillCountNotifier.parseBoss(message).ifPresent(pair -> {
+            String boss = pair.getKey();
+            Integer kc = pair.getValue();
+
+            // Update cache if no mapping exists (i.e., this is the first boss kill & chat event occurred first)
+            // We store kc - 1 since incrementAndGetKillCount will increment; kc - 1 + 1 == kc
+            Integer existingMapping = killCounts.asMap().putIfAbsent(boss, kc - 1);
+            if (existingMapping != null) {
+                // KC already cached, but we don't know if this boss message appeared before/after the loot event.
+                // If after, we should store kc. If before, we should store kc - 1.
+                // Given this uncertainty, we wait so that the loot event has passed, and then we can store latest kc.
+                executor.schedule(() -> {
+                    killCounts.asMap().merge(boss, kc, Math::max);
+                }, 15, TimeUnit.SECONDS);
+            }
+        });
     }
 
     public void onNpcLootReceived(NpcLootReceived event) {
