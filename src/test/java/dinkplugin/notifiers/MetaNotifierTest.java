@@ -63,6 +63,7 @@ class MetaNotifierTest extends MockedNotifierTest {
         when(client.getVarbitValue(Varbits.BA_GC)).thenReturn(666);
 
         when(client.getRealSkillLevel(any())).thenReturn(level);
+        when(client.getSkillExperience(any())).thenReturn((int) xp);
         when(client.getTotalLevel()).thenReturn(skillCount * level);
         when(client.getOverallExperience()).thenReturn(skillCount * xp);
 
@@ -89,13 +90,15 @@ class MetaNotifierTest extends MockedNotifierTest {
         // verify handled
         Map<String, Integer> levels = Arrays.stream(Skill.values())
             .collect(Collectors.toMap(Skill::getName, s -> level));
+        Map<String, Integer> exp = Arrays.stream(Skill.values())
+            .collect(Collectors.toMap(Skill::getName, s -> (int) xp));
         LoginNotificationData extra = new LoginNotificationData(world,
             Progress.of(1312, 1477),
             Progress.of(1984, 2005),
             Progress.of(3, 48),
             null,
             new LoginNotificationData.BarbarianAssault(666),
-            new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels),
+            new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels, exp),
             Progress.of(21, 158), Progress.of(43, 300),
             new LoginNotificationData.SlayerData(2484, 300)
         );
@@ -126,13 +129,15 @@ class MetaNotifierTest extends MockedNotifierTest {
         // verify handled
         Map<String, Integer> levels = Arrays.stream(Skill.values())
             .collect(Collectors.toMap(Skill::getName, s -> level));
+        Map<String, Integer> exp = Arrays.stream(Skill.values())
+            .collect(Collectors.toMap(Skill::getName, s -> (int) xp));
         LoginNotificationData extra = new LoginNotificationData(world,
             null, // collection log data should not be present
             Progress.of(1984, 2005),
             Progress.of(3, 48),
             null,
             new LoginNotificationData.BarbarianAssault(666),
-            new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels),
+            new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels, exp),
             Progress.of(21, 158), Progress.of(43, 300),
             new LoginNotificationData.SlayerData(2484, 300)
         );

@@ -92,6 +92,8 @@ public class MetaNotifier extends BaseNotifier {
             int lvl = client.getRealSkillLevel(skill);
             return lvl < 99 ? lvl : Experience.getLevelForXp(client.getSkillExperience(skill));
         }));
+        Map<String, Integer> skillExperience = Arrays.stream(Skill.values())
+            .collect(Collectors.toMap(Skill::getName, client::getSkillExperience));
 
         int questsCompleted = client.getVarbitValue(QuestNotifier.COMPLETED_ID);
         int questsTotal = client.getVarbitValue(QuestNotifier.TOTAL_ID);
@@ -116,7 +118,7 @@ public class MetaNotifier extends BaseNotifier {
             Progress.of(diaryCompleted, diaryTotal),
             Progress.of(diaryTaskCompleted, diaryTaskTotal),
             new LoginNotificationData.BarbarianAssault(gambleCount),
-            new LoginNotificationData.SkillData(experienceTotal, levelTotal, skillLevels),
+            new LoginNotificationData.SkillData(experienceTotal, levelTotal, skillLevels, skillExperience),
             Progress.of(questsCompleted, questsTotal),
             Progress.of(questPoints, questPointsTotal),
             new LoginNotificationData.SlayerData(slayerPoints, slayerStreak)
