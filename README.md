@@ -795,7 +795,7 @@ On login, Dink can submit a character summary containing data that spans multipl
       "highGambleCount": 0
     },
     "skills": {
-      "totalExperience": 337810454,
+      "totalExperience": 346380298,
       "totalLevel": 2164,
       "levels": {
         "Hunter": 90,
