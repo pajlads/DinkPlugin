@@ -87,8 +87,8 @@ public class MetaNotifier extends BaseNotifier {
 
         long experienceTotal = client.getOverallExperience();
         int levelTotal = client.getTotalLevel();
-        Map<String, Integer> skillLevels = new HashMap<>();
-        Map<String, Integer> skillExperience = new HashMap<>();
+        Map<String, Integer> skillLevels = new HashMap<>(32);
+        Map<String, Integer> skillExperience = new HashMap<>(32);
         for (Skill skill : Skill.values()) {
             int xp = client.getSkillExperience(skill);
             int lvl = client.getRealSkillLevel(skill);
