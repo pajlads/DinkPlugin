@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include individual skill XP in login notification metadata. (#345)
+
 ## 1.6.4
 
 - Minor: Add task progress metadata for diary notifications. (#331)
