@@ -154,7 +154,7 @@ public class MetaNotifier extends BaseNotifier {
             return null;
 
         String json = configManager.getRSProfileConfiguration("chatcommands", "pets2");
-        if (json == null || !json.startsWith("[") || !json.endsWith("]"))
+        if (json == null || json.isEmpty())
             return null;
 
         int[] petItemIds;
