@@ -36,8 +36,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class MetaNotifier extends BaseNotifier {
-    private static final String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
-
+    static final @VisibleForTesting String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
     static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
 
     private final AtomicInteger loginTicks = new AtomicInteger(-1);
@@ -147,7 +146,8 @@ public class MetaNotifier extends BaseNotifier {
         );
     }
 
-    private Map<Integer, String> getPets() {
+    @VisibleForTesting
+    Map<Integer, String> getPets() {
         if ("false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, RL_CHAT_CMD_PLUGIN_NAME)))
             return null;
 

@@ -7,11 +7,14 @@ import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
+import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.config.RuneLiteConfig;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -163,6 +166,21 @@ class MetaNotifierTest extends MockedNotifierTest {
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testPetDeserialization() {
+        when(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, MetaNotifier.RL_CHAT_CMD_PLUGIN_NAME))
+            .thenReturn(Boolean.TRUE.toString());
+
+        when(configManager.getRSProfileConfiguration("chatcommands", "pets2"))
+            .thenReturn(String.format("[%d, %d]", ItemID.HERBI, ItemID.BABY_MOLE));
+
+        mockItem(ItemID.HERBI, 0, "Herbi");
+        mockItem(ItemID.BABY_MOLE, 0, "Baby mole");
+
+        Map<Integer, String> expected = Map.of(ItemID.HERBI, "Herbi", ItemID.BABY_MOLE, "Baby mole");
+        Assertions.assertEquals(expected, notifier.getPets());
     }
 
     private static GameStateChanged event(GameState state) {
