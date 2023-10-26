@@ -9,6 +9,7 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
+import dinkplugin.util.SerializedPet;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
@@ -26,8 +27,9 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -147,7 +149,7 @@ public class MetaNotifier extends BaseNotifier {
     }
 
     @VisibleForTesting
-    Map<Integer, String> getPets() {
+    List<SerializedPet> getPets() {
         if ("false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, RL_CHAT_CMD_PLUGIN_NAME)))
             return null;
 
@@ -163,9 +165,9 @@ public class MetaNotifier extends BaseNotifier {
             return null;
         }
 
-        Map<Integer, String> pets = new HashMap<>(petItemIds.length * 4 / 3);
+        List<SerializedPet> pets = new ArrayList<>(petItemIds.length);
         for (int itemId : petItemIds) {
-            pets.put(itemId, client.getItemDefinition(itemId).getMembersName());
+            pets.add(new SerializedPet(itemId, client.getItemDefinition(itemId).getMembersName()));
         }
         return pets;
     }

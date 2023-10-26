@@ -1,9 +1,11 @@
 package dinkplugin.notifiers.data;
 
+import dinkplugin.util.SerializedPet;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 
 @Value
@@ -22,7 +24,7 @@ public class LoginNotificationData extends NotificationData {
     Progress questPoints;
     SlayerData slayer;
     @Nullable // requires Chat Commands plugin to be enabled
-    Map<Integer, String> pets;
+    List<SerializedPet> pets;
 
     @Value
     public static class SkillData {

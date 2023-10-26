@@ -835,17 +835,23 @@ On login, Dink can submit a character summary containing data that spans multipl
       "points": 2204,
       "streak": 1074
     },
-    "pets": {
-      "11995": "Pet chaos elemental",
-      "13071": "Chompy chick"
-    }
+    "pets": [
+      {
+        "itemId": 11995,
+        "name": "Pet chaos elemental"
+      },
+      {
+        "itemId": 13071,
+        "name": "Chompy chick"
+      }
+    ]
   }
 }
 ```
 
 Note: `clanName` requires `Advanced > Send Clan Name` to be enabled (default: on). The `groupIronClanName` and `discordUser` fields also have similar toggles in the Advanced config section.
 
-Note: `extra.pets` is a mapping of item ID to the pet's name. This requires the base Chat Commands plugin to be enabled.
+Note: `extra.pets` requires the base Chat Commands plugin to be enabled.
 
 </details>
 

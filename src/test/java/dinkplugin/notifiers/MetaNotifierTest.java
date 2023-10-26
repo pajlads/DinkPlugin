@@ -5,6 +5,7 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
+import dinkplugin.util.SerializedPet;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -179,7 +181,10 @@ class MetaNotifierTest extends MockedNotifierTest {
         mockItem(ItemID.HERBI, 0, "Herbi");
         mockItem(ItemID.BABY_MOLE, 0, "Baby mole");
 
-        Map<Integer, String> expected = Map.of(ItemID.HERBI, "Herbi", ItemID.BABY_MOLE, "Baby mole");
+        List<SerializedPet> expected = List.of(
+            new SerializedPet(ItemID.HERBI, "Herbi"),
+            new SerializedPet(ItemID.BABY_MOLE, "Baby mole")
+        );
         Assertions.assertEquals(expected, notifier.getPets());
     }
 
