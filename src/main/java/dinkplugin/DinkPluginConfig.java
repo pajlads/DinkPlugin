@@ -802,13 +802,26 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootSourceAllowlist",
+        name = "Source Allowlist",
+        description = "Only allow loot from specific sources to trigger notifications. Sources can be NPC names or special events.<br/>" +
+            "For example, 'Loot Chest' can be specified to only notify on PK loot chest openings.<br/>" +
+            "Place one source per line (case-insensitive; asterisks are wildcards)",
+        position = 39,
+        section = lootSection
+    )
+    default String lootSourceAllowlist() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "lootNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %LOOT% to insert the loot<br/>" +
             "Use %SOURCE% to show the source of the loot",
-        position = 39,
+        position = 40,
         section = lootSection
     )
     default String lootNotifyMessage() {

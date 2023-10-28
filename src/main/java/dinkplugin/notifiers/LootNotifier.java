@@ -73,6 +73,7 @@ public class LootNotifier extends BaseNotifier {
 
     private final Collection<Pattern> itemNameAllowlist = new CopyOnWriteArrayList<>();
     private final Collection<Pattern> itemNameDenylist = new CopyOnWriteArrayList<>();
+    private final Collection<Pattern> sourceAllowlist = new CopyOnWriteArrayList<>();
 
     private final Cache<String, Integer> killCounts = CacheBuilder.newBuilder()
         .expireAfterAccess(10, TimeUnit.MINUTES)
@@ -106,20 +107,29 @@ public class LootNotifier extends BaseNotifier {
                 .map(Utils::regexify)
                 .collect(Collectors.toList())
         );
+
+        sourceAllowlist.clear();
+        sourceAllowlist.addAll(
+            ConfigUtil.readDelimited(config.lootSourceAllowlist())
+                .map(Utils::regexify)
+                .collect(Collectors.toList())
+        );
     }
 
     public void onConfigChanged(String key, String value) {
-        Collection<Pattern> itemNames;
+        Collection<Pattern> patterns;
         if ("lootItemAllowlist".equals(key)) {
-            itemNames = itemNameAllowlist;
+            patterns = itemNameAllowlist;
         } else if ("lootItemDenylist".equals(key)) {
-            itemNames = itemNameDenylist;
+            patterns = itemNameDenylist;
+        } else if ("lootSourceAllowlist".equals(key)) {
+            patterns = sourceAllowlist;
         } else {
             return;
         }
 
-        itemNames.clear();
-        itemNames.addAll(
+        patterns.clear();
+        patterns.addAll(
             ConfigUtil.readDelimited(value)
                 .map(Utils::regexify)
                 .collect(Collectors.toList())
@@ -221,6 +231,10 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type) {
+        if (type != LootRecordType.PLAYER && !sourceAllowlist.isEmpty() && !matches(sourceAllowlist, dropper)) {
+            return;
+        }
+
         final Integer kc = type == LootRecordType.NPC ? incrementAndGetKillCount(dropper) : null;
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
