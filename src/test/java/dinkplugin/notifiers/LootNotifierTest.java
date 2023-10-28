@@ -275,6 +275,46 @@ class LootNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifySourceAllowlist() {
+        when(config.lootSourceAllowlist()).thenReturn(LOOTED_NAME);
+        notifier.init();
+
+        // fire event
+        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), 1);
+        plugin.onLootReceived(event);
+
+        // verify notification message
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: 1 x {{ruby}} (%d) from %s for %d gp", PLAYER_NAME, RUBY_PRICE, LOOTED_NAME, RUBY_PRICE))
+                        .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
+                        .build()
+                )
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), LOOTED_NAME, LootRecordType.PICKPOCKET, null))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+
+    }
+
+    @Test
+    void testIgnoreSourceAllowlist() {
+        when(config.lootSourceAllowlist()).thenReturn("Romy");
+        notifier.init();
+
+        // fire event
+        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.TUNA, 1, null)), 1);
+        plugin.onLootReceived(event);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testNotifyClue() {
         // fire event
         String source = "Clue Scroll (Medium)";
