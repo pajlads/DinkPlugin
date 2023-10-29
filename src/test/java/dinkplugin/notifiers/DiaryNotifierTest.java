@@ -88,7 +88,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
                 .extra(new DiaryNotificationData("Desert", AchievementDiary.Difficulty.EASY, 1, tasksCompleted, TOTAL_TASKS, tasksCompleted, totalAreaTasks))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -114,7 +115,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS, KARAMJA_TASKS_FROM_EASY_TO_HARD, KARAMJA_TOTAL_TASKS))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -139,7 +141,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS, KARAMJA_TASKS_FROM_EASY_TO_HARD, KARAMJA_TOTAL_TASKS))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -173,7 +176,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
                 .extra(new DiaryNotificationData("Western Provinces", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS, westernTasksFromEasyToHard, westernTasksTotal))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -199,7 +203,8 @@ class DiaryNotifierTest extends MockedNotifierTest {
                 .extra(new DiaryNotificationData("Karamja", AchievementDiary.Difficulty.HARD, total + 1, COMPLETED_TASKS, TOTAL_TASKS, KARAMJA_TASKS_FROM_EASY_TO_HARD, KARAMJA_TOTAL_TASKS))
                 .type(NotificationType.ACHIEVEMENT_DIARY)
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
 
         // trigger message box
@@ -222,7 +227,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -238,7 +243,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -248,7 +253,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -264,7 +269,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -283,7 +288,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     private static VarbitChanged event(int id, int value) {

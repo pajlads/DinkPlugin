@@ -101,7 +101,8 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
                 .extra(new PlayerKillNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, damage))
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -124,7 +125,8 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
                 .extra(new PlayerKillNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, 12))
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -151,7 +153,8 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.PLAYER_KILL)
                 .playerName(PLAYER_NAME)
                 .extra(new PlayerKillNotificationData(TARGET, LEVEL, EQUIPMENT, WORLD, LOCATION, MY_HP, damage))
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -166,7 +169,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -179,7 +182,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -196,7 +199,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -211,7 +214,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -225,7 +228,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -241,7 +244,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -254,7 +257,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     private static Player mockPlayer() {

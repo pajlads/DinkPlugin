@@ -61,7 +61,8 @@ class PetNotifierTest extends MockedNotifierTest {
                 .extra(new PetNotificationData(null, null, false, null))
                 .text(buildTemplate(PLAYER_NAME + " feels something weird sneaking into their backpack"))
                 .type(NotificationType.PET)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -82,7 +83,8 @@ class PetNotifierTest extends MockedNotifierTest {
                 .extra(new PetNotificationData(null, null, true, true))
                 .text(buildTemplate(PLAYER_NAME + " has a funny feeling like they would have been followed..."))
                 .type(NotificationType.PET)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -109,7 +111,8 @@ class PetNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -136,7 +139,8 @@ class PetNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -162,7 +166,8 @@ class PetNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -188,7 +193,8 @@ class PetNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -211,7 +217,8 @@ class PetNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -250,7 +257,8 @@ class PetNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -288,7 +296,8 @@ class PetNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -312,7 +321,8 @@ class PetNotifierTest extends MockedNotifierTest {
                 .extra(new PetNotificationData(null, null, false, null))
                 .text(buildTemplate(PLAYER_NAME + " has a funny feeling like they're being followed"))
                 .type(NotificationType.PET)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -323,7 +333,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -336,7 +346,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -357,7 +367,8 @@ class PetNotifierTest extends MockedNotifierTest {
                 .extra(new PetNotificationData(null, null, false, null))
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .type(NotificationType.PET)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -380,7 +391,9 @@ class PetNotifierTest extends MockedNotifierTest {
                 .extra(new PetNotificationData(null, null, false, null))
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .type(NotificationType.PET)
-                .build());
+                .build(),
+            null
+        );
     }
 
     @Test
@@ -395,7 +408,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -409,7 +422,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
 }

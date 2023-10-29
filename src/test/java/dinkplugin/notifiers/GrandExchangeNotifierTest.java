@@ -76,7 +76,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(1, offer);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(0, offer);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(1, offer);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -185,7 +185,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(0, offer);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -195,7 +195,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(0, offer);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -208,7 +208,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(0, offer);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     private void verifyNotification(int slot, Offer offer, String type, String itemName, long marketPrice, Long tax) {
@@ -230,7 +230,8 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
                 .embeds(Collections.singletonList(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId()))))
                 .extra(new GrandExchangeNotificationData(slot + 1, offer.getState(), item, marketPrice, offer.getPrice(), offer.getTotalQuantity(), tax))
                 .playerName(PLAYER_NAME)
-                .build()
+                .build(),
+            null
         );
     }
 

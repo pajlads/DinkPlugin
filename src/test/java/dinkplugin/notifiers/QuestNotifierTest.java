@@ -69,7 +69,8 @@ class QuestNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new QuestNotificationData("Dragon Slayer I", 22, 156, 44, 293))
                 .type(NotificationType.QUEST)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -79,7 +80,7 @@ class QuestNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event(-1));
 
         // verify no message
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -96,7 +97,7 @@ class QuestNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event(QUEST_COMPLETED_GROUP_ID));
 
         // verify no message
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     private static WidgetLoaded event(int id) {

@@ -91,7 +91,8 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(QUEST_NAME, latest))
                 .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString(), true))
                 .type(NotificationType.SPEEDRUN)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -135,7 +136,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event());
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -154,7 +155,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event());
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -181,7 +182,8 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(QUEST_NAME, latest))
                 .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString(), true))
                 .type(NotificationType.SPEEDRUN)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -203,7 +205,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event());
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     private WidgetLoaded event() {

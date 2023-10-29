@@ -9,6 +9,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
+import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 import okhttp3.Call;
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -212,6 +214,12 @@ public class Utils {
             MediaType type = part.body().contentType();
             return type != null && "image".equals(type.type());
         });
+    }
+
+    public CompletableFuture<Image> captureScreenshot(@NotNull DrawManager drawManager) {
+        CompletableFuture<Image> future = new CompletableFuture<>();
+        drawManager.requestNextFrameListener(future::complete);
+        return future;
     }
 
     public CompletableFuture<String> readClipboard() {

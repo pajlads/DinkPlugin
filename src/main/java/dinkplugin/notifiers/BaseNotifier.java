@@ -9,6 +9,8 @@ import net.runelite.api.Client;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
+import java.awt.Image;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class BaseNotifier {
 
@@ -31,9 +33,13 @@ public abstract class BaseNotifier {
     protected abstract String getWebhookUrl();
 
     protected final void createMessage(boolean sendImage, NotificationBody<?> body) {
+        this.createMessage(sendImage, null, body);
+    }
+
+    protected final void createMessage(boolean sendImage, CompletableFuture<Image> screenshot, NotificationBody<?> body) {
         String overrideUrl = getWebhookUrl();
         String url = StringUtils.isNotBlank(overrideUrl) ? overrideUrl : config.primaryWebhook();
-        messageHandler.createMessage(url, sendImage, body);
+        messageHandler.createMessage(url, sendImage, body, screenshot);
     }
 
 }

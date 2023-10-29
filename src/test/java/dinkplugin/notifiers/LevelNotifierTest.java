@@ -91,7 +91,8 @@ class LevelNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5), expectedSkills, unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -118,7 +119,8 @@ class LevelNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LevelNotificationData(ImmutableMap.of("Hunter", 6), expectedSkills, unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -145,7 +147,8 @@ class LevelNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LevelNotificationData(ImmutableMap.of("Attack", 100), expectedSkills, unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -172,7 +175,8 @@ class LevelNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LevelNotificationData(ImmutableMap.of("Hunter", 127), expectedSkills, unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -204,7 +208,8 @@ class LevelNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Hunter", 99), expectedSkills, unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -238,7 +243,8 @@ class LevelNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LevelNotificationData(ImmutableMap.of("Agility", 5, "Attack", 100, "Hunter", 5), expectedSkills, unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -270,7 +276,8 @@ class LevelNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LevelNotificationData(Collections.emptyMap(), expectedSkills, combatLevel))
                 .type(NotificationType.LEVEL)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -303,7 +310,8 @@ class LevelNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LevelNotificationData(ImmutableMap.of("Hitpoints", 13), expectedSkills, combatLevel))
                 .type(NotificationType.LEVEL)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -324,7 +332,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -336,7 +344,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -360,7 +368,8 @@ class LevelNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LevelNotificationData(ImmutableMap.of("Slayer", 97), skillsMap("Slayer", 97), unchangedCombatLevel))
                 .type(NotificationType.LEVEL)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -376,7 +385,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -391,7 +400,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -411,7 +420,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -426,7 +435,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     private void mockLevel(Skill skill, int level) {

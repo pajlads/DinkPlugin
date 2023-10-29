@@ -102,7 +102,8 @@ class LootNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), name, LootRecordType.NPC, kc + 1))
                 .type(NotificationType.LOOT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -130,7 +131,8 @@ class LootNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, null))
                 .type(NotificationType.LOOT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -158,7 +160,8 @@ class LootNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, null))
                 .type(NotificationType.LOOT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -170,7 +173,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -181,7 +184,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -206,7 +209,8 @@ class LootNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), name, LootRecordType.NPC, 1))
                 .type(NotificationType.LOOT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -224,7 +228,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onNpcLootReceived(event);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -238,7 +242,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onNpcLootReceived(event);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -260,7 +264,8 @@ class LootNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), LOOTED_NAME, LootRecordType.PICKPOCKET, null))
                 .type(NotificationType.LOOT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -271,7 +276,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -294,7 +299,8 @@ class LootNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT, null))
                 .type(NotificationType.LOOT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -308,7 +314,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -334,7 +340,8 @@ class LootNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, null))
                 .type(NotificationType.LOOT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -350,7 +357,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onPlayerLootReceived(event);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -384,7 +391,8 @@ class LootNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.EVENT, null))
                 .type(NotificationType.LOOT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -420,7 +428,8 @@ class LootNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 5, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.EVENT, null))
                 .type(NotificationType.LOOT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -457,7 +466,8 @@ class LootNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.ABYSSAL_WHIP, 1, whipPrice, "Abyssal Whip")), source, LootRecordType.EVENT, null))
                 .type(NotificationType.LOOT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -479,7 +489,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -492,7 +502,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // ensure no notification
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
 }

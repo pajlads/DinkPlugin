@@ -88,7 +88,8 @@ class ClueNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new ClueNotificationData("medium", 1312, Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"))))
                 .type(NotificationType.CLUE)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -114,7 +115,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event);
 
         // ensure no notification was fired
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -139,7 +140,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event);
 
         // ensure no notification was fired
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -167,7 +168,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event);
 
         // ensure no notification was fired
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
 }

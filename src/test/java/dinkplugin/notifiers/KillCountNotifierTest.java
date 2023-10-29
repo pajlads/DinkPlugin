@@ -78,7 +78,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             true,
-            body
+            body,
+            null
         );
 
         assertDoesNotThrow(() -> RuneLiteAPI.GSON.toJson(body));
@@ -104,7 +105,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
                 .extra(new BossNotificationData("King Black Dragon", 1, gameMessage, null, null))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -120,7 +122,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no message
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -136,7 +138,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no message
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -161,7 +163,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             true,
-            body
+            body,
+            null
         );
 
         assertDoesNotThrow(() -> RuneLiteAPI.GSON.toJson(body));
@@ -190,7 +193,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             true,
-            body
+            body,
+            null
         );
 
         assertDoesNotThrow(() -> RuneLiteAPI.GSON.toJson(body));
@@ -219,7 +223,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             true,
-            body
+            body,
+            null
         );
 
         assertDoesNotThrow(() -> RuneLiteAPI.GSON.toJson(body));
@@ -245,7 +250,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
                 .extra(new BossNotificationData("Zulrah", 1, gameMessage, Duration.ofHours(1).plusSeconds(56).plusMillis(500), true))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -272,7 +278,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             true,
-            body
+            body,
+            null
         );
 
         assertDoesNotThrow(() -> RuneLiteAPI.GSON.toJson(body));
@@ -298,7 +305,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
                 .extra(new BossNotificationData("Chambers of Xeric", 125, gameMessage, Duration.ofMinutes(36).plusSeconds(4).plusMillis(200), true))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -323,7 +331,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
                 .extra(new BossNotificationData("Chambers of Xeric", 150, gameMessage, Duration.ofMinutes(46).plusSeconds(31).plusMillis(800), false))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -348,7 +357,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
                 .extra(new BossNotificationData("Crystalline Hunllef", 10, gameMessage, Duration.ofMinutes(10).plusSeconds(25), true))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -372,7 +382,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
                 .extra(new BossNotificationData("Tempoross", 69, gameMessage, Duration.ofMinutes(6).plusSeconds(30), true))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -396,7 +407,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
                 .extra(new BossNotificationData("Tombs of Amascut: Expert Mode", 8, gameMessage, Duration.ofMinutes(25), true))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -420,7 +432,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
                 .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(59).plusMillis(300), false))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -457,7 +470,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .embeds(Collections.singletonList(Embed.ofImage(ItemUtils.getNpcImageUrl(NpcID.PENANCE_QUEEN))))
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -477,7 +491,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no message
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -492,7 +506,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no message
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -507,7 +521,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no message
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -522,7 +536,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no message
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -537,7 +551,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no message
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -552,7 +566,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // ensure no message
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     private static Template buildTemplate(String boss, int count) {

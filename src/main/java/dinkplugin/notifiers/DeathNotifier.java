@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.domain.AccountType;
+import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.Embed;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
@@ -26,6 +27,7 @@ import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
+import net.runelite.client.ui.DrawManager;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -35,6 +37,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.awt.Image;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +46,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -55,7 +62,7 @@ public class DeathNotifier extends BaseNotifier {
 
     private static final String ATTACK_OPTION = "Attack";
 
-    private static final String TOA_DEATH_MSG = "You failed to survive the Tombs of Amascut";
+    static final @VisibleForTesting String TOA_DEATH_MSG = "You failed to survive the Tombs of Amascut.";
 
     /**
      * Checks whether the actor is alive and interacting with the specified player.
@@ -82,6 +89,19 @@ public class DeathNotifier extends BaseNotifier {
 
     @Inject
     private NPCManager npcManager;
+
+    @Inject
+    private DrawManager drawManager;
+
+    @Inject
+    private ScheduledExecutorService executor;
+
+    /**
+     * Stores a screenshot that is captured at an earlier moment than {@link DiscordMessageHandler} would.
+     * <p>
+     * This is relevant for TOA since notifications rely upon a game message that occurs well after the actual death.
+     */
+    private final AtomicReference<CompletableFuture<Image>> screenshot = new AtomicReference<>();
 
     /**
      * Tracks the last {@link Actor} our local player interacted with,
@@ -116,7 +136,8 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     public void onGameMessage(String message) {
-        if (config.deathIgnoreSafe() && !Utils.getAccountType(client).isHardcore() && message.contains(TOA_DEATH_MSG) && isEnabled()) {
+        boolean shouldNotify = screenshot.get() != null || (config.deathIgnoreSafe() && !Utils.getAccountType(client).isHardcore() && isEnabled());
+        if (message.equals(TOA_DEATH_MSG) && shouldNotify) {
             // https://github.com/pajlads/DinkPlugin/issues/316
             // though, hardcore (group) ironmen just use the normal ActorDeath trigger for TOA
             handleNotify(Danger.DANGEROUS);
@@ -130,9 +151,23 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Danger dangerOverride) {
+        // Check if a screenshot for this death was already captured (relevant for TOA)
+        CompletableFuture<Image> screenshotFuture = screenshot.getAndSet(null);
+
+        // Ignore safe deaths, depending on config
         Danger danger = dangerOverride != null ? dangerOverride : getDangerLevel(client);
-        if (danger == Danger.SAFE && config.deathIgnoreSafe())
+        if (danger == Danger.SAFE && config.deathIgnoreSafe()) {
+            // Capture screenshot now if the death was in TOA since the game message comes late
+            if (config.deathSendImage() && WorldUtils.isAmascutTombs(WorldUtils.getLocation(client).getRegionID())) {
+                screenshot.set(Utils.captureScreenshot(drawManager));
+                executor.schedule(() -> {
+                    // release memory just in case onGameMessage branch doesn't get called
+                    screenshot.set(null);
+                }, 15L, TimeUnit.SECONDS);
+            }
+
             return;
+        }
 
         Collection<Item> items = ItemUtils.getItems(client);
         List<Pair<Item, Long>> itemsByPrice = getPricedItems(itemManager, items);
@@ -188,7 +223,7 @@ public class DeathNotifier extends BaseNotifier {
             lostStacks
         );
 
-        createMessage(config.deathSendImage(), NotificationBody.builder()
+        createMessage(config.deathSendImage(), screenshotFuture, NotificationBody.builder()
             .text(notifyMessage)
             .extra(extra)
             .embeds(keptItemEmbeds)

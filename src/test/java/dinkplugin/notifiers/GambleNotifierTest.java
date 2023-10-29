@@ -67,7 +67,8 @@ public class GambleNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(PLAYER_NAME + " has reached 20 high gambles"))
                 .extra(new GambleNotificationData(20, Collections.singletonList(new SerializedItemStack(ItemID.GRANITE_HELM, 1, GRANITE_HELM_PRICE, "Granite helm"))))
                 .type(NotificationType.BARBARIAN_ASSAULT_GAMBLE)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -85,14 +86,15 @@ public class GambleNotifierTest extends MockedNotifierTest {
                     new SerializedItemStack(ItemID.CLUE_SCROLL_ELITE, 1, ELITE_CLUE_PRICE, "Clue scroll (elite)")
                 )))
                 .type(NotificationType.BARBARIAN_ASSAULT_GAMBLE)
-                .build()
+                .build(),
+            null
         );
     }
 
     @Test
     void testIgnoredInterval() {
         notifier.onMesBoxNotification("Watermelon seed (x 50)! High level gamble count: 21.");
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
@@ -111,7 +113,8 @@ public class GambleNotifierTest extends MockedNotifierTest {
                 )
                 .extra(new GambleNotificationData(11, Collections.singletonList(new SerializedItemStack(ItemID.DRAGON_CHAINBODY, 1, DRAGON_CHAINBODY_PRICE, "Dragon chainbody"))))
                 .type(NotificationType.BARBARIAN_ASSAULT_GAMBLE)
-                .build()
+                .build(),
+            null
         );
     }
 
@@ -119,13 +122,13 @@ public class GambleNotifierTest extends MockedNotifierTest {
     void testIgnoredRareLootInterval() {
         when(config.gambleRareLoot()).thenReturn(false);
         notifier.onMesBoxNotification("Dragon chainbody! High level gamble count: 13.");
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 
     @Test
     void testDisabled() {
         when(config.notifyGamble()).thenReturn(false);
         notifier.onMesBoxNotification("Dragon chainbody! High level gamble count: 100.");
-        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any(), any());
     }
 }
