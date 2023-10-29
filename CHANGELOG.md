@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Classify reminisced Galvek deaths as safe. (#351)
+
 ## 1.6.4
 
 - Minor: Add task progress metadata for diary notifications. (#331)
