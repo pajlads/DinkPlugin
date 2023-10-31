@@ -37,10 +37,10 @@ import com.google.common.collect.ImmutableList;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +52,9 @@ public class QuestUtils {
     private final Pattern QUEST_PATTERN_2 = Pattern.compile("'?(?<quest>.+?)'?(?: [Qq]uest)? (?<verb>[a-z]\\w+?ed)?(?: f.*?)?[!.]?$");
     private final Collection<String> RFD_TAGS = ImmutableList.of("Another Cook", "freed", "defeated", "saved");
     private final Collection<String> WORD_QUEST_IN_NAME_TAGS = ImmutableList.of("Another Cook", "Doric", "Heroes", "Legends", "Observatory", "Olaf", "Waterfall");
+    private final Map<String, String> QUEST_REPLACEMENTS = Map.of(
+        "Lumbridge Cook... again", "Another Cook's"
+    );
 
     @Nullable
     public String parseQuestWidget(final String text) {
@@ -62,6 +65,8 @@ public class QuestUtils {
         }
 
         String quest = matcher.group("quest");
+        quest = QUEST_REPLACEMENTS.getOrDefault(quest, quest);
+
         String verb = StringUtils.defaultString(matcher.group("verb"));
 
         if (verb.contains("kind of")) {
