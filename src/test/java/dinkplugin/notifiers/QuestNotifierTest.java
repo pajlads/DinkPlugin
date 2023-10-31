@@ -6,11 +6,9 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.QuestNotificationData;
-import dinkplugin.util.QuestUtils;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,6 +17,7 @@ import static dinkplugin.util.QuestUtils.parseQuestWidget;
 import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 import static net.runelite.api.widgets.WidgetInfo.QUEST_COMPLETED_NAME_TEXT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -111,6 +110,16 @@ class QuestNotifierTest extends MockedNotifierTest {
         assertEquals("Recipe for Disaster - Sir Amik Varze", parseQuestWidget("You have freed Sir Amik Varze!"));
         assertEquals("Recipe for Disaster - Skrach 'Bone Crusher' Uglogwee", parseQuestWidget("You have freed Skrach 'Bone Crusher' Uglogwee!"));
         assertEquals("Recipe for Disaster", parseQuestWidget("You have completed Recipe for Disaster!"));
+
+        assertEquals("Doric's Quest", parseQuestWidget("You have completed Doric's Quest!"));
+        assertEquals("Heroes Quest", parseQuestWidget("You have completed the Heroes' Quest!"));
+
+        assertEquals("Dragon Slayer II", parseQuestWidget("You have completed Dragon Slayer II!"));
+        assertEquals("Rag and Bone Man II", parseQuestWidget("You have completed Rag and Bone Man II!"));
+        assertEquals("Fairytale II - Cure a Queen", parseQuestWidget("You have completed Fairytale II - Cure a Queen!"));
+
+        assertNull(parseQuestWidget("You have... kind of... completed Hazeel Cult!"));
+        assertEquals("Hazeel Cult", parseQuestWidget("You have completed Hazeel Cult!"));
     }
 
     private static WidgetLoaded event(int id) {
