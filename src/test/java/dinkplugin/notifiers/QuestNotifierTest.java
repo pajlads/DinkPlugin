@@ -6,15 +6,19 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.QuestNotificationData;
+import dinkplugin.util.QuestUtils;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
+import static dinkplugin.util.QuestUtils.parseQuestWidget;
 import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 import static net.runelite.api.widgets.WidgetInfo.QUEST_COMPLETED_NAME_TEXT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -97,6 +101,16 @@ class QuestNotifierTest extends MockedNotifierTest {
 
         // verify no message
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void parseWidgets() {
+        assertEquals("Recipe for Disaster - Another Cook's Quest", parseQuestWidget("You have completed Another Cook's Quest!"));
+        assertEquals("Recipe for Disaster - Another Cook's Quest", parseQuestWidget("You have assisted the Lumbridge Cook... again!"));
+        assertEquals("Recipe for Disaster - Goblin Generals", parseQuestWidget("You have freed the Goblin Generals!"));
+        assertEquals("Recipe for Disaster - Sir Amik Varze", parseQuestWidget("You have freed Sir Amik Varze!"));
+        assertEquals("Recipe for Disaster - Skrach 'Bone Crusher' Uglogwee", parseQuestWidget("You have freed Skrach 'Bone Crusher' Uglogwee!"));
+        assertEquals("Recipe for Disaster", parseQuestWidget("You have completed Recipe for Disaster!"));
     }
 
     private static WidgetLoaded event(int id) {
