@@ -251,6 +251,12 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
+            String overrideUrl = getWebhookUrl();
+            if (config.lootForwardPlayerKill() && !config.pkWebhook().isBlank()) {
+                if (type == LootRecordType.PLAYER || (type == LootRecordType.EVENT && "Loot Chest".equals(dropper))) {
+                    overrideUrl = config.pkWebhook();
+                }
+            }
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Template notifyMessage = Template.builder()
                 .template(config.lootNotifyMessage())
@@ -260,7 +266,7 @@ public class LootNotifier extends BaseNotifier {
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))
                 .replacement("%SOURCE%", Replacements.ofText(dropper))
                 .build();
-            createMessage(screenshot,
+            createMessage(overrideUrl, screenshot,
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)

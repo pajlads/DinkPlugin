@@ -767,6 +767,19 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootForwardPlayerKill",
+        name = "Send PK Loot to PK URL",
+        description = "Whether to send PK loot to the PK override webhook URL, rather than the loot URL.<br/>" +
+            "Must have 'Include PK Loot' (above) enabled.<br/>" +
+            "Has no effect if the Player Kills notifier override URL is absent",
+        position = 35,
+        section = lootSection
+    )
+    default boolean lootForwardPlayerKill() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "lootIncludeClueScrolls",
         name = "Include Clue Loot",
         description = "Allow notifications for loot from Clue Scrolls",
