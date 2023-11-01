@@ -108,7 +108,7 @@ class QuestNotifierTest extends MockedNotifierTest {
         assertEquals("Recipe for Disaster - Another Cook's Quest", parseQuestWidget("You have assisted the Lumbridge Cook... again!"));
         assertEquals("Recipe for Disaster - Goblin Generals", parseQuestWidget("You have freed the Goblin Generals!"));
         assertEquals("Recipe for Disaster - Sir Amik Varze", parseQuestWidget("You have freed Sir Amik Varze!"));
-        assertEquals("Recipe for Disaster - Skrach 'Bone Crusher' Uglogwee", parseQuestWidget("You have freed Skrach 'Bone Crusher' Uglogwee!"));
+        assertEquals("Recipe for Disaster - Skrach Uglogwee", parseQuestWidget("You have freed Skrach 'Bone Crusher' Uglogwee!"));
         assertEquals("Recipe for Disaster", parseQuestWidget("You have completed Recipe for Disaster!"));
 
         assertEquals("Doric's Quest", parseQuestWidget("You have completed Doric's Quest!"));

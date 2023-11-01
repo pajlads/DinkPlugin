@@ -53,7 +53,8 @@ public class QuestUtils {
     private final Collection<String> RFD_TAGS = ImmutableList.of("Another Cook", "freed", "defeated", "saved");
     private final Collection<String> WORD_QUEST_IN_NAME_TAGS = ImmutableList.of("Another Cook", "Doric", "Heroes", "Legends", "Observatory", "Olaf", "Waterfall");
     private final Map<String, String> QUEST_REPLACEMENTS = Map.of(
-        "Lumbridge Cook... again", "Another Cook's"
+        "Lumbridge Cook... again", "Another Cook's",
+        "Skrach 'Bone Crusher' Uglogwee", "Skrach Uglogwee"
     );
 
     @Nullable
