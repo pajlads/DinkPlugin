@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Improve handling of queued notifications upon concurrent config changes. (#355)
+
 ## 1.6.4
 
 - Minor: Add task progress metadata for diary notifications. (#331)
