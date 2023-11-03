@@ -153,10 +153,6 @@ public class SettingsManager {
         }
     }
 
-    void onProfileChanged() {
-        setFilteredNames(config.filteredNames());
-    }
-
     void onConfigChanged(ConfigChanged event) {
         String key = event.getKey();
         String value = event.getNewValue();

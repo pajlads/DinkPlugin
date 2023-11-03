@@ -44,7 +44,6 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
-import net.runelite.client.events.ProfileChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
@@ -124,12 +123,6 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onCommandExecuted(CommandExecuted event) {
         settingsManager.onCommand(event);
-    }
-
-    @Subscribe
-    public void onProfileChanged(ProfileChanged event) {
-        settingsManager.onProfileChanged(); // update player name filters
-        lootNotifier.init(); // reset item filters
     }
 
     @Subscribe
