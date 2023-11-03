@@ -153,6 +153,10 @@ public class SettingsManager {
         }
     }
 
+    void onProfileChanged() {
+        setFilteredNames(config.filteredNames());
+    }
+
     void onConfigChanged(ConfigChanged event) {
         String key = event.getKey();
         String value = event.getNewValue();
@@ -279,9 +283,6 @@ public class SettingsManager {
             .map(String::toLowerCase)
             .forEach(filteredNames::add);
         log.debug("Updated RSN Filter List to: {}", filteredNames);
-
-        // clear any outdated notifier state
-        plugin.resetNotifiers();
     }
 
     /**
