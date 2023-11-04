@@ -12,6 +12,7 @@ import dinkplugin.util.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.WorldType;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
 import net.runelite.api.widgets.Widget;
@@ -217,6 +218,10 @@ public class DiscordMessageHandler {
         }
 
         NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
+
+        if (!config.ignoreSeasonal()) {
+            builder.seasonalWorld(client.getWorldType().contains(WorldType.SEASONAL));
+        }
 
         if (config.sendDiscordUser()) {
             builder.discordUser(DiscordProfile.of(discordService.getCurrentUser()));
