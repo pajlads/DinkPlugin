@@ -28,7 +28,10 @@ public abstract class BaseNotifier {
 
     public boolean isEnabled() {
         Set<WorldType> world = client.getWorldType();
-        if ((config.ignoreSeasonal() && world.contains(WorldType.SEASONAL)) || WorldUtils.isIgnoredWorld(world)) {
+        if (config.ignoreSeasonal() && world.contains(WorldType.SEASONAL)) {
+            return false;
+        }
+        if (WorldUtils.isIgnoredWorld(world)) {
             return false;
         }
         return settingsManager.isNamePermitted(client.getLocalPlayer().getName());
