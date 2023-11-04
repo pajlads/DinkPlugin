@@ -279,9 +279,6 @@ public class SettingsManager {
             .map(String::toLowerCase)
             .forEach(filteredNames::add);
         log.debug("Updated RSN Filter List to: {}", filteredNames);
-
-        // clear any outdated notifier state
-        plugin.resetNotifiers();
     }
 
     /**

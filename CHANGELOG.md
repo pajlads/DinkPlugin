@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Include owned pets in login notification metadata. (#347)
+- Bugfix: Improve handling of queued notifications upon concurrent config changes. (#355)
 
 ## 1.6.4
 
