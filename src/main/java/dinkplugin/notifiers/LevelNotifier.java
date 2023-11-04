@@ -96,7 +96,12 @@ public class LevelNotifier extends BaseNotifier {
         // We wait a couple extra ticks so we can ensure that we process all the levels of the previous tick
         if (ticks > 2) {
             ticksWaited.set(0);
-            attemptNotify();
+            // ensure notifier was not disabled during ticks waited
+            if (isEnabled()) {
+                attemptNotify();
+            } else {
+                levelledSkills.clear();
+            }
         }
     }
 

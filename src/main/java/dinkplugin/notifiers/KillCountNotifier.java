@@ -106,8 +106,11 @@ public class KillCountNotifier extends BaseNotifier {
         BossNotificationData data = this.data.get();
         if (data != null) {
             if (data.getBoss() != null) {
-                // once boss name has arrived, we notify at tick end (even if duration hasn't arrived)
-                handleKill(data);
+                // ensure notifier was not disabled during bad ticks wait period
+                if (isEnabled()) {
+                    // once boss name has arrived, we notify at tick end (even if duration hasn't arrived)
+                    handleKill(data);
+                }
                 reset();
             } else if (badTicks.incrementAndGet() > MAX_BAD_TICKS) {
                 // after receiving fight duration, allow up to 10 ticks for boss name to arrive.
