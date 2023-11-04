@@ -138,6 +138,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         ItemComposition item = mock(ItemComposition.class);
         when(item.getName()).thenReturn(name);
         when(item.getMembersName()).thenReturn(name);
+        when(client.getItemDefinition(id)).thenReturn(item);
         when(itemManager.getItemComposition(id)).thenReturn(item);
         when(itemManager.canonicalize(id)).thenReturn(id);
     }
