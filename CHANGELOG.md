@@ -1,6 +1,10 @@
 ## Unreleased
 
 - Minor: Prefer historical name for first Recipe for Disaster quest. (#352)
+- Minor: Include owned pets in login notification metadata. (#347)
+- Minor: Include individual skill XP in login notification metadata. (#345)
+- Bugfix: Classify reminisced Galvek deaths as safe. (#351)
+- Bugfix: Improve handling of queued notifications upon concurrent config changes. (#355)
 
 ## 1.6.4
 
