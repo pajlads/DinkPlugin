@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include individual skill XP in login notification metadata. (#345)
 - Bugfix: Improve handling of queued notifications upon concurrent config changes. (#355)
 
 ## 1.6.4
