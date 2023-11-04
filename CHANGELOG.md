@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include owned pets in login notification metadata. (#347)
 - Minor: Include individual skill XP in login notification metadata. (#345)
 - Bugfix: Improve handling of queued notifications upon concurrent config changes. (#355)
 

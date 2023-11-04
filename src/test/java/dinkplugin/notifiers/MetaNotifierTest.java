@@ -5,18 +5,23 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
+import dinkplugin.util.SerializedPet;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
+import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.config.RuneLiteConfig;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -100,7 +105,8 @@ class MetaNotifierTest extends MockedNotifierTest {
             new LoginNotificationData.BarbarianAssault(666),
             new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels, exp),
             Progress.of(21, 158), Progress.of(43, 300),
-            new LoginNotificationData.SlayerData(2484, 300)
+            new LoginNotificationData.SlayerData(2484, 300),
+            null
         );
         verify(messageHandler).createMessage(
             url,
@@ -139,7 +145,8 @@ class MetaNotifierTest extends MockedNotifierTest {
             new LoginNotificationData.BarbarianAssault(666),
             new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels, exp),
             Progress.of(21, 158), Progress.of(43, 300),
-            new LoginNotificationData.SlayerData(2484, 300)
+            new LoginNotificationData.SlayerData(2484, 300),
+            null
         );
         verify(messageHandler).createMessage(
             url,
@@ -166,6 +173,24 @@ class MetaNotifierTest extends MockedNotifierTest {
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testPetDeserialization() {
+        when(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, MetaNotifier.RL_CHAT_CMD_PLUGIN_NAME))
+            .thenReturn(Boolean.TRUE.toString());
+
+        when(configManager.getRSProfileConfiguration("chatcommands", "pets2"))
+            .thenReturn(String.format("[%d, %d]", ItemID.HERBI, ItemID.BABY_MOLE));
+
+        mockItem(ItemID.HERBI, 0, "Herbi");
+        mockItem(ItemID.BABY_MOLE, 0, "Baby mole");
+
+        List<SerializedPet> expected = List.of(
+            new SerializedPet(ItemID.HERBI, "Herbi"),
+            new SerializedPet(ItemID.BABY_MOLE, "Baby mole")
+        );
+        Assertions.assertEquals(expected, notifier.getPets());
     }
 
     private static GameStateChanged event(GameState state) {
