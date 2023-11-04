@@ -31,6 +31,7 @@ public class LoginNotificationData extends NotificationData {
         long totalExperience;
         int totalLevel;
         Map<String, Integer> levels;
+        Map<String, Integer> experience;
     }
 
     @Value

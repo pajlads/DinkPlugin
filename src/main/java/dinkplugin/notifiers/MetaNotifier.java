@@ -29,11 +29,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Singleton
@@ -105,10 +105,15 @@ public class MetaNotifier extends BaseNotifier {
 
         long experienceTotal = client.getOverallExperience();
         int levelTotal = client.getTotalLevel();
-        Map<String, Integer> skillLevels = Arrays.stream(Skill.values()).collect(Collectors.toMap(Skill::getName, skill -> {
+        Map<String, Integer> skillLevels = new HashMap<>(32);
+        Map<String, Integer> skillExperience = new HashMap<>(32);
+        for (Skill skill : Skill.values()) {
+            int xp = client.getSkillExperience(skill);
             int lvl = client.getRealSkillLevel(skill);
-            return lvl < 99 ? lvl : Experience.getLevelForXp(client.getSkillExperience(skill));
-        }));
+            int virtualLevel = lvl < 99 ? lvl : Experience.getLevelForXp(xp);
+            skillExperience.put(skill.getName(), xp);
+            skillLevels.put(skill.getName(), virtualLevel);
+        }
 
         int questsCompleted = client.getVarbitValue(QuestNotifier.COMPLETED_ID);
         int questsTotal = client.getVarbitValue(QuestNotifier.TOTAL_ID);
@@ -133,7 +138,7 @@ public class MetaNotifier extends BaseNotifier {
             Progress.of(diaryCompleted, diaryTotal),
             Progress.of(diaryTaskCompleted, diaryTaskTotal),
             new LoginNotificationData.BarbarianAssault(gambleCount),
-            new LoginNotificationData.SkillData(experienceTotal, levelTotal, skillLevels),
+            new LoginNotificationData.SkillData(experienceTotal, levelTotal, skillLevels, skillExperience),
             Progress.of(questsCompleted, questsTotal),
             Progress.of(questPoints, questPointsTotal),
             new LoginNotificationData.SlayerData(slayerPoints, slayerStreak),
