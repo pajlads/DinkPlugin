@@ -12,6 +12,7 @@ import dinkplugin.util.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.WorldType;
 import net.runelite.api.annotations.Component;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
@@ -220,6 +221,10 @@ public class DiscordMessageHandler {
 
         NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
 
+        if (!config.ignoreSeasonal()) {
+            builder.seasonalWorld(client.getWorldType().contains(WorldType.SEASONAL));
+        }
+
         if (config.sendDiscordUser()) {
             builder.discordUser(DiscordProfile.of(discordService.getCurrentUser()));
         }
@@ -250,10 +255,11 @@ public class DiscordMessageHandler {
     private NotificationBody<?> injectThreadName(HttpUrl url, NotificationBody<?> mBody, boolean force) {
         Collection<String> queryParams = url.queryParameterNames();
         if (force || (queryParams.contains("forum") && !queryParams.contains("thread_id"))) {
+            String type = mBody.isSeasonalWorld() ? "Seasonal - " + mBody.getType().getTitle() : mBody.getType().getTitle();
             String threadName = Template.builder()
                 .template(config.threadNameTemplate())
                 .replacementBoundary("%")
-                .replacement("%TYPE%", Replacements.ofText(mBody.getType().getTitle()))
+                .replacement("%TYPE%", Replacements.ofText(type))
                 .replacement("%MESSAGE%", mBody.getText())
                 .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
                 .build()
@@ -342,7 +348,7 @@ public class DiscordMessageHandler {
             Embed.builder()
                 .author(author)
                 .color(Utils.PINK)
-                .title(type.getTitle())
+                .title(body.isSeasonalWorld() ? "[Seasonal] " + type.getTitle() : type.getTitle())
                 .description(Utils.truncate(body.getText().evaluate(config.discordRichEmbeds()), Embed.MAX_DESCRIPTION_LENGTH))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(thumbnail))

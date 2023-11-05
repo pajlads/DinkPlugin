@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Allow notifications on seasonal worlds to be ignored via advanced config. (#357)
 - Minor: Prefer historical name for first Recipe for Disaster quest. (#352)
 - Minor: Include owned pets in login notification metadata. (#347)
 - Minor: Include individual skill XP in login notification metadata. (#345)
