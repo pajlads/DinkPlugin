@@ -15,9 +15,9 @@ import net.runelite.api.NpcID;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -92,8 +92,8 @@ public class KillCountNotifier extends BaseNotifier {
             return;
 
         // Barbarian Assault: Track Penance Queen kills
-        if (config.killCountPenanceQueen() && event.getGroupId() == WidgetID.BA_REWARD_GROUP_ID) {
-            Widget widget = client.getWidget(WidgetInfo.BA_REWARD_TEXT);
+        if (config.killCountPenanceQueen() && event.getGroupId() == InterfaceID.BA_REWARD) {
+            Widget widget = client.getWidget(ComponentID.BA_REWARD_REWARD_TEXT);
             // https://oldschool.runescape.wiki/w/Barbarian_Assault/Rewards#Earning_Honour_points
             if (widget != null && widget.getText().contains("80 ") && widget.getText().contains("5 ")) {
                 int gambleCount = client.getVarbitValue(Varbits.BA_GC);

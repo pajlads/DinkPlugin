@@ -10,14 +10,13 @@ import dinkplugin.notifiers.data.QuestNotificationData;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
-
-import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
 
 public class QuestNotifier extends BaseNotifier {
 
@@ -48,8 +47,8 @@ public class QuestNotifier extends BaseNotifier {
     }
 
     public void onWidgetLoaded(WidgetLoaded event) {
-        if (event.getGroupId() == QUEST_COMPLETED_GROUP_ID && isEnabled()) {
-            Widget quest = client.getWidget(WidgetInfo.QUEST_COMPLETED_NAME_TEXT);
+        if (event.getGroupId() == InterfaceID.QUEST_COMPLETED && isEnabled()) {
+            Widget quest = client.getWidget(ComponentID.QUEST_COMPLETED_NAME_TEXT);
             if (quest != null) {
                 String questText = quest.getText();
                 // 1 tick delay to ensure relevant varbits have been processed by the client

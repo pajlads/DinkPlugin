@@ -8,8 +8,8 @@ import net.runelite.api.Client;
 import net.runelite.api.WorldType;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Collections;
@@ -67,7 +67,7 @@ public class WorldUtils {
     }
 
     public boolean isPvpSafeZone(Client client) {
-        Widget widget = client.getWidget(WidgetInfo.PVP_WORLD_SAFE_ZONE);
+        Widget widget = client.getWidget(ComponentID.PVP_SAFE_ZONE);
         return widget != null && !widget.isHidden();
     }
 
@@ -107,7 +107,7 @@ public class WorldUtils {
         if (LMS_REGIONS.contains(getLocation(client).getRegionID()))
             return true;
 
-        Widget widget = client.getWidget(WidgetInfo.LMS_KDA);
+        Widget widget = client.getWidget(ComponentID.LMS_KDA_INFO);
         return widget != null && !widget.isHidden();
     }
 
@@ -116,7 +116,7 @@ public class WorldUtils {
     }
 
     public boolean isPestControl(Client client) {
-        Widget widget = client.getWidget(WidgetInfo.PEST_CONTROL_BLUE_SHIELD);
+        Widget widget = client.getWidget(ComponentID.PEST_CONTROL_BLUE_SHIELD);
         return widget != null && !widget.isHidden();
     }
 

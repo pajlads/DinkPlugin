@@ -8,14 +8,14 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.QuestNotificationData;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import static dinkplugin.util.QuestUtils.parseQuestWidget;
-import static net.runelite.api.widgets.WidgetID.QUEST_COMPLETED_GROUP_ID;
-import static net.runelite.api.widgets.WidgetInfo.QUEST_COMPLETED_NAME_TEXT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -53,11 +53,11 @@ class QuestNotifierTest extends MockedNotifierTest {
 
         // mock widget
         Widget questWidget = mock(Widget.class);
-        when(client.getWidget(QUEST_COMPLETED_NAME_TEXT)).thenReturn(questWidget);
+        when(client.getWidget(ComponentID.QUEST_COMPLETED_NAME_TEXT)).thenReturn(questWidget);
         when(questWidget.getText()).thenReturn("You have completed the Dragon Slayer I quest!");
 
         // send event
-        plugin.onWidgetLoaded(event(QUEST_COMPLETED_GROUP_ID));
+        plugin.onWidgetLoaded(event(InterfaceID.QUEST_COMPLETED));
 
         // verify notification
         verify(messageHandler).createMessage(
@@ -92,11 +92,11 @@ class QuestNotifierTest extends MockedNotifierTest {
 
         // mock widget
         Widget questWidget = mock(Widget.class);
-        when(client.getWidget(QUEST_COMPLETED_NAME_TEXT)).thenReturn(questWidget);
+        when(client.getWidget(ComponentID.QUEST_COMPLETED_NAME_TEXT)).thenReturn(questWidget);
         when(questWidget.getText()).thenReturn("You have completed the Dragon Slayer quest!");
 
         // send event
-        plugin.onWidgetLoaded(event(QUEST_COMPLETED_GROUP_ID));
+        plugin.onWidgetLoaded(event(InterfaceID.QUEST_COMPLETED));
 
         // verify no message
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
