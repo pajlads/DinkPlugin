@@ -107,7 +107,7 @@ public class WorldUtils {
         if (LMS_REGIONS.contains(getLocation(client).getRegionID()))
             return true;
 
-        Widget widget = client.getWidget(ComponentID.LMS_KDA_INFO);
+        Widget widget = client.getWidget(ComponentID.LMS_INGAME_INFO);
         return widget != null && !widget.isHidden();
     }
 

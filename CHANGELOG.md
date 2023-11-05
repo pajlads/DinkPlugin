@@ -8,7 +8,7 @@
 - Minor: Include individual skill XP in login notification metadata. (#345)
 - Bugfix: Classify reminisced Galvek deaths as safe. (#351)
 - Bugfix: Improve handling of queued notifications upon concurrent config changes. (#355)
-- Dev: Migrate to new RuneLite Widget API. (#358)
+- Dev: Migrate to new RuneLite Widget API. (#358, #359)
 
 ## 1.6.4
 
