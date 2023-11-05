@@ -12,10 +12,10 @@ import dinkplugin.util.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.annotations.Component;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.*;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.discord.DiscordService;
 import net.runelite.client.ui.DrawManager;
@@ -107,8 +107,8 @@ public class DiscordMessageHandler {
         NotificationBody<?> mBody = enrichBody(inputBody, sendImage);
         if (sendImage) {
             // optionally hide chat for privacy in screenshot
-            boolean chatHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.CHATBOX);
-            boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.PRIVATE_CHAT_MESSAGE);
+            boolean chatHidden = hideWidget(config.screenshotHideChat(), client, ComponentID.CHATBOX_FRAME);
+            boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
 
             captureScreenshot(drawManager, config.screenshotScale() / 100.0)
                 .thenApply(image ->
@@ -120,8 +120,8 @@ public class DiscordMessageHandler {
                 })
                 .thenApply(image -> {
                     // unhide any widgets we hid
-                    unhideWidget(chatHidden, client, clientThread, WidgetInfo.CHATBOX);
-                    unhideWidget(whispersHidden, client, clientThread, WidgetInfo.PRIVATE_CHAT_MESSAGE);
+                    unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
+                    unhideWidget(whispersHidden, client, clientThread, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
                     return image;
                 })
                 .thenAccept(image -> sendToMultiple(urlList, mBody, image));
@@ -352,7 +352,7 @@ public class DiscordMessageHandler {
         return embeds;
     }
 
-    private static boolean hideWidget(boolean shouldHide, Client client, WidgetInfo info) {
+    private static boolean hideWidget(boolean shouldHide, Client client, @Component int info) {
         if (!shouldHide)
             return false;
 
@@ -364,7 +364,7 @@ public class DiscordMessageHandler {
         return true;
     }
 
-    private static void unhideWidget(boolean shouldUnhide, Client client, ClientThread clientThread, WidgetInfo info) {
+    private static void unhideWidget(boolean shouldUnhide, Client client, ClientThread clientThread, @Component int info) {
         if (!shouldUnhide)
             return;
 

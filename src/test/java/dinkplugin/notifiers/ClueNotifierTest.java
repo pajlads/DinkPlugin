@@ -10,9 +10,7 @@ import dinkplugin.notifiers.data.ClueNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.ItemID;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.api.widgets.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -60,7 +58,7 @@ class ClueNotifierTest extends MockedNotifierTest {
 
         // mock widgets
         Widget widget = mock(Widget.class);
-        when(client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
+        when(client.getWidget(ComponentID.CLUESCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
 
         Widget child = mock(Widget.class);
         when(child.getItemQuantity()).thenReturn(1);
@@ -71,7 +69,7 @@ class ClueNotifierTest extends MockedNotifierTest {
 
         // fire widget event
         WidgetLoaded event = new WidgetLoaded();
-        event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
+        event.setGroupId(InterfaceID.CLUESCROLL_REWARD);
         plugin.onWidgetLoaded(event);
 
         // verify notification message
@@ -99,7 +97,7 @@ class ClueNotifierTest extends MockedNotifierTest {
 
         // mock widgets
         Widget widget = mock(Widget.class);
-        when(client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
+        when(client.getWidget(ComponentID.CLUESCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
 
         Widget child = mock(Widget.class);
         when(child.getItemQuantity()).thenReturn(1);
@@ -110,7 +108,7 @@ class ClueNotifierTest extends MockedNotifierTest {
 
         // fire widget event
         WidgetLoaded event = new WidgetLoaded();
-        event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
+        event.setGroupId(InterfaceID.CLUESCROLL_REWARD);
         plugin.onWidgetLoaded(event);
 
         // ensure no notification was fired
@@ -124,7 +122,7 @@ class ClueNotifierTest extends MockedNotifierTest {
 
         // mock widgets
         Widget widget = mock(Widget.class);
-        when(client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
+        when(client.getWidget(ComponentID.CLUESCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
 
         Widget child = mock(Widget.class);
         when(child.getItemQuantity()).thenReturn(1);
@@ -135,7 +133,7 @@ class ClueNotifierTest extends MockedNotifierTest {
 
         // fire widget event
         WidgetLoaded event = new WidgetLoaded();
-        event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
+        event.setGroupId(InterfaceID.CLUESCROLL_REWARD);
         plugin.onWidgetLoaded(event);
 
         // ensure no notification was fired
@@ -152,7 +150,7 @@ class ClueNotifierTest extends MockedNotifierTest {
 
         // mock widgets
         Widget widget = mock(Widget.class);
-        when(client.getWidget(WidgetInfo.CLUE_SCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
+        when(client.getWidget(ComponentID.CLUESCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
 
         Widget child = mock(Widget.class);
         when(child.getItemQuantity()).thenReturn(1);
@@ -163,7 +161,7 @@ class ClueNotifierTest extends MockedNotifierTest {
 
         // fire widget event
         WidgetLoaded event = new WidgetLoaded();
-        event.setGroupId(WidgetID.CLUE_SCROLL_REWARD_GROUP_ID);
+        event.setGroupId(InterfaceID.CLUESCROLL_REWARD);
         plugin.onWidgetLoaded(event);
 
         // ensure no notification was fired

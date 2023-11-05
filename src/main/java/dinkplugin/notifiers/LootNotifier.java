@@ -20,10 +20,11 @@ import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
+import net.runelite.api.annotations.Component;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.RuneLiteConfig;
@@ -193,11 +194,11 @@ public class LootNotifier extends BaseNotifier {
         if (!isEnabled()) return;
 
         // special case: runelite client & loot tracker do not handle unsired loot at the time of writing
-        if (event.getGroupId() == WidgetID.DIALOG_SPRITE_GROUP_ID) {
+        if (event.getGroupId() == InterfaceID.DIALOG_SPRITE) {
             clientThread.invokeAtTickEnd(() -> {
-                Widget textWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
+                Widget textWidget = client.getWidget(ComponentID.DIALOG_SPRITE_TEXT);
                 if (textWidget != null && StringUtils.containsIgnoreCase(textWidget.getText(), "The Font consumes the Unsired")) {
-                    Widget spriteWidget = firstWithItem(WidgetInfo.DIALOG_SPRITE, WidgetInfo.DIALOG_SPRITE_SPRITE, WidgetInfo.DIALOG_SPRITE_TEXT);
+                    Widget spriteWidget = firstWithItem(Utils.packWidget(InterfaceID.DIALOG_SPRITE, 0), ComponentID.DIALOG_SPRITE_SPRITE, ComponentID.DIALOG_SPRITE_TEXT);
                     if (hasItem(spriteWidget)) {
                         ItemStack item = new ItemStack(
                             spriteWidget.getItemId(),
@@ -206,7 +207,7 @@ public class LootNotifier extends BaseNotifier {
                         );
                         this.handleNotify(Collections.singletonList(item), "The Font of Consumption", LootRecordType.EVENT);
                     } else {
-                        Widget widget = client.getWidget(WidgetInfo.DIALOG_SPRITE);
+                        Widget widget = client.getWidget(InterfaceID.DIALOG_SPRITE, 0);
                         log.warn(
                             "Failed to locate widget with item for Unsired loot. Children: {} - Nested: {} - Sprite: {} - Model: {}",
                             widget != null && widget.getDynamicChildren() != null ? widget.getDynamicChildren().length : -1,
@@ -312,8 +313,8 @@ public class LootNotifier extends BaseNotifier {
         }
     }
 
-    private Widget firstWithItem(WidgetInfo... widgets) {
-        for (WidgetInfo info : widgets) {
+    private Widget firstWithItem(@Component int... componentIds) {
+        for (@Component int info : componentIds) {
             Widget widget = client.getWidget(info);
             if (hasItem(widget)) {
                 log.debug("Obtained item from widget via {}", info);
