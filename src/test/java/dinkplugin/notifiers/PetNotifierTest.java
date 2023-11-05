@@ -9,11 +9,13 @@ import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
 import net.runelite.api.ItemID;
 import net.runelite.api.Varbits;
+import net.runelite.api.WorldType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.EnumSet;
 import java.util.stream.IntStream;
 
 import static dinkplugin.notifiers.PetNotifier.MAX_TICKS_WAIT;
@@ -330,6 +332,42 @@ class PetNotifierTest extends MockedNotifierTest {
     void testDisabled() {
         // disable notifier
         when(config.notifyPet()).thenReturn(false);
+
+        // send fake message
+        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testNotifySeasonal() {
+        // update mocks
+        when(config.ignoreSeasonal()).thenReturn(false);
+        when(client.getWorldType()).thenReturn(EnumSet.of(WorldType.SEASONAL));
+
+        // send fake message
+        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(null, null, false, null))
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
+    void testIgnoreSeasonal() {
+        // update mocks
+        when(config.ignoreSeasonal()).thenReturn(true);
+        when(client.getWorldType()).thenReturn(EnumSet.of(WorldType.SEASONAL));
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
