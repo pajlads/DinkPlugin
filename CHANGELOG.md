@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add loot notifier setting that redirects pk loot to the pk notifier override url. (#353)
+
 ## 1.6.5
 
 - Minor: Allow notifications on seasonal worlds to be ignored via advanced config. (#357)
