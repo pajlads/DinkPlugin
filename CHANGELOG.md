@@ -1,5 +1,15 @@
 ## Unreleased
 
+## 1.6.5
+
+- Minor: Allow notifications on seasonal worlds to be ignored via advanced config. (#357)
+- Minor: Prefer historical name for first Recipe for Disaster quest. (#352)
+- Minor: Include owned pets in login notification metadata. (#347)
+- Minor: Include individual skill XP in login notification metadata. (#345)
+- Bugfix: Classify reminisced Galvek deaths as safe. (#351)
+- Bugfix: Improve handling of queued notifications upon concurrent config changes. (#355)
+- Dev: Migrate to new RuneLite Widget API. (#358, #359)
+
 ## 1.6.4
 
 - Minor: Add task progress metadata for diary notifications. (#331)

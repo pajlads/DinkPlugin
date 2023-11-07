@@ -7,15 +7,16 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.Utils;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemStack;
@@ -490,17 +491,18 @@ class LootNotifierTest extends MockedNotifierTest {
         // prepare mocks
         Widget spriteWidget = mock(Widget.class);
         when(spriteWidget.getItemId()).thenReturn(ItemID.ABYSSAL_WHIP);
-        when(client.getWidget(WidgetInfo.DIALOG_SPRITE)).thenReturn(spriteWidget);
+        when(client.getWidget(InterfaceID.DIALOG_SPRITE, 0)).thenReturn(spriteWidget);
+        when(client.getWidget(Utils.packWidget(InterfaceID.DIALOG_SPRITE, 0))).thenReturn(spriteWidget);
         final int whipPrice = 1_500_000;
         mockItem(ItemID.ABYSSAL_WHIP, whipPrice, "Abyssal Whip");
 
         Widget textWidget = mock(Widget.class);
         when(textWidget.getText()).thenReturn("The Font consumes the Unsired and returns you a reward.");
-        when(client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT)).thenReturn(textWidget);
+        when(client.getWidget(ComponentID.DIALOG_SPRITE_TEXT)).thenReturn(textWidget);
 
         // fire event
         WidgetLoaded event = new WidgetLoaded();
-        event.setGroupId(WidgetID.DIALOG_SPRITE_GROUP_ID);
+        event.setGroupId(InterfaceID.DIALOG_SPRITE);
         plugin.onWidgetLoaded(event);
 
         // verify notification message

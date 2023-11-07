@@ -86,7 +86,7 @@ public class DinkPlugin extends Plugin {
 
     @Override
     protected void startUp() {
-        log.info("Started up Dink");
+        log.debug("Started up Dink");
         settingsManager.init();
         lootNotifier.init();
         levelNotifier.initLevels();
@@ -94,7 +94,7 @@ public class DinkPlugin extends Plugin {
 
     @Override
     protected void shutDown() {
-        log.info("Shutting down Dink");
+        log.debug("Shutting down Dink");
         this.resetNotifiers();
     }
 

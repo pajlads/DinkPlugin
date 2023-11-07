@@ -12,10 +12,13 @@ import dinkplugin.util.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.WorldType;
+import net.runelite.api.annotations.Component;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.discord.DiscordService;
 import net.runelite.client.ui.DrawManager;
@@ -107,8 +110,8 @@ public class DiscordMessageHandler {
         NotificationBody<?> mBody = enrichBody(inputBody, sendImage);
         if (sendImage) {
             // optionally hide chat for privacy in screenshot
-            boolean chatHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.CHATBOX);
-            boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.PRIVATE_CHAT_MESSAGE);
+            boolean chatHidden = hideWidget(config.screenshotHideChat(), client, ComponentID.CHATBOX_FRAME);
+            boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
 
             captureScreenshot(drawManager, config.screenshotScale() / 100.0)
                 .thenApply(image ->
@@ -120,8 +123,8 @@ public class DiscordMessageHandler {
                 })
                 .thenApply(image -> {
                     // unhide any widgets we hid
-                    unhideWidget(chatHidden, client, clientThread, WidgetInfo.CHATBOX);
-                    unhideWidget(whispersHidden, client, clientThread, WidgetInfo.PRIVATE_CHAT_MESSAGE);
+                    unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
+                    unhideWidget(whispersHidden, client, clientThread, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
                     return image;
                 })
                 .thenAccept(image -> sendToMultiple(urlList, mBody, image));
@@ -218,6 +221,10 @@ public class DiscordMessageHandler {
 
         NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
 
+        if (!config.ignoreSeasonal()) {
+            builder.seasonalWorld(client.getWorldType().contains(WorldType.SEASONAL));
+        }
+
         if (config.sendDiscordUser()) {
             builder.discordUser(DiscordProfile.of(discordService.getCurrentUser()));
         }
@@ -248,10 +255,11 @@ public class DiscordMessageHandler {
     private NotificationBody<?> injectThreadName(HttpUrl url, NotificationBody<?> mBody, boolean force) {
         Collection<String> queryParams = url.queryParameterNames();
         if (force || (queryParams.contains("forum") && !queryParams.contains("thread_id"))) {
+            String type = mBody.isSeasonalWorld() ? "Seasonal - " + mBody.getType().getTitle() : mBody.getType().getTitle();
             String threadName = Template.builder()
                 .template(config.threadNameTemplate())
                 .replacementBoundary("%")
-                .replacement("%TYPE%", Replacements.ofText(mBody.getType().getTitle()))
+                .replacement("%TYPE%", Replacements.ofText(type))
                 .replacement("%MESSAGE%", mBody.getText())
                 .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
                 .build()
@@ -340,7 +348,7 @@ public class DiscordMessageHandler {
             Embed.builder()
                 .author(author)
                 .color(Utils.PINK)
-                .title(type.getTitle())
+                .title(body.isSeasonalWorld() ? "[Seasonal] " + type.getTitle() : type.getTitle())
                 .description(Utils.truncate(body.getText().evaluate(config.discordRichEmbeds()), Embed.MAX_DESCRIPTION_LENGTH))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(thumbnail))
@@ -352,7 +360,7 @@ public class DiscordMessageHandler {
         return embeds;
     }
 
-    private static boolean hideWidget(boolean shouldHide, Client client, WidgetInfo info) {
+    private static boolean hideWidget(boolean shouldHide, Client client, @Component int info) {
         if (!shouldHide)
             return false;
 
@@ -364,7 +372,7 @@ public class DiscordMessageHandler {
         return true;
     }
 
-    private static void unhideWidget(boolean shouldUnhide, Client client, ClientThread clientThread, WidgetInfo info) {
+    private static void unhideWidget(boolean shouldUnhide, Client client, ClientThread clientThread, @Component int info) {
         if (!shouldUnhide)
             return;
 

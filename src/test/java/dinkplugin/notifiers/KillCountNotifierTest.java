@@ -13,9 +13,9 @@ import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.http.api.RuneLiteAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -434,11 +434,11 @@ class KillCountNotifierTest extends MockedNotifierTest {
         when(client.getVarbitValue(Varbits.BA_GC)).thenReturn(count);
         Widget widget = mock(Widget.class);
         when(widget.getText()).thenReturn("Reward:<br>80 Healer points<br>5 Defender points<br>5 Collector points<br>5 Attacker points");
-        when(client.getWidget(WidgetInfo.BA_REWARD_TEXT)).thenReturn(widget);
+        when(client.getWidget(ComponentID.BA_REWARD_REWARD_TEXT)).thenReturn(widget);
 
         // fire event
         WidgetLoaded event = new WidgetLoaded();
-        event.setGroupId(WidgetID.BA_REWARD_GROUP_ID);
+        event.setGroupId(InterfaceID.BA_REWARD);
         notifier.onWidget(event);
         notifier.onTick();
 
@@ -468,11 +468,11 @@ class KillCountNotifierTest extends MockedNotifierTest {
         when(client.getVarbitValue(Varbits.BA_GC)).thenReturn(420);
         Widget widget = mock(Widget.class);
         when(widget.getText()).thenReturn("Reward:<br>80 Healer points<br>5 Defender points<br>5 Collector points<br>5 Attacker points");
-        when(client.getWidget(WidgetInfo.BA_REWARD_TEXT)).thenReturn(widget);
+        when(client.getWidget(ComponentID.BA_REWARD_REWARD_TEXT)).thenReturn(widget);
 
         // fire event
         WidgetLoaded event = new WidgetLoaded();
-        event.setGroupId(WidgetID.BA_REWARD_GROUP_ID);
+        event.setGroupId(InterfaceID.BA_REWARD);
         notifier.onWidget(event);
         notifier.onTick();
 

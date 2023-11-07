@@ -349,6 +349,17 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "ignoreSeasonalWorlds",
+        name = "Ignore Seasonal Worlds",
+        description = "Whether to suppress notifications that occur on seasonal worlds like Leagues",
+        position = 1015,
+        section = advancedSection
+    )
+    default boolean ignoreSeasonal() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
