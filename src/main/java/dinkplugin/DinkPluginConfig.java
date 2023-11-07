@@ -778,7 +778,7 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "lootForwardPlayerKill",
+        keyName = "lootRedirectPlayerKill",
         name = "Send PK Loot to PK URL",
         description = "Whether to send PK loot to the PK override webhook URL, rather than the loot URL.<br/>" +
             "Must have 'Include PK Loot' (above) enabled.<br/>" +
@@ -786,7 +786,7 @@ public interface DinkPluginConfig extends Config {
         position = 35,
         section = lootSection
     )
-    default boolean lootForwardPlayerKill() {
+    default boolean lootRedirectPlayerKill() {
         return false;
     }
 

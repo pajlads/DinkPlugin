@@ -316,7 +316,7 @@ class LootNotifierTest extends MockedNotifierTest {
     void testNotifyPlayer() {
         // prepare mocks
         when(config.pkWebhook()).thenReturn("https://example.com/");
-        when(config.lootForwardPlayerKill()).thenReturn(false);
+        when(config.lootRedirectPlayerKill()).thenReturn(false);
         Player player = mock(Player.class);
         when(player.getName()).thenReturn(LOOTED_NAME);
 
@@ -346,7 +346,7 @@ class LootNotifierTest extends MockedNotifierTest {
         // prepare mocks
         String overrideUrl = "https://example.com/";
         when(config.pkWebhook()).thenReturn(overrideUrl);
-        when(config.lootForwardPlayerKill()).thenReturn(true);
+        when(config.lootRedirectPlayerKill()).thenReturn(true);
         Player player = mock(Player.class);
         when(player.getName()).thenReturn(LOOTED_NAME);
 
@@ -375,7 +375,7 @@ class LootNotifierTest extends MockedNotifierTest {
     void testNotifyPlayerForwardBlank() {
         // prepare mocks
         when(config.pkWebhook()).thenReturn("");
-        when(config.lootForwardPlayerKill()).thenReturn(true);
+        when(config.lootRedirectPlayerKill()).thenReturn(true);
         Player player = mock(Player.class);
         when(player.getName()).thenReturn(LOOTED_NAME);
 

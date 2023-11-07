@@ -253,7 +253,7 @@ public class LootNotifier extends BaseNotifier {
 
         if (sendMessage) {
             String overrideUrl = getWebhookUrl();
-            if (config.lootForwardPlayerKill() && !config.pkWebhook().isBlank()) {
+            if (config.lootRedirectPlayerKill() && !config.pkWebhook().isBlank()) {
                 if (type == LootRecordType.PLAYER || (type == LootRecordType.EVENT && "Loot Chest".equals(dropper))) {
                     overrideUrl = config.pkWebhook();
                 }
