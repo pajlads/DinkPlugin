@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Major: Add notifier to capture trades with other players. (#361)
+
 ## 1.6.5
 
 - Minor: Allow notifications on seasonal worlds to be ignored via advanced config. (#357)
