@@ -97,7 +97,7 @@ public class TradeNotifier extends BaseNotifier {
         List<SerializedItemStack> disbursed = getItems(trade);
 
         String localPlayer = client.getLocalPlayer().getName();
-        String counterparty = client.getVarcStrValue(TRADE_COUNTERPARTY_VAR);
+        String counterparty = Utils.sanitize(client.getVarcStrValue(TRADE_COUNTERPARTY_VAR));
         Template content = Template.builder()
             .template(config.tradeNotifyMessage())
             .replacementBoundary("%")
