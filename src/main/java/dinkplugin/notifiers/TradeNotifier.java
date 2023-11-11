@@ -21,6 +21,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.QuantityFormatter;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -37,7 +38,10 @@ import static dinkplugin.message.DiscordMessageHandler.PRIVATE_CHAT_WIDGET;
 @Slf4j
 @Singleton
 public class TradeNotifier extends BaseNotifier {
-    private static final @VarCStr int TRADE_COUNTERPARTY_VAR = 357;
+    @VisibleForTesting
+    public static final String TRADE_ACCEPTED_MESSAGE = "Accepted trade.";
+    @VisibleForTesting
+    public static final @VarCStr int TRADE_COUNTERPARTY_VAR = 357;
     private static final @Interface int TRADE_CONFIRMATION_GROUP = 334;
 
     @Inject
@@ -66,7 +70,7 @@ public class TradeNotifier extends BaseNotifier {
     }
 
     public void onTradeMessage(String message) {
-        if (!"Accepted trade.".equals(message) || !isEnabled()) {
+        if (!TRADE_ACCEPTED_MESSAGE.equals(message) || !isEnabled()) {
             this.reset();
             return;
         }
@@ -150,9 +154,7 @@ public class TradeNotifier extends BaseNotifier {
             quantityById.merge(item.getId(), item.getQuantity(), Integer::sum);
         }
         List<SerializedItemStack> stacks = new ArrayList<>(quantityById.size());
-        quantityById.forEach((id, quantity) -> {
-            stacks.add(ItemUtils.stackFromItem(itemManager, id, quantity));
-        });
+        quantityById.forEach((id, quantity) -> stacks.add(ItemUtils.stackFromItem(itemManager, id, quantity)));
         return stacks;
     }
 }
