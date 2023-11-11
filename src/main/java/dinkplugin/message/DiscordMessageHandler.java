@@ -286,8 +286,9 @@ public class DiscordMessageHandler {
      * Captures the next frame and applies the specified rescaling
      * while abiding by {@link Embed#MAX_IMAGE_SIZE}.
      *
-     * @param drawManager  {@link DrawManager}
-     * @param scalePercent {@link DinkPluginConfig#screenshotScale()} divided by 100.0
+     * @param drawManager        {@link DrawManager}
+     * @param scalePercent       {@link DinkPluginConfig#screenshotScale()} divided by 100.0
+     * @param screenshotOverride an optional image to use instead of grabbing a frame from {@link DrawManager}
      * @return future of the image byte array by the image format name
      * @apiNote scalePercent should be in (0, 1]
      * @implNote the image format is either "png" (lossless) or "jpeg" (lossy), both of which can be used in MIME type
