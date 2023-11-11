@@ -132,7 +132,7 @@ public class TradeNotifier extends BaseNotifier {
     }
 
     public void onWidgetClose(WidgetClosed event) {
-        // should be unnecessary, but frees memory just to be safe
+        // relevant when local player declines a trade since no chat message occurs
         if (event.getGroupId() == TRADE_CONFIRMATION_GROUP) {
             clientThread.invokeAtTickEnd(this::reset);
         }
