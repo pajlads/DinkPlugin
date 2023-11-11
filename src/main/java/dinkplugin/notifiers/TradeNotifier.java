@@ -93,7 +93,7 @@ public class TradeNotifier extends BaseNotifier {
             return;
         }
         List<SerializedItemStack> received = getItems(other);
-        List<SerializedItemStack> discarded = getItems(trade);
+        List<SerializedItemStack> disbursed = getItems(trade);
 
         String localPlayer = client.getLocalPlayer().getName();
         String counterparty = client.getVarcStrValue(TRADE_COUNTERPARTY_VAR);
@@ -108,7 +108,7 @@ public class TradeNotifier extends BaseNotifier {
 
         createMessage(config.tradeSendImage(), NotificationBody.builder()
             .text(content)
-            .extra(new TradeNotificationData(counterparty, received, discarded, grossValue, netValue))
+            .extra(new TradeNotificationData(counterparty, received, disbursed, grossValue, netValue))
             .playerName(localPlayer)
             .screenshotOverride(image.get())
             .type(NotificationType.TRADE)

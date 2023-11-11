@@ -787,7 +787,7 @@ See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/Gra
         "name": "Feather"
       }
     ],
-    "discardedItems": [
+    "givenItems": [
       {
         "id": 2,
         "quantity": 3,

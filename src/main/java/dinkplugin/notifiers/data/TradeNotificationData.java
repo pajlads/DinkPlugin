@@ -14,7 +14,7 @@ import java.util.List;
 public class TradeNotificationData extends NotificationData {
     String counterparty;
     List<SerializedItemStack> receivedItems;
-    List<SerializedItemStack> discardedItems;
+    List<SerializedItemStack> givenItems;
     long grossValue;
     long netValue;
 
