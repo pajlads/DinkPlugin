@@ -4,7 +4,6 @@ import dinkplugin.message.Field;
 import dinkplugin.util.ItemUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
-import net.runelite.client.util.QuantityFormatter;
 
 import java.util.ArrayList;
 import java.util.List;

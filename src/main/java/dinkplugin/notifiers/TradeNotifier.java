@@ -40,6 +40,9 @@ import static dinkplugin.message.DiscordMessageHandler.PRIVATE_CHAT_WIDGET;
 public class TradeNotifier extends BaseNotifier {
     @VisibleForTesting
     public static final String TRADE_ACCEPTED_MESSAGE = "Accepted trade.";
+    /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript%2Ctrade_partner_set%5D.cs2#L3">CS2 Reference</a>
+     */
     @VisibleForTesting
     public static final @VarCStr int TRADE_COUNTERPARTY_VAR = 357;
     private static final @Interface int TRADE_CONFIRMATION_GROUP = 334;
