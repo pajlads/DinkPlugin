@@ -24,7 +24,8 @@ public enum NotificationType {
     PLAYER_KILL("Player Kill", "playerKillImage.png", WIKI_IMG_BASE_URL + "Skull_(status)_icon.png"),
     GROUP_STORAGE("Group Shared Storage", "groupStorage.png", WIKI_IMG_BASE_URL + "Coins_10000.png"),
     GRAND_EXCHANGE("Grand Exchange", "grandExchange.png", WIKI_IMG_BASE_URL + "Grand_Exchange_icon.png"),
-    LOGIN("Player Login", "login.png", WIKI_IMG_BASE_URL + "Prop_sword.png");
+    LOGIN("Player Login", "login.png", WIKI_IMG_BASE_URL + "Prop_sword.png"),
+    TRADE("Player Trade", "trade.png", WIKI_IMG_BASE_URL + "Inventory.png");
 
     private final String title;
 

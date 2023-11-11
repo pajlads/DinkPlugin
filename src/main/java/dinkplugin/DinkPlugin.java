@@ -11,13 +11,14 @@ import dinkplugin.notifiers.GrandExchangeNotifier;
 import dinkplugin.notifiers.GroupStorageNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.LevelNotifier;
-import dinkplugin.notifiers.MetaNotifier;
 import dinkplugin.notifiers.LootNotifier;
+import dinkplugin.notifiers.MetaNotifier;
 import dinkplugin.notifiers.PetNotifier;
 import dinkplugin.notifiers.PlayerKillNotifier;
 import dinkplugin.notifiers.QuestNotifier;
 import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
+import dinkplugin.notifiers.TradeNotifier;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
@@ -83,6 +84,7 @@ public class DinkPlugin extends Plugin {
     private @Inject GroupStorageNotifier groupStorageNotifier;
     private @Inject GrandExchangeNotifier grandExchangeNotifier;
     private @Inject MetaNotifier metaNotifier;
+    private @Inject TradeNotifier tradeNotifier;
 
     @Override
     protected void startUp() {
@@ -108,6 +110,7 @@ public class DinkPlugin extends Plugin {
         killCountNotifier.reset();
         groupStorageNotifier.reset();
         speedrunNotifier.reset();
+        tradeNotifier.reset();
     }
 
     @Provides
@@ -203,6 +206,10 @@ public class DinkPlugin extends Plugin {
                 gambleNotifier.onMesBoxNotification(chatMessage);
                 break;
 
+            case TRADE:
+                tradeNotifier.onTradeMessage(chatMessage);
+                break;
+
             default:
                 // do nothing
                 break;
@@ -264,11 +271,13 @@ public class DinkPlugin extends Plugin {
         lootNotifier.onWidgetLoaded(event);
         groupStorageNotifier.onWidgetLoad(event);
         killCountNotifier.onWidget(event);
+        tradeNotifier.onWidgetLoad(event);
     }
 
     @Subscribe
     public void onWidgetClosed(WidgetClosed event) {
         groupStorageNotifier.onWidgetClose(event);
+        tradeNotifier.onWidgetClose(event);
     }
 
     public void addChatSuccess(String message) {
