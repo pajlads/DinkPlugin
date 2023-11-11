@@ -766,7 +766,7 @@ See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/Gra
 
 `%GROSS_VALUE%` will be replaced with the sum of item values offered by both parties in the transaction.
 
-`%NET_VALUE%` will be replaced with the value of the received items *minus* the value of the given items.
+`%NET_VALUE%` will be replaced with the value of the received items _minus_ the value of the given items.
 
 <details>
   <summary>JSON for Player Trade Notifications:</summary>
@@ -800,6 +800,7 @@ See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/Gra
   }
 }
 ```
+
 </details>
 
 ### Metadata:
