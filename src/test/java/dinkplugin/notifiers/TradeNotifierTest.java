@@ -68,8 +68,6 @@ public class TradeNotifierTest extends MockedNotifierTest {
         notifier.onTradeMessage(TradeNotifier.TRADE_ACCEPTED_MESSAGE);
 
         // verify handled
-        long grossValue = OPAL_PRICE * 2 + RUBY_PRICE;
-        long netValue = RUBY_PRICE - 2 * OPAL_PRICE;
         List<SerializedItemStack> received = List.of(
             new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")
         );
@@ -87,7 +85,7 @@ public class TradeNotifierTest extends MockedNotifierTest {
                         .replacement("%COUNTERPARTY%", Replacements.ofLink(COUNTERPARTY, config.playerLookupService().getPlayerUrl(COUNTERPARTY)))
                         .build()
                 )
-                .extra(new TradeNotificationData(COUNTERPARTY, received, discarded, grossValue, netValue))
+                .extra(new TradeNotificationData(COUNTERPARTY, received, discarded, RUBY_PRICE, 2 * OPAL_PRICE))
                 .type(NotificationType.TRADE)
                 .playerName(PLAYER_NAME)
                 .build()

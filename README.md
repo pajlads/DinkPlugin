@@ -795,8 +795,8 @@ See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/Gra
         "name": "Cannonball"
       }
     ],
-    "grossValue": 650,
-    "netValue": -250
+    "receivedValue": 200,
+    "givenValue": 450
   }
 }
 ```

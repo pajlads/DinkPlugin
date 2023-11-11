@@ -1718,8 +1718,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %COUNTERPARTY% to insert the name of the other player<br/>" +
-            "Use %NET_VALUE% to insert the net value of the transaction<br/>" +
-            "Use %GROSS_VALUE% to insert the gross value of the transaction",
+            "Use %IN_VALUE% to insert the value of the items received from the counterparty<br/>" +
+            "Use %OUT_VALUE% to insert the value of the items given to the counterparty",
         position = 163,
         section = tradeSection
     )

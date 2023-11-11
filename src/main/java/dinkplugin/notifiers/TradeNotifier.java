@@ -86,9 +86,7 @@ public class TradeNotifier extends BaseNotifier {
         Item[] other = otherInv != null ? otherInv.getItems() : new Item[0];
         long receiveValue = getTotalValue(other);
         long giveValue = getTotalValue(trade);
-        long grossValue = receiveValue + giveValue;
-        long netValue = receiveValue - giveValue;
-        if (grossValue < config.tradeMinValue()) {
+        if (receiveValue + giveValue < config.tradeMinValue()) {
             this.reset();
             return;
         }
@@ -102,13 +100,13 @@ public class TradeNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(localPlayer))
             .replacement("%COUNTERPARTY%", Replacements.ofLink(counterparty, config.playerLookupService().getPlayerUrl(counterparty)))
-            .replacement("%GROSS_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(grossValue)))
-            .replacement("%NET_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(netValue)))
+            .replacement("%IN_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(receiveValue)))
+            .replacement("%OUT_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(giveValue)))
             .build();
 
         createMessage(config.tradeSendImage(), NotificationBody.builder()
             .text(content)
-            .extra(new TradeNotificationData(counterparty, received, disbursed, grossValue, netValue))
+            .extra(new TradeNotificationData(counterparty, received, disbursed, receiveValue, giveValue))
             .playerName(localPlayer)
             .screenshotOverride(image.get())
             .type(NotificationType.TRADE)
