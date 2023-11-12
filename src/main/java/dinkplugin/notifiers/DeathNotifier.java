@@ -2,6 +2,7 @@ package dinkplugin.notifiers;
 
 import dinkplugin.domain.AccountType;
 import dinkplugin.domain.Danger;
+import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.message.Embed;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
@@ -116,7 +117,8 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     public void onGameMessage(String message) {
-        if (config.deathIgnoreSafe() && !Utils.getAccountType(client).isHardcore() && message.contains(TOA_DEATH_MSG) && isEnabled()) {
+        if (config.deathIgnoreSafe() && !config.deathSafeExceptions().contains(ExceptionalDeath.TOA) &&
+            !Utils.getAccountType(client).isHardcore() && message.contains(TOA_DEATH_MSG) && isEnabled()) {
             // https://github.com/pajlads/DinkPlugin/issues/316
             // though, hardcore (group) ironmen just use the normal ActorDeath trigger for TOA
             handleNotify(Danger.DANGEROUS);
