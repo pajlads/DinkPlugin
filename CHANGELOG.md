@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Update set of items that are never kept on dangerous deaths. (#364)
+
 ## 1.6.5
 
 - Minor: Allow notifications on seasonal worlds to be ignored via advanced config. (#357)
