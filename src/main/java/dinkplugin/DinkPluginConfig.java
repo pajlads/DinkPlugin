@@ -878,7 +878,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "deathSafeExceptions",
         name = "Safe Exceptions",
-        description = "Safe deaths that should trigger notifications even when 'Ignore Safe Deaths' is enabled",
+        description = "Safe deaths that should trigger notifications even when 'Ignore Safe Deaths' is enabled.<br/>" +
+            "Hold Control while clicking on the options to select multiple exceptions",
         position = 44,
         section = deathSection
     )
