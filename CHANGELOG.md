@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Allow customization of which safe deaths can trigger notifications. (#363)
+
 ## 1.6.5
 
 - Minor: Allow notifications on seasonal worlds to be ignored via advanced config. (#357)
