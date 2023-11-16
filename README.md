@@ -804,7 +804,8 @@ For all players, Karamja is the _zeroth_ region selected (and there is no notifi
   "extra": {
     "relic": "Production Prodigy",
     "tier": 1,
-    "totalPointsEarned": 20,
+    "requiredPoints": 0,
+    "totalPoints": 20,
     "pointsUntilNextTier": 480
   }
 }

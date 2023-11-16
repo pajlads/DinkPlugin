@@ -141,7 +141,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
                         .replacement("{{relic}}", Replacements.ofWiki(relic))
                         .build()
                 )
-                .extra(new LeaguesRelicNotificationData(relic, 1, totalPoints, pointsUntilNextTier))
+                .extra(new LeaguesRelicNotificationData(relic, 1, 0, totalPoints, pointsUntilNextTier))
                 .playerName(PLAYER_NAME)
                 .seasonalWorld(true)
                 .build()

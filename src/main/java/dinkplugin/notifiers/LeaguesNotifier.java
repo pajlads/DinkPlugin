@@ -133,6 +133,7 @@ public class LeaguesNotifier extends BaseNotifier {
     private void notifyRelicUnlock(String relic) {
         LeagueRelicTier relicTier = TIER_BY_RELIC.get(relic);
         Integer tier = relicTier != null ? relicTier.ordinal() + 1 : null;
+        Integer requiredPoints = relicTier != null ? relicTier.getPoints() : null;
 
         int points = client.getVarpValue(POINTS_EARNED_ID);
         Integer pointsOfNextTier = LeagueRelicTier.TIER_BY_POINTS.ceilingKey(points + 1);
@@ -149,7 +150,7 @@ public class LeaguesNotifier extends BaseNotifier {
         createMessage(config.leaguesSendImage(), NotificationBody.builder()
             .type(NotificationType.LEAGUES_RELIC)
             .text(text)
-            .extra(new LeaguesRelicNotificationData(relic, tier, points, pointsUntilNextTier))
+            .extra(new LeaguesRelicNotificationData(relic, tier, requiredPoints, points, pointsUntilNextTier))
             .playerName(playerName)
             .seasonalWorld(true)
             .build());
