@@ -27,7 +27,7 @@ public class LeaguesRelicNotificationData extends NotificationData {
         if (pointsUntilNextTier != null) {
             fields.add(
                 new Field(
-                    "Points until next tier",
+                    "Points until next Relic",
                     Field.formatBlock("", String.valueOf(pointsUntilNextTier))
                 )
             );
