@@ -837,6 +837,32 @@ For all players, Karamja is the _zeroth_ region selected (and there is no notifi
 
 </details>
 
+<details>
+  <summary>JSON for Task Notifications that unlocked a Trophy:</summary>
+
+```json5
+{
+  "type": "LEAGUES_TASK",
+  "content": "%USERNAME% completed a Hard task, The Frozen Door, unlocking the Bronze trophy!",
+  "playerName": "%USERNAME%",
+  "accountType": "IRONMAN",
+  "seasonalWorld": true,
+  "extra": {
+    "taskName": "The Frozen Door",
+    "difficulty": "HARD",
+    "taskPoints": 80,
+    "totalPoints": 2520,
+    "tasksCompleted": 119,
+    "tasksUntilNextArea": 81,
+    "pointsUntilNextRelic": 1480,
+    "pointsUntilNextTrophy": 2480,
+    "earnedTrophy": "Bronze"
+  }
+}
+```
+
+</details>
+
 Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntilNextTrophy` can be omitted
 if there is no next level of progression (i.e., all three regions selected, all relic tiers unlocked, all trophies acquired).
 
