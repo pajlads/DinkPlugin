@@ -1745,7 +1745,7 @@ public interface DinkPluginConfig extends Config {
         section = leaguesSection
     )
     default LeagueTaskDifficulty leaguesTaskMinTier() {
-        return LeagueTaskDifficulty.HARD;
+        return LeagueTaskDifficulty.EASY;
     }
 
 }
