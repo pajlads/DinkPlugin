@@ -23,7 +23,7 @@ public class LeaguesAreaNotificationData extends NotificationData {
         );
         if (tasksUntilNextArea != null) {
             fields.add(
-                new Field("Tasks until next area", Field.formatBlock("", String.valueOf(tasksUntilNextArea)))
+                new Field("Tasks until next Area", Field.formatBlock("", String.valueOf(tasksUntilNextArea)))
             );
         }
         return fields;
