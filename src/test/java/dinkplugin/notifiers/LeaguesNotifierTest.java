@@ -55,9 +55,9 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         int totalPoints = 100 * 10 + 100 * 40;
         when(client.getVarbitValue(LeaguesNotifier.TASKS_COMPLETED_ID)).thenReturn(tasksCompleted);
         when(client.getVarpValue(LeaguesNotifier.POINTS_EARNED_ID)).thenReturn(totalPoints);
-        when(client.getVarbitValue(10663)).thenReturn(2);
-        when(client.getVarbitValue(10664)).thenReturn(4);
-        when(client.getVarbitValue(10665)).thenReturn(8);
+        when(client.getVarbitValue(LeaguesNotifier.TWO_AREAS)).thenReturn(2);
+        when(client.getVarbitValue(LeaguesNotifier.THREE_AREAS)).thenReturn(4);
+        when(client.getVarbitValue(LeaguesNotifier.FOUR_AREAS)).thenReturn(8);
 
         // fire event
         notifier.onGameMessage("Congratulations, you've unlocked a new area: Kandarin.");
@@ -90,7 +90,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         int totalPoints = 2 * 10;
         when(client.getVarbitValue(LeaguesNotifier.TASKS_COMPLETED_ID)).thenReturn(tasksCompleted);
         when(client.getVarpValue(LeaguesNotifier.POINTS_EARNED_ID)).thenReturn(totalPoints);
-        when(client.getVarbitValue(10663)).thenReturn(2);
+        when(client.getVarbitValue(LeaguesNotifier.TWO_AREAS)).thenReturn(2);
 
         // fire event
         notifier.onGameMessage("Congratulations, you've unlocked a new area: Karamja.");
@@ -288,8 +288,8 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         int totalPoints = 100 * 10 + 80;
         when(client.getVarbitValue(LeaguesNotifier.TASKS_COMPLETED_ID)).thenReturn(tasksCompleted);
         when(client.getVarpValue(LeaguesNotifier.POINTS_EARNED_ID)).thenReturn(totalPoints);
-        when(client.getVarbitValue(10663)).thenReturn(2);
-        when(client.getVarbitValue(10664)).thenReturn(4);
+        when(client.getVarbitValue(LeaguesNotifier.TWO_AREAS)).thenReturn(2);
+        when(client.getVarbitValue(LeaguesNotifier.THREE_AREAS)).thenReturn(4);
 
         // fire event
         notifier.onGameMessage("Congratulations, you've completed a hard task: The Frozen Door.");
@@ -310,8 +310,8 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         int totalPoints = 100 * 10 + 80;
         when(client.getVarbitValue(LeaguesNotifier.TASKS_COMPLETED_ID)).thenReturn(tasksCompleted);
         when(client.getVarpValue(LeaguesNotifier.POINTS_EARNED_ID)).thenReturn(totalPoints);
-        when(client.getVarbitValue(10663)).thenReturn(2);
-        when(client.getVarbitValue(10664)).thenReturn(4);
+        when(client.getVarbitValue(LeaguesNotifier.TWO_AREAS)).thenReturn(2);
+        when(client.getVarbitValue(LeaguesNotifier.THREE_AREAS)).thenReturn(4);
 
         // fire event
         notifier.onGameMessage("Congratulations, you've completed a hard task: The Frozen Door.");

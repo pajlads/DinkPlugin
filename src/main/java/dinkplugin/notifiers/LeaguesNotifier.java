@@ -42,6 +42,12 @@ public class LeaguesNotifier extends BaseNotifier {
     static final @Varp int POINTS_EARNED_ID = 2614;
 
     /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cleague_areas_draw_interface%5D.cs2#L28-L55">CS2 Reference</a>
+     */
+    @VisibleForTesting
+    static final @Varbit int FIVE_AREAS = 10666, FOUR_AREAS = 10665, THREE_AREAS = 10664, TWO_AREAS = 10663;
+
+    /**
      * Trophy name by the required points.
      *
      * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League#Trophies">Wiki Reference</a>
@@ -203,23 +209,22 @@ public class LeaguesNotifier extends BaseNotifier {
 
     /**
      * @return the number of areas that have been unlocked as integer and human name
-     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cleague_areas_draw_interface%5D.cs2#L28-L55">CS2 Reference</a>
      */
     private Map.Entry<Integer, String> numAreasUnlocked() {
         // While Jagex's code has 5 areas (2 default, 3 discretionary),
         // most players think just in terms of the 3 discretionary areas,
         // so we disregard Misthalin and consider Karamja as the zeroth area.
         // Thus, the number of unlocked areas is bounded by 3 (instead of 5).
-        if (client.getVarbitValue(10666) > 0) {
+        if (client.getVarbitValue(FIVE_AREAS) > 0) {
             return Map.entry(3, ith(3));
         }
-        if (client.getVarbitValue(10665) > 0) {
+        if (client.getVarbitValue(FOUR_AREAS) > 0) {
             return Map.entry(2, ith(2));
         }
-        if (client.getVarbitValue(10664) > 0) {
+        if (client.getVarbitValue(THREE_AREAS) > 0) {
             return Map.entry(1, ith(1));
         }
-        if (client.getVarbitValue(10663) > 0) {
+        if (client.getVarbitValue(TWO_AREAS) > 0) {
             return Map.entry(0, ith(0)); // Karamja
         }
         return null;
