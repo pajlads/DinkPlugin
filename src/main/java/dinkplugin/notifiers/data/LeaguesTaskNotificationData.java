@@ -24,6 +24,9 @@ public class LeaguesTaskNotificationData extends NotificationData {
     int totalPoints;
     int tasksCompleted;
 
+    @Nullable // when player has already unlocked all three regions
+    Integer tasksUntilNextArea;
+
     @Nullable // when player has already unlocked a tier 8 relic (highest)
     Integer pointsUntilNextRelic;
 

@@ -158,6 +158,9 @@ public class LeaguesNotifier extends BaseNotifier {
         int tasksCompleted = client.getVarbitValue(TASKS_COMPLETED_ID);
         String playerName = Utils.getPlayerName(client);
 
+        Integer nextAreaTasks = AREA_BY_TASKS.ceilingKey(tasksCompleted + 1);
+        Integer tasksUntilNextArea = nextAreaTasks != null ? nextAreaTasks - tasksCompleted : null;
+
         Map.Entry<Integer, String> trophy = TROPHY_BY_POINTS.floorEntry(totalPoints);
         Integer prevTrophyPoints;
         if (trophy != null) {
@@ -188,7 +191,7 @@ public class LeaguesNotifier extends BaseNotifier {
         createMessage(config.leaguesSendImage(), NotificationBody.builder()
             .type(NotificationType.LEAGUES_TASK)
             .text(text)
-            .extra(new LeaguesTaskNotificationData(task, tier, taskPoints, totalPoints, tasksCompleted, pointsUntilNextRelic, pointsUntilNextTrophy, justEarnedTrophy))
+            .extra(new LeaguesTaskNotificationData(task, tier, taskPoints, totalPoints, tasksCompleted, tasksUntilNextArea, pointsUntilNextRelic, pointsUntilNextTrophy, justEarnedTrophy))
             .playerName(playerName)
             .seasonalWorld(true)
             .build());
