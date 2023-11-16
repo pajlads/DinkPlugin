@@ -785,6 +785,10 @@ Each of these events can be independently enabled or disabled in the notifier se
 }
 ```
 
+Note: `index` refers to the order of region unlocks.
+Here, Kandarin was the second region selected.
+For all players, Karamja is the *zeroth* region selected (and there is no notification for Misthalin).
+
 </details>
 
 <details>
