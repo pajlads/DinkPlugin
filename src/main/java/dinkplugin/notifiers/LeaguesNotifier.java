@@ -48,7 +48,7 @@ public class LeaguesNotifier extends BaseNotifier {
     static final @Varbit int FIVE_AREAS = 10666, FOUR_AREAS = 10665, THREE_AREAS = 10664, TWO_AREAS = 10663;
 
     /**
-     * Trophy name by the required points.
+     * Trophy name by the required points, in a binary search tree.
      *
      * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League#Trophies">Wiki Reference</a>
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cscript731%5D.cs2#L3">CS2 Reference</a>
@@ -63,7 +63,7 @@ public class LeaguesNotifier extends BaseNotifier {
     private static final Map<String, LeagueRelicTier> TIER_BY_RELIC;
 
     /**
-     * Mapping of the number of tasks required to unlock an area to the area index (1-3).
+     * Mapping of the number of tasks required to unlock an area to the area index (0-3).
      *
      * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League/Areas">Wiki reference</a>
      */

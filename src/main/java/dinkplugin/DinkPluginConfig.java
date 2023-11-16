@@ -559,7 +559,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "leaguesWebhook",
         name = "Leagues Webhook Override",
-        description = "If non-empty, Leagues messages are sent to this URL, instead of the primary URL",
+        description = "If non-empty, Leagues messages are sent to this URL, instead of the primary URL.<br/>" +
+            "Note: this only applies to the Leagues notifier, not every notifier in a seasonal world",
         position = -1,
         section = webhookSection
     )
