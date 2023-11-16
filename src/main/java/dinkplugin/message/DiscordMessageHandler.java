@@ -221,7 +221,7 @@ public class DiscordMessageHandler {
 
         NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
 
-        if (!config.ignoreSeasonal()) {
+        if (!config.ignoreSeasonal() && !mBody.isSeasonalWorld()) {
             builder.seasonalWorld(client.getWorldType().contains(WorldType.SEASONAL));
         }
 
@@ -333,7 +333,7 @@ public class DiscordMessageHandler {
         Author author = Author.builder()
             .name(body.getPlayerName())
             .url(playerLookupService.getPlayerUrl(body.getPlayerName()))
-            .iconUrl(Utils.getChatBadge(body.getAccountType()))
+            .iconUrl(Utils.getChatBadge(body.getAccountType(), body.isSeasonalWorld()))
             .build();
         Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()
             .text(Utils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
