@@ -187,7 +187,7 @@ public class LeaguesNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%TIER%", Replacements.ofText(tier.getDisplayName()))
-            .replacement("%TASK%", Replacements.ofWiki(task))
+            .replacement("%TASK%", Replacements.ofWiki(task, "Trailblazer_Reloaded_League/Tasks"))
             .replacement("%TROPHY%", newTrophy
                 ? Replacements.ofWiki(trophy.getValue(), String.format("Trailblazer reloaded %s trophy", trophy.getValue().toLowerCase()))
                 : Replacements.ofText("?"))

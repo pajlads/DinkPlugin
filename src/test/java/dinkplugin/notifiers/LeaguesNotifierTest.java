@@ -173,7 +173,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
                 .text(
                     Template.builder()
                         .template(String.format("%s completed a %s task: {{task}}.", PLAYER_NAME, "Hard"))
-                        .replacement("{{task}}", Replacements.ofWiki(taskName))
+                        .replacement("{{task}}", Replacements.ofWiki(taskName, "Trailblazer_Reloaded_League/Tasks"))
                         .build()
                 )
                 .extra(new LeaguesTaskNotificationData(taskName, difficulty, difficulty.getPoints(), totalPoints, tasksCompleted, tasksUntilNextArea, pointsUntilNextRelic, pointsUntilNextTrophy, null))
@@ -209,7 +209,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
                 .text(
                     Template.builder()
                         .template(String.format("%s completed a %s task, {{task}}, unlocking the {{trophy}} trophy!", PLAYER_NAME, "Hard"))
-                        .replacement("{{task}}", Replacements.ofWiki(taskName))
+                        .replacement("{{task}}", Replacements.ofWiki(taskName, "Trailblazer_Reloaded_League/Tasks"))
                         .replacement("{{trophy}}", Replacements.ofWiki(trophy, "Trailblazer reloaded " + trophy.toLowerCase() + " trophy"))
                         .build()
                 )
@@ -247,7 +247,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
                 .text(
                     Template.builder()
                         .template(String.format("%s completed a %s task, {{task}}, unlocking the {{trophy}} trophy!", PLAYER_NAME, "Medium"))
-                        .replacement("{{task}}", Replacements.ofWiki(taskName))
+                        .replacement("{{task}}", Replacements.ofWiki(taskName, "Trailblazer_Reloaded_League/Tasks"))
                         .replacement("{{trophy}}", Replacements.ofWiki(trophy, "Trailblazer reloaded " + trophy.toLowerCase() + " trophy"))
                         .build()
                 )
