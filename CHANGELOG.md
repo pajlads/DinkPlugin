@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Major: Add leagues notifier for areas, relics, and tasks. (#366)
+
 ## 1.6.5
 
 - Minor: Allow notifications on seasonal worlds to be ignored via advanced config. (#357)
