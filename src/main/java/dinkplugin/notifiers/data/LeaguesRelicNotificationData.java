@@ -15,13 +15,8 @@ public class LeaguesRelicNotificationData extends NotificationData {
 
     @NotNull
     String relic;
-
-    @Nullable // if dink did not recognize the relic name
     Integer tier;
-
-    @Nullable // if dink did not recognize the relic name
     Integer requiredPoints;
-
     int totalPoints;
 
     @Nullable // if relics for all 8 tiers have now been unlocked

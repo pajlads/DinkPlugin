@@ -137,13 +137,20 @@ public class LeaguesNotifier extends BaseNotifier {
     }
 
     private void notifyRelicUnlock(String relic) {
-        LeagueRelicTier relicTier = TIER_BY_RELIC.get(relic);
-        Integer tier = relicTier != null ? relicTier.ordinal() + 1 : null;
-        Integer requiredPoints = relicTier != null ? relicTier.getPoints() : null;
-
         int points = client.getVarpValue(POINTS_EARNED_ID);
         Integer pointsOfNextTier = LeagueRelicTier.TIER_BY_POINTS.ceilingKey(points + 1);
         Integer pointsUntilNextTier = pointsOfNextTier != null ? pointsOfNextTier - points : null;
+
+        LeagueRelicTier relicTier = TIER_BY_RELIC.get(relic);
+        if (relicTier == null) {
+            // shouldn't happen, but just to be safe
+            log.warn("Unknown relic encountered: {}", relic);
+            if (points >= 0) {
+                relicTier = LeagueRelicTier.TIER_BY_POINTS.floorEntry(points).getValue();
+            }
+        }
+        Integer tier = relicTier != null ? relicTier.ordinal() + 1 : null;
+        Integer requiredPoints = relicTier != null ? relicTier.getPoints() : null;
 
         String playerName = Utils.getPlayerName(client);
         Template text = Template.builder()
