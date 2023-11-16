@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.WorldType;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.annotations.Varp;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Collections;
 import java.util.Map;
@@ -31,12 +32,14 @@ public class LeaguesNotifier extends BaseNotifier {
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cleague_areas_progress_bar%5D.cs2#L177">CS2 Reference</a>
      */
-    private static final @Varbit int TASKS_COMPLETED_ID = 10046;
+    @VisibleForTesting
+    static final @Varbit int TASKS_COMPLETED_ID = 10046;
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cscript730%5D.cs2#L86">CS2 Reference</a>
      */
-    private static final @Varp int POINTS_EARNED_ID = 2614;
+    @VisibleForTesting
+    static final @Varp int POINTS_EARNED_ID = 2614;
 
     /**
      * Trophy name by the required points.
@@ -112,7 +115,7 @@ public class LeaguesNotifier extends BaseNotifier {
 
         String playerName = Utils.getPlayerName(client);
         Template text = Template.builder()
-            .template("%USERNAME% selected their %I_TH% region: %AREA%")
+            .template("%USERNAME% selected their %I_TH% region: %AREA%.")
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%I_TH%", Replacements.ofText(unlocked.getValue()))
@@ -137,7 +140,7 @@ public class LeaguesNotifier extends BaseNotifier {
 
         String playerName = Utils.getPlayerName(client);
         Template text = Template.builder()
-            .template("%USERNAME% unlocked a Tier %TIER% Relic: %RELIC%")
+            .template("%USERNAME% unlocked a Tier %TIER% Relic: %RELIC%.")
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%TIER%", Replacements.ofText(tier != null ? tier.toString() : "?"))
