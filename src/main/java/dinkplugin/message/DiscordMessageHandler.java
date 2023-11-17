@@ -219,11 +219,11 @@ public class DiscordMessageHandler {
             }
         }
 
-        NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
-
-        if (!config.ignoreSeasonal() && !mBody.isSeasonalWorld()) {
-            builder.seasonalWorld(client.getWorldType().contains(WorldType.SEASONAL));
+        if (!config.ignoreSeasonal() && !mBody.isSeasonalWorld() && client.getWorldType().contains(WorldType.SEASONAL)) {
+            mBody = mBody.withSeasonalWorld(true);
         }
+
+        NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
 
         if (config.sendDiscordUser()) {
             builder.discordUser(DiscordProfile.of(discordService.getCurrentUser()));
