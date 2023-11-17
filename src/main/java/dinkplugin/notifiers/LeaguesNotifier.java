@@ -96,12 +96,12 @@ public class LeaguesNotifier extends BaseNotifier {
                 notifyRelicUnlock(relic);
             }
         } else if (config.leaguesTaskCompletion()) {
-            LeagueTaskDifficulty tier;
             Matcher matcher = TASK_REGEX.matcher(message);
-            if (matcher.find() &&
-                (tier = LeagueTaskDifficulty.TIER_BY_LOWER_NAME.get(matcher.group("tier"))) != null &&
-                tier.ordinal() >= config.leaguesTaskMinTier().ordinal()) {
-                notifyTaskCompletion(tier, matcher.group("task"));
+            if (matcher.find()) {
+                LeagueTaskDifficulty tier = LeagueTaskDifficulty.TIER_BY_LOWER_NAME.get(matcher.group("tier"));
+                if (tier != null && tier.ordinal() >= config.leaguesTaskMinTier().ordinal()) {
+                    notifyTaskCompletion(tier, matcher.group("task"));
+                }
             }
         }
     }
