@@ -112,4 +112,17 @@ class UtilsTest {
         assertFalse(m.matcher("iron pickaxe").find());
     }
 
+    @Test
+    void sanitize() {
+        assertEquals("Congratulations, you've unlocked a new Relic: Archer's Embrace.", Utils.sanitize("Congratulations, you've unlocked a new Relic: <col=ff7700>Archer's Embrace</col>."));
+        assertEquals("Congratulations, you've completed an easy task: Obtain a Gem While Mining.", Utils.sanitize("Congratulations, you've completed an easy task: <col=ff7700>Obtain a Gem While Mining</col>."));
+
+        assertEquals("", Utils.sanitize(null));
+        assertEquals("", Utils.sanitize(""));
+
+        assertEquals("foo\nbar", Utils.sanitize("foo<br>bar"));
+
+        assertEquals("foo bar", Utils.sanitize("foo\u00A0bar"));
+    }
+
 }

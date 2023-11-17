@@ -4,6 +4,7 @@ import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.domain.FilterMode;
+import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -158,6 +159,14 @@ public interface DinkPluginConfig extends Config {
         closedByDefault = true
     )
     String tradeSection = "Player Trades";
+
+    @ConfigSection(
+        name = "Leagues",
+        description = "Settings for notifying when you complete league tasks, unlock areas, and redeem relics",
+        position = 200,
+        closedByDefault = true
+    )
+    String leaguesSection = "Leagues";
 
     @ConfigSection(
         name = "Advanced",
@@ -359,7 +368,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "ignoreSeasonalWorlds",
         name = "Ignore Seasonal Worlds",
-        description = "Whether to suppress notifications that occur on seasonal worlds like Leagues",
+        description = "Whether to suppress notifications that occur on seasonal worlds like Leagues.<br/>" +
+            "Note: the Leagues-specific notifier uses an independent config toggle",
         position = 1015,
         section = advancedSection
     )
@@ -562,6 +572,18 @@ public interface DinkPluginConfig extends Config {
         section = webhookSection
     )
     default String tradeWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "leaguesWebhook",
+        name = "Leagues Webhook Override",
+        description = "If non-empty, Leagues messages are sent to this URL, instead of the primary URL.<br/>" +
+            "Note: this only applies to the Leagues notifier, not every notifier in a seasonal world",
+        position = -1,
+        section = webhookSection
+    )
+    default String leaguesWebhook() {
         return "";
     }
 
@@ -1725,6 +1747,72 @@ public interface DinkPluginConfig extends Config {
     )
     default String tradeNotifyMessage() {
         return "%USERNAME% traded with %COUNTERPARTY%";
+    }
+
+    @ConfigItem(
+        keyName = "notifyLeagues",
+        name = "Enable Leagues",
+        description = "Enable notifications upon various leagues events",
+        position = 200,
+        section = leaguesSection
+    )
+    default boolean notifyLeagues() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 201,
+        section = leaguesSection
+    )
+    default boolean leaguesSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesAreaUnlock",
+        name = "Send Area Unlocks",
+        description = "Send notifications upon area unlocks",
+        position = 202,
+        section = leaguesSection
+    )
+    default boolean leaguesAreaUnlock() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesRelicUnlock",
+        name = "Send Relic Unlocks",
+        description = "Send notifications upon relic unlocks",
+        position = 203,
+        section = leaguesSection
+    )
+    default boolean leaguesRelicUnlock() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesTaskCompletion",
+        name = "Send Completed Tasks",
+        description = "Send notifications upon completing a task",
+        position = 204,
+        section = leaguesSection
+    )
+    default boolean leaguesTaskCompletion() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesTaskMinTier",
+        name = "Task Min Difficulty",
+        description = "The minimum tier of a task for a notification to be sent",
+        position = 205,
+        section = leaguesSection
+    )
+    default LeagueTaskDifficulty leaguesTaskMinTier() {
+        return LeagueTaskDifficulty.EASY;
     }
 
 }

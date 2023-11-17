@@ -2,6 +2,10 @@
 
 - Major: Add notifier to capture trades with other players. (#361)
 
+## 1.7.0
+
+- Major: Add leagues notifier for areas, relics, and tasks. (#366)
+
 ## 1.6.5
 
 - Minor: Allow notifications on seasonal worlds to be ignored via advanced config. (#357)

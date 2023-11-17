@@ -172,7 +172,10 @@ public class Utils {
     }
 
     @Nullable
-    public String getChatBadge(@NotNull AccountType type) {
+    public String getChatBadge(@NotNull AccountType type, boolean seasonal) {
+        if (seasonal) {
+            return WIKI_IMG_BASE_URL + "Leagues_chat_badge.png";
+        }
         switch (type) {
             case IRONMAN:
                 return WIKI_IMG_BASE_URL + "Ironman_chat_badge.png";
@@ -185,7 +188,7 @@ public class Utils {
             case HARDCORE_GROUP_IRONMAN:
                 return WIKI_IMG_BASE_URL + "Hardcore_group_ironman_chat_badge.png";
             case UNRANKED_GROUP_IRONMAN:
-                return WIKI_IMG_BASE_URL + "Unranked_group_ironman_chat_badge";
+                return WIKI_IMG_BASE_URL + "Unranked_group_ironman_chat_badge.png";
             default:
                 return null;
         }
