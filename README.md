@@ -35,6 +35,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 - [Player Kills](#player-kills): Sends a webhook message upon killing another player (while hitsplats are still visible)
 - [Group Storage](#group-storage): Sends a webhook message upon Group Ironman Shared Bank transactions (i.e., depositing or withdrawing items)
 - [Grand Exchange](#grand-exchange): Sends a webhook message upon buying or selling items on the GE (with customizable value threshold)
+- [Leagues](#leagues): Sends a webhook message upon completing a Leagues IV task or unlocking a region/relic
 
 ## Other Setup
 
@@ -758,6 +759,112 @@ values can range from 1 to 8 (inclusive) for members, and 1 to 3 (inclusive) for
 See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/GrandExchangeOfferState.html) for the possible values of `extra.status`.
 
 </details>
+
+### Leagues:
+
+Leagues notifications include: region unlocked, relic unlocked, and task completed (with customizable difficulty threshold).
+
+Each of these events can be independently enabled or disabled in the notifier settings.
+
+<details>
+  <summary>JSON for Area Unlock Notifications:</summary>
+
+```json5
+{
+  "type": "LEAGUES_AREA",
+  "content": "%USERNAME% selected their second region: Kandarin.",
+  "playerName": "%USERNAME%",
+  "accountType": "IRONMAN",
+  "seasonalWorld": true,
+  "extra": {
+    "area": "Kandarin",
+    "index": 2,
+    "tasksCompleted": 200,
+    "tasksUntilNextArea": 200
+  }
+}
+```
+
+Note: `index` refers to the order of region unlocks.
+Here, Kandarin was the second region selected.
+For all players, Karamja is the _zeroth_ region selected (and there is no notification for Misthalin).
+
+</details>
+
+<details>
+  <summary>JSON for Relic Chosen Notifications:</summary>
+
+```json5
+{
+  "type": "LEAGUES_RELIC",
+  "content": "%USERNAME% unlocked a Tier 1 Relic: Production Prodigy.",
+  "playerName": "%USERNAME%",
+  "accountType": "IRONMAN",
+  "seasonalWorld": true,
+  "extra": {
+    "relic": "Production Prodigy",
+    "tier": 1,
+    "requiredPoints": 0,
+    "totalPoints": 20,
+    "pointsUntilNextTier": 480
+  }
+}
+```
+
+</details>
+
+<details>
+  <summary>JSON for Task Completed Notifications:</summary>
+
+```json5
+{
+  "type": "LEAGUES_TASK",
+  "content": "%USERNAME% completed a Easy task: Pickpocket a Citizen.",
+  "playerName": "%USERNAME%",
+  "accountType": "IRONMAN",
+  "seasonalWorld": true,
+  "extra": {
+    "taskName": "Pickpocket a Citizen",
+    "difficulty": "EASY",
+    "taskPoints": 10,
+    "totalPoints": 30,
+    "tasksCompleted": 3,
+    "pointsUntilNextRelic": 470,
+    "pointsUntilNextTrophy": 2470
+  }
+}
+```
+
+</details>
+
+<details>
+  <summary>JSON for Task Notifications that unlocked a Trophy:</summary>
+
+```json5
+{
+  "type": "LEAGUES_TASK",
+  "content": "%USERNAME% completed a Hard task, The Frozen Door, unlocking the Bronze trophy!",
+  "playerName": "%USERNAME%",
+  "accountType": "IRONMAN",
+  "seasonalWorld": true,
+  "extra": {
+    "taskName": "The Frozen Door",
+    "difficulty": "HARD",
+    "taskPoints": 80,
+    "totalPoints": 2520,
+    "tasksCompleted": 119,
+    "tasksUntilNextArea": 81,
+    "pointsUntilNextRelic": 1480,
+    "pointsUntilNextTrophy": 2480,
+    "earnedTrophy": "Bronze"
+  }
+}
+```
+
+</details>
+
+Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntilNextTrophy` can be omitted
+if there is no next level of progression (i.e., all three regions selected, all relic tiers unlocked, all trophies acquired).
 
 ### Metadata:
 
