@@ -321,4 +321,19 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
+
+    @Test
+    void ignoreIrrelevant() {
+        // update client mocks
+        int tasksCompleted = 101;
+        int totalPoints = 100 * 10 + 80;
+        when(client.getVarbitValue(LeaguesNotifier.TASKS_COMPLETED_ID)).thenReturn(tasksCompleted);
+        when(client.getVarpValue(LeaguesNotifier.POINTS_EARNED_ID)).thenReturn(totalPoints);
+
+        // fire event
+        notifier.onGameMessage("Congratulations, you've completed a hard combat task: Ready to Pounce.");
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
 }
