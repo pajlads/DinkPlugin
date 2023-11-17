@@ -219,11 +219,11 @@ public class DiscordMessageHandler {
             }
         }
 
-        NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
-
-        if (!config.ignoreSeasonal()) {
-            builder.seasonalWorld(client.getWorldType().contains(WorldType.SEASONAL));
+        if (!config.ignoreSeasonal() && !mBody.isSeasonalWorld() && client.getWorldType().contains(WorldType.SEASONAL)) {
+            mBody = mBody.withSeasonalWorld(true);
         }
+
+        NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
 
         if (config.sendDiscordUser()) {
             builder.discordUser(DiscordProfile.of(discordService.getCurrentUser()));
@@ -333,7 +333,7 @@ public class DiscordMessageHandler {
         Author author = Author.builder()
             .name(body.getPlayerName())
             .url(playerLookupService.getPlayerUrl(body.getPlayerName()))
-            .iconUrl(Utils.getChatBadge(body.getAccountType()))
+            .iconUrl(Utils.getChatBadge(body.getAccountType(), body.isSeasonalWorld()))
             .build();
         Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()
             .text(Utils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
