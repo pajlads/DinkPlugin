@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.7.0
+
 - Major: Add leagues notifier for areas, relics, and tasks. (#366)
 
 ## 1.6.5
