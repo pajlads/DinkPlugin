@@ -114,8 +114,7 @@ public class LeaguesNotifier extends BaseNotifier {
         Integer tasksUntilNextArea = tasksForNextArea != null ? tasksForNextArea - tasksCompleted : null;
 
         if (unlocked == null) {
-            Map.Entry<Integer, Integer> entry = AREA_BY_TASKS.floorEntry(tasksCompleted);
-            int i = entry.getValue() != null ? entry.getValue() : 0;
+            int i = AREA_BY_TASKS.floorEntry(Math.max(tasksCompleted, 0)).getValue();
             unlocked = Map.entry(i, ith(i));
         }
 
