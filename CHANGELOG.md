@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.7.1
+
 - Fix: Report correct remaining tasks until next area unlock in Leagues notifications. (#369)
 
 ## 1.7.0
