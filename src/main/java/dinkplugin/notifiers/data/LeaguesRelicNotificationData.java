@@ -15,8 +15,8 @@ public class LeaguesRelicNotificationData extends NotificationData {
 
     @NotNull
     String relic;
-    Integer tier;
-    Integer requiredPoints;
+    int tier;
+    int requiredPoints;
     int totalPoints;
 
     @Nullable // if relics for all 8 tiers have now been unlocked

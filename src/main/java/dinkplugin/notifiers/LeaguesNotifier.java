@@ -163,6 +163,7 @@ public class LeaguesNotifier extends BaseNotifier {
         Integer tasksUntilNextArea = tasksForNextArea != null ? tasksForNextArea - tasksCompleted : null;
 
         if (unlocked == null) {
+            // shouldn't happen, but just to be safe
             int i = AREA_BY_TASKS.floorEntry(Math.max(tasksCompleted, 0)).getValue();
             unlocked = Map.entry(i, ith(i));
         }
@@ -193,19 +194,17 @@ public class LeaguesNotifier extends BaseNotifier {
         if (relicTier == null) {
             // shouldn't happen, but just to be safe
             log.warn("Unknown relic encountered: {}", relic);
-            if (points >= 0) {
-                relicTier = LeagueRelicTier.TIER_BY_POINTS.floorEntry(points).getValue();
-            }
+            relicTier = LeagueRelicTier.TIER_BY_POINTS.floorEntry(Math.max(points, 0)).getValue();
         }
-        Integer tier = relicTier != null ? relicTier.ordinal() + 1 : null;
-        Integer requiredPoints = relicTier != null ? relicTier.getPoints() : null;
+        int tier = relicTier.ordinal() + 1;
+        int requiredPoints = relicTier.getPoints();
 
         String playerName = Utils.getPlayerName(client);
         Template text = Template.builder()
             .template("%USERNAME% unlocked a Tier %TIER% Relic: %RELIC%.")
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
-            .replacement("%TIER%", Replacements.ofText(tier != null ? tier.toString() : "?"))
+            .replacement("%TIER%", Replacements.ofText(String.valueOf(tier)))
             .replacement("%RELIC%", Replacements.ofWiki(relic))
             .build();
         createMessage(config.leaguesSendImage(), NotificationBody.builder()
