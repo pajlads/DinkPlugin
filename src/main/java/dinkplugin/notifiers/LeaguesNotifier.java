@@ -11,12 +11,17 @@ import dinkplugin.notifiers.data.LeaguesRelicNotificationData;
 import dinkplugin.notifiers.data.LeaguesTaskNotificationData;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.EnumComposition;
+import net.runelite.api.StructComposition;
 import net.runelite.api.WorldType;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.annotations.Varp;
+import net.runelite.client.callback.ClientThread;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import javax.inject.Inject;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -48,30 +53,42 @@ public class LeaguesNotifier extends BaseNotifier {
     static final @Varbit int FIVE_AREAS = 10666, FOUR_AREAS = 10665, THREE_AREAS = 10664, TWO_AREAS = 10663;
 
     /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/[proc%2Cscript2451].cs2#L3-L6">CS2 Reference</a>
+     * @see <a href="https://abextm.github.io/cache2/#/viewer/enum/2670">Enum Reference</a>
+     * @see <a href="https://abextm.github.io/cache2/#/viewer/struct/4699">Struct Reference</a>
+     */
+    @VisibleForTesting
+    static final @Varbit int LEAGUES_VERSION = 10032; // 4 for Leagues IV
+
+    /**
      * Trophy name by the required points, in a binary search tree.
      *
      * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League#Trophies">Wiki Reference</a>
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cscript731%5D.cs2#L3">CS2 Reference</a>
      */
-    private static final NavigableMap<Integer, String> TROPHY_BY_POINTS;
+    private static final NavigableMap<Integer, String> TROPHY_BY_POINTS; // immutable
 
     /**
      * Mapping of each relic name to the tier (1-8).
      *
      * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League/Relics">Wiki Reference</a>
      */
-    private static final Map<String, LeagueRelicTier> TIER_BY_RELIC;
+    private static final Map<String, LeagueRelicTier> TIER_BY_RELIC; // mutable via #init
 
     /**
      * Mapping of the number of tasks required to unlock an area to the area index (0-3).
      *
      * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League/Areas">Wiki reference</a>
      */
-    private static final NavigableMap<Integer, Integer> AREA_BY_TASKS;
+    private static final NavigableMap<Integer, Integer> AREA_BY_TASKS; // immutable
+
+    @Inject
+    private ClientThread clientThread;
 
     @Override
     public boolean isEnabled() {
         return config.notifyLeagues() &&
+            client.getVarbitValue(LEAGUES_VERSION) == 4 &&
             client.getWorldType().contains(WorldType.SEASONAL) &&
             settingsManager.isNamePermitted(client.getLocalPlayer().getName());
     }
@@ -79,6 +96,38 @@ public class LeaguesNotifier extends BaseNotifier {
     @Override
     protected String getWebhookUrl() {
         return config.leaguesWebhook();
+    }
+
+    public void init() {
+        // https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bproc,script2281%5D.cs2
+        clientThread.invoke(() -> {
+            EnumComposition enum2670 = client.getEnum(2670);
+            if (enum2670 == null) return;
+            StructComposition struct2 = client.getStructComposition(enum2670.getIntValue(4)); // 4699
+            if (struct2 == null) return;
+            EnumComposition enum3 = client.getEnum(struct2.getIntValue(870)); // 5209
+            if (enum3 == null) return;
+            int[] tiers = enum3.getKeys();
+            int[] structs = enum3.getIntVals();
+            LeagueRelicTier[] relicTiers = LeagueRelicTier.values();
+            for (int i = 0; i < tiers.length; i++) {
+                int tier = tiers[i]; // 0..7
+                if (tier < 0 || tier >= relicTiers.length) continue;
+                LeagueRelicTier relicTier = relicTiers[tier];
+                StructComposition struct4 = client.getStructComposition(structs[i]);
+                if (struct4 == null) continue;
+                EnumComposition enum5 = client.getEnum(struct4.getIntValue(878));
+                if (enum5 == null) continue;
+                int[] relicStructs = enum5.getIntVals();
+                for (int struct6 : relicStructs) {
+                    StructComposition structComp6 = client.getStructComposition(struct6);
+                    if (structComp6 == null) continue;
+                    String string0 = structComp6.getStringValue(879);
+                    log.debug("Identified Tier {} Relic: {}", tier + 1, string0);
+                    TIER_BY_RELIC.put(string0, relicTier);
+                }
+            }
+        });
     }
 
     public void onGameMessage(String message) {
@@ -261,7 +310,7 @@ public class LeaguesNotifier extends BaseNotifier {
         thresholds.put(56_000, "Dragon");
         TROPHY_BY_POINTS = Collections.unmodifiableNavigableMap(thresholds);
 
-        TIER_BY_RELIC = Map.ofEntries(
+        TIER_BY_RELIC = new HashMap<>(Map.ofEntries(
             Map.entry("Endless Harvest", LeagueRelicTier.ONE),
             Map.entry("Production Prodigy", LeagueRelicTier.ONE),
             Map.entry("Trickster", LeagueRelicTier.ONE),
@@ -284,6 +333,6 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Guardian", LeagueRelicTier.EIGHT),
             Map.entry("Executioner", LeagueRelicTier.EIGHT),
             Map.entry("Undying Retribution", LeagueRelicTier.EIGHT)
-        );
+        ));
     }
 }

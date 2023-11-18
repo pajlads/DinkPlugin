@@ -92,6 +92,7 @@ public class DinkPlugin extends Plugin {
         settingsManager.init();
         lootNotifier.init();
         levelNotifier.initLevels();
+        leaguesNotifier.init();
     }
 
     @Override
