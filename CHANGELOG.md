@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Populate leagues relic names dynamically from structs and enums (#368).
+
 ## 1.7.0
 
 - Major: Add leagues notifier for areas, relics, and tasks. (#366)
