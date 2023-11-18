@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Fix: Report correct remaining tasks until next area unlock in Leagues notifications. (#369)
+
 ## 1.7.0
 
 - Major: Add leagues notifier for areas, relics, and tasks. (#366)
