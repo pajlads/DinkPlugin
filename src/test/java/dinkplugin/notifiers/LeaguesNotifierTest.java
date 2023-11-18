@@ -39,6 +39,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         // client mocks
         when(client.getWorldType()).thenReturn(EnumSet.of(WorldType.SEASONAL));
         when(client.getVarbitValue(Varbits.ACCOUNT_TYPE)).thenReturn(AccountType.IRONMAN.ordinal());
+        when(client.getVarbitValue(LeaguesNotifier.LEAGUES_VERSION)).thenReturn(4);
 
         // config mocks
         when(config.notifyLeagues()).thenReturn(true);
