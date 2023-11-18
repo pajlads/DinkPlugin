@@ -212,18 +212,18 @@ public class DiscordMessageHandler {
             mBody = mBody.withAccountType(Utils.getAccountType(client));
         }
 
-        if (mBody.getDinkAccountHash() == null) {
-            long id = client.getAccountHash();
-            if (id != -1) {
-                mBody = mBody.withDinkAccountHash(Utils.dinkHash(id));
-            }
-        }
-
         if (!config.ignoreSeasonal() && !mBody.isSeasonalWorld() && client.getWorldType().contains(WorldType.SEASONAL)) {
             mBody = mBody.withSeasonalWorld(true);
         }
 
         NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
+
+        if (mBody.getDinkAccountHash() == null) {
+            long id = client.getAccountHash();
+            if (id != -1) {
+                builder.dinkAccountHash(Utils.dinkHash(id));
+            }
+        }
 
         if (config.sendDiscordUser()) {
             builder.discordUser(DiscordProfile.of(discordService.getCurrentUser()));
