@@ -65,7 +65,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
 
         // verify notification
         String area = "Kandarin";
-        int tasksUntilNextArea = 400 - tasksCompleted;
+        int tasksUntilNextArea = 300 - tasksCompleted;
         verify(messageHandler).createMessage(
             PRIMARY_WEBHOOK_URL,
             false,
@@ -163,7 +163,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         // verify notification
         String taskName = "The Frozen Door";
         LeagueTaskDifficulty difficulty = LeagueTaskDifficulty.HARD;
-        int tasksUntilNextArea = 200 - tasksCompleted;
+        int tasksUntilNextArea = 140 - tasksCompleted;
         int pointsUntilNextRelic = LeagueRelicTier.THREE.getPoints() - totalPoints;
         int pointsUntilNextTrophy = 2_500 - totalPoints;
         verify(messageHandler).createMessage(
@@ -198,7 +198,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         // verify notification
         String taskName = "The Frozen Door";
         LeagueTaskDifficulty difficulty = LeagueTaskDifficulty.HARD;
-        int tasksUntilNextArea = 200 - tasksCompleted;
+        int tasksUntilNextArea = 140 - tasksCompleted;
         int pointsUntilNextRelic = LeagueRelicTier.FIVE.getPoints() - totalPoints;
         int pointsUntilNextTrophy = 5_000 - totalPoints;
         String trophy = "Bronze";
@@ -236,7 +236,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         // verify notification
         String taskName = "Equip Amy's Saw";
         LeagueTaskDifficulty difficulty = LeagueTaskDifficulty.MEDIUM;
-        int tasksUntilNextArea = 400 - tasksCompleted;
+        int tasksUntilNextArea = 300 - tasksCompleted;
         int pointsUntilNextRelic = LeagueRelicTier.SIX.getPoints() - totalPoints;
         int pointsUntilNextTrophy = 10_000 - totalPoints;
         String trophy = "Iron";
