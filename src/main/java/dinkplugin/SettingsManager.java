@@ -268,7 +268,7 @@ public class SettingsManager {
         if (isSettingsOpen(client)) {
             plugin.addChatWarning(message);
         } else {
-            log.warn(message);
+            log.debug(message);
         }
     }
 
