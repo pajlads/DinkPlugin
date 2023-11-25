@@ -73,7 +73,8 @@ public class DiaryNotifier extends BaseNotifier {
     }
 
     public void onGameState(GameStateChanged event) {
-        if (event.getGameState() != GameState.LOGGED_IN)
+        GameState state = event.getGameState();
+        if (state != GameState.LOADING && state != GameState.LOGGED_IN)
             this.reset();
     }
 
