@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Dev: Moved `warnForGameSetting` logging down to `log.debug`. (#372)
+- Dev: Change game setting warning logs to debug level. (#372)
 
 ## 1.7.1
 
