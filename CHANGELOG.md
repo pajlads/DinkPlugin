@@ -1,9 +1,10 @@
 ## Unreleased
 
+- Dev: Moved `warnForGameSetting` logging down to `log.debug`. (#372)
+
 ## 1.7.1
 
 - Bugfix: Report correct remaining tasks until next area unlock in Leagues notifications. (#369)
-- Dev: Moved `warnForGameSetting` logging down to `log.debug`. (#372)
 
 ## 1.7.0
 
