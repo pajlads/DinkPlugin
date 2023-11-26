@@ -163,7 +163,7 @@ public class DinkPlugin extends Plugin {
         }
 
         settingsManager.onGameState(previousState, newState);
-        collectionNotifier.onGameState(previousState, newState);
+        collectionNotifier.onGameState(newState);
         levelNotifier.onGameStateChanged(gameStateChanged);
         diaryNotifier.onGameState(gameStateChanged);
         grandExchangeNotifier.onGameStateChange(gameStateChanged);

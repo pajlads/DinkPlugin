@@ -72,11 +72,8 @@ public class CollectionNotifier extends BaseNotifier {
         this.popupStarted.set(false);
     }
 
-    public void onGameState(GameState oldState, GameState newState) {
-        if (oldState == GameState.HOPPING || newState == GameState.HOPPING)
-            return;
-
-        if (newState != GameState.LOGGED_IN)
+    public void onGameState(GameState newState) {
+        if (newState != GameState.HOPPING && newState != GameState.LOGGED_IN)
             this.reset();
     }
 
