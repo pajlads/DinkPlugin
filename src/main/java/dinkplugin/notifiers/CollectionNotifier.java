@@ -84,7 +84,9 @@ public class CollectionNotifier extends BaseNotifier {
             completed.set(-1);
         } else if (completed.get() < 0) {
             // initialize collection log entry completion count
-            completed.set(client.getVarpValue(COMPLETED_VARP));
+            int varpValue = client.getVarpValue(COMPLETED_VARP);
+            if (varpValue > 0)
+               completed.set(varpValue);
         }
     }
 
