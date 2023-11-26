@@ -15,7 +15,6 @@ import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varp;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
@@ -73,8 +72,11 @@ public class CollectionNotifier extends BaseNotifier {
         this.popupStarted.set(false);
     }
 
-    public void onGameState(GameStateChanged event) {
-        if (event.getGameState() != GameState.LOGGED_IN)
+    public void onGameState(GameState oldState, GameState newState) {
+        if (oldState == GameState.HOPPING || newState == GameState.HOPPING)
+            return;
+
+        if (newState != GameState.LOGGED_IN)
             this.reset();
     }
 
