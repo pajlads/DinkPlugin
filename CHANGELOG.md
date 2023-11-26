@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Don't report inaccurate completed collections count, when character summary tab was not selected. (#374)
+
 ## 1.7.1
 
 - Bugfix: Report correct remaining tasks until next area unlock in Leagues notifications. (#369)
