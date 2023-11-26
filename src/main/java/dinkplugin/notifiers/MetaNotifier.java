@@ -42,7 +42,6 @@ public class MetaNotifier extends BaseNotifier {
     static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
 
     private final AtomicInteger loginTicks = new AtomicInteger(-1);
-    private final AtomicReference<GameState> gameState = new AtomicReference<>();
 
     @Inject
     private ClientThread clientThread;
@@ -63,13 +62,8 @@ public class MetaNotifier extends BaseNotifier {
         return config.metadataWebhook();
     }
 
-    public void onGameState(GameStateChanged event) {
-        GameState newState = event.getGameState();
-        if (newState == GameState.LOADING) {
-            // ignore this intermediate state
-            return;
-        }
-        GameState oldState = gameState.getAndSet(newState);
+    public void onGameState(GameState oldState, GameState newState) {
+        // inspect oldState because we don't want a notification on each world hop
         if (oldState == GameState.LOGGING_IN && newState == GameState.LOGGED_IN) {
             loginTicks.set(INIT_TICKS);
         }
