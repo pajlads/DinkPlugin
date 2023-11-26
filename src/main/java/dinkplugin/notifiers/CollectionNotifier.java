@@ -80,13 +80,13 @@ public class CollectionNotifier extends BaseNotifier {
 
     public void onTick() {
         if (client.getGameState() != GameState.LOGGED_IN) {
-            // indicate that the latest completion count should be updated
+            // this shouldn't ever happen, but just in case
             completed.set(-1);
         } else if (completed.get() < 0) {
             // initialize collection log entry completion count
             int varpValue = client.getVarpValue(COMPLETED_VARP);
             if (varpValue > 0)
-               completed.set(varpValue);
+                completed.set(varpValue);
         }
     }
 
@@ -94,15 +94,10 @@ public class CollectionNotifier extends BaseNotifier {
         if (event.getVarpId() != COMPLETED_VARP)
             return;
 
-        // Currently, this varp is sent early enough to be read on the first logged-in tick.
-        // For robustness, we also allow initialization here just in case the varp is sent with greater delay.
-
-        // Note: upon a completion, this varp is not updated until a few ticks after the collection log message.
-        // However, this behavior could also change, which is why here we don't synchronize "completed" beyond initialization.
-
-        int old = completed.get();
-        if (old <= 0) {
-            completed.compareAndSet(old, event.getValue());
+        // we only care about this event when the notifier is disabled
+        // to keep `completed` updated when `handleNotify` is not being called
+        if (!config.notifyCollectionLog()) {
+            completed.set(event.getValue());
         }
     }
 

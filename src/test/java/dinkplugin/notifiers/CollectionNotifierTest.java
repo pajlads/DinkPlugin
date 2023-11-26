@@ -42,11 +42,6 @@ class CollectionNotifierTest extends MockedNotifierTest {
     protected void setUp() {
         super.setUp();
 
-        // init config mocks
-        when(config.notifyCollectionLog()).thenReturn(true);
-        when(config.collectionSendImage()).thenReturn(false);
-        when(config.collectionNotifyMessage()).thenReturn("%USERNAME% has added %ITEM% to their collection");
-
         // init client mocks
         when(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION)).thenReturn(1);
         when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
@@ -58,6 +53,11 @@ class CollectionNotifierTest extends MockedNotifierTest {
         initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
         initCompleted.setValue(0);
         notifier.onVarPlayer(initCompleted);
+
+        // init config mocks
+        when(config.notifyCollectionLog()).thenReturn(true);
+        when(config.collectionSendImage()).thenReturn(false);
+        when(config.collectionNotifyMessage()).thenReturn("%USERNAME% has added %ITEM% to their collection");
     }
 
     @Test
