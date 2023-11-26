@@ -12,6 +12,7 @@ import net.runelite.api.ItemID;
 import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
+import net.runelite.api.events.VarbitChanged;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -52,6 +53,11 @@ class CollectionNotifierTest extends MockedNotifierTest {
         when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
         notifier.onTick();
+
+        VarbitChanged initCompleted = new VarbitChanged();
+        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
+        initCompleted.setValue(0);
+        notifier.onVarPlayer(initCompleted);
     }
 
     @Test
