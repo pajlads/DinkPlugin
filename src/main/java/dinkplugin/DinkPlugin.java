@@ -264,7 +264,6 @@ public class DinkPlugin extends Plugin {
         questNotifier.onWidgetLoaded(event);
         clueNotifier.onWidgetLoaded(event);
         speedrunNotifier.onWidgetLoaded(event);
-        lootNotifier.onWidgetLoaded(event);
         groupStorageNotifier.onWidgetLoad(event);
         killCountNotifier.onWidget(event);
     }
