@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.7.2
+
 - Dev: Utilize runelite event for unsired loot instead of custom widget handler (#375).
 
 ## 1.7.1
