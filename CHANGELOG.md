@@ -1,6 +1,11 @@
 ## Unreleased
 
 - Bugfix: Don't report inaccurate completed collections count, when character summary tab was not selected. (#374)
+- Bugfix: Avoid undercounting diary completions for notifications that occur shortly after a teleport. (#373)
+
+## 1.7.2
+
+- Dev: Utilize runelite event for unsired loot instead of custom widget handler (#375).
 
 ## 1.7.1
 
