@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Avoid undercounting diary completions for notifications that occur shortly after a teleport. (#373)
+
 ## 1.7.2
 
 - Dev: Utilize runelite event for unsired loot instead of custom widget handler (#375).

@@ -200,12 +200,17 @@ public class SettingsManager {
         }
     }
 
-    void onGameState(GameStateChanged event) {
-        if (event.getGameState() != GameState.LOGGED_IN) {
+    void onGameState(GameState oldState, GameState newState) {
+        if (newState != GameState.LOGGED_IN) {
             justLoggedIn.set(false);
             return;
         } else {
             justLoggedIn.set(true);
+        }
+
+        if (oldState == GameState.HOPPING) {
+            // avoid repeated warnings after login
+            return;
         }
 
         // Since varbit values default to zero and no VarbitChanged occurs if the
