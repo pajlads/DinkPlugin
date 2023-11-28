@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Don't report inaccurate completed collections count, when character summary tab was not selected. (#374)
 - Bugfix: Avoid undercounting diary completions for notifications that occur shortly after a teleport. (#373)
 
 ## 1.7.2
