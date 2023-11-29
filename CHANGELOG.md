@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Update set of items that are never kept on dangerous deaths. (#364)
 - Bugfix: Don't report inaccurate completed collections count, when character summary tab was not selected. (#374)
 - Bugfix: Avoid undercounting diary completions for notifications that occur shortly after a teleport. (#373)
 
