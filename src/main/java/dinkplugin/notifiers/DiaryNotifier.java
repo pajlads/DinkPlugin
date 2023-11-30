@@ -107,11 +107,6 @@ public class DiaryNotifier extends BaseNotifier {
                 return;
             }
 
-            if (!checkDifficulty(difficulty)) {
-                log.warn("Ignoring diary notification as difficulty threshold isn't met ({} <= {})", difficulty, config.minDiaryDifficulty().name());
-                return;
-            }
-
             String area = matcher.group("area").trim();
             Optional<AchievementDiary> found = DIARIES.values().stream()
                 .filter(e -> e.getDifficulty() == difficulty && Utils.containsEither(e.getArea(), area))
@@ -123,6 +118,10 @@ public class DiaryNotifier extends BaseNotifier {
                     diaryCompletionById.put(varbitId, 1);
                 } else {
                     diaryCompletionById.put(varbitId, 2);
+                }
+                if (!checkDifficulty(difficulty)) {
+                    log.warn("Ignoring diary notification as difficulty threshold isn't met ({} <= {})", difficulty, config.minDiaryDifficulty().name());
+                    return;
                 }
                 clientThread.invokeLater(() -> handle(diary)); // 20ms delay to run scripts cleanly
             } else {
