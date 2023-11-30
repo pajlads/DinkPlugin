@@ -119,10 +119,7 @@ public class DiaryNotifier extends BaseNotifier {
                 } else {
                     diaryCompletionById.put(varbitId, 2);
                 }
-                if (!checkDifficulty(difficulty)) {
-                    log.warn("Ignoring diary notification as difficulty threshold isn't met ({} <= {})", difficulty, config.minDiaryDifficulty().name());
-                    return;
-                }
+                if (!checkDifficulty(difficulty)) return;
                 clientThread.invokeLater(() -> handle(diary)); // 20ms delay to run scripts cleanly
             } else {
                 log.warn("Failed to match diary area: {}", area);
