@@ -107,6 +107,11 @@ public class DiaryNotifier extends BaseNotifier {
                 return;
             }
 
+            if (!checkDifficulty(difficulty)) {
+                log.warn("Ignoring diary notification as difficulty threshold isn't met ({} <= {})", difficulty, config.minDiaryDifficulty().name());
+                return;
+            }
+
             String area = matcher.group("area").trim();
             Optional<AchievementDiary> found = DIARIES.values().stream()
                 .filter(e -> e.getDifficulty() == difficulty && Utils.containsEither(e.getArea(), area))
