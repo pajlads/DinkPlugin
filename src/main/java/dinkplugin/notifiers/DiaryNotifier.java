@@ -120,6 +120,7 @@ public class DiaryNotifier extends BaseNotifier {
                     diaryCompletionById.put(varbitId, 2);
                 }
                 if (!checkDifficulty(difficulty)) return;
+
                 clientThread.invokeLater(() -> handle(diary)); // 20ms delay to run scripts cleanly
             } else {
                 log.warn("Failed to match diary area: {}", area);
