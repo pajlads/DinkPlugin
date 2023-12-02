@@ -144,6 +144,21 @@ class DiaryNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testDontNotifyKaramjaMessageBox() {
+        // initially many diary completions
+        when(client.getVarbitValue(anyInt())).thenReturn(1);
+
+        // perform enough ticks to trigger diary initialization
+        IntStream.range(0, 16).forEach(i -> notifier.onTick());
+
+        // trigger diary completion
+        notifier.onMessageBox("Congratulations! You have completed all of the easy tasks in the Karamja area. Speak to Pirate Jackie the Fruit to claim your reward.");
+
+        // verify no notification message
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testNotifyWesternMessageBox() {
         // initially many diary completions
         when(client.getVarbitValue(anyInt())).thenReturn(1);
