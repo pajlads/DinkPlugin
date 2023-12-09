@@ -116,7 +116,7 @@ public class WorldUtils {
      * The in-game region is the same as the inferno, but a varp value is different
      */
     public boolean isJadChallenges(Client client, int regionId) {
-        return regionId == INFERNO_REGION && client.getVarpValue(INSIDE_RAID_OR_CHALLENGE) == 1001;
+        return regionId == INFERNO_REGION && client.getVarpValue(INSIDE_RAID_OR_CHALLENGE) > 0;
     }
 
     public boolean isLastManStanding(Client client) {
