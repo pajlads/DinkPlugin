@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Minor: Allow customization of which safe deaths can trigger notifications. (#363)
+- Minor: Allow customization of which safe deaths can trigger notifications. (#363, #384)
 - Bugfix: Ensure diary notifications below the configured minimum difficulty are not sent. (#382)
 - Bugfix: Update set of items that are never kept on dangerous deaths. (#364)
 - Bugfix: Don't report inaccurate completed collections count, when character summary tab was not selected. (#374)

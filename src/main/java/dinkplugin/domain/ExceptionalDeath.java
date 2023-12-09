@@ -10,7 +10,8 @@ public enum ExceptionalDeath {
     COX("Chambers of Xeric"),
     FIGHT_CAVE("Fight Caves"),
     INFERNO("Inferno"),
-    TOA("Tombs of Amascut");
+    TOA("Tombs of Amascut"),
+    JAD_CHALLENGES("Jad challenges");
 
     private final String displayName;
 

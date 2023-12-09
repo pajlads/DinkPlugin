@@ -9,6 +9,7 @@ import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
 import net.runelite.api.annotations.Varbit;
+import net.runelite.api.annotations.Varp;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
@@ -43,6 +44,11 @@ public class WorldUtils {
      * @see <a href="https://oldschool.runescape.wiki/w/RuneScape:Varbit/6104">Wiki</a>
      */
     private final @Varbit int DRAGON_SLAYER_II_PROGRESS = 6104;
+
+    /**
+     * @see <a href="https://oldschool.runescape.wiki/w/RuneScape:Varplayer/2926">Wiki</a>
+     */
+    private final @Varp int INSIDE_RAID_OR_CHALLENGE = 2926;
 
     /**
      * @see <a href="https://chisel.weirdgloop.org/varbs/display?varbit=6104#ChangeFrequencyTitle">Chisel</a>
@@ -101,8 +107,16 @@ public class WorldUtils {
         return GAUNTLET_REGIONS.contains(regionId);
     }
 
-    public boolean isInferno(int regionId) {
-        return regionId == INFERNO_REGION;
+    public boolean isInferno(Client client, int regionId) {
+        return regionId == INFERNO_REGION && client.getVarpValue(INSIDE_RAID_OR_CHALLENGE) == 0;
+    }
+
+    /**
+     * Checks whether the player is within TzHaar-Ket-Rak's Challenges
+     * The in-game region is the same as the inferno, but a varp value is different
+     */
+    public boolean isJadChallenges(Client client, int regionId) {
+        return regionId == INFERNO_REGION && client.getVarpValue(INSIDE_RAID_OR_CHALLENGE) == 1001;
     }
 
     public boolean isLastManStanding(Client client) {
@@ -166,8 +180,12 @@ public class WorldUtils {
             return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.COX);
         }
 
-        if (isInferno(regionId)) {
+        if (isInferno(client, regionId)) {
             return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.INFERNO);
+        }
+
+        if (isJadChallenges(client, regionId)) {
+            return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.JAD_CHALLENGES);
         }
 
         if (isTzHaarFightCave(regionId)) {
