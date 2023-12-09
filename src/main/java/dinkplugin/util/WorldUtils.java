@@ -2,6 +2,8 @@ package dinkplugin.util;
 
 import com.google.common.collect.ImmutableSet;
 import dinkplugin.domain.AccountType;
+import dinkplugin.domain.Danger;
+import dinkplugin.domain.ExceptionalDeath;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
@@ -125,30 +127,7 @@ public class WorldUtils {
     }
 
     public boolean isSafeArea(Client client) {
-        int regionId = getLocation(client).getRegionID();
-
-        if (isAmascutTombs(regionId)) {
-            // ToA is technically a dangerous activity, but multiple attempts can be permitted
-            // the real TOA death is detected via game message in death notifier
-            // However: any TOA death is still dangerous for hardcore (group) ironmen
-            return !Utils.getAccountType(client).isHardcore();
-        }
-
-        if (isGauntlet(regionId)) {
-            // Players can't take items in or out of (Corrupted) Gauntlet, so these deaths are effectively safe
-            // However: any Gauntlet death is still dangerous for hardcore (group) ironmen
-            return !Utils.getAccountType(client).isHardcore();
-        }
-
-        if (isBarbarianAssault(regionId) || isChambersOfXeric(regionId) || isInferno(regionId) ||
-            isNightmareZone(regionId) || isTzHaarFightCave(regionId) || isPestControl(client) ||
-            isGalvekRematch(client, regionId)) {
-            // All PvM activities are dangerous for Hardcore group iron players
-            return Utils.getAccountType(client) != AccountType.HARDCORE_GROUP_IRONMAN;
-        }
-
-        return isCastleWars(regionId) || isClanWars(regionId) || isSoulWars(regionId) ||
-            isPlayerOwnedHouse(regionId) || isLastManStanding(client) || isTzHaarFightPit(regionId);
+        return getDangerLevel(client, Collections.emptySet()) == Danger.SAFE;
     }
 
     public boolean isSoulWars(int regionId) {
@@ -165,6 +144,53 @@ public class WorldUtils {
 
     public boolean isTzHaarFightPit(int regionId) {
         return regionId == TZHAAR_PIT;
+    }
+
+    public Danger getDangerLevel(Client client, Set<ExceptionalDeath> exceptions) {
+        int regionId = getLocation(client).getRegionID();
+
+        if (isGauntlet(regionId)) {
+            // Players can't take items in or out of (Corrupted) Gauntlet, so these deaths are effectively safe
+            // However: any Gauntlet death is still dangerous for hardcore (group) ironmen
+            return Utils.getAccountType(client).isHardcore() ? Danger.DANGEROUS : Danger.SAFE;
+        }
+
+        if (isAmascutTombs(regionId)) {
+            // ToA is technically a dangerous activity, but multiple attempts can be permitted
+            // the real TOA death is detected via game message in death notifier
+            // However: any TOA death is still dangerous for hardcore (group) ironmen
+            return checkException(Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.TOA);
+        }
+
+        if (isChambersOfXeric(regionId)) {
+            return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.COX);
+        }
+
+        if (isInferno(regionId)) {
+            return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.INFERNO);
+        }
+
+        if (isTzHaarFightCave(regionId)) {
+            return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.FIGHT_CAVE);
+        }
+
+        if (isBarbarianAssault(regionId) || isNightmareZone(regionId) || isPestControl(client) || isGalvekRematch(client, regionId)) {
+            // All PvM activities are dangerous for Hardcore group iron players
+            return Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN ? Danger.DANGEROUS : Danger.SAFE;
+        }
+
+        if (isCastleWars(regionId) || isClanWars(regionId) || isSoulWars(regionId) || isPlayerOwnedHouse(regionId)
+            || isLastManStanding(client) || isTzHaarFightPit(regionId)) {
+            return Danger.SAFE;
+        }
+
+        return Danger.DANGEROUS;
+    }
+
+    private Danger checkException(boolean dangerous, Set<ExceptionalDeath> exceptions, ExceptionalDeath exception) {
+        if (dangerous) return Danger.DANGEROUS;
+        if (exceptions.contains(exception)) return Danger.EXCEPTIONAL;
+        return Danger.SAFE;
     }
 
 }

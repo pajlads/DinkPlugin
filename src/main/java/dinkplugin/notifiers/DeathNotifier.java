@@ -1,6 +1,8 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.domain.AccountType;
+import dinkplugin.domain.Danger;
+import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.message.Embed;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
@@ -13,7 +15,6 @@ import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
-import net.runelite.api.Client;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
@@ -116,7 +117,8 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     public void onGameMessage(String message) {
-        if (config.deathIgnoreSafe() && !Utils.getAccountType(client).isHardcore() && message.contains(TOA_DEATH_MSG) && isEnabled()) {
+        if (config.deathIgnoreSafe() && !config.deathSafeExceptions().contains(ExceptionalDeath.TOA) &&
+            !Utils.getAccountType(client).isHardcore() && message.contains(TOA_DEATH_MSG) && isEnabled()) {
             // https://github.com/pajlads/DinkPlugin/issues/316
             // though, hardcore (group) ironmen just use the normal ActorDeath trigger for TOA
             handleNotify(Danger.DANGEROUS);
@@ -130,7 +132,7 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Danger dangerOverride) {
-        Danger danger = dangerOverride != null ? dangerOverride : getDangerLevel(client);
+        Danger danger = dangerOverride != null ? dangerOverride : WorldUtils.getDangerLevel(client, config.deathSafeExceptions());
         if (danger == Danger.SAFE && config.deathIgnoreSafe())
             return;
 
@@ -362,29 +364,6 @@ public class DeathNotifier extends BaseNotifier {
         return items.stream()
             .map(item -> ItemUtils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
-    }
-
-    /**
-     * @param client {@link Client}
-     * @return whether the player is not in a safe area (excluding inferno and fight cave)
-     */
-    private static Danger getDangerLevel(Client client) {
-        if (!WorldUtils.isSafeArea(client))
-            return Danger.DANGEROUS;
-
-        // inferno and fight cave are technically safe, but we want death notification regardless
-        int regionId = WorldUtils.getLocation(client).getRegionID();
-        if (WorldUtils.isInferno(regionId) || WorldUtils.isTzHaarFightCave(regionId))
-            return Danger.EXCEPTIONAL;
-
-        // otherwise actually safe
-        return Danger.SAFE;
-    }
-
-    private enum Danger {
-        SAFE,
-        DANGEROUS,
-        EXCEPTIONAL // safe areas that should trigger death notification when ignoreSafe is enabled
     }
 
     static {
