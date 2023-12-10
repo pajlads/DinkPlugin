@@ -310,6 +310,67 @@ class LootNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyPlayer() {
         // prepare mocks
+        when(config.pkWebhook()).thenReturn("https://example.com/");
+        when(config.lootRedirectPlayerKill()).thenReturn(false);
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn(LOOTED_NAME);
+
+        // fire event
+        PlayerLootReceived event = new PlayerLootReceived(player, Arrays.asList(new ItemStack(ItemID.RUBY, 1, null), new ItemStack(ItemID.TUNA, 1, null)));
+        plugin.onPlayerLootReceived(event);
+
+        // verify notification message
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: 1 x {{ruby}} (%d) from %s for %s gp", PLAYER_NAME, RUBY_PRICE, LOOTED_NAME, QuantityFormatter.quantityToStackSize(RUBY_PRICE + TUNA_PRICE)))
+                        .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
+                        .build()
+                )
+                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, null))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyPlayerForwarded() {
+        // prepare mocks
+        String overrideUrl = "https://example.com/";
+        when(config.pkWebhook()).thenReturn(overrideUrl);
+        when(config.lootRedirectPlayerKill()).thenReturn(true);
+        Player player = mock(Player.class);
+        when(player.getName()).thenReturn(LOOTED_NAME);
+
+        // fire event
+        PlayerLootReceived event = new PlayerLootReceived(player, Arrays.asList(new ItemStack(ItemID.RUBY, 1, null), new ItemStack(ItemID.TUNA, 1, null)));
+        plugin.onPlayerLootReceived(event);
+
+        // verify notification message
+        verify(messageHandler).createMessage(
+            overrideUrl,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: 1 x {{ruby}} (%d) from %s for %s gp", PLAYER_NAME, RUBY_PRICE, LOOTED_NAME, QuantityFormatter.quantityToStackSize(RUBY_PRICE + TUNA_PRICE)))
+                        .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
+                        .build()
+                )
+                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, null))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyPlayerForwardBlank() {
+        // prepare mocks
+        when(config.pkWebhook()).thenReturn("");
+        when(config.lootRedirectPlayerKill()).thenReturn(true);
         Player player = mock(Player.class);
         when(player.getName()).thenReturn(LOOTED_NAME);
 

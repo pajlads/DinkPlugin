@@ -62,6 +62,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 1200, 10, 10));
         plugin.onStatChanged(new StatChanged(Skill.HUNTER, 300, 4, 4));
         plugin.onStatChanged(new StatChanged(Skill.SLAYER, 9_800_000, 96, 96));
+        notifier.onTick();
     }
 
     @Test
