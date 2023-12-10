@@ -2,6 +2,7 @@ package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.domain.AccountType;
+import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -33,6 +34,7 @@ import org.mockito.Mockito;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -433,6 +435,50 @@ class DeathNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.DEATH)
                 .build()
         );
+    }
+
+    @Test
+    void testNotifyAmascutExceptional() {
+        // update mocks
+        when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(3520, 5120, 0));
+        when(config.deathIgnoreSafe()).thenReturn(true);
+        when(config.deathEmbedKeptItems()).thenReturn(false);
+        when(config.deathSafeExceptions()).thenReturn(EnumSet.of(ExceptionalDeath.TOA));
+        when(client.isPrayerActive(Prayer.PROTECT_ITEM)).thenReturn(true);
+        Item[] items = {
+            new Item(ItemID.RUBY, 1),
+            new Item(ItemID.TUNA, 1),
+            new Item(ItemID.COAL, 1),
+            new Item(ItemID.SHARK, 1),
+            new Item(ItemID.OPAL, 1),
+        };
+        ItemContainer inv = mock(ItemContainer.class);
+        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(inv.getItems()).thenReturn(items);
+
+        // fire event
+        plugin.onActorDeath(new ActorDeath(localPlayer));
+
+        // verify notification
+        List<SerializedItemStack> kept = Arrays.stream(items)
+            .map(i -> ItemUtils.stackFromItem(itemManager, i))
+            .sorted(Comparator.comparingLong(SerializedItemStack::getTotalPrice).reversed())
+            .collect(Collectors.toList());
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
+                .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList()))
+                .type(NotificationType.DEATH)
+                .build()
+        );
+
+        // fire event
+        notifier.onGameMessage("You failed to survive the Tombs of Amascut");
+
+        // ensure toa death message is ignored in exceptional mode (since a notification already fired)
+        Mockito.verifyNoMoreInteractions(messageHandler);
     }
 
     @Test
