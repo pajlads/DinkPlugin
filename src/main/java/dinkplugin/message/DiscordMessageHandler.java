@@ -113,19 +113,13 @@ public class DiscordMessageHandler {
             boolean chatHidden = hideWidget(config.screenshotHideChat(), client, ComponentID.CHATBOX_FRAME);
             boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
 
-            captureScreenshot(drawManager, config.screenshotScale() / 100.0)
+            captureScreenshot(config.screenshotScale() / 100.0, chatHidden, whispersHidden)
                 .thenApply(image ->
                     RequestBody.create(MediaType.parse("image/" + image.getKey()), image.getValue())
                 )
                 .exceptionally(e -> {
                     log.warn("There was an error creating bytes from captured image", e);
                     return null;
-                })
-                .thenApply(image -> {
-                    // unhide any widgets we hid
-                    unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
-                    unhideWidget(whispersHidden, client, clientThread, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
-                    return image;
                 })
                 .thenAccept(image -> sendToMultiple(urlList, mBody, image));
         } else {
@@ -284,15 +278,23 @@ public class DiscordMessageHandler {
      * Captures the next frame and applies the specified rescaling
      * while abiding by {@link Embed#MAX_IMAGE_SIZE}.
      *
-     * @param drawManager  {@link DrawManager}
      * @param scalePercent {@link DinkPluginConfig#screenshotScale()} divided by 100.0
+     * @param chatHidden Whether the chat widget should be unhidden
+     * @param whispersHidden Whether the whispers widget should be unhidden
      * @return future of the image byte array by the image format name
      * @apiNote scalePercent should be in (0, 1]
      * @implNote the image format is either "png" (lossless) or "jpeg" (lossy), both of which can be used in MIME type
      */
-    private static CompletableFuture<Map.Entry<String, byte[]>> captureScreenshot(DrawManager drawManager, double scalePercent) {
+    private CompletableFuture<Map.Entry<String, byte[]>> captureScreenshot(double scalePercent, boolean chatHidden, boolean whispersHidden) {
         CompletableFuture<Image> future = new CompletableFuture<>();
-        drawManager.requestNextFrameListener(future::complete);
+        drawManager.requestNextFrameListener(img -> {
+            // unhide any widgets we hid (scheduled for client thread)
+            unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
+            unhideWidget(whispersHidden, client, clientThread, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
+
+            // resolve future on separate thread
+            executor.execute(() -> future.complete(img));
+        });
         return future.thenApply(ImageUtil::bufferedImageFromImage)
             .thenApply(input -> Utils.rescale(input, scalePercent))
             .thenApply(image -> {
