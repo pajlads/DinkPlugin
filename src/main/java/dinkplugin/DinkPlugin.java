@@ -95,7 +95,6 @@ public class DinkPlugin extends Plugin {
         log.debug("Started up Dink");
         settingsManager.init();
         lootNotifier.init();
-        levelNotifier.initLevels();
     }
 
     @Override
