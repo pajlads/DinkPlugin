@@ -258,6 +258,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onScriptPreFired(ScriptPreFired event) {
         collectionNotifier.onScript(event.getScriptId());
+        deathNotifier.onScript(event);
     }
 
     @Subscribe(priority = 1) // run before the base loot tracker plugin

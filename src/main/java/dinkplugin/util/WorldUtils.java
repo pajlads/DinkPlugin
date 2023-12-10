@@ -34,6 +34,7 @@ public class WorldUtils {
     private final Set<Integer> POH_REGIONS = ImmutableSet.of(7257, 7513, 7514, 7769, 7770, 8025, 8026);
     private final Set<Integer> SOUL_REGIONS = ImmutableSet.of(8493, 8748, 8749, 9005);
     private final Set<Integer> TOA_REGIONS = ImmutableSet.of(14160, 14162, 14164, 14674, 14676, 15184, 15186, 15188, 15696, 15698, 15700);
+    private final Set<Integer> TOB_REGIONS = ImmutableSet.of(12611, 12612, 12613, 12867, 12869, 13122, 13123, 13125, 13379);
     private final int BURTHORPE_REGION = 8781;
     private final int INFERNO_REGION = 9043;
     private final int NMZ_REGION = 9033;
@@ -152,6 +153,10 @@ public class WorldUtils {
         return TOA_REGIONS.contains(regionId);
     }
 
+    public boolean isBloodTheatre(int regionId) {
+        return TOB_REGIONS.contains(regionId);
+    }
+
     public boolean isTzHaarFightCave(int regionId) {
         return regionId == TZHAAR_CAVE;
     }
@@ -174,6 +179,13 @@ public class WorldUtils {
             // the real TOA death is detected via game message in death notifier
             // However: any TOA death is still dangerous for hardcore (group) ironmen
             return checkException(Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.TOA);
+        }
+
+        if (isBloodTheatre(regionId)) {
+            // ToB is another dangerous activity, but the whole party needs to wipe for it to be a dangerous event
+            // So we use HUD text to detect the real tob death in the notifier itself
+            // However: any TOB death is still dangerous for hardcore (group) ironmen
+            return checkException(Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.TOB);
         }
 
         if (isChambersOfXeric(regionId)) {

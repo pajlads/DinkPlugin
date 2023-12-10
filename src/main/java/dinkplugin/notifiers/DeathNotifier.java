@@ -25,6 +25,7 @@ import net.runelite.api.Prayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
+import net.runelite.api.events.ScriptPreFired;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
 import org.apache.commons.lang3.ArrayUtils;
@@ -57,6 +58,13 @@ public class DeathNotifier extends BaseNotifier {
     private static final String ATTACK_OPTION = "Attack";
 
     private static final String TOA_DEATH_MSG = "You failed to survive the Tombs of Amascut";
+
+    private static final String TOB_DEATH_MSG = "Your party has failed";
+
+    /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,tob_hud_portal%5D.cs2">CS2 Reference</a>
+     */
+    private static final int TOB_HUB_PORTAL_SCRIPT = 2307;
 
     /**
      * Checks whether the actor is alive and interacting with the specified player.
@@ -122,6 +130,21 @@ public class DeathNotifier extends BaseNotifier {
             // https://github.com/pajlads/DinkPlugin/issues/316
             // though, hardcore (group) ironmen just use the normal ActorDeath trigger for TOA
             handleNotify(Danger.DANGEROUS);
+        }
+    }
+
+    public void onScript(ScriptPreFired event) {
+        if (event.getScriptId() == TOB_HUB_PORTAL_SCRIPT && event.getScriptEvent() != null &&
+            config.deathIgnoreSafe() && !config.deathSafeExceptions().contains(ExceptionalDeath.TOB) &&
+            !Utils.getAccountType(client).isHardcore() && isEnabled()) {
+            Object[] args = event.getScriptEvent().getArguments();
+            if (args != null && args.length > 1) {
+                Object text = args[1];
+                if (text instanceof String && ((String) text).contains(TOB_DEATH_MSG)) {
+                    // https://oldschool.runescape.wiki/w/Theatre_of_Blood#Death_within_the_Theatre
+                    handleNotify(Danger.DANGEROUS);
+                }
+            }
         }
     }
 
