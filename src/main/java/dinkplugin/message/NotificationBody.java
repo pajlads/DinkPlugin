@@ -14,6 +14,7 @@ import lombok.With;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.Image;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -85,5 +86,12 @@ public class NotificationBody<T extends NotificationData> {
     @Nullable
     @SerializedName("thread_name")
     String threadName;
+
+    /**
+     * An optional screenshot to use, instead of capturing one from {@link DiscordMessageHandler}
+     */
+    @Nullable
+    @EqualsAndHashCode.Exclude
+    transient Image screenshotOverride;
 
 }

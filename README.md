@@ -35,6 +35,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 - [Player Kills](#player-kills): Sends a webhook message upon killing another player (while hitsplats are still visible)
 - [Group Storage](#group-storage): Sends a webhook message upon Group Ironman Shared Bank transactions (i.e., depositing or withdrawing items)
 - [Grand Exchange](#grand-exchange): Sends a webhook message upon buying or selling items on the GE (with customizable value threshold)
+- [Trades](#trades): Sends a webhook message upon completing a trade with another player (with customizable item value threshold)
 - [Leagues](#leagues): Sends a webhook message upon completing a Leagues IV task or unlocking a region/relic
 
 ## Other Setup
@@ -757,6 +758,49 @@ Unlike `GrandExchangeOfferChanged#getSlot`, `extra.slot` is one-indexed;
 values can range from 1 to 8 (inclusive) for members, and 1 to 3 (inclusive) for F2P.
 
 See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/GrandExchangeOfferState.html) for the possible values of `extra.status`.
+
+</details>
+
+### Trades:
+
+`%COUNTERPARTY%` will be replaced with the name of the other user involved in the trade
+
+`%GROSS_VALUE%` will be replaced with the sum of item values offered by both parties in the transaction.
+
+`%NET_VALUE%` will be replaced with the value of the received items _minus_ the value of the given items.
+
+<details>
+  <summary>JSON for Player Trade Notifications:</summary>
+
+```json5
+{
+  "content": "%USERNAME% traded with %COUNTERPARTY%",
+  "type": "TRADE",
+  "playerName": "%USERNAME%",
+  "accountType": "NORMAL",
+  "extra": {
+    "counterparty": "%COUNTERPARTY%",
+    "receivedItems": [
+      {
+        "id": 314,
+        "quantity": 100,
+        "priceEach": 2,
+        "name": "Feather"
+      }
+    ],
+    "givenItems": [
+      {
+        "id": 2,
+        "quantity": 3,
+        "priceEach": 150,
+        "name": "Cannonball"
+      }
+    ],
+    "receivedValue": 200,
+    "givenValue": 450
+  }
+}
+```
 
 </details>
 

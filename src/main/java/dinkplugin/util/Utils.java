@@ -11,6 +11,8 @@ import net.runelite.api.Client;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Component;
 import net.runelite.api.annotations.Interface;
+import net.runelite.api.widgets.Widget;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 import okhttp3.Call;
@@ -201,6 +203,29 @@ public class Utils {
     @SuppressWarnings("MagicConstant")
     public int packWidget(@Interface int groupId, int childId) {
         return groupId << 16 | childId;
+    }
+
+    public static boolean hideWidget(boolean shouldHide, Client client, @Component int info) {
+        if (!shouldHide)
+            return false;
+
+        Widget widget = client.getWidget(info);
+        if (widget == null || widget.isHidden())
+            return false;
+
+        widget.setHidden(true);
+        return true;
+    }
+
+    public static void unhideWidget(boolean shouldUnhide, Client client, ClientThread clientThread, @Component int info) {
+        if (!shouldUnhide)
+            return;
+
+        clientThread.invoke(() -> {
+            Widget widget = client.getWidget(info);
+            if (widget != null)
+                widget.setHidden(false);
+        });
     }
 
     public BufferedImage rescale(BufferedImage input, double percent) {

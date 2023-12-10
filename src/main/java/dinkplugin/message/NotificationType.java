@@ -27,7 +27,8 @@ public enum NotificationType {
     LEAGUES_AREA("Area Unlocked", "leaguesArea.png", WIKI_IMG_BASE_URL + "Trailblazer_Reloaded_League_-_%3F_Relic.png"),
     LEAGUES_RELIC("Relic Chosen", "leaguesRelic.png", WIKI_IMG_BASE_URL + "Trailblazer_Reloaded_League_-_relics_icon.png"),
     LEAGUES_TASK("Task Completed", "leaguesTask.png", WIKI_IMG_BASE_URL + "Trailblazer_Reloaded_League_icon.png"),
-    LOGIN("Player Login", "login.png", WIKI_IMG_BASE_URL + "Prop_sword.png");
+    LOGIN("Player Login", "login.png", WIKI_IMG_BASE_URL + "Prop_sword.png"),
+    TRADE("Player Trade", "trade.png", WIKI_IMG_BASE_URL + "Inventory.png");
 
     private final String title;
 

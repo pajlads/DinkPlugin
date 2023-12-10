@@ -157,6 +157,14 @@ public interface DinkPluginConfig extends Config {
     String grandExchangeSection = "Grand Exchange";
 
     @ConfigSection(
+        name = "Player Trades",
+        description = "Settings for notifying when you trade with another player",
+        position = 160,
+        closedByDefault = true
+    )
+    String tradeSection = "Player Trades";
+
+    @ConfigSection(
         name = "Leagues",
         description = "Settings for notifying when you complete league tasks, unlock areas, and redeem relics",
         position = 200,
@@ -557,6 +565,17 @@ public interface DinkPluginConfig extends Config {
         section = webhookSection
     )
     default String grandExchangeWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "tradeWebhook",
+        name = "Trade Webhook Override",
+        description = "If non-empty, Trading messages are sent to this URL, instead of the primary URL",
+        position = -3,
+        section = webhookSection
+    )
+    default String tradeWebhook() {
         return "";
     }
 
@@ -1709,6 +1728,54 @@ public interface DinkPluginConfig extends Config {
     )
     default String grandExchangeNotifyMessage() {
         return "%USERNAME% %TYPE% %ITEM% on the GE";
+    }
+
+    @ConfigItem(
+        keyName = "notifyTrades",
+        name = "Enable Trades",
+        description = "Enable notifications upon completed player trades",
+        position = 160,
+        section = tradeSection
+    )
+    default boolean notifyTrades() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "tradeSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 161,
+        section = tradeSection
+    )
+    default boolean tradeSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "tradeMinValue",
+        name = "Min Value",
+        description = "The minimum total value of the traded items to send a notification",
+        position = 162,
+        section = tradeSection
+    )
+    default int tradeMinValue() {
+        return 0;
+    }
+
+    @ConfigItem(
+        keyName = "tradeNotifyMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %COUNTERPARTY% to insert the name of the other player<br/>" +
+            "Use %IN_VALUE% to insert the value of the items received from the counterparty<br/>" +
+            "Use %OUT_VALUE% to insert the value of the items given to the counterparty",
+        position = 163,
+        section = tradeSection
+    )
+    default String tradeNotifyMessage() {
+        return "%USERNAME% traded with %COUNTERPARTY%";
     }
 
     @ConfigItem(
