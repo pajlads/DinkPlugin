@@ -20,11 +20,6 @@ import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
-import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.events.NpcLootReceived;
@@ -42,9 +37,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -62,10 +57,10 @@ public class LootNotifier extends BaseNotifier {
     private ItemManager itemManager;
 
     @Inject
-    private ClientThread clientThread;
+    private ConfigManager configManager;
 
     @Inject
-    private ConfigManager configManager;
+    private ScheduledExecutorService executor;
 
     private final Collection<Pattern> itemNameAllowlist = new CopyOnWriteArrayList<>();
     private final Collection<Pattern> itemNameDenylist = new CopyOnWriteArrayList<>();
@@ -122,6 +117,26 @@ public class LootNotifier extends BaseNotifier {
         );
     }
 
+    public void onGameMessage(String message) {
+        // update cached KC via boss chat message with robustness for chat event coming before OR after the loot event
+        KillCountNotifier.parseBoss(message).ifPresent(pair -> {
+            String boss = pair.getKey();
+            Integer kc = pair.getValue();
+
+            // Update cache if no mapping exists (i.e., this is the first boss kill & chat event occurred first)
+            // We store kc - 1 since incrementAndGetKillCount will increment; kc - 1 + 1 == kc
+            Integer existingMapping = killCounts.asMap().putIfAbsent(boss, kc - 1);
+            if (existingMapping != null) {
+                // KC already cached, but we don't know if this boss message appeared before/after the loot event.
+                // If after, we should store kc. If before, we should store kc - 1.
+                // Given this uncertainty, we wait so that the loot event has passed, and then we can store latest kc.
+                executor.schedule(() -> {
+                    killCounts.asMap().merge(boss, kc, Math::max);
+                }, 15, TimeUnit.SECONDS);
+            }
+        });
+    }
+
     public void onNpcLootReceived(NpcLootReceived event) {
         if (!isEnabled()) {
             // increment kill count
@@ -165,37 +180,6 @@ public class LootNotifier extends BaseNotifier {
         }
     }
 
-    public void onWidgetLoaded(WidgetLoaded event) {
-        if (!isEnabled()) return;
-
-        // special case: runelite client & loot tracker do not handle unsired loot at the time of writing
-        if (event.getGroupId() == WidgetID.DIALOG_SPRITE_GROUP_ID) {
-            clientThread.invokeAtTickEnd(() -> {
-                Widget textWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
-                if (textWidget != null && StringUtils.containsIgnoreCase(textWidget.getText(), "The Font consumes the Unsired")) {
-                    Widget spriteWidget = firstWithItem(WidgetInfo.DIALOG_SPRITE, WidgetInfo.DIALOG_SPRITE_SPRITE, WidgetInfo.DIALOG_SPRITE_TEXT);
-                    if (hasItem(spriteWidget)) {
-                        ItemStack item = new ItemStack(
-                            spriteWidget.getItemId(),
-                            1,
-                            client.getLocalPlayer().getLocalLocation()
-                        );
-                        this.handleNotify(Collections.singletonList(item), "The Font of Consumption", LootRecordType.EVENT);
-                    } else {
-                        Widget widget = client.getWidget(WidgetInfo.DIALOG_SPRITE);
-                        log.warn(
-                            "Failed to locate widget with item for Unsired loot. Children: {} - Nested: {} - Sprite: {} - Model: {}",
-                            widget != null && widget.getDynamicChildren() != null ? widget.getDynamicChildren().length : -1,
-                            widget != null && widget.getNestedChildren() != null ? widget.getNestedChildren().length : -1,
-                            widget != null ? widget.getSpriteId() : -1,
-                            widget != null ? widget.getModelId() : -1
-                        );
-                    }
-                }
-            });
-        }
-    }
-
     private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type) {
         final Integer kc = type == LootRecordType.NPC ? incrementAndGetKillCount(dropper) : null;
         final int minValue = config.minLootValue();
@@ -227,6 +211,12 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
+            String overrideUrl = getWebhookUrl();
+            if (config.lootRedirectPlayerKill() && !config.pkWebhook().isBlank()) {
+                if (type == LootRecordType.PLAYER || (type == LootRecordType.EVENT && "Loot Chest".equals(dropper))) {
+                    overrideUrl = config.pkWebhook();
+                }
+            }
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Template notifyMessage = Template.builder()
                 .template(config.lootNotifyMessage())
@@ -236,7 +226,7 @@ public class LootNotifier extends BaseNotifier {
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))
                 .replacement("%SOURCE%", Replacements.ofText(dropper))
                 .build();
-            createMessage(screenshot,
+            createMessage(overrideUrl, screenshot,
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
@@ -286,21 +276,6 @@ public class LootNotifier extends BaseNotifier {
             log.warn("Failed to read kills from loot tracker config", e);
             return null;
         }
-    }
-
-    private Widget firstWithItem(WidgetInfo... widgets) {
-        for (WidgetInfo info : widgets) {
-            Widget widget = client.getWidget(info);
-            if (hasItem(widget)) {
-                log.debug("Obtained item from widget via {}", info);
-                return widget;
-            }
-        }
-        return null;
-    }
-
-    private static boolean hasItem(Widget widget) {
-        return widget != null && widget.getItemId() >= 0;
     }
 
     private static boolean matches(Collection<Pattern> regexps, String input) {

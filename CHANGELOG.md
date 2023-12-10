@@ -1,11 +1,47 @@
 ## Unreleased
 
+- Minor: Add loot notifier setting that redirects pk loot to the pk notifier override url. (#353)
+- Minor: Allow customization of which safe deaths can trigger notifications. (#363)
+- Bugfix: Avoid erroneous level notification on login when initial data is delayed. (#383)
+- Bugfix: Ensure diary notifications below the configured minimum difficulty are not sent. (#382)
+- Bugfix: Update set of items that are never kept on dangerous deaths. (#364)
+- Bugfix: Don't report inaccurate completed collections count, when character summary tab was not selected. (#374)
+- Bugfix: Avoid undercounting diary completions for notifications that occur shortly after a teleport. (#373)
+- Dev: Execute screenshot rescaling on background thread to minimize FPS impact. (#378)
+
+## 1.7.2
+
+- Dev: Utilize runelite event for unsired loot instead of custom widget handler (#375).
+
+## 1.7.1
+
+- Bugfix: Report correct remaining tasks until next area unlock in Leagues notifications. (#369)
+
+## 1.7.0
+
+- Major: Add leagues notifier for areas, relics, and tasks. (#366)
+
+## 1.6.5
+
+- Minor: Allow notifications on seasonal worlds to be ignored via advanced config. (#357)
+- Minor: Prefer historical name for first Recipe for Disaster quest. (#352)
+- Minor: Include owned pets in login notification metadata. (#347)
+- Minor: Include individual skill XP in login notification metadata. (#345)
+- Bugfix: Classify reminisced Galvek deaths as safe. (#351)
+- Bugfix: Improve handling of queued notifications upon concurrent config changes. (#355)
+- Dev: Migrate to new RuneLite Widget API. (#358, #359)
+
+## 1.6.4
+
+- Minor: Add task progress metadata for diary notifications. (#331)
+- Minor: Use boss chat message for latest kill count in loot notifications. This is only for "normal" bosses and won't yet work for things such as raids/barrows/hespori. (#324)
 - Minor: Include hashed account unique identifier in notification metadata. (#334)
 - Minor: Made the default setting for screenshots enabled for consistency across all notifiers. (#330)
 - Minor: Send character information on login to custom handlers via advanced config. (#321)
 - Minor: Add key in the Speedrun notifier extra object for whether the run is a personal best or not. (#329)
 - Minor: Indicate in pet notification metadata when a pet was previously owned but lost. (#314)
 - Minor: Support wildcards in loot item name filters. (#312)
+- Bugfix: Use correct duration time for gauntlet minigame completions. (#341)
 - Bugfix: Allow the first xp drop after login to trigger level notifications. (#332)
 - Bugfix: Don't treat personal best ties as personal bests for Speedrun notifications. (#329)
 - Bugfix: Classify Gauntlet deaths as safe, unless the player is a hardcore ironman. (#327)

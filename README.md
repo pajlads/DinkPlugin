@@ -35,6 +35,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 - [Player Kills](#player-kills): Sends a webhook message upon killing another player (while hitsplats are still visible)
 - [Group Storage](#group-storage): Sends a webhook message upon Group Ironman Shared Bank transactions (i.e., depositing or withdrawing items)
 - [Grand Exchange](#grand-exchange): Sends a webhook message upon buying or selling items on the GE (with customizable value threshold)
+- [Leagues](#leagues): Sends a webhook message upon completing a Leagues IV task or unlocking a region/relic
 
 ## Other Setup
 
@@ -486,9 +487,17 @@ If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replac
 
 `%AREA%` will be replaced with the geographic area of the achievement diary tasks (e.g., Varrock)
 
-`%DIFFICULTY%` will be replaced with the level of the achievement diary (e.g., Elite)
+`%DIFFICULTY%` will be replaced with the level of the achievement diary (e.g., Hard)
 
 `%TOTAL%` will be replaced with the total number of achievement diaries completed across all locations and difficulties
+
+`%TASKS_COMPLETE%` will be replaced with the number of tasks completed across all locations and difficulties
+
+`%TASKS_TOTAL%` will be replaced with the total number of tasks possible across all locations and difficulties
+
+`%AREA_TASKS_COMPLETE%` will be replaced with the number of tasks completed within the area
+
+`%AREA_TASKS_TOTAL%` will be replaced with the total number of tasks possible within the area
 
 <details>
   <summary>JSON for Achievement Diary Notifications:</summary>
@@ -498,8 +507,12 @@ If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replac
   "content": "%USERNAME% has completed the %DIFFICULTY% %AREA% Achievement Diary, for a total of %TOTAL% diaries completed",
   "extra": {
     "area": "Varrock",
-    "difficulty": "ELITE",
-    "total": 36
+    "difficulty": "HARD",
+    "total": 15,
+    "tasksCompleted": 152,
+    "tasksTotal": 492,
+    "areaTasksCompleted": 37,
+    "areaTasksTotal": 42
   },
   "type": "ACHIEVEMENT_DIARY"
 }
@@ -747,6 +760,112 @@ See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/Gra
 
 </details>
 
+### Leagues:
+
+Leagues notifications include: region unlocked, relic unlocked, and task completed (with customizable difficulty threshold).
+
+Each of these events can be independently enabled or disabled in the notifier settings.
+
+<details>
+  <summary>JSON for Area Unlock Notifications:</summary>
+
+```json5
+{
+  "type": "LEAGUES_AREA",
+  "content": "%USERNAME% selected their second region: Kandarin.",
+  "playerName": "%USERNAME%",
+  "accountType": "IRONMAN",
+  "seasonalWorld": true,
+  "extra": {
+    "area": "Kandarin",
+    "index": 2,
+    "tasksCompleted": 200,
+    "tasksUntilNextArea": 200
+  }
+}
+```
+
+Note: `index` refers to the order of region unlocks.
+Here, Kandarin was the second region selected.
+For all players, Karamja is the _zeroth_ region selected (and there is no notification for Misthalin).
+
+</details>
+
+<details>
+  <summary>JSON for Relic Chosen Notifications:</summary>
+
+```json5
+{
+  "type": "LEAGUES_RELIC",
+  "content": "%USERNAME% unlocked a Tier 1 Relic: Production Prodigy.",
+  "playerName": "%USERNAME%",
+  "accountType": "IRONMAN",
+  "seasonalWorld": true,
+  "extra": {
+    "relic": "Production Prodigy",
+    "tier": 1,
+    "requiredPoints": 0,
+    "totalPoints": 20,
+    "pointsUntilNextTier": 480
+  }
+}
+```
+
+</details>
+
+<details>
+  <summary>JSON for Task Completed Notifications:</summary>
+
+```json5
+{
+  "type": "LEAGUES_TASK",
+  "content": "%USERNAME% completed a Easy task: Pickpocket a Citizen.",
+  "playerName": "%USERNAME%",
+  "accountType": "IRONMAN",
+  "seasonalWorld": true,
+  "extra": {
+    "taskName": "Pickpocket a Citizen",
+    "difficulty": "EASY",
+    "taskPoints": 10,
+    "totalPoints": 30,
+    "tasksCompleted": 3,
+    "pointsUntilNextRelic": 470,
+    "pointsUntilNextTrophy": 2470
+  }
+}
+```
+
+</details>
+
+<details>
+  <summary>JSON for Task Notifications that unlocked a Trophy:</summary>
+
+```json5
+{
+  "type": "LEAGUES_TASK",
+  "content": "%USERNAME% completed a Hard task, The Frozen Door, unlocking the Bronze trophy!",
+  "playerName": "%USERNAME%",
+  "accountType": "IRONMAN",
+  "seasonalWorld": true,
+  "extra": {
+    "taskName": "The Frozen Door",
+    "difficulty": "HARD",
+    "taskPoints": 80,
+    "totalPoints": 2520,
+    "tasksCompleted": 119,
+    "tasksUntilNextArea": 81,
+    "pointsUntilNextRelic": 1480,
+    "pointsUntilNextTrophy": 2480,
+    "earnedTrophy": "Bronze"
+  }
+}
+```
+
+</details>
+
+Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntilNextTrophy` can be omitted
+if there is no next level of progression (i.e., all three regions selected, all relic tiers unlocked, all trophies acquired).
+
 ### Metadata:
 
 On login, Dink can submit a character summary containing data that spans multiple notifiers to a custom webhook handler (configurable in the `Advanced` section). This login notification is delayed by at least 5 seconds in order to gather all of the relevant data. However, `collectionLog` data can be missing if the user does not have the Character Summary tab selected (since the client otherwise is not sent that data).
@@ -783,7 +902,7 @@ On login, Dink can submit a character summary containing data that spans multipl
       "highGambleCount": 0
     },
     "skills": {
-      "totalExperience": 337810454,
+      "totalExperience": 346380298,
       "totalLevel": 2164,
       "levels": {
         "Hunter": 90,
@@ -809,6 +928,31 @@ On login, Dink can submit a character summary containing data that spans multipl
         "Strength": 104,
         "Prayer": 91,
         "Farming": 100
+      },
+      "experience": {
+        "Hunter": 5420696,
+        "Thieving": 3696420,
+        "Runecraft": 3969420,
+        "Construction": 3680085,
+        "Cooking": 19696420,
+        "Magic": 28008135,
+        "Fletching": 13696420,
+        "Herblore": 5969420,
+        "Firemaking": 14420666,
+        "Attack": 30696420,
+        "Fishing": 6632248,
+        "Crafting": 9696420,
+        "Hitpoints": 46969666,
+        "Ranged": 42069420,
+        "Mining": 4696420,
+        "Smithing": 6428696,
+        "Agility": 2666420,
+        "Woodcutting": 9696666,
+        "Slayer": 21420696,
+        "Defence": 21212121,
+        "Strength": 23601337,
+        "Prayer": 6369666,
+        "Farming": 15666420
       }
     },
     "questCount": {
@@ -822,12 +966,24 @@ On login, Dink can submit a character summary containing data that spans multipl
     "slayer": {
       "points": 2204,
       "streak": 1074
-    }
+    },
+    "pets": [
+      {
+        "itemId": 11995,
+        "name": "Pet chaos elemental"
+      },
+      {
+        "itemId": 13071,
+        "name": "Chompy chick"
+      }
+    ]
   }
 }
 ```
 
 Note: `clanName` requires `Advanced > Send Clan Name` to be enabled (default: on). The `groupIronClanName` and `discordUser` fields also have similar toggles in the Advanced config section.
+
+Note: `extra.pets` requires the base Chat Commands plugin to be enabled.
 
 </details>
 

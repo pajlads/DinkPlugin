@@ -1,0 +1,75 @@
+name: Issue report
+description: Report something that you have trouble with or that stopped working
+labels:
+  - issue-report
+body:
+  - type: checkboxes
+    id: acknowledgments
+    attributes:
+      label: Checklist
+      description: null
+      options:
+        - label: I'm reporting a problem with Dink
+          required: true
+        - label: I've searched the [issues and pull
+            requests](https://github.com/pajlads/Dinkplugin/issues?q=) for
+            similar looking reports
+          required: true
+
+  - type: textarea
+    id: description
+    validations:
+      required: true
+    attributes:
+      label: Describe your issue
+      description: >
+        Write a brief description of your issue.
+
+        Important:
+            Focus on the problem instead of a concrete solution. This ensures that the focus of the thread is to resolve your issue.
+            If you want to voice a concrete idea you can add a comment below after posting the issue.
+      placeholder: |
+        Examples:
+          - I cannot do X.
+          - I have trouble doing X.
+          - Feature X has stopped working for me.
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: |
+        While optional, it's highly encouraged to include screenshots or
+        videos to illustrate what you mean.
+        Example: Kill Count notifications are not working for (newly added boss)
+          Include an image of the chat message(s) recieved when the boss dies.
+      placeholder: Drag and drop them into this box.
+
+  - type: textarea
+    id: logs
+    validations:
+      required: true
+    attributes:
+      label: Runelite Logs
+      description: >
+        Attaching log files is appreciated for bug reports, as the problem
+        can often be mentioned in the logs.
+
+        ### You can find logs in one of two ways:
+
+        ### A) On Windows press `windowsKey+R` and open `%userprofile%\.runelite\logs`, on Linux and MacOS navigate to the `$HOME/.runelite/logs` folder.
+
+        ### B) Open the screenshot directory (by right-clicking the \"Camera\" button) and navigate one directory up and then open the `logs` folder
+      placeholder: Drag and drop the `client.log` file into this box.
+  - type: input
+    id: versions
+    validations:
+      required: true
+    attributes:
+      label: Runelite Version
+      description: >
+        󠀀
+        ![runelite_version_information](https://github.com/Felanbird/DinkPlugin/assets/41973452/2952a3c6-2f1f-46fe-908d-95598f2d4587)
+
+        The Runelite version can be found by clicking the ⓘ icon on the sidebar.
+      placeholder: "Runelite version: 1.10.14.3"

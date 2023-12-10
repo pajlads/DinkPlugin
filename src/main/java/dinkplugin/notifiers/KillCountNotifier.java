@@ -15,9 +15,9 @@ import net.runelite.api.NpcID;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -92,8 +92,8 @@ public class KillCountNotifier extends BaseNotifier {
             return;
 
         // Barbarian Assault: Track Penance Queen kills
-        if (config.killCountPenanceQueen() && event.getGroupId() == WidgetID.BA_REWARD_GROUP_ID) {
-            Widget widget = client.getWidget(WidgetInfo.BA_REWARD_TEXT);
+        if (config.killCountPenanceQueen() && event.getGroupId() == InterfaceID.BA_REWARD) {
+            Widget widget = client.getWidget(ComponentID.BA_REWARD_REWARD_TEXT);
             // https://oldschool.runescape.wiki/w/Barbarian_Assault/Rewards#Earning_Honour_points
             if (widget != null && widget.getText().contains("80 ") && widget.getText().contains("5 ")) {
                 int gambleCount = client.getVarbitValue(Varbits.BA_GC);
@@ -106,8 +106,11 @@ public class KillCountNotifier extends BaseNotifier {
         BossNotificationData data = this.data.get();
         if (data != null) {
             if (data.getBoss() != null) {
-                // once boss name has arrived, we notify at tick end (even if duration hasn't arrived)
-                handleKill(data);
+                // ensure notifier was not disabled during bad ticks wait period
+                if (isEnabled()) {
+                    // once boss name has arrived, we notify at tick end (even if duration hasn't arrived)
+                    handleKill(data);
+                }
                 reset();
             } else if (badTicks.incrementAndGet() > MAX_BAD_TICKS) {
                 // after receiving fight duration, allow up to 10 ticks for boss name to arrive.
@@ -201,6 +204,7 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private static Optional<BossNotificationData> parse(String message) {
+        if (message.startsWith("Preparation")) return Optional.empty();
         Optional<Pair<String, Integer>> boss = parseBoss(message);
         if (boss.isPresent())
             return boss.map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null));
@@ -217,8 +221,7 @@ public class KillCountNotifier extends BaseNotifier {
         return Optional.empty();
     }
 
-    @VisibleForTesting
-    static Optional<Pair<String, Integer>> parseBoss(String message) {
+    public static Optional<Pair<String, Integer>> parseBoss(String message) {
         Matcher primary = PRIMARY_REGEX.matcher(message);
         Matcher secondary; // lazy init
         if (primary.find()) {

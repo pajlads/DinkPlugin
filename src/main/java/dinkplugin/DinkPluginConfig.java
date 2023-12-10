@@ -3,7 +3,9 @@ package dinkplugin;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
+import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.domain.FilterMode;
+import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -11,6 +13,9 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 import net.runelite.client.config.Units;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 @ConfigGroup(SettingsManager.CONFIG_GROUP)
 public interface DinkPluginConfig extends Config {
@@ -150,6 +155,14 @@ public interface DinkPluginConfig extends Config {
         closedByDefault = true
     )
     String grandExchangeSection = "Grand Exchange";
+
+    @ConfigSection(
+        name = "Leagues",
+        description = "Settings for notifying when you complete league tasks, unlock areas, and redeem relics",
+        position = 200,
+        closedByDefault = true
+    )
+    String leaguesSection = "Leagues";
 
     @ConfigSection(
         name = "Advanced",
@@ -349,6 +362,18 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "ignoreSeasonalWorlds",
+        name = "Ignore Seasonal Worlds",
+        description = "Whether to suppress notifications that occur on seasonal worlds like Leagues.<br/>" +
+            "Note: the Leagues-specific notifier uses an independent config toggle",
+        position = 1015,
+        section = advancedSection
+    )
+    default boolean ignoreSeasonal() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
@@ -532,6 +557,18 @@ public interface DinkPluginConfig extends Config {
         section = webhookSection
     )
     default String grandExchangeWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "leaguesWebhook",
+        name = "Leagues Webhook Override",
+        description = "If non-empty, Leagues messages are sent to this URL, instead of the primary URL.<br/>" +
+            "Note: this only applies to the Leagues notifier, not every notifier in a seasonal world",
+        position = -1,
+        section = webhookSection
+    )
+    default String leaguesWebhook() {
         return "";
     }
 
@@ -767,6 +804,19 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootRedirectPlayerKill",
+        name = "Send PK Loot to PK URL",
+        description = "Whether to send PK loot to the PK override webhook URL, rather than the loot URL.<br/>" +
+            "Must have 'Include PK Loot' (above) enabled.<br/>" +
+            "Has no effect if the Player Kills notifier override URL is absent",
+        position = 35,
+        section = lootSection
+    )
+    default boolean lootRedirectPlayerKill() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "lootIncludeClueScrolls",
         name = "Include Clue Loot",
         description = "Allow notifications for loot from Clue Scrolls",
@@ -852,7 +902,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathIgnoreSafe",
         name = "Ignore Safe Deaths",
         description = "Whether deaths in safe areas should be ignored.<br/>" +
-            "Note: Inferno and TzHaar Fight Cave deaths are still sent with this setting enabled",
+            "Exceptions to this rule can be configured below",
         position = 43,
         section = deathSection
     )
@@ -861,11 +911,23 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "deathSafeExceptions",
+        name = "Safe Exceptions",
+        description = "Safe deaths that should trigger notifications even when 'Ignore Safe Deaths' is enabled.<br/>" +
+            "Hold Control while clicking on the options to select multiple exceptions",
+        position = 44,
+        section = deathSection
+    )
+    default Set<ExceptionalDeath> deathSafeExceptions() {
+        return EnumSet.of(ExceptionalDeath.FIGHT_CAVE, ExceptionalDeath.INFERNO);
+    }
+
+    @ConfigItem(
         keyName = "deathMinValue",
         name = "Min Lost Value",
         description = "The minimum value of the lost items for a notification to be sent.<br/>" +
             "This setting does not apply for safe deaths",
-        position = 44,
+        position = 45,
         section = deathSection
     )
     default int deathMinValue() {
@@ -878,7 +940,7 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 45,
+        position = 46,
         section = deathSection
     )
     default String deathNotifyMessage() {
@@ -889,7 +951,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpEnabled",
         name = "Distinguish PvP deaths",
         description = "Should the plugin use a different message for dying in PvP?",
-        position = 46,
+        position = 47,
         section = deathSection
     )
     default boolean deathNotifPvpEnabled() {
@@ -903,7 +965,7 @@ public interface DinkPluginConfig extends Config {
             "Use %PKER% to insert the killer<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 47,
+        position = 48,
         section = deathSection
     )
     default String deathNotifPvpMessage() {
@@ -1338,7 +1400,11 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %DIFFICULTY% to insert the diary difficulty<br/>" +
             "Use %AREA% to insert the diary area<br/>" +
-            "Use %TOTAL% to insert the total diaries completed",
+            "Use %TOTAL% to insert the total diaries completed<br/>" +
+            "Use %TASKS_COMPLETE% to insert the tasks completed across all diaries<br/>" +
+            "Use %TASKS_TOTAL% to insert the total tasks possible across all diaries<br/>" +
+            "Use %AREA_TASKS_COMPLETE% to insert the tasks completed within the area<br/>" +
+            "Use %AREA_TASKS_TOTAL% to insert the total tasks possible within the area",
         position = 113,
         section = diarySection
     )
@@ -1643,6 +1709,72 @@ public interface DinkPluginConfig extends Config {
     )
     default String grandExchangeNotifyMessage() {
         return "%USERNAME% %TYPE% %ITEM% on the GE";
+    }
+
+    @ConfigItem(
+        keyName = "notifyLeagues",
+        name = "Enable Leagues",
+        description = "Enable notifications upon various leagues events",
+        position = 200,
+        section = leaguesSection
+    )
+    default boolean notifyLeagues() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 201,
+        section = leaguesSection
+    )
+    default boolean leaguesSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesAreaUnlock",
+        name = "Send Area Unlocks",
+        description = "Send notifications upon area unlocks",
+        position = 202,
+        section = leaguesSection
+    )
+    default boolean leaguesAreaUnlock() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesRelicUnlock",
+        name = "Send Relic Unlocks",
+        description = "Send notifications upon relic unlocks",
+        position = 203,
+        section = leaguesSection
+    )
+    default boolean leaguesRelicUnlock() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesTaskCompletion",
+        name = "Send Completed Tasks",
+        description = "Send notifications upon completing a task",
+        position = 204,
+        section = leaguesSection
+    )
+    default boolean leaguesTaskCompletion() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesTaskMinTier",
+        name = "Task Min Difficulty",
+        description = "The minimum tier of a task for a notification to be sent",
+        position = 205,
+        section = leaguesSection
+    )
+    default LeagueTaskDifficulty leaguesTaskMinTier() {
+        return LeagueTaskDifficulty.EASY;
     }
 
 }

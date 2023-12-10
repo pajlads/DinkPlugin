@@ -9,6 +9,8 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
+import net.runelite.api.annotations.Component;
+import net.runelite.api.annotations.Interface;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 import okhttp3.Call;
@@ -168,7 +170,10 @@ public class Utils {
     }
 
     @Nullable
-    public String getChatBadge(@NotNull AccountType type) {
+    public String getChatBadge(@NotNull AccountType type, boolean seasonal) {
+        if (seasonal) {
+            return WIKI_IMG_BASE_URL + "Leagues_chat_badge.png";
+        }
         switch (type) {
             case IRONMAN:
                 return WIKI_IMG_BASE_URL + "Ironman_chat_badge.png";
@@ -181,10 +186,21 @@ public class Utils {
             case HARDCORE_GROUP_IRONMAN:
                 return WIKI_IMG_BASE_URL + "Hardcore_group_ironman_chat_badge.png";
             case UNRANKED_GROUP_IRONMAN:
-                return WIKI_IMG_BASE_URL + "Unranked_group_ironman_chat_badge";
+                return WIKI_IMG_BASE_URL + "Unranked_group_ironman_chat_badge.png";
             default:
                 return null;
         }
+    }
+
+    /**
+     * @param groupId the {@link Interface}
+     * @param childId the child id
+     * @return the corresponding {@link Component}
+     */
+    @Component
+    @SuppressWarnings("MagicConstant")
+    public int packWidget(@Interface int groupId, int childId) {
+        return groupId << 16 | childId;
     }
 
     public BufferedImage rescale(BufferedImage input, double percent) {

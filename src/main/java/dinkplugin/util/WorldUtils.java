@@ -2,13 +2,16 @@ package dinkplugin.util;
 
 import com.google.common.collect.ImmutableSet;
 import dinkplugin.domain.AccountType;
+import dinkplugin.domain.Danger;
+import dinkplugin.domain.ExceptionalDeath;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
+import net.runelite.api.annotations.Varbit;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Collections;
@@ -24,6 +27,7 @@ public class WorldUtils {
     private final Set<Integer> CASTLE_WARS_REGIONS = ImmutableSet.of(9520, 9620);
     private final Set<Integer> CLAN_WARS_REGIONS = ImmutableSet.of(12621, 12622, 12623, 13130, 13131, 13133, 13134, 13135, 13386, 13387, 13390, 13641, 13642, 13643, 13644, 13645, 13646, 13647, 13899, 13900, 14155, 14156);
     private final Set<Integer> COX_REGIONS = ImmutableSet.of(12889, 13136, 13137, 13138, 13139, 13140, 13141, 13145, 13393, 13394, 13395, 13396, 13397, 13401);
+    private final Set<Integer> GALVEK_REGIONS = ImmutableSet.of(6486, 6487, 6488, 6489, 6742, 6743, 6744, 6745);
     private final Set<Integer> GAUNTLET_REGIONS = ImmutableSet.of(7512, 7768, 12127); // includes CG
     private final Set<Integer> LMS_REGIONS = ImmutableSet.of(13658, 13659, 13660, 13914, 13915, 13916, 13918, 13919, 13920, 14174, 14175, 14176, 14430, 14431, 14432);
     private final Set<Integer> POH_REGIONS = ImmutableSet.of(7257, 7513, 7514, 7769, 7770, 8025, 8026);
@@ -34,6 +38,16 @@ public class WorldUtils {
     private final int NMZ_REGION = 9033;
     private final int TZHAAR_CAVE = 9551;
     public final @VisibleForTesting int TZHAAR_PIT = 9552;
+
+    /**
+     * @see <a href="https://oldschool.runescape.wiki/w/RuneScape:Varbit/6104">Wiki</a>
+     */
+    private final @Varbit int DRAGON_SLAYER_II_PROGRESS = 6104;
+
+    /**
+     * @see <a href="https://chisel.weirdgloop.org/varbs/display?varbit=6104#ChangeFrequencyTitle">Chisel</a>
+     */
+    private final int DRAGON_SLAYER_II_COMPLETED = 215;
 
     public static WorldPoint getLocation(Client client) {
         return getLocation(client, client.getLocalPlayer());
@@ -55,7 +69,7 @@ public class WorldUtils {
     }
 
     public boolean isPvpSafeZone(Client client) {
-        Widget widget = client.getWidget(WidgetInfo.PVP_WORLD_SAFE_ZONE);
+        Widget widget = client.getWidget(ComponentID.PVP_SAFE_ZONE);
         return widget != null && !widget.isHidden();
     }
 
@@ -79,6 +93,10 @@ public class WorldUtils {
         return CLAN_WARS_REGIONS.contains(regionId);
     }
 
+    public boolean isGalvekRematch(Client client, int regionId) {
+        return GALVEK_REGIONS.contains(regionId) && client.getVarbitValue(DRAGON_SLAYER_II_PROGRESS) >= DRAGON_SLAYER_II_COMPLETED;
+    }
+
     public boolean isGauntlet(int regionId) {
         return GAUNTLET_REGIONS.contains(regionId);
     }
@@ -91,7 +109,7 @@ public class WorldUtils {
         if (LMS_REGIONS.contains(getLocation(client).getRegionID()))
             return true;
 
-        Widget widget = client.getWidget(WidgetInfo.LMS_KDA);
+        Widget widget = client.getWidget(ComponentID.LMS_INGAME_INFO);
         return widget != null && !widget.isHidden();
     }
 
@@ -100,7 +118,7 @@ public class WorldUtils {
     }
 
     public boolean isPestControl(Client client) {
-        Widget widget = client.getWidget(WidgetInfo.PEST_CONTROL_BLUE_SHIELD);
+        Widget widget = client.getWidget(ComponentID.PEST_CONTROL_BLUE_SHIELD);
         return widget != null && !widget.isHidden();
     }
 
@@ -109,29 +127,7 @@ public class WorldUtils {
     }
 
     public boolean isSafeArea(Client client) {
-        int regionId = getLocation(client).getRegionID();
-
-        if (isAmascutTombs(regionId)) {
-            // ToA is technically a dangerous activity, but multiple attempts can be permitted
-            // the real TOA death is detected via game message in death notifier
-            // However: any TOA death is still dangerous for hardcore (group) ironmen
-            return !Utils.getAccountType(client).isHardcore();
-        }
-
-        if (isGauntlet(regionId)) {
-            // Players can't take items in or out of (Corrupted) Gauntlet, so these deaths are effectively safe
-            // However: any Gauntlet death is still dangerous for hardcore (group) ironmen
-            return !Utils.getAccountType(client).isHardcore();
-        }
-
-        if (isBarbarianAssault(regionId) || isChambersOfXeric(regionId) || isInferno(regionId) ||
-            isNightmareZone(regionId) || isTzHaarFightCave(regionId) || isPestControl(client)) {
-            // All PvM activities are dangerous for Hardcore group iron players
-            return Utils.getAccountType(client) != AccountType.HARDCORE_GROUP_IRONMAN;
-        }
-
-        return isCastleWars(regionId) || isClanWars(regionId) || isSoulWars(regionId) ||
-            isPlayerOwnedHouse(regionId) || isLastManStanding(client) || isTzHaarFightPit(regionId);
+        return getDangerLevel(client, Collections.emptySet()) == Danger.SAFE;
     }
 
     public boolean isSoulWars(int regionId) {
@@ -148,6 +144,53 @@ public class WorldUtils {
 
     public boolean isTzHaarFightPit(int regionId) {
         return regionId == TZHAAR_PIT;
+    }
+
+    public Danger getDangerLevel(Client client, Set<ExceptionalDeath> exceptions) {
+        int regionId = getLocation(client).getRegionID();
+
+        if (isGauntlet(regionId)) {
+            // Players can't take items in or out of (Corrupted) Gauntlet, so these deaths are effectively safe
+            // However: any Gauntlet death is still dangerous for hardcore (group) ironmen
+            return Utils.getAccountType(client).isHardcore() ? Danger.DANGEROUS : Danger.SAFE;
+        }
+
+        if (isAmascutTombs(regionId)) {
+            // ToA is technically a dangerous activity, but multiple attempts can be permitted
+            // the real TOA death is detected via game message in death notifier
+            // However: any TOA death is still dangerous for hardcore (group) ironmen
+            return checkException(Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.TOA);
+        }
+
+        if (isChambersOfXeric(regionId)) {
+            return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.COX);
+        }
+
+        if (isInferno(regionId)) {
+            return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.INFERNO);
+        }
+
+        if (isTzHaarFightCave(regionId)) {
+            return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.FIGHT_CAVE);
+        }
+
+        if (isBarbarianAssault(regionId) || isNightmareZone(regionId) || isPestControl(client) || isGalvekRematch(client, regionId)) {
+            // All PvM activities are dangerous for Hardcore group iron players
+            return Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN ? Danger.DANGEROUS : Danger.SAFE;
+        }
+
+        if (isCastleWars(regionId) || isClanWars(regionId) || isSoulWars(regionId) || isPlayerOwnedHouse(regionId)
+            || isLastManStanding(client) || isTzHaarFightPit(regionId)) {
+            return Danger.SAFE;
+        }
+
+        return Danger.DANGEROUS;
+    }
+
+    private Danger checkException(boolean dangerous, Set<ExceptionalDeath> exceptions, ExceptionalDeath exception) {
+        if (dangerous) return Danger.DANGEROUS;
+        if (exceptions.contains(exception)) return Danger.EXCEPTIONAL;
+        return Danger.SAFE;
     }
 
 }

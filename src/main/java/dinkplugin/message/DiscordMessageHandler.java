@@ -12,10 +12,13 @@ import dinkplugin.util.Utils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
+import net.runelite.api.WorldType;
+import net.runelite.api.annotations.Component;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.discord.DiscordService;
 import net.runelite.client.ui.DrawManager;
@@ -107,22 +110,16 @@ public class DiscordMessageHandler {
         NotificationBody<?> mBody = enrichBody(inputBody, sendImage);
         if (sendImage) {
             // optionally hide chat for privacy in screenshot
-            boolean chatHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.CHATBOX);
-            boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, WidgetInfo.PRIVATE_CHAT_MESSAGE);
+            boolean chatHidden = hideWidget(config.screenshotHideChat(), client, ComponentID.CHATBOX_FRAME);
+            boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
 
-            captureScreenshot(drawManager, config.screenshotScale() / 100.0)
+            captureScreenshot(config.screenshotScale() / 100.0, chatHidden, whispersHidden)
                 .thenApply(image ->
                     RequestBody.create(MediaType.parse("image/" + image.getKey()), image.getValue())
                 )
                 .exceptionally(e -> {
                     log.warn("There was an error creating bytes from captured image", e);
                     return null;
-                })
-                .thenApply(image -> {
-                    // unhide any widgets we hid
-                    unhideWidget(chatHidden, client, clientThread, WidgetInfo.CHATBOX);
-                    unhideWidget(whispersHidden, client, clientThread, WidgetInfo.PRIVATE_CHAT_MESSAGE);
-                    return image;
                 })
                 .thenAccept(image -> sendToMultiple(urlList, mBody, image));
         } else {
@@ -216,6 +213,10 @@ public class DiscordMessageHandler {
             }
         }
 
+        if (!config.ignoreSeasonal() && !mBody.isSeasonalWorld() && client.getWorldType().contains(WorldType.SEASONAL)) {
+            mBody = mBody.withSeasonalWorld(true);
+        }
+
         NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
 
         if (config.sendDiscordUser()) {
@@ -248,10 +249,11 @@ public class DiscordMessageHandler {
     private NotificationBody<?> injectThreadName(HttpUrl url, NotificationBody<?> mBody, boolean force) {
         Collection<String> queryParams = url.queryParameterNames();
         if (force || (queryParams.contains("forum") && !queryParams.contains("thread_id"))) {
+            String type = mBody.isSeasonalWorld() ? "Seasonal - " + mBody.getType().getTitle() : mBody.getType().getTitle();
             String threadName = Template.builder()
                 .template(config.threadNameTemplate())
                 .replacementBoundary("%")
-                .replacement("%TYPE%", Replacements.ofText(mBody.getType().getTitle()))
+                .replacement("%TYPE%", Replacements.ofText(type))
                 .replacement("%MESSAGE%", mBody.getText())
                 .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
                 .build()
@@ -276,15 +278,23 @@ public class DiscordMessageHandler {
      * Captures the next frame and applies the specified rescaling
      * while abiding by {@link Embed#MAX_IMAGE_SIZE}.
      *
-     * @param drawManager  {@link DrawManager}
      * @param scalePercent {@link DinkPluginConfig#screenshotScale()} divided by 100.0
+     * @param chatHidden Whether the chat widget should be unhidden
+     * @param whispersHidden Whether the whispers widget should be unhidden
      * @return future of the image byte array by the image format name
      * @apiNote scalePercent should be in (0, 1]
      * @implNote the image format is either "png" (lossless) or "jpeg" (lossy), both of which can be used in MIME type
      */
-    private static CompletableFuture<Map.Entry<String, byte[]>> captureScreenshot(DrawManager drawManager, double scalePercent) {
+    private CompletableFuture<Map.Entry<String, byte[]>> captureScreenshot(double scalePercent, boolean chatHidden, boolean whispersHidden) {
         CompletableFuture<Image> future = new CompletableFuture<>();
-        drawManager.requestNextFrameListener(future::complete);
+        drawManager.requestNextFrameListener(img -> {
+            // unhide any widgets we hid (scheduled for client thread)
+            unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
+            unhideWidget(whispersHidden, client, clientThread, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
+
+            // resolve future on separate thread
+            executor.execute(() -> future.complete(img));
+        });
         return future.thenApply(ImageUtil::bufferedImageFromImage)
             .thenApply(input -> Utils.rescale(input, scalePercent))
             .thenApply(image -> {
@@ -325,7 +335,7 @@ public class DiscordMessageHandler {
         Author author = Author.builder()
             .name(body.getPlayerName())
             .url(playerLookupService.getPlayerUrl(body.getPlayerName()))
-            .iconUrl(Utils.getChatBadge(body.getAccountType()))
+            .iconUrl(Utils.getChatBadge(body.getAccountType(), body.isSeasonalWorld()))
             .build();
         Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()
             .text(Utils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
@@ -340,7 +350,7 @@ public class DiscordMessageHandler {
             Embed.builder()
                 .author(author)
                 .color(Utils.PINK)
-                .title(type.getTitle())
+                .title(body.isSeasonalWorld() ? "[Seasonal] " + type.getTitle() : type.getTitle())
                 .description(Utils.truncate(body.getText().evaluate(config.discordRichEmbeds()), Embed.MAX_DESCRIPTION_LENGTH))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(thumbnail))
@@ -352,7 +362,7 @@ public class DiscordMessageHandler {
         return embeds;
     }
 
-    private static boolean hideWidget(boolean shouldHide, Client client, WidgetInfo info) {
+    private static boolean hideWidget(boolean shouldHide, Client client, @Component int info) {
         if (!shouldHide)
             return false;
 
@@ -364,7 +374,7 @@ public class DiscordMessageHandler {
         return true;
     }
 
-    private static void unhideWidget(boolean shouldUnhide, Client client, ClientThread clientThread, WidgetInfo info) {
+    private static void unhideWidget(boolean shouldUnhide, Client client, ClientThread clientThread, @Component int info) {
         if (!shouldUnhide)
             return;
 

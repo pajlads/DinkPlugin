@@ -15,7 +15,6 @@ import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varp;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
@@ -73,18 +72,20 @@ public class CollectionNotifier extends BaseNotifier {
         this.popupStarted.set(false);
     }
 
-    public void onGameState(GameStateChanged event) {
-        if (event.getGameState() != GameState.LOGGED_IN)
+    public void onGameState(GameState newState) {
+        if (newState != GameState.HOPPING && newState != GameState.LOGGED_IN)
             this.reset();
     }
 
     public void onTick() {
         if (client.getGameState() != GameState.LOGGED_IN) {
-            // indicate that the latest completion count should be updated
+            // this shouldn't ever happen, but just in case
             completed.set(-1);
         } else if (completed.get() < 0) {
             // initialize collection log entry completion count
-            completed.set(client.getVarpValue(COMPLETED_VARP));
+            int varpValue = client.getVarpValue(COMPLETED_VARP);
+            if (varpValue > 0)
+                completed.set(varpValue);
         }
     }
 
@@ -92,15 +93,10 @@ public class CollectionNotifier extends BaseNotifier {
         if (event.getVarpId() != COMPLETED_VARP)
             return;
 
-        // Currently, this varp is sent early enough to be read on the first logged-in tick.
-        // For robustness, we also allow initialization here just in case the varp is sent with greater delay.
-
-        // Note: upon a completion, this varp is not updated until a few ticks after the collection log message.
-        // However, this behavior could also change, which is why here we don't synchronize "completed" beyond initialization.
-
-        int old = completed.get();
-        if (old <= 0) {
-            completed.compareAndSet(old, event.getValue());
+        // we only care about this event when the notifier is disabled
+        // to keep `completed` updated when `handleNotify` is not being called
+        if (!config.notifyCollectionLog()) {
+            completed.set(event.getValue());
         }
     }
 
@@ -140,7 +136,7 @@ public class CollectionNotifier extends BaseNotifier {
         // varp isn't updated for a few ticks, so we increment the count locally.
         // this approach also has the benefit of yielding incrementing values even when
         // multiple collection log entries are completed within a single tick.
-        int completed = this.completed.incrementAndGet();
+        int completed = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
         int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed > 0;
         if (!varpValid) {

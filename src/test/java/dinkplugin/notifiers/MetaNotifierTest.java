@@ -5,18 +5,22 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
+import dinkplugin.util.SerializedPet;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
+import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
-import net.runelite.api.events.GameStateChanged;
+import net.runelite.client.config.RuneLiteConfig;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -63,6 +67,7 @@ class MetaNotifierTest extends MockedNotifierTest {
         when(client.getVarbitValue(Varbits.BA_GC)).thenReturn(666);
 
         when(client.getRealSkillLevel(any())).thenReturn(level);
+        when(client.getSkillExperience(any())).thenReturn((int) xp);
         when(client.getTotalLevel()).thenReturn(skillCount * level);
         when(client.getOverallExperience()).thenReturn(skillCount * xp);
 
@@ -81,23 +86,24 @@ class MetaNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         // fire event
-        notifier.onGameState(event(GameState.LOGGING_IN));
-        notifier.onGameState(event(GameState.LOADING));
-        notifier.onGameState(event(GameState.LOGGED_IN));
+        notifier.onGameState(GameState.LOGGING_IN, GameState.LOGGED_IN);
         IntStream.rangeClosed(0, MetaNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
 
         // verify handled
         Map<String, Integer> levels = Arrays.stream(Skill.values())
             .collect(Collectors.toMap(Skill::getName, s -> level));
+        Map<String, Integer> exp = Arrays.stream(Skill.values())
+            .collect(Collectors.toMap(Skill::getName, s -> (int) xp));
         LoginNotificationData extra = new LoginNotificationData(world,
             Progress.of(1312, 1477),
             Progress.of(1984, 2005),
             Progress.of(3, 48),
             null,
             new LoginNotificationData.BarbarianAssault(666),
-            new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels),
+            new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels, exp),
             Progress.of(21, 158), Progress.of(43, 300),
-            new LoginNotificationData.SlayerData(2484, 300)
+            new LoginNotificationData.SlayerData(2484, 300),
+            null
         );
         verify(messageHandler).createMessage(
             url,
@@ -118,23 +124,24 @@ class MetaNotifierTest extends MockedNotifierTest {
         when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(0);
 
         // fire events
-        notifier.onGameState(event(GameState.LOGGING_IN));
-        notifier.onGameState(event(GameState.LOADING));
-        notifier.onGameState(event(GameState.LOGGED_IN));
+        notifier.onGameState(GameState.LOGGING_IN, GameState.LOGGED_IN);
         IntStream.rangeClosed(0, MetaNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
 
         // verify handled
         Map<String, Integer> levels = Arrays.stream(Skill.values())
             .collect(Collectors.toMap(Skill::getName, s -> level));
+        Map<String, Integer> exp = Arrays.stream(Skill.values())
+            .collect(Collectors.toMap(Skill::getName, s -> (int) xp));
         LoginNotificationData extra = new LoginNotificationData(world,
             null, // collection log data should not be present
             Progress.of(1984, 2005),
             Progress.of(3, 48),
             null,
             new LoginNotificationData.BarbarianAssault(666),
-            new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels),
+            new LoginNotificationData.SkillData(xp * skillCount, level * skillCount, levels, exp),
             Progress.of(21, 158), Progress.of(43, 300),
-            new LoginNotificationData.SlayerData(2484, 300)
+            new LoginNotificationData.SlayerData(2484, 300),
+            null
         );
         verify(messageHandler).createMessage(
             url,
@@ -154,18 +161,28 @@ class MetaNotifierTest extends MockedNotifierTest {
         when(config.metadataWebhook()).thenReturn("");
 
         // fire event
-        GameStateChanged event = new GameStateChanged();
-        event.setGameState(GameState.LOGGED_IN);
-        notifier.onGameState(event);
+        notifier.onGameState(GameState.LOGGING_IN, GameState.LOGGED_IN);
         IntStream.rangeClosed(0, MetaNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
-    private static GameStateChanged event(GameState state) {
-        GameStateChanged event = new GameStateChanged();
-        event.setGameState(state);
-        return event;
+    @Test
+    void testPetDeserialization() {
+        when(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, MetaNotifier.RL_CHAT_CMD_PLUGIN_NAME))
+            .thenReturn(Boolean.TRUE.toString());
+
+        when(configManager.getRSProfileConfiguration("chatcommands", "pets2"))
+            .thenReturn(String.format("[%d, %d]", ItemID.HERBI, ItemID.BABY_MOLE));
+
+        mockItem(ItemID.HERBI, 0, "Herbi");
+        mockItem(ItemID.BABY_MOLE, 0, "Baby mole");
+
+        List<SerializedPet> expected = List.of(
+            new SerializedPet(ItemID.HERBI, "Herbi"),
+            new SerializedPet(ItemID.BABY_MOLE, "Baby mole")
+        );
+        Assertions.assertEquals(expected, notifier.getPets());
     }
 }

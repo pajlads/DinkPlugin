@@ -10,6 +10,7 @@ import dinkplugin.notifiers.GambleNotifier;
 import dinkplugin.notifiers.GrandExchangeNotifier;
 import dinkplugin.notifiers.GroupStorageNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
+import dinkplugin.notifiers.LeaguesNotifier;
 import dinkplugin.notifiers.LevelNotifier;
 import dinkplugin.notifiers.MetaNotifier;
 import dinkplugin.notifiers.LootNotifier;
@@ -21,6 +22,7 @@ import dinkplugin.notifiers.SpeedrunNotifier;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
+import net.runelite.api.GameState;
 import net.runelite.api.events.AccountHashChanged;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
@@ -51,6 +53,7 @@ import net.runelite.client.util.ColorUtil;
 
 import javax.inject.Inject;
 import java.awt.Color;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @PluginDescriptor(
@@ -82,20 +85,23 @@ public class DinkPlugin extends Plugin {
     private @Inject PlayerKillNotifier pkNotifier;
     private @Inject GroupStorageNotifier groupStorageNotifier;
     private @Inject GrandExchangeNotifier grandExchangeNotifier;
+    private @Inject LeaguesNotifier leaguesNotifier;
     private @Inject MetaNotifier metaNotifier;
+
+    private final AtomicReference<GameState> gameState = new AtomicReference<>();
 
     @Override
     protected void startUp() {
-        log.info("Started up Dink");
+        log.debug("Started up Dink");
         settingsManager.init();
         lootNotifier.init();
-        levelNotifier.initLevels();
     }
 
     @Override
     protected void shutDown() {
-        log.info("Shutting down Dink");
+        log.debug("Shutting down Dink");
         this.resetNotifiers();
+        gameState.lazySet(null);
     }
 
     void resetNotifiers() {
@@ -143,12 +149,24 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
-        settingsManager.onGameState(gameStateChanged);
-        collectionNotifier.onGameState(gameStateChanged);
+        GameState newState = gameStateChanged.getGameState();
+        if (newState == GameState.LOADING) {
+            // an intermediate state that is irrelevant for our notifiers; ignore
+            return;
+        }
+
+        GameState previousState = gameState.getAndSet(newState);
+        if (previousState == newState) {
+            // no real change occurred (just momentarily went through LOADING); ignore
+            return;
+        }
+
+        settingsManager.onGameState(previousState, newState);
+        collectionNotifier.onGameState(newState);
         levelNotifier.onGameStateChanged(gameStateChanged);
         diaryNotifier.onGameState(gameStateChanged);
         grandExchangeNotifier.onGameStateChange(gameStateChanged);
-        metaNotifier.onGameState(gameStateChanged);
+        metaNotifier.onGameState(previousState, newState);
     }
 
     @Subscribe(priority = -1) // run AFTER Prestige plugin
@@ -179,12 +197,14 @@ public class DinkPlugin extends Plugin {
             case GAMEMESSAGE:
                 collectionNotifier.onChatMessage(chatMessage);
                 petNotifier.onChatMessage(chatMessage);
+                lootNotifier.onGameMessage(chatMessage);
                 slayerNotifier.onChatMessage(chatMessage);
                 clueNotifier.onChatMessage(chatMessage);
                 killCountNotifier.onGameMessage(chatMessage);
                 combatTaskNotifier.onGameMessage(chatMessage);
                 deathNotifier.onGameMessage(chatMessage);
                 speedrunNotifier.onGameMessage(chatMessage);
+                leaguesNotifier.onGameMessage(chatMessage);
                 break;
 
             case FRIENDSCHATNOTIFICATION:
@@ -260,7 +280,6 @@ public class DinkPlugin extends Plugin {
         questNotifier.onWidgetLoaded(event);
         clueNotifier.onWidgetLoaded(event);
         speedrunNotifier.onWidgetLoaded(event);
-        lootNotifier.onWidgetLoaded(event);
         groupStorageNotifier.onWidgetLoad(event);
         killCountNotifier.onWidget(event);
     }
