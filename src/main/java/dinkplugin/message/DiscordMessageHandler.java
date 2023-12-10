@@ -295,14 +295,13 @@ public class DiscordMessageHandler {
         } else {
             drawManager.requestNextFrameListener(img -> {
                 // unhide any widgets we hid (scheduled for client thread)
-                unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
-                unhideWidget(whispersHidden, client, clientThread, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
+                Utils.unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
+                Utils.unhideWidget(whispersHidden, client, clientThread, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
 
                 // resolve future on separate thread
                 executor.execute(() -> future.complete(img));
             });
         }
-
         return future.thenApply(ImageUtil::bufferedImageFromImage)
             .thenApply(input -> Utils.rescale(input, scalePercent))
             .thenApply(image -> {
