@@ -40,7 +40,10 @@ public abstract class BaseNotifier {
     protected abstract String getWebhookUrl();
 
     protected final void createMessage(boolean sendImage, NotificationBody<?> body) {
-        String overrideUrl = getWebhookUrl();
+        this.createMessage(getWebhookUrl(), sendImage, body);
+    }
+
+    protected final void createMessage(String overrideUrl, boolean sendImage, NotificationBody<?> body) {
         String url = StringUtils.isNotBlank(overrideUrl) ? overrideUrl : config.primaryWebhook();
         messageHandler.createMessage(url, sendImage, body);
     }
