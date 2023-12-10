@@ -1,6 +1,18 @@
 ## Unreleased
 
+- Minor: Add loot notifier setting that redirects pk loot to the pk notifier override url. (#353)
+- Minor: Allow customization of which safe deaths can trigger notifications. (#363)
+- Bugfix: Avoid erroneous level notification on login when initial data is delayed. (#383)
+- Bugfix: Ensure diary notifications below the configured minimum difficulty are not sent. (#382)
+- Bugfix: Update set of items that are never kept on dangerous deaths. (#364)
+- Bugfix: Don't report inaccurate completed collections count, when character summary tab was not selected. (#374)
+- Bugfix: Avoid undercounting diary completions for notifications that occur shortly after a teleport. (#373)
 - Dev: Populate leagues relic names dynamically from structs and enums (#368).
+- Dev: Execute screenshot rescaling on background thread to minimize FPS impact. (#378)
+
+## 1.7.2
+
+- Dev: Utilize runelite event for unsired loot instead of custom widget handler (#375).
 
 ## 1.7.1
 

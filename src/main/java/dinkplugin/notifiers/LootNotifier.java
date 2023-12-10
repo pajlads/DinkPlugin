@@ -20,12 +20,6 @@ import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
-import net.runelite.api.annotations.Component;
-import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.ComponentID;
-import net.runelite.api.widgets.InterfaceID;
-import net.runelite.api.widgets.Widget;
-import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.events.NpcLootReceived;
@@ -43,7 +37,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
@@ -62,9 +55,6 @@ public class LootNotifier extends BaseNotifier {
 
     @Inject
     private ItemManager itemManager;
-
-    @Inject
-    private ClientThread clientThread;
 
     @Inject
     private ConfigManager configManager;
@@ -190,37 +180,6 @@ public class LootNotifier extends BaseNotifier {
         }
     }
 
-    public void onWidgetLoaded(WidgetLoaded event) {
-        if (!isEnabled()) return;
-
-        // special case: runelite client & loot tracker do not handle unsired loot at the time of writing
-        if (event.getGroupId() == InterfaceID.DIALOG_SPRITE) {
-            clientThread.invokeAtTickEnd(() -> {
-                Widget textWidget = client.getWidget(ComponentID.DIALOG_SPRITE_TEXT);
-                if (textWidget != null && StringUtils.containsIgnoreCase(textWidget.getText(), "The Font consumes the Unsired")) {
-                    Widget spriteWidget = firstWithItem(Utils.packWidget(InterfaceID.DIALOG_SPRITE, 0), ComponentID.DIALOG_SPRITE_SPRITE, ComponentID.DIALOG_SPRITE_TEXT);
-                    if (hasItem(spriteWidget)) {
-                        ItemStack item = new ItemStack(
-                            spriteWidget.getItemId(),
-                            1,
-                            client.getLocalPlayer().getLocalLocation()
-                        );
-                        this.handleNotify(Collections.singletonList(item), "The Font of Consumption", LootRecordType.EVENT);
-                    } else {
-                        Widget widget = client.getWidget(InterfaceID.DIALOG_SPRITE, 0);
-                        log.warn(
-                            "Failed to locate widget with item for Unsired loot. Children: {} - Nested: {} - Sprite: {} - Model: {}",
-                            widget != null && widget.getDynamicChildren() != null ? widget.getDynamicChildren().length : -1,
-                            widget != null && widget.getNestedChildren() != null ? widget.getNestedChildren().length : -1,
-                            widget != null ? widget.getSpriteId() : -1,
-                            widget != null ? widget.getModelId() : -1
-                        );
-                    }
-                }
-            });
-        }
-    }
-
     private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type) {
         final Integer kc = type == LootRecordType.NPC ? incrementAndGetKillCount(dropper) : null;
         final int minValue = config.minLootValue();
@@ -252,6 +211,12 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
+            String overrideUrl = getWebhookUrl();
+            if (config.lootRedirectPlayerKill() && !config.pkWebhook().isBlank()) {
+                if (type == LootRecordType.PLAYER || (type == LootRecordType.EVENT && "Loot Chest".equals(dropper))) {
+                    overrideUrl = config.pkWebhook();
+                }
+            }
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Template notifyMessage = Template.builder()
                 .template(config.lootNotifyMessage())
@@ -261,7 +226,7 @@ public class LootNotifier extends BaseNotifier {
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))
                 .replacement("%SOURCE%", Replacements.ofText(dropper))
                 .build();
-            createMessage(screenshot,
+            createMessage(overrideUrl, screenshot,
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
@@ -311,21 +276,6 @@ public class LootNotifier extends BaseNotifier {
             log.warn("Failed to read kills from loot tracker config", e);
             return null;
         }
-    }
-
-    private Widget firstWithItem(@Component int... componentIds) {
-        for (@Component int info : componentIds) {
-            Widget widget = client.getWidget(info);
-            if (hasItem(widget)) {
-                log.debug("Obtained item from widget via {}", info);
-                return widget;
-            }
-        }
-        return null;
-    }
-
-    private static boolean hasItem(Widget widget) {
-        return widget != null && widget.getItemId() >= 0;
     }
 
     private static boolean matches(Collection<Pattern> regexps, String input) {

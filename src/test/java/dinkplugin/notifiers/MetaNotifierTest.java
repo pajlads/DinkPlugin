@@ -12,7 +12,6 @@ import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.config.RuneLiteConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -87,9 +86,7 @@ class MetaNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         // fire event
-        notifier.onGameState(event(GameState.LOGGING_IN));
-        notifier.onGameState(event(GameState.LOADING));
-        notifier.onGameState(event(GameState.LOGGED_IN));
+        notifier.onGameState(GameState.LOGGING_IN, GameState.LOGGED_IN);
         IntStream.rangeClosed(0, MetaNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
 
         // verify handled
@@ -127,9 +124,7 @@ class MetaNotifierTest extends MockedNotifierTest {
         when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(0);
 
         // fire events
-        notifier.onGameState(event(GameState.LOGGING_IN));
-        notifier.onGameState(event(GameState.LOADING));
-        notifier.onGameState(event(GameState.LOGGED_IN));
+        notifier.onGameState(GameState.LOGGING_IN, GameState.LOGGED_IN);
         IntStream.rangeClosed(0, MetaNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
 
         // verify handled
@@ -166,9 +161,7 @@ class MetaNotifierTest extends MockedNotifierTest {
         when(config.metadataWebhook()).thenReturn("");
 
         // fire event
-        GameStateChanged event = new GameStateChanged();
-        event.setGameState(GameState.LOGGED_IN);
-        notifier.onGameState(event);
+        notifier.onGameState(GameState.LOGGING_IN, GameState.LOGGED_IN);
         IntStream.rangeClosed(0, MetaNotifier.INIT_TICKS).forEach(i -> notifier.onTick());
 
         // ensure no notification
@@ -191,11 +184,5 @@ class MetaNotifierTest extends MockedNotifierTest {
             new SerializedPet(ItemID.BABY_MOLE, "Baby mole")
         );
         Assertions.assertEquals(expected, notifier.getPets());
-    }
-
-    private static GameStateChanged event(GameState state) {
-        GameStateChanged event = new GameStateChanged();
-        event.setGameState(state);
-        return event;
     }
 }
