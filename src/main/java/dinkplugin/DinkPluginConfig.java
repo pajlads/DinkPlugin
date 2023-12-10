@@ -3,6 +3,7 @@ package dinkplugin;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
+import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
@@ -12,6 +13,9 @@ import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 import net.runelite.client.config.Units;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 @ConfigGroup(SettingsManager.CONFIG_GROUP)
 public interface DinkPluginConfig extends Config {
@@ -898,7 +902,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathIgnoreSafe",
         name = "Ignore Safe Deaths",
         description = "Whether deaths in safe areas should be ignored.<br/>" +
-            "Note: Inferno and TzHaar Fight Cave deaths are still sent with this setting enabled",
+            "Exceptions to this rule can be configured below",
         position = 43,
         section = deathSection
     )
@@ -907,11 +911,23 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "deathSafeExceptions",
+        name = "Safe Exceptions",
+        description = "Safe deaths that should trigger notifications even when 'Ignore Safe Deaths' is enabled.<br/>" +
+            "Hold Control while clicking on the options to select multiple exceptions",
+        position = 44,
+        section = deathSection
+    )
+    default Set<ExceptionalDeath> deathSafeExceptions() {
+        return EnumSet.of(ExceptionalDeath.FIGHT_CAVE, ExceptionalDeath.INFERNO);
+    }
+
+    @ConfigItem(
         keyName = "deathMinValue",
         name = "Min Lost Value",
         description = "The minimum value of the lost items for a notification to be sent.<br/>" +
             "This setting does not apply for safe deaths",
-        position = 44,
+        position = 45,
         section = deathSection
     )
     default int deathMinValue() {
@@ -924,7 +940,7 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 45,
+        position = 46,
         section = deathSection
     )
     default String deathNotifyMessage() {
@@ -935,7 +951,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpEnabled",
         name = "Distinguish PvP deaths",
         description = "Should the plugin use a different message for dying in PvP?",
-        position = 46,
+        position = 47,
         section = deathSection
     )
     default boolean deathNotifPvpEnabled() {
@@ -949,7 +965,7 @@ public interface DinkPluginConfig extends Config {
             "Use %PKER% to insert the killer<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 47,
+        position = 48,
         section = deathSection
     )
     default String deathNotifPvpMessage() {
