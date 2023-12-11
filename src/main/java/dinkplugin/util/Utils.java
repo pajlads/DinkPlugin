@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Component;
-import net.runelite.api.annotations.Interface;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.util.ColorUtil;
@@ -192,17 +191,6 @@ public class Utils {
             default:
                 return null;
         }
-    }
-
-    /**
-     * @param groupId the {@link Interface}
-     * @param childId the child id
-     * @return the corresponding {@link Component}
-     */
-    @Component
-    @SuppressWarnings("MagicConstant")
-    public int packWidget(@Interface int groupId, int childId) {
-        return groupId << 16 | childId;
     }
 
     public static boolean hideWidget(boolean shouldHide, Client client, @Component int info) {
