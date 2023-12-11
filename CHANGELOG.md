@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.8.0
+
 - Major: Add notifier to capture trades with other players. (#361)
 - Minor: Add loot notifier setting that redirects pk loot to the pk notifier override url. (#353)
 - Minor: Allow customization of which safe deaths can trigger notifications. (#363, #384, #385)
