@@ -873,6 +873,7 @@ For all players, Karamja is the _zeroth_ region selected (and there is no notifi
     "taskPoints": 10,
     "totalPoints": 30,
     "tasksCompleted": 3,
+    "tasksUntilNextArea": 57,
     "pointsUntilNextRelic": 470,
     "pointsUntilNextTrophy": 2470
   }

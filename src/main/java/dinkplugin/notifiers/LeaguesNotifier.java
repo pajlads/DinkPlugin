@@ -48,6 +48,14 @@ public class LeaguesNotifier extends BaseNotifier {
     static final @Varbit int FIVE_AREAS = 10666, FOUR_AREAS = 10665, THREE_AREAS = 10664, TWO_AREAS = 10663;
 
     /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/[proc%2Cscript2451].cs2#L3-L6">CS2 Reference</a>
+     * @see <a href="https://abextm.github.io/cache2/#/viewer/enum/2670">Enum Reference</a>
+     * @see <a href="https://abextm.github.io/cache2/#/viewer/struct/4699">Struct Reference</a>
+     */
+    @VisibleForTesting
+    static final @Varbit int LEAGUES_VERSION = 10032; // 4 for Leagues IV
+
+    /**
      * Trophy name by the required points, in a binary search tree.
      *
      * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League#Trophies">Wiki Reference</a>
@@ -72,6 +80,7 @@ public class LeaguesNotifier extends BaseNotifier {
     @Override
     public boolean isEnabled() {
         return config.notifyLeagues() &&
+            client.getVarbitValue(LEAGUES_VERSION) == 4 &&
             client.getWorldType().contains(WorldType.SEASONAL) &&
             settingsManager.isNamePermitted(client.getLocalPlayer().getName());
     }
@@ -144,19 +153,17 @@ public class LeaguesNotifier extends BaseNotifier {
         if (relicTier == null) {
             // shouldn't happen, but just to be safe
             log.warn("Unknown relic encountered: {}", relic);
-            if (points >= 0) {
-                relicTier = LeagueRelicTier.TIER_BY_POINTS.floorEntry(points).getValue();
-            }
+            relicTier = LeagueRelicTier.TIER_BY_POINTS.floorEntry(Math.max(points, 0)).getValue();
         }
-        Integer tier = relicTier != null ? relicTier.ordinal() + 1 : null;
-        Integer requiredPoints = relicTier != null ? relicTier.getPoints() : null;
+        int tier = relicTier.ordinal() + 1;
+        int requiredPoints = relicTier.getPoints();
 
         String playerName = Utils.getPlayerName(client);
         Template text = Template.builder()
             .template("%USERNAME% unlocked a Tier %TIER% Relic: %RELIC%.")
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
-            .replacement("%TIER%", Replacements.ofText(tier != null ? tier.toString() : "?"))
+            .replacement("%TIER%", Replacements.ofText(String.valueOf(tier)))
             .replacement("%RELIC%", Replacements.ofWiki(relic))
             .build();
         createMessage(config.leaguesSendImage(), NotificationBody.builder()
