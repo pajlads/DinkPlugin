@@ -11,8 +11,8 @@ public enum ExceptionalDeath {
     FIGHT_CAVE("Fight Caves"),
     INFERNO("Inferno"),
     JAD_CHALLENGES("Jad challenges"),
-    TOA("Tombs of Amascut"),
-    TOB("Theatre of Blood");
+    TOB("Theatre of Blood"),
+    TOA("Tombs of Amascut");
 
     private final String displayName;
 
