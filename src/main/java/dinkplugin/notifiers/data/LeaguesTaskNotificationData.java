@@ -41,7 +41,9 @@ public class LeaguesTaskNotificationData extends NotificationData {
         List<Field> fields = new ArrayList<>(3);
         fields.add(new Field("Total Tasks", Field.formatBlock("", String.valueOf(tasksCompleted))));
         fields.add(new Field("Total Points", Field.formatBlock("", String.valueOf(totalPoints))));
-        if (earnedTrophy == null && pointsUntilNextRelic != null) {
+        if (tasksUntilNextArea != null) {
+            fields.add(new Field("Tasks until next Area", Field.formatBlock("", String.valueOf(tasksUntilNextArea))));
+        } else if (earnedTrophy == null && pointsUntilNextRelic != null) {
             fields.add(new Field("Points until next Relic", Field.formatBlock("", String.valueOf(pointsUntilNextRelic))));
         } else if (pointsUntilNextTrophy != null) {
             fields.add(new Field("Points until next Trophy", Field.formatBlock("", String.valueOf(pointsUntilNextTrophy))));
