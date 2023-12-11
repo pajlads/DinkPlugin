@@ -2,7 +2,7 @@
 
 - Major: Add notifier to capture trades with other players. (#361)
 - Minor: Add loot notifier setting that redirects pk loot to the pk notifier override url. (#353)
-- Minor: Allow customization of which safe deaths can trigger notifications. (#363, #384)
+- Minor: Allow customization of which safe deaths can trigger notifications. (#363, #384, #385)
 - Bugfix: Avoid erroneous level notification on login when initial data is delayed. (#383)
 - Bugfix: Ensure diary notifications below the configured minimum difficulty are not sent. (#382)
 - Bugfix: Update set of items that are never kept on dangerous deaths. (#364)
