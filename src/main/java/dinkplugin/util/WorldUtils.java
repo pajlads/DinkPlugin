@@ -153,7 +153,7 @@ public class WorldUtils {
         return TOA_REGIONS.contains(regionId);
     }
 
-    public boolean isBloodTheatre(int regionId) {
+    public boolean isTheatreOfBlood(int regionId) {
         return TOB_REGIONS.contains(regionId);
     }
 
@@ -181,7 +181,7 @@ public class WorldUtils {
             return checkException(Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.TOA);
         }
 
-        if (isBloodTheatre(regionId)) {
+        if (isTheatreOfBlood(regionId)) {
             // ToB is another dangerous activity, but the whole party needs to wipe for it to be a dangerous event
             // So we use HUD text to detect the real tob death in the notifier itself
             // However: any TOB death is still dangerous for hardcore (group) ironmen
