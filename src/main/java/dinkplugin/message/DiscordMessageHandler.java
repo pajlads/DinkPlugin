@@ -18,6 +18,7 @@ import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.InterfaceID;
+import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.discord.DiscordService;
 import net.runelite.client.ui.DrawManager;
@@ -62,7 +63,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class DiscordMessageHandler {
-    public static final @Component int PRIVATE_CHAT_WIDGET = Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0);
+    public static final @Component int PRIVATE_CHAT_WIDGET = WidgetUtil.packComponentId(InterfaceID.PRIVATE_CHAT, 0);
 
     private final Gson gson;
     private final Client client;
@@ -296,7 +297,7 @@ public class DiscordMessageHandler {
             drawManager.requestNextFrameListener(img -> {
                 // unhide any widgets we hid (scheduled for client thread)
                 Utils.unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
-                Utils.unhideWidget(whispersHidden, client, clientThread, Utils.packWidget(InterfaceID.PRIVATE_CHAT, 0));
+                Utils.unhideWidget(whispersHidden, client, clientThread, PRIVATE_CHAT_WIDGET);
 
                 // resolve future on separate thread
                 executor.execute(() -> future.complete(img));
