@@ -1,6 +1,7 @@
 package dinkplugin;
 
 import com.google.inject.Provides;
+import dinkplugin.notifiers.ChatNotifier;
 import dinkplugin.notifiers.ClueNotifier;
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
@@ -89,6 +90,7 @@ public class DinkPlugin extends Plugin {
     private @Inject LeaguesNotifier leaguesNotifier;
     private @Inject MetaNotifier metaNotifier;
     private @Inject TradeNotifier tradeNotifier;
+    private @Inject ChatNotifier chatNotifier;
 
     private final AtomicReference<GameState> gameState = new AtomicReference<>();
 
@@ -97,6 +99,7 @@ public class DinkPlugin extends Plugin {
         log.debug("Started up Dink");
         settingsManager.init();
         lootNotifier.init();
+        chatNotifier.init();
     }
 
     @Override
@@ -117,6 +120,7 @@ public class DinkPlugin extends Plugin {
         groupStorageNotifier.reset();
         speedrunNotifier.reset();
         tradeNotifier.reset();
+        chatNotifier.reset();
     }
 
     @Provides
@@ -142,6 +146,7 @@ public class DinkPlugin extends Plugin {
 
         settingsManager.onConfigChanged(event);
         lootNotifier.onConfigChanged(event.getKey(), event.getNewValue());
+        chatNotifier.onConfig(event.getKey(), event.getNewValue());
     }
 
     @Subscribe
@@ -196,6 +201,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onChatMessage(ChatMessage message) {
         String chatMessage = Utils.sanitize(message.getMessage());
+        chatNotifier.onMessage(message.getType(), chatMessage);
         switch (message.getType()) {
             case GAMEMESSAGE:
                 collectionNotifier.onChatMessage(chatMessage);
