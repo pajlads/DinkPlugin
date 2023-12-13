@@ -778,10 +778,22 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootImageDelay",
+        name = "Screenshot Delay",
+        description = "The number of seconds to wait before capturing a screenshot",
+        position = 32,
+        section = lootSection
+    )
+    @Units(Units.SECONDS)
+    default int lootImageDelay() {
+        return 0;
+    }
+
+    @ConfigItem(
         keyName = "lootIcons",
         name = "Show loot icons",
         description = "Show icons for the loot obtained as additional embeds",
-        position = 32,
+        position = 33,
         section = lootSection
     )
     default boolean lootIcons() {
@@ -792,7 +804,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "minLootValue",
         name = "Min Loot value",
         description = "The minimum value of an item for a notification to be sent",
-        position = 33,
+        position = 34,
         section = lootSection
     )
     default int minLootValue() {
@@ -804,7 +816,7 @@ public interface DinkPluginConfig extends Config {
         name = "Screenshot Min Value",
         description = "The minimum combined loot value to send a screenshot.<br/>" +
             "Must have 'Send Image' enabled",
-        position = 34,
+        position = 35,
         section = lootSection
     )
     default int lootImageMinValue() {
@@ -815,7 +827,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "lootIncludePlayer",
         name = "Include PK Loot",
         description = "Allow notifications for loot from player kills",
-        position = 35,
+        position = 36,
         section = lootSection
     )
     default boolean includePlayerLoot() {
@@ -828,7 +840,7 @@ public interface DinkPluginConfig extends Config {
         description = "Whether to send PK loot to the PK override webhook URL, rather than the loot URL.<br/>" +
             "Must have 'Include PK Loot' (above) enabled.<br/>" +
             "Has no effect if the Player Kills notifier override URL is absent",
-        position = 35,
+        position = 36,
         section = lootSection
     )
     default boolean lootRedirectPlayerKill() {
@@ -839,7 +851,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "lootIncludeClueScrolls",
         name = "Include Clue Loot",
         description = "Allow notifications for loot from Clue Scrolls",
-        position = 36,
+        position = 37,
         section = lootSection
     )
     default boolean lootIncludeClueScrolls() {
@@ -851,7 +863,7 @@ public interface DinkPluginConfig extends Config {
         name = "Item Allowlist",
         description = "Always fire notifications for these items, despite value settings.<br/>" +
             "Place one item name per line (case-insensitive; asterisks are wildcards)",
-        position = 37,
+        position = 38,
         section = lootSection
     )
     default String lootItemAllowlist() {

@@ -211,11 +211,12 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
-            String overrideUrl = getWebhookUrl();
-            if (config.lootRedirectPlayerKill() && !config.pkWebhook().isBlank()) {
-                if (type == LootRecordType.PLAYER || (type == LootRecordType.EVENT && "Loot Chest".equals(dropper))) {
-                    overrideUrl = config.pkWebhook();
-                }
+            String overrideUrl;
+            if (config.lootRedirectPlayerKill() && !config.pkWebhook().isBlank() &&
+                (type == LootRecordType.PLAYER || (type == LootRecordType.EVENT && "Loot Chest".equals(dropper)))) {
+                overrideUrl = config.pkWebhook();
+            } else {
+                overrideUrl = getWebhookUrl();
             }
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Template notifyMessage = Template.builder()
@@ -226,15 +227,23 @@ public class LootNotifier extends BaseNotifier {
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))
                 .replacement("%SOURCE%", Replacements.ofText(dropper))
                 .build();
-            createMessage(overrideUrl, screenshot,
+            String thumbnail = ItemUtils.getItemImageUrl(max.getId());
+
+            Runnable sendNotification = () -> createMessage(overrideUrl, screenshot,
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
                     .extra(new LootNotificationData(serializedItems, dropper, type, kc))
                     .type(NotificationType.LOOT)
-                    .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
+                    .thumbnailUrl(thumbnail)
                     .build()
             );
+            int delay = config.lootImageDelay();
+            if (delay <= 0) {
+                sendNotification.run();
+            } else {
+                executor.schedule(sendNotification, delay, TimeUnit.SECONDS);
+            }
         }
     }
 
