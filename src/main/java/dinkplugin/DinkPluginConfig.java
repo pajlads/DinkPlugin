@@ -784,6 +784,7 @@ public interface DinkPluginConfig extends Config {
         position = 32,
         section = lootSection
     )
+    @Range(max = 10)
     @Units(Units.SECONDS)
     default int lootImageDelay() {
         return 0;
