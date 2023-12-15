@@ -1,5 +1,10 @@
 ## Unreleased
 
+## 1.8.1
+
+- Dev: Changed the plugin icon to a Christmas version. (#393)
+- Dev: Refactor widget ID packing. (#389)
+
 ## 1.8.0
 
 - Major: Add notifier to capture trades with other players. (#361)
