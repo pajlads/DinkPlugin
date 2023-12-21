@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Dynamically obtain coin item variations. (#398)
+
 ## 1.8.1
 
 - Dev: Changed the plugin icon to a Christmas version. (#393)
