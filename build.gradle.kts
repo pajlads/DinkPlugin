@@ -30,6 +30,7 @@ dependencies {
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = junitVersion)
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params", version = junitVersion)
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = junitVersion)
+    testRuntimeOnly(group = "org.junit.platform", name = "junit-platform-launcher", version = "1.5.2")
 
     // mocking and test injection used by runelite client
     testImplementation(group = "org.mockito", name = "mockito-core", version = "4.11.0") // runelite uses 3.1.0
@@ -39,7 +40,7 @@ dependencies {
 }
 
 group = "dinkplugin"
-version = "1.8.0"
+version = "1.8.1"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"

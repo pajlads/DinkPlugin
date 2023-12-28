@@ -1,6 +1,8 @@
 package dinkplugin;
 
 import dinkplugin.util.ItemUtils;
+import net.runelite.api.ItemID;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -17,6 +19,15 @@ import net.runelite.client.game.ItemStack;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UtilsTest {
+
+    @Test
+    void coinVariations() {
+        assertTrue(ItemUtils.COIN_VARIATIONS.contains(ItemID.COINS));
+        assertTrue(ItemUtils.COIN_VARIATIONS.contains(ItemID.COINS_995));
+        assertTrue(ItemUtils.COIN_VARIATIONS.contains(ItemID.COINS_6964));
+        assertTrue(ItemUtils.COIN_VARIATIONS.contains(ItemID.COINS_8890));
+    }
+
     @ParameterizedTest(name = "Item stack should be reduced {0}")
     @ArgumentsSource(ItemStackReductionProvider.class)
     void itemStackShouldBeReduced(Collection<ItemStack> input, Collection<ItemStack> reduced) {

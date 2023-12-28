@@ -62,7 +62,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             .thenReturn("%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%");
 
         // init item mocks
-        mockItem(ItemID.COINS_995, 1, "Coins");
+        mockItem(ItemID.COINS, 1, "Coins");
         mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
         mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
         mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
@@ -147,7 +147,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         // verify notification message
         GroupStorageNotificationData extra = new GroupStorageNotificationData(
             Collections.emptyList(),
-            Collections.singletonList(new SerializedItemStack(ItemID.COINS_995, 900, 1, "Coins")),
+            Collections.singletonList(new SerializedItemStack(ItemID.COINS, 900, 1, "Coins")),
             -900,
             GROUP_NAME,
             true
@@ -173,7 +173,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         // verify notification message
         GroupStorageNotificationData extra = new GroupStorageNotificationData(
             Collections.emptyList(),
-            Collections.singletonList(new SerializedItemStack(ItemID.COINS_995, 800, 1, "Coins")),
+            Collections.singletonList(new SerializedItemStack(ItemID.COINS, 800, 1, "Coins")),
             -800,
             GROUP_NAME,
             true

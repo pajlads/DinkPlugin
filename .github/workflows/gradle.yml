@@ -35,7 +35,7 @@ jobs:
         run: ./gradlew shadowJar
 
       - name: Upload shadowJar
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dinkplugin-shadow
           path: build/libs/dinkplugin-*-all.jar
@@ -46,7 +46,7 @@ jobs:
     if: (github.event_name == 'push' && github.ref == 'refs/heads/master')
 
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: dinkplugin-shadow
           path: release-artifacts/
