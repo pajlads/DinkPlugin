@@ -13,7 +13,6 @@ import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
 import net.runelite.client.config.RuneLiteConfig;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +40,7 @@ class MetaNotifierTest extends MockedNotifierTest {
     int level = 50;
     long xp = Experience.getXpForLevel(level);
     int skillCount = Skill.values().length;
-    String url = StringUtils.isNotBlank(PRIMARY_WEBHOOK_URL) ? PRIMARY_WEBHOOK_URL : "https://example.com";
+    String url = PRIMARY_WEBHOOK_URL == null || PRIMARY_WEBHOOK_URL.isBlank() ? "https://example.com" : PRIMARY_WEBHOOK_URL;
 
     @Override
     @BeforeEach

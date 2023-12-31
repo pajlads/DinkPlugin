@@ -7,7 +7,6 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.util.WorldUtils;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.Set;
@@ -44,7 +43,7 @@ public abstract class BaseNotifier {
     }
 
     protected final void createMessage(String overrideUrl, boolean sendImage, NotificationBody<?> body) {
-        String url = StringUtils.isNotBlank(overrideUrl) ? overrideUrl : config.primaryWebhook();
+        String url = overrideUrl == null || overrideUrl.isBlank() ? config.primaryWebhook() : overrideUrl;
         messageHandler.createMessage(url, sendImage, body);
     }
 

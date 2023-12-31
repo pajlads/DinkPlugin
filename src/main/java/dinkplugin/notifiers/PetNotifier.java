@@ -14,7 +14,6 @@ import lombok.Setter;
 import lombok.Value;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
@@ -124,7 +123,7 @@ public class PetNotifier extends BaseNotifier {
             String user = matcher.group("user").trim();
             if (user.equals(Utils.getPlayerName(client))) {
                 this.petName = matcher.group("pet");
-                this.milestone = StringUtils.removeEnd(matcher.group("milestone"), ".");
+                this.milestone = Utils.removeEnd(matcher.group("milestone"), '.');
             }
         }
     }
@@ -178,14 +177,14 @@ public class PetNotifier extends BaseNotifier {
             .replacement("%GAME_MESSAGE%", Replacements.ofText(gameMessage))
             .build();
 
-        String thumbnail = Optional.ofNullable(petName)
-            .filter(s -> !s.isEmpty())
+        String pet = petName == null || petName.isEmpty() ? null : petName;
+        String thumbnail = Optional.ofNullable(pet)
             .map(Utils::ucFirst)
             .map(itemSearcher::findItemId)
             .map(ItemUtils::getItemImageUrl)
             .orElse(null);
 
-        PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null), milestone, duplicate, previouslyOwned);
+        PetNotificationData extra = new PetNotificationData(pet, milestone, duplicate, previouslyOwned);
 
         createMessage(config.petSendImage(), NotificationBody.builder()
             .extra(extra)

@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import com.google.common.collect.ImmutableMap;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.util.Utils;
@@ -10,7 +9,6 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.CombatAchievementData;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.client.callback.ClientThread;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
@@ -73,7 +71,7 @@ public class CombatTaskNotifier extends BaseNotifier {
 
     public void onGameMessage(String message) {
         if (isEnabled())
-            parse(message).ifPresent(pair -> handle(pair.getLeft(), pair.getRight()));
+            parse(message).ifPresent(pair -> handle(pair.getKey(), pair.getValue()));
     }
 
     private void handle(CombatAchievementTier tier, String task) {
@@ -131,12 +129,12 @@ public class CombatTaskNotifier extends BaseNotifier {
     }
 
     @VisibleForTesting
-    static Optional<Pair<CombatAchievementTier, String>> parse(String message) {
+    static Optional<Map.Entry<CombatAchievementTier, String>> parse(String message) {
         Matcher matcher = ACHIEVEMENT_PATTERN.matcher(message);
         if (!matcher.find()) return Optional.empty();
         return Optional.of(matcher.group("tier"))
             .map(CombatAchievementTier.TIER_BY_LOWER_NAME::get)
-            .map(tier -> Pair.of(
+            .map(tier -> Map.entry(
                 tier,
                 TASK_POINTS.matcher(
                     matcher.group("task")
@@ -145,14 +143,13 @@ public class CombatTaskNotifier extends BaseNotifier {
     }
 
     static {
-        // noinspection UnstableApiUsage (builderWithExpectedSize is no longer @Beta in snapshot guava)
-        CUM_POINTS_VARBIT_BY_TIER = ImmutableMap.<CombatAchievementTier, Integer>builderWithExpectedSize(6)
-            .put(CombatAchievementTier.EASY, 4132) // 33 = 33 * 1
-            .put(CombatAchievementTier.MEDIUM, 10660) // 115 = 33 + 41 * 2
-            .put(CombatAchievementTier.HARD, 10661) // 304 = 115 + 63 * 3
-            .put(CombatAchievementTier.ELITE, 14812) // 820 = 304 + 129 * 4
-            .put(CombatAchievementTier.MASTER, 14813) // 1465 = 820 + 129 * 5
-            .put(CombatAchievementTier.GRANDMASTER, GRANDMASTER_TOTAL_POINTS_ID) // 2005 = 1465 + 90 * 6
-            .build();
+        CUM_POINTS_VARBIT_BY_TIER = Map.of(
+            CombatAchievementTier.EASY, 4132, // 33 = 33 * 1
+            CombatAchievementTier.MEDIUM, 10660, // 115 = 33 + 41 * 2
+            CombatAchievementTier.HARD, 10661, // 304 = 115 + 63 * 3
+            CombatAchievementTier.ELITE, 14812, // 820 = 304 + 129 * 4
+            CombatAchievementTier.MASTER, 14813, // 1465 = 820 + 129 * 5
+            CombatAchievementTier.GRANDMASTER, GRANDMASTER_TOTAL_POINTS_ID // 2005 = 1465 + 90 * 6
+        );
     }
 }

@@ -31,7 +31,6 @@ import net.runelite.client.plugins.loottracker.LootTrackerConfig;
 import net.runelite.client.plugins.loottracker.LootTrackerPlugin;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -168,7 +167,7 @@ public class LootNotifier extends BaseNotifier {
 
         // only consider non-NPC and non-PK loot
         if (lootReceived.getType() == LootRecordType.EVENT || lootReceived.getType() == LootRecordType.PICKPOCKET) {
-            if (!config.lootIncludeClueScrolls() && StringUtils.startsWithIgnoreCase(lootReceived.getName(), "Clue Scroll")) {
+            if (!config.lootIncludeClueScrolls() && lootReceived.getName().startsWith("Clue Scroll")) {
                 // skip clue scroll loot, depending on config
                 return;
             }

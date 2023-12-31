@@ -16,14 +16,14 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.game.ItemManager;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -93,11 +93,11 @@ public class GambleNotifier extends BaseNotifier {
     }
 
     private List<SerializedItemStack> serializeItems(ParsedData data) {
-        return Stream.of(Pair.of(data.itemName, data.itemQuantity), Pair.of(data.tertiaryItem, 1))
-            .filter(p -> p.getLeft() != null)
-            .map(p -> Pair.of(itemSearcher.findItemId(p.getLeft()), p.getRight()))
-            .filter(p -> p.getLeft() != null)
-            .map(p -> ItemUtils.stackFromItem(itemManager, p.getLeft(), p.getRight()))
+        return Stream.of(Map.entry(data.itemName, data.itemQuantity), new AbstractMap.SimpleImmutableEntry<>(data.tertiaryItem, 1))
+            .filter(p -> p.getKey() != null)
+            .map(p -> new AbstractMap.SimpleImmutableEntry<>(itemSearcher.findItemId(p.getKey()), p.getValue()))
+            .filter(p -> p.getKey() != null)
+            .map(p -> ItemUtils.stackFromItem(itemManager, p.getKey(), p.getValue()))
             .collect(Collectors.toList());
     }
 
@@ -116,7 +116,7 @@ public class GambleNotifier extends BaseNotifier {
         }
         String tertiary = matcher.group(2);
         if (tertiary != null) {
-            tertiary = StringUtils.removeEnd(tertiary, "!").trim();
+            tertiary = Utils.removeEnd(tertiary, '!').trim();
         }
         int gambleCount = Integer.parseInt(matcher.group(3));
         return new ParsedData(itemName, itemQuantity, tertiary, gambleCount);

@@ -17,23 +17,19 @@ import net.runelite.api.GameState;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Singleton
@@ -54,7 +50,8 @@ public class MetaNotifier extends BaseNotifier {
 
     @Override
     public boolean isEnabled() {
-        return StringUtils.isNotBlank(config.metadataWebhook()) && super.isEnabled();
+        String url = config.metadataWebhook();
+        return url != null && !url.isBlank() && super.isEnabled();
     }
 
     @Override

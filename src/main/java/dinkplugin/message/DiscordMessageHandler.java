@@ -31,8 +31,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -100,10 +98,10 @@ public class DiscordMessageHandler {
     }
 
     public void createMessage(String webhookUrl, boolean sendImage, @NonNull NotificationBody<?> inputBody) {
-        if (StringUtils.isBlank(webhookUrl)) return;
+        if (webhookUrl == null || webhookUrl.isBlank()) return;
 
-        Collection<HttpUrl> urlList = Arrays.stream(StringUtils.split(webhookUrl, '\n'))
-            .filter(StringUtils::isNotBlank)
+        Collection<HttpUrl> urlList = Arrays.stream(webhookUrl.split("\n"))
+            .filter(s -> !s.isBlank())
             .map(HttpUrl::parse)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
@@ -261,7 +259,7 @@ public class DiscordMessageHandler {
                 .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
                 .build()
                 .evaluate(false);
-            return mBody.withThreadName(Utils.truncate(StringUtils.normalizeSpace(threadName), NotificationBody.MAX_THREAD_NAME_LENGTH));
+            return mBody.withThreadName(Utils.truncate(Utils.normalizeSpace(threadName), NotificationBody.MAX_THREAD_NAME_LENGTH));
         }
         return mBody;
     }
@@ -308,7 +306,7 @@ public class DiscordMessageHandler {
             .thenApply(image -> {
                 try {
                     String format = "png"; // lossless
-                    return Pair.of(format, Utils.convertImageToByteArray(image, format));
+                    return Map.entry(format, Utils.convertImageToByteArray(image, format));
                 } catch (IOException e) {
                     throw new CompletionException("Could not convert image to byte array", e);
                 }
@@ -326,7 +324,7 @@ public class DiscordMessageHandler {
                 try (InputStream is = new ByteArrayInputStream(bytes)) {
                     String format = "jpeg"; // lossy
                     BufferedImage rescaled = Utils.rescale(ImageIO.read(is), factor);
-                    return Pair.of(format, Utils.convertImageToByteArray(rescaled, format));
+                    return Map.entry(format, Utils.convertImageToByteArray(rescaled, format));
                 } catch (Exception e) {
                     throw new CompletionException("Failed to resize image below Discord size limit", e);
                 }
@@ -345,9 +343,9 @@ public class DiscordMessageHandler {
             .url(playerLookupService.getPlayerUrl(body.getPlayerName()))
             .iconUrl(Utils.getChatBadge(body.getAccountType(), body.isSeasonalWorld()))
             .build();
-        Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()
+        Footer footer = footerText.isBlank() ? null : Footer.builder()
             .text(Utils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
-            .iconUrl(StringUtils.isBlank(footerIcon) ? null : footerIcon)
+            .iconUrl(footerIcon.isBlank() ? null : footerIcon)
             .build();
         String thumbnail = body.getThumbnailUrl() != null
             ? body.getThumbnailUrl()

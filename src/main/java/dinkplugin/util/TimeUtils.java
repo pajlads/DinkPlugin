@@ -3,8 +3,6 @@ package dinkplugin.util;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
 import net.runelite.api.annotations.Varbit;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -50,7 +48,7 @@ public class TimeUtils {
         String fractional = m.group("fractional");
         if (fractional != null) {
             // osrs sends 2 digits, but this is robust to changes
-            String f = fractional.length() < 3 ? StringUtils.rightPad(fractional, 3, '0') : fractional.substring(0, 3);
+            String f = fractional.length() < 3 ? Utils.padRight(fractional, 3, '0') : fractional.substring(0, 3);
             d = d.plusMillis(Integer.parseInt(f));
         }
 
@@ -59,7 +57,7 @@ public class TimeUtils {
 
     @NotNull
     public String format(@Nullable Duration duration, boolean precise) {
-        Temporal time = ObjectUtils.defaultIfNull(duration, Duration.ZERO).addTo(LocalTime.of(0, 0));
+        Temporal time = LocalTime.of(0, 0).plus(duration != null ? duration : Duration.ZERO);
         StringBuilder sb = new StringBuilder();
 
         int h = time.get(HOUR_OF_DAY);

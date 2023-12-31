@@ -16,19 +16,17 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.CommandExecuted;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.reflect.Type;
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -104,7 +102,7 @@ public class SettingsManager {
             configValueTypes.put(key, item.getType());
 
             String section = item.getItem().section();
-            if (StringUtils.isNotEmpty(section)) {
+            if (section != null && !section.isEmpty()) {
                 keysBySection.computeIfAbsent(
                     section.toLowerCase().replace(" ", ""),
                     s -> new HashSet<>()
@@ -297,21 +295,21 @@ public class SettingsManager {
             .stream()
             .map(prop -> prop.substring(prefix.length()))
             .filter(exportKey)
-            .map(key -> Pair.of(key, configValueTypes.get(key)))
+            .map(key -> new AbstractMap.SimpleImmutableEntry<>(key, configValueTypes.get(key)))
             .filter(pair -> pair.getValue() != null)
-            .map(pair -> Pair.of(pair.getKey(), configManager.getConfiguration(CONFIG_GROUP, pair.getKey(), pair.getValue())))
+            .map(pair -> new AbstractMap.SimpleImmutableEntry<>(pair.getKey(), configManager.getConfiguration(CONFIG_GROUP, pair.getKey(), pair.getValue())))
             .filter(pair -> pair.getValue() != null)
             .filter(pair -> {
                 // only serialize webhook urls if they are not blank
                 if (webhookConfigKeys.contains(pair.getKey())) {
                     Object value = pair.getValue();
-                    return value instanceof String && StringUtils.isNotBlank((String) value);
+                    return value instanceof String && !((String) value).isBlank();
                 }
 
                 // always serialize everything else
                 return true;
             })
-            .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         Utils.copyToClipboard(gson.toJson(configMap))
             .thenRun(() -> plugin.addChatSuccess("Copied current configuration to clipboard"))
@@ -427,7 +425,7 @@ public class SettingsManager {
     }
 
     static {
-        PROBLEMATIC_VARBITS = ImmutableSet.of(
+        PROBLEMATIC_VARBITS = Set.of(
             KillCountNotifier.KILL_COUNT_SPAM_FILTER,
             CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP,
             Varbits.COLLECTION_LOG_NOTIFICATION,

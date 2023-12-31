@@ -4,14 +4,14 @@ import dinkplugin.domain.AccountType;
 import dinkplugin.domain.Danger;
 import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.message.Embed;
-import dinkplugin.message.templating.Replacements;
-import dinkplugin.message.templating.Template;
-import dinkplugin.util.ItemUtils;
-import dinkplugin.util.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.ItemUtils;
+import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
@@ -28,9 +28,6 @@ import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -44,6 +41,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -158,17 +156,17 @@ public class DeathNotifier extends BaseNotifier {
             return;
 
         Collection<Item> items = ItemUtils.getItems(client);
-        List<Pair<Item, Long>> itemsByPrice = getPricedItems(itemManager, items);
+        List<Map.Entry<Item, Long>> itemsByPrice = getPricedItems(itemManager, items);
 
-        Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> split;
+        Map.Entry<List<Map.Entry<Item, Long>>, List<Map.Entry<Item, Long>>> split;
         if (danger == Danger.DANGEROUS) {
             int keepCount = getKeepCount();
             split = splitItemsByKept(itemsByPrice, keepCount);
         } else {
-            split = Pair.of(itemsByPrice, Collections.emptyList());
+            split = Map.entry(itemsByPrice, Collections.emptyList());
         }
-        List<Pair<Item, Long>> keptItems = split.getLeft();
-        List<Pair<Item, Long>> lostItems = split.getRight();
+        List<Map.Entry<Item, Long>> keptItems = split.getKey();
+        List<Map.Entry<Item, Long>> lostItems = split.getValue();
 
         long losePrice = lostItems.stream()
             .mapToLong(pair -> pair.getValue() * pair.getKey().getQuantity())
@@ -183,7 +181,7 @@ public class DeathNotifier extends BaseNotifier {
         Actor killer = identifyKiller();
         boolean pk = killer instanceof Player;
         boolean npc = killer instanceof NPC;
-        String killerName = killer != null ? StringUtils.defaultIfEmpty(killer.getName(), "?") : null;
+        String killerName = killer != null ? Optional.ofNullable(killer.getName()).filter(s -> !s.isEmpty()).orElse("?") : null;
         Template notifyMessage = buildMessage(killerName, losePrice, pk, npc);
 
         List<SerializedItemStack> lostStacks = getStacks(itemManager, lostItems, true);
@@ -192,7 +190,7 @@ public class DeathNotifier extends BaseNotifier {
         if (config.deathEmbedKeptItems()) {
             keptItemEmbeds = ItemUtils.buildEmbeds(
                 keptItems.stream()
-                    .map(Pair::getKey)
+                    .map(Map.Entry::getKey)
                     .mapToInt(Item::getId)
                     .distinct()
                     .toArray()
@@ -328,7 +326,7 @@ public class DeathNotifier extends BaseNotifier {
 
         if (actor instanceof NPC) {
             NPCComposition npc = ((NPC) actor).getTransformedComposition();
-            return NPC_VALID.test(npc) && ArrayUtils.contains(npc.getActions(), ATTACK_OPTION);
+            return NPC_VALID.test(npc) && Utils.contains(npc.getActions(), ATTACK_OPTION);
         }
 
         log.warn("Encountered unknown type of Actor; was neither Player nor NPC!");
@@ -341,10 +339,10 @@ public class DeathNotifier extends BaseNotifier {
      * @return pairs of the passed items to their price, sorted by most expensive unit price first
      */
     @NotNull
-    private static List<Pair<Item, Long>> getPricedItems(ItemManager itemManager, Collection<Item> items) {
+    private static List<Map.Entry<Item, Long>> getPricedItems(ItemManager itemManager, Collection<Item> items) {
         return items.stream()
-            .map(item -> Pair.of(item, ItemUtils.getPrice(itemManager, item.getId())))
-            .sorted(Comparator.<Pair<Item, Long>>comparingLong(Pair::getValue).reversed())
+            .map(item -> Map.entry(item, ItemUtils.getPrice(itemManager, item.getId())))
+            .sorted(Comparator.<Map.Entry<Item, Long>>comparingLong(Map.Entry::getValue).reversed())
             .collect(Collectors.toList());
     }
 
@@ -358,12 +356,12 @@ public class DeathNotifier extends BaseNotifier {
      */
     @NotNull
     @VisibleForTesting
-    static Pair<List<Pair<Item, Long>>, List<Pair<Item, Long>>> splitItemsByKept(List<Pair<Item, Long>> itemsByPrice, int keepCount) {
-        final List<Pair<Item, Long>> keep = new ArrayList<>(keepCount);
-        final List<Pair<Item, Long>> lost = new ArrayList<>(Math.max(itemsByPrice.size() - keepCount, 0));
+    static Map.Entry<List<Map.Entry<Item, Long>>, List<Map.Entry<Item, Long>>> splitItemsByKept(List<Map.Entry<Item, Long>> itemsByPrice, int keepCount) {
+        final List<Map.Entry<Item, Long>> keep = new ArrayList<>(keepCount);
+        final List<Map.Entry<Item, Long>> lost = new ArrayList<>(Math.max(itemsByPrice.size() - keepCount, 0));
 
         int kept = 0;
-        for (Pair<Item, Long> item : itemsByPrice) {
+        for (Map.Entry<Item, Long> item : itemsByPrice) {
             int id = item.getKey().getId();
 
             if (id == ItemID.OLD_SCHOOL_BOND || id == ItemID.OLD_SCHOOL_BOND_UNTRADEABLE) {
@@ -375,16 +373,16 @@ public class DeathNotifier extends BaseNotifier {
             boolean neverKept = ItemUtils.isItemNeverKeptOnDeath(id);
             for (int i = 0; i < item.getKey().getQuantity(); i++) {
                 if (kept < keepCount && !neverKept) {
-                    keep.add(Pair.of(new Item(id, 1), item.getValue()));
+                    keep.add(Map.entry(new Item(id, 1), item.getValue()));
                     kept++;
                 } else {
-                    lost.add(Pair.of(new Item(id, item.getKey().getQuantity() - i), item.getValue()));
+                    lost.add(Map.entry(new Item(id, item.getKey().getQuantity() - i), item.getValue()));
                     break;
                 }
             }
         }
 
-        return Pair.of(keep, lost);
+        return Map.entry(keep, lost);
     }
 
     /**
@@ -397,8 +395,8 @@ public class DeathNotifier extends BaseNotifier {
      * @return the (optionally reduced) {@link SerializedItemStack}'s associated with {@code pricedItems}
      */
     @NotNull
-    private static List<SerializedItemStack> getStacks(ItemManager itemManager, List<Pair<Item, Long>> pricedItems, boolean reduce) {
-        Collection<Item> items = pricedItems.stream().map(Pair::getLeft).collect(Collectors.toList());
+    private static List<SerializedItemStack> getStacks(ItemManager itemManager, List<Map.Entry<Item, Long>> pricedItems, boolean reduce) {
+        Collection<Item> items = pricedItems.stream().map(Map.Entry::getKey).collect(Collectors.toList());
         if (reduce) {
             items = ItemUtils.reduceItems(items).values();
         }
@@ -419,9 +417,9 @@ public class DeathNotifier extends BaseNotifier {
                     Comparator
                         .comparing(
                             (NPCComposition comp) -> comp.getStringValue(ParamID.NPC_HP_NAME),
-                            Comparator.comparing(StringUtils::isNotEmpty) // prefer has name in hit points UI
+                            Comparator.comparing(s -> s != null && !s.isEmpty()) // prefer has name in hit points UI
                         )
-                        .thenComparing(comp -> ArrayUtils.contains(comp.getActions(), ATTACK_OPTION)) // prefer explicitly attackable
+                        .thenComparing(comp -> Utils.contains(comp.getActions(), ATTACK_OPTION)) // prefer explicitly attackable
                         .thenComparingInt(NPCComposition::getCombatLevel) // prefer high level
                         .thenComparingInt(NPCComposition::getSize) // prefer large
                         .thenComparing(NPCComposition::isMinimapVisible) // prefer visible on minimap

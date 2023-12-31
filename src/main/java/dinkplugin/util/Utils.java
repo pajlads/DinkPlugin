@@ -42,6 +42,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -90,6 +91,74 @@ public class Utils {
     public String sanitize(String str) {
         if (str == null || str.isEmpty()) return "";
         return Text.removeTags(str.replace("<br>", "\n")).replace('\u00A0', ' ').trim();
+    }
+
+    public String removeEnd(@NotNull String str, char c) {
+        int len = str.length();
+        if (len == 0 || str.charAt(len - 1) != c) return str;
+        return str.substring(0, len - 1);
+    }
+
+    public String padRight(@NotNull String str, int minLength, char padChar) {
+        int delta = minLength - str.length();
+        if (delta <= 0) return str;
+        return str + String.valueOf(padChar).repeat(delta);
+    }
+
+    public String normalizeSpace(@Nullable String str) {
+        if (str == null || str.isEmpty()) return str;
+
+        final char[] chars = str.toCharArray();
+        final int len = chars.length;
+
+        // find first non-whitespace char
+        int start = 0;
+        while (start < len) {
+            char c = chars[start];
+            if (!Character.isWhitespace(c) && !Character.isISOControl(c)) {
+                break;
+            }
+            start++;
+        }
+
+        if (start >= len) {
+            // input string only contained whitespace
+            return "";
+        }
+
+        // find last non-whitespace char
+        int end = len - 1;
+        while (end > start) {
+            char c = chars[end];
+            if (!Character.isWhitespace(c) && !Character.isISOControl(c)) {
+                break;
+            }
+            end--;
+        }
+
+        if (start == end) {
+            // optimization when string has single non-whitespace character
+            return String.valueOf(chars[start]);
+        }
+
+        // replace sequences of whitespaces within [start, end] with single space
+        final char nbsp = '\u00A0';
+        final StringBuilder sb = new StringBuilder(end - start + 1);
+        sb.append(chars[start]);
+        boolean prevWhitespace = false;
+        for (int i = start + 1; i <= end; i++) {
+            char c = chars[i];
+            if (Character.isWhitespace(c)) {
+                if (!prevWhitespace) {
+                    sb.append(' ');
+                    prevWhitespace = true;
+                }
+            } else {
+                prevWhitespace = false;
+                sb.append(c != nbsp ? c : ' ');
+            }
+        }
+        return sb.toString();
     }
 
     /**
@@ -149,6 +218,15 @@ public class Utils {
         } else {
             return b.contains(a);
         }
+    }
+
+    public <T> boolean contains(@Nullable T[] array, @Nullable T value) {
+        if (array == null) return false;
+        for (T t : array) {
+            if (Objects.equals(t, value))
+                return true;
+        }
+        return false;
     }
 
     /**

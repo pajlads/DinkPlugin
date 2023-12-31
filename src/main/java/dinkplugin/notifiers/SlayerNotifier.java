@@ -8,12 +8,12 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.util.Utils;
 import dinkplugin.notifiers.data.SlayerNotificationData;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Singleton;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -104,9 +104,9 @@ public class SlayerNotifier extends BaseNotifier {
 
         int threshold = config.slayerPointThreshold();
         if (threshold <= 0 || Integer.parseInt(slayerPoints.replace(",", "")) >= threshold) {
-            Optional<Pair<Integer, String>> parsedTask = parseTask(task);
-            Integer marginalKillCount = parsedTask.map(Pair::getLeft).orElse(null);
-            String monster = parsedTask.map(Pair::getRight).orElse(null);
+            Optional<Map.Entry<Integer, String>> parsedTask = parseTask(task);
+            Integer marginalKillCount = parsedTask.map(Map.Entry::getKey).orElse(null);
+            String monster = parsedTask.map(Map.Entry::getValue).orElse(null);
 
             Template notifyMessage = Template.builder()
                 .template(config.slayerNotifyMessage())
@@ -145,9 +145,9 @@ public class SlayerNotifier extends BaseNotifier {
     }
 
     @NotNull
-    private static Optional<Pair<Integer, String>> parseTask(@NotNull String task) {
+    private static Optional<Map.Entry<Integer, String>> parseTask(@NotNull String task) {
         Matcher m = TASK_MONSTER_REGEX.matcher(task);
         if (!m.find()) return Optional.empty();
-        return Optional.of(Pair.of(Integer.parseInt(m.group("count")), m.group("monster")));
+        return Optional.of(Map.entry(Integer.parseInt(m.group("count")), m.group("monster")));
     }
 }

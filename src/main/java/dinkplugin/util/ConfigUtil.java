@@ -5,7 +5,6 @@ import net.runelite.api.Client;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.util.ColorUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +24,7 @@ public class ConfigUtil {
         if (value == null) return Stream.empty();
         return DELIM.splitAsStream(value)
             .map(String::trim)
-            .filter(StringUtils::isNotEmpty);
+            .filter(s -> !s.isEmpty());
     }
 
     @Nullable

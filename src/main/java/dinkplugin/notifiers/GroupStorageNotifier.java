@@ -20,7 +20,6 @@ import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
@@ -119,7 +118,8 @@ public class GroupStorageNotifier extends BaseNotifier {
         if (widget == null)
             return;
 
-        if (isEnabled() && StringUtils.containsIgnoreCase(widget.getText(), "Saving")) {
+        String text = widget.getText();
+        if (text != null && isEnabled() && text.contains("Saving")) {
             ItemContainer inv = getInventory();
             if (inv != null) {
                 Map<Integer, Integer> updatedInventory = reduce(inv.getItems());
@@ -173,10 +173,14 @@ public class GroupStorageNotifier extends BaseNotifier {
 
         // Build content
         String playerName = client.getLocalPlayer().getName();
-        String content = StringUtils.replaceEach(config.groupStorageNotifyMessage(),
-            new String[] { "%USERNAME%", "%DEPOSITED%", "%WITHDRAWN%" },
-            new String[] { playerName, depositString, withdrawalString }
-        );
+        String content = Template.builder()
+            .template(config.groupStorageNotifyMessage())
+            .replacementBoundary("%")
+            .replacement("%USERNAME%", Replacements.ofText(playerName))
+            .replacement("%DEPOSITED%", Replacements.ofText(depositString))
+            .replacement("%WITHDRAWN%", Replacements.ofText(withdrawalString))
+            .build()
+            .evaluate(false);
         Template formattedText = Template.builder()
             .template("$s$")
             .replacementBoundary("$")

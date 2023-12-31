@@ -18,7 +18,6 @@ import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -26,14 +25,13 @@ import javax.inject.Singleton;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Slf4j
 @Singleton
@@ -193,11 +191,11 @@ public class KillCountNotifier extends BaseNotifier {
                 // where the order of the messages differs depending on the boss.
                 // Here, we update data without setting any not-null values back to null.
                 return new BossNotificationData(
-                    defaultIfNull(updated.getBoss(), old.getBoss()),
-                    defaultIfNull(updated.getCount(), old.getCount()),
-                    defaultIfNull(updated.getGameMessage(), old.getGameMessage()),
-                    defaultIfNull(updated.getTime(), old.getTime()),
-                    defaultIfNull(updated.isPersonalBest(), old.isPersonalBest())
+                    updated.getBoss() != null ? updated.getBoss() : old.getBoss(),
+                    updated.getCount() != null ? updated.getCount() : old.getCount(),
+                    updated.getGameMessage() != null ? updated.getGameMessage() : old.getGameMessage(),
+                    updated.getTime() != null ? updated.getTime() : old.getTime(),
+                    updated.isPersonalBest() != null ? updated.isPersonalBest() : old.isPersonalBest()
                 );
             }
         });
@@ -205,23 +203,23 @@ public class KillCountNotifier extends BaseNotifier {
 
     private static Optional<BossNotificationData> parse(String message) {
         if (message.startsWith("Preparation")) return Optional.empty();
-        Optional<Pair<String, Integer>> boss = parseBoss(message);
+        Optional<Map.Entry<String, Integer>> boss = parseBoss(message);
         if (boss.isPresent())
-            return boss.map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null));
-        return parseTime(message).map(t -> new BossNotificationData(null, null, null, t.getLeft(), t.getRight()));
+            return boss.map(pair -> new BossNotificationData(pair.getKey(), pair.getValue(), message, null, null));
+        return parseTime(message).map(t -> new BossNotificationData(null, null, null, t.getKey(), t.getValue()));
     }
 
-    private static Optional<Pair<Duration, Boolean>> parseTime(String message) {
+    private static Optional<Map.Entry<Duration, Boolean>> parseTime(String message) {
         Matcher matcher = TIME_REGEX.matcher(message);
         if (matcher.find()) {
             Duration duration = TimeUtils.parseTime(matcher.group("time"));
             boolean pb = message.toLowerCase().contains("(new personal best)");
-            return Optional.of(Pair.of(duration, pb));
+            return Optional.of(Map.entry(duration, pb));
         }
         return Optional.empty();
     }
 
-    public static Optional<Pair<String, Integer>> parseBoss(String message) {
+    public static Optional<Map.Entry<String, Integer>> parseBoss(String message) {
         Matcher primary = PRIMARY_REGEX.matcher(message);
         Matcher secondary; // lazy init
         if (primary.find()) {
@@ -236,10 +234,10 @@ public class KillCountNotifier extends BaseNotifier {
         return Optional.empty();
     }
 
-    private static Optional<Pair<String, Integer>> result(String boss, String count) {
+    private static Optional<Map.Entry<String, Integer>> result(String boss, String count) {
         // safely transform (String, String) => (String, Int)
         try {
-            return Optional.ofNullable(boss).map(k -> Pair.of(boss, Integer.parseInt(count)));
+            return Optional.ofNullable(boss).map(k -> Map.entry(boss, Integer.parseInt(count)));
         } catch (NumberFormatException e) {
             log.debug("Failed to parse kill count [{}] for boss [{}]", count, boss);
             return Optional.empty();

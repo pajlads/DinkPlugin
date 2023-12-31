@@ -3,7 +3,6 @@ package dinkplugin.message;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +24,7 @@ public class Field {
     }
 
     public static String formatBlock(String codeBlockLanguage, String content) {
-        return String.format("```%s\n%s\n```", StringUtils.defaultString(codeBlockLanguage), content);
+        return String.format("```%s\n%s\n```", codeBlockLanguage != null ? codeBlockLanguage : "", content);
     }
 
     public static String formatProgress(int completed, int total) {

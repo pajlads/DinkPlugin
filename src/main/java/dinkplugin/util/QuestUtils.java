@@ -36,11 +36,11 @@ package dinkplugin.util;
 import com.google.common.collect.ImmutableList;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,7 +68,7 @@ public class QuestUtils {
         String quest = matcher.group("quest");
         quest = QUEST_REPLACEMENTS.getOrDefault(quest, quest);
 
-        String verb = StringUtils.defaultString(matcher.group("verb"));
+        String verb = Optional.ofNullable(matcher.group("verb")).orElse("");
 
         if (verb.contains("kind of")) {
             log.debug("Skipping partial completion of quest: {}", quest);
