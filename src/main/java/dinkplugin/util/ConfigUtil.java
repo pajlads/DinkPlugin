@@ -105,7 +105,7 @@ public class ConfigUtil {
             Type rawType = ((ParameterizedType) type).getRawType();
             if (rawType instanceof Class && Collection.class.isAssignableFrom((Class<?>) rawType)) {
                 try {
-                    return gson.fromJson(gson.toJson(in), type); // TODO: make more efficient
+                    return gson.fromJson(gson.toJson(in), type); // inefficient, but unimportant
                 } catch (Exception e) {
                     return null;
                 }
