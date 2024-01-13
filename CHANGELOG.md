@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Update death safe exceptions on config import from clipboard. (#406)
+
 ## 1.8.2
 
 - Dev: Dynamically obtain coin item variations. (#398)

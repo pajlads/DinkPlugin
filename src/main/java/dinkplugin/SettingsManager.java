@@ -16,7 +16,6 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.CommandExecuted;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -367,7 +366,7 @@ public class SettingsManager {
                 return;
             }
 
-            Object value = convertTypeFromJson(valueType, rawValue);
+            Object value = convertTypeFromJson(gson, valueType, rawValue);
             if (value == null) {
                 log.debug("Encountered config value with incorrect type: {} = {}", key, rawValue);
                 return;
