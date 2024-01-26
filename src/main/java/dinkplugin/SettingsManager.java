@@ -62,6 +62,11 @@ public class SettingsManager {
     private final Map<String, Collection<String>> keysBySection = new HashMap<>();
 
     /**
+     * The key names of config items that are hidden (and, thus, should not be exported).
+     */
+    private final Collection<String> hiddenConfigKeys = new HashSet<>();
+
+    /**
      * Set of our config keys that correspond to webhook URL lists.
      * <p>
      * These are used for special logic to merge the previous value with the new value during config imports.
@@ -101,6 +106,10 @@ public class SettingsManager {
         configManager.getConfigDescriptor(config).getItems().forEach(item -> {
             String key = item.key();
             configValueTypes.put(key, item.getType());
+
+            if (item.getItem().hidden()) {
+                hiddenConfigKeys.add(key);
+            }
 
             String section = item.getItem().section();
             if (StringUtils.isNotEmpty(section)) {
@@ -295,6 +304,7 @@ public class SettingsManager {
         Map<String, Object> configMap = configManager.getConfigurationKeys(prefix)
             .stream()
             .map(prop -> prop.substring(prefix.length()))
+            .filter(key -> !hiddenConfigKeys.contains(key))
             .filter(exportKey)
             .map(key -> Pair.of(key, configValueTypes.get(key)))
             .filter(pair -> pair.getValue() != null)

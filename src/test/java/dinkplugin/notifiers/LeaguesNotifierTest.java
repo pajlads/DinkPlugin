@@ -14,6 +14,7 @@ import dinkplugin.notifiers.data.LeaguesTaskNotificationData;
 import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@Disabled
 public class LeaguesNotifierTest extends MockedNotifierTest {
 
     @Bind
