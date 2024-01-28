@@ -2,6 +2,7 @@
 
 - Minor: Include Scurrius pet name in pet notifications. (#410)
 - Bugfix: Update death safe exceptions on config import from clipboard. (#406)
+- Dev: Disable leagues notifier. (#411)
 
 ## 1.8.2
 

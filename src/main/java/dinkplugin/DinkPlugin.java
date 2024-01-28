@@ -10,7 +10,6 @@ import dinkplugin.notifiers.GambleNotifier;
 import dinkplugin.notifiers.GrandExchangeNotifier;
 import dinkplugin.notifiers.GroupStorageNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
-import dinkplugin.notifiers.LeaguesNotifier;
 import dinkplugin.notifiers.LevelNotifier;
 import dinkplugin.notifiers.LootNotifier;
 import dinkplugin.notifiers.MetaNotifier;
@@ -86,7 +85,6 @@ public class DinkPlugin extends Plugin {
     private @Inject PlayerKillNotifier pkNotifier;
     private @Inject GroupStorageNotifier groupStorageNotifier;
     private @Inject GrandExchangeNotifier grandExchangeNotifier;
-    private @Inject LeaguesNotifier leaguesNotifier;
     private @Inject MetaNotifier metaNotifier;
     private @Inject TradeNotifier tradeNotifier;
 
@@ -207,7 +205,6 @@ public class DinkPlugin extends Plugin {
                 combatTaskNotifier.onGameMessage(chatMessage);
                 deathNotifier.onGameMessage(chatMessage);
                 speedrunNotifier.onGameMessage(chatMessage);
-                leaguesNotifier.onGameMessage(chatMessage);
                 break;
 
             case FRIENDSCHATNOTIFICATION:

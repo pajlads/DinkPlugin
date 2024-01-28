@@ -164,12 +164,14 @@ public interface DinkPluginConfig extends Config {
     )
     String tradeSection = "Player Trades";
 
+    /*
     @ConfigSection(
         name = "Leagues",
         description = "Settings for notifying when you complete league tasks, unlock areas, and redeem relics",
         position = 200,
         closedByDefault = true
     )
+     */
     String leaguesSection = "Leagues";
 
     @ConfigSection(
@@ -372,8 +374,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "ignoreSeasonalWorlds",
         name = "Ignore Seasonal Worlds",
-        description = "Whether to suppress notifications that occur on seasonal worlds like Leagues.<br/>" +
-            "Note: the Leagues-specific notifier uses an independent config toggle",
+        description = "Whether to suppress notifications that occur on seasonal worlds like Leagues.",
         position = 1015,
         section = advancedSection
     )
@@ -585,7 +586,8 @@ public interface DinkPluginConfig extends Config {
         description = "If non-empty, Leagues messages are sent to this URL, instead of the primary URL.<br/>" +
             "Note: this only applies to the Leagues notifier, not every notifier in a seasonal world",
         position = -1,
-        section = webhookSection
+        section = webhookSection,
+        hidden = true
     )
     default String leaguesWebhook() {
         return "";
@@ -1783,7 +1785,8 @@ public interface DinkPluginConfig extends Config {
         name = "Enable Leagues",
         description = "Enable notifications upon various leagues events",
         position = 200,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default boolean notifyLeagues() {
         return false;
@@ -1794,7 +1797,8 @@ public interface DinkPluginConfig extends Config {
         name = "Send Image",
         description = "Send image with the notification",
         position = 201,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default boolean leaguesSendImage() {
         return true;
@@ -1805,7 +1809,8 @@ public interface DinkPluginConfig extends Config {
         name = "Send Area Unlocks",
         description = "Send notifications upon area unlocks",
         position = 202,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default boolean leaguesAreaUnlock() {
         return true;
@@ -1816,7 +1821,8 @@ public interface DinkPluginConfig extends Config {
         name = "Send Relic Unlocks",
         description = "Send notifications upon relic unlocks",
         position = 203,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default boolean leaguesRelicUnlock() {
         return true;
@@ -1827,7 +1833,8 @@ public interface DinkPluginConfig extends Config {
         name = "Send Completed Tasks",
         description = "Send notifications upon completing a task",
         position = 204,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default boolean leaguesTaskCompletion() {
         return true;
@@ -1838,7 +1845,8 @@ public interface DinkPluginConfig extends Config {
         name = "Task Min Difficulty",
         description = "The minimum tier of a task for a notification to be sent",
         position = 205,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default LeagueTaskDifficulty leaguesTaskMinTier() {
         return LeagueTaskDifficulty.EASY;
