@@ -247,13 +247,11 @@ If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replac
 
 `%NET_VALUE%` will be replaced with the value of the received items _minus_ the value of the given items.
 
-<!---
 ### Leagues:
 
 Leagues notifications include: region unlocked, relic unlocked, and task completed (with customizable difficulty threshold).
 
 Each of these events can be independently enabled or disabled in the notifier settings.
---->
 
 ### Metadata:
 
