@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Fire loot notification for PK loot chests with sufficiently high total value. (#417)
+
 ## 1.8.3
 
 - Minor: Include Scurrius pet name in pet notifications. (#410)
