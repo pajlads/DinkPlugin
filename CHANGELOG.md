@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Bugfix: Treat deaths in the mage training arena as safe. (#418)
+- Bugfix: Treat deaths in the graveyard room of the mage training arena as safe. (#418)
 
 ## 1.8.3
 
