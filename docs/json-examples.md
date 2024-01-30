@@ -333,7 +333,7 @@ JSON for Pet Notifications:
 }
 ```
 
-`petName` is only included if the game sent it to the users chat via untradeable drop, collection log, or clan notifications.
+`petName` is only included if the game sent it to the users chat via untradeable drop, collection log, or clan notifications.  
 `milestone` is only included if a clan notification was triggered.
 
 ### Speedrunning
@@ -562,8 +562,8 @@ JSON for Area Unlock Notifications:
 }
 ```
 
-Note: `index` refers to the order of region unlocks.
-Here, Kandarin was the second region selected.
+Note: `index` refers to the order of region unlocks.  
+Here, Kandarin was the second region selected.  
 For all players, Karamja is the _zeroth_ region selected (and there is no notification for Misthalin).
 
 JSON for Relic Chosen Notifications:
@@ -741,5 +741,5 @@ JSON for Login Notifications:
 }
 ```
 
-`extra.pets` requires the base Chat Commands plugin to be enabled.
+`extra.pets` requires the base Chat Commands plugin to be enabled.  
 `collectionLog` data can be missing if the user does not have the Character Summary tab selected (since the client otherwise is not sent that data).
