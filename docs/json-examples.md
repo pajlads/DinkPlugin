@@ -36,7 +36,7 @@
 
 `clanName` is only sent when the player is in a clan and has the advanced setting `Send Clan Name` enabled  
 `groupIronClanName` is only sent with the player is a GIM and has the advanced setting `Send GIM Clan Name` enabled  
-`discordUser` and it's members are only sent when the advanced setting `Send Discord Profile` is enabled
+`discordUser` and its members are only sent when the advanced setting `Send Discord Profile` is enabled
 
 </details>
 
