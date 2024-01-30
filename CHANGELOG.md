@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Treat deaths in the mage training arena as safe. (#418)
+
 ## 1.8.3
 
 - Minor: Include Scurrius pet name in pet notifications. (#410)
