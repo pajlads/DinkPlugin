@@ -31,7 +31,9 @@ JSON sent with every notification but only in certain circumstances:
 `groupIronClanName` is only sent when the player is a GIM and has the advanced setting `Send GIM Clan Name` enabled.  
 The `discordUser` object is only sent when Discord is open and the advanced setting `Send Discord Profile` is enabled.
 
-Note: The examples below omit `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same. Also, `embeds` is excluded for simplicity.
+Note: The examples below omit `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same.
+
+Also, `content` is populated instead of `embeds` for simplicity; this would correspond to the advanced setting `Use Rich Embeds` being disabled. Third-party integrations should rely on the `extra` object instead of `content`/`embeds`.
 
 ### Deaths
 
@@ -160,12 +162,10 @@ JSON for Loot Notifications:
   "extra": {
     "items": [
       {
-        // type of this object is SerializedItemStack
 
         "id": 1234,
         "quantity": 1,
         "priceEach": 42069,
-        // priceEach is the GE price of the item
         "name": "Some item"
       }
     ],
@@ -178,6 +178,8 @@ JSON for Loot Notifications:
 ```
 
 `killCount` is only specified for NPC loot with the base RuneLite Loot Tracker plugin enabled.
+
+The items are valued at GE prices (when possible) if the user has not disabled the `Use actively traded price` base RuneLite setting. Otherwise, the store price of the item is used.
 
 ### Slayer
 
@@ -227,12 +229,10 @@ JSON for Clue Notifications:
     "numberCompleted": 123,
     "items": [
       {
-        // the type of this object SerializedItemStack
 
         "id": 1234,
         "quantity": 1,
         "priceEach": 42069,
-        // priceEach is the GE price of the item
         "name": "Some item"
       }
     ]
@@ -240,6 +240,8 @@ JSON for Clue Notifications:
   "type": "CLUE"
 }
 ```
+
+The items are valued at GE prices (when possible) if the user has not disabled the `Use actively traded price` base RuneLite setting. Otherwise, the store price of the item is used.
 
 ### Kill Count
 
