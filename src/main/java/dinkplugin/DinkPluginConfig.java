@@ -947,13 +947,13 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathIgnoredRegions",
         name = "Ignored Region IDs",
         description = "User-specified, comma-separated Region IDs where deaths should be ignored.<br/>" +
-            "Use the '::DinkRegion' chat command or an online map to obtain the region IDs.<br/>" +
+            "Use the '::dinkregion' chat command or an online map to obtain the region IDs.<br/>" +
             "For example, Prifddinas spans 12894, 12895, 13150, 13151",
         position = 45,
         section = deathSection
     )
     default String deathIgnoredRegions() {
-        return "8781, 12336, 13462, 13463";
+        return "4904, 5930, 6953, 7723";
     }
 
     @ConfigItem(
