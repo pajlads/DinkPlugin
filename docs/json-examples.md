@@ -28,9 +28,9 @@ JSON sent with every notification but only in certain circumstances:
    },
 ```
 
-`clanName` is only sent when the player is in a clan and has the advanced setting `Send Clan Name` enabled  
-`groupIronClanName` is only sent with the player is a GIM and has the advanced setting `Send GIM Clan Name` enabled  
-`discordUser` and its members are only sent when the advanced setting `Send Discord Profile` is enabled
+`clanName` is only sent when the player is in a clan and has the advanced setting `Send Clan Name` enabled.  
+`groupIronClanName` is only sent with the player is a GIM and has the advanced setting `Send GIM Clan Name` enabled.  
+`discordUser` and its members are only sent when the advanced setting `Send Discord Profile` is enabled.
 
 Note: The examples below omit `embeds`, `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same.
 
@@ -479,7 +479,7 @@ JSON for GIM Bank Notifications:
 }
 ```
 
-`accountType` is always `GROUP_IRONMAN` or `HARDCORE_GROUP_IRONMAN` for Group Storage notifications
+`accountType` is always `GROUP_IRONMAN` or `HARDCORE_GROUP_IRONMAN` for Group Storage notifications.
 
 ### Grand Exchange
 
@@ -630,7 +630,7 @@ JSON for Task Notifications that unlocked a Trophy:
 Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntilNextTrophy` can be omitted if there is no next level of progression
 (i.e., all three regions selected, all relic tiers unlocked, all trophies acquired).
 
-`accountType` is always `IRONMAN` for Leagues, unrelated to what the user is outside of Leagues
+`accountType` is always `IRONMAN` for Leagues, unrelated to what the user is outside of Leagues.
 
 ### Metadata
 
