@@ -2,7 +2,7 @@
 
 Dink sends webhook messages upon noteworthy in-game events.
 While Dink supports the Discord webhook format (with rich embeds and optional screenshots), it also includes additional metadata that allows custom webhook servers to analyze messages or even generate their own messages.
-Examples of the additional metadata can be found [here](https://github.com/Felanbird/DinkPlugin/blob/chore/move-nerd-data-out-of-base-readme/docs/development/json-examples.md).
+Examples of the additional metadata can be found [here](https://github.com/Felanbird/DinkPlugin/blob/chore/move-nerd-data-out-of-base-readme/docs/json-examples.md).
 This project was forked from UniversalDiscordNotifier, but has more features, reliability, configurability, testing, and maintainer activity.
 
 Have a suggestion (e.g., new notifier, additional data), bug report (as rare as it may be), or question? Let us know on our [issue tracker](https://github.com/pajlads/DinkPlugin/issues)!
