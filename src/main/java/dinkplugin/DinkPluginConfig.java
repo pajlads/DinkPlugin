@@ -953,7 +953,7 @@ public interface DinkPluginConfig extends Config {
         section = deathSection
     )
     default String deathIgnoredRegions() {
-        return "4904, 5930, 6953, 7723";
+        return "123, 456, 789";
     }
 
     @ConfigItem(
