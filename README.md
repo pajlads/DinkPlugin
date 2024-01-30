@@ -118,8 +118,6 @@ contain some words that will be replaced with in-game values.
 
 `%USERNAME%` will be replaced with the username of the player.
 
-The examples below omit `embeds` and `playerName` keys because they are always the same.
-
 ### Death:
 
 `%VALUELOST%` will be replaced with the price of the items you lost. If you died in PvP, `%PKER%` will be replaced with the name of your killer.

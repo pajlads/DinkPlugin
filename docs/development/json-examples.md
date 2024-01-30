@@ -40,6 +40,8 @@
 
 </details>
 
+Note: The examples below omit `embeds`, `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same.
+
 ### Deaths 
 
 <details>
@@ -458,8 +460,6 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 {
   "content": "%USERNAME% has PK'd %TARGET%",
   "type": "PLAYER_KILL",
-  "playerName": "%USERNAME%",
-  "accountType": "NORMAL",
   "extra": {
     "victimName": "%TARGET%",
     "victimCombatLevel": 69,
@@ -515,8 +515,7 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 {
   "content": "%USERNAME% has deposited: %DEPOSITED% | %USERNAME% has withdrawn: %WITHDRAWN%",
   "type": "GROUP_STORAGE",
-  "playerName": "%USERNAME%",
-  "accountType": "HARDCORE_GROUP_IRONMAN",
+  "accountType": "GROUP_IRONMAN | HARDCORE_GROUP_IRONMAN",
   "extra": {
     "groupName": "group name",
     "deposits": [
@@ -546,6 +545,8 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 }
 ```
 
+`accountType` is always `GROUP_IRONMAN` or `HARDCORE_GROUP_IRONMAN`
+
 </details>
 
 ### Grand Exchange
@@ -557,8 +558,6 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 {
   "content": "%USERNAME% %TYPE% %ITEM% on the GE",
   "type": "GRAND_EXCHANGE",
-  "playerName": "%USERNAME%",
-  "accountType": "NORMAL",
   "extra": {
     "slot": 1,
     "status": "SOLD",
@@ -592,8 +591,6 @@ See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/Gra
 {
   "content": "%USERNAME% traded with %COUNTERPARTY%",
   "type": "TRADE",
-  "playerName": "%USERNAME%",
-  "accountType": "NORMAL",
   "extra": {
     "counterparty": "%COUNTERPARTY%",
     "receivedItems": [
@@ -629,7 +626,6 @@ See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/Gra
 {
   "type": "LEAGUES_AREA",
   "content": "%USERNAME% selected their second region: Kandarin.",
-  "playerName": "%USERNAME%",
   "accountType": "IRONMAN",
   "seasonalWorld": true,
   "extra": {
@@ -654,7 +650,6 @@ For all players, Karamja is the _zeroth_ region selected (and there is no notifi
 {
   "type": "LEAGUES_RELIC",
   "content": "%USERNAME% unlocked a Tier 1 Relic: Production Prodigy.",
-  "playerName": "%USERNAME%",
   "accountType": "IRONMAN",
   "seasonalWorld": true,
   "extra": {
@@ -676,7 +671,6 @@ For all players, Karamja is the _zeroth_ region selected (and there is no notifi
 {
   "type": "LEAGUES_TASK",
   "content": "%USERNAME% completed a Easy task: Pickpocket a Citizen.",
-  "playerName": "%USERNAME%",
   "accountType": "IRONMAN",
   "seasonalWorld": true,
   "extra": {
@@ -701,7 +695,6 @@ For all players, Karamja is the _zeroth_ region selected (and there is no notifi
 {
   "type": "LEAGUES_TASK",
   "content": "%USERNAME% completed a Hard task, The Frozen Door, unlocking the Bronze trophy!",
-  "playerName": "%USERNAME%",
   "accountType": "IRONMAN",
   "seasonalWorld": true,
   "extra": {
@@ -723,6 +716,8 @@ For all players, Karamja is the _zeroth_ region selected (and there is no notifi
 Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntilNextTrophy` can be omitted if there is no next level of progression 
 (i.e., all three regions selected, all relic tiers unlocked, all trophies acquired).
 
+`accountType` is always `IRONMAN` for Leagues, unrelated to what the user is outside of Leagues
+
 ### Metadata 
 
 <details>
@@ -732,9 +727,6 @@ Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntil
 {
   "content": "%USERNAME% logged into World %WORLD%",
   "type": "LOGIN",
-  "playerName": "%USERNAME%",
-  "accountType": "NORMAL",
-  "clanName": "Dink QA",
   "extra": {
     "world": 338,
     "collectionLog": {
