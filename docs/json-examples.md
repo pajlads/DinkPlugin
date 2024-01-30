@@ -20,7 +20,6 @@ JSON sent with every notification but only in certain circumstances:
 {
   "clanName": "Dink QA",
   "groupIronClanName":"Dink QA",
-},
   "discordUser":{
     "id":"012345678910111213",
     "name":"Gamer",
@@ -29,10 +28,10 @@ JSON sent with every notification but only in certain circumstances:
 ```
 
 `clanName` is only sent when the player is in a clan and has the advanced setting `Send Clan Name` enabled.  
-`groupIronClanName` is only sent with the player is a GIM and has the advanced setting `Send GIM Clan Name` enabled.  
-`discordUser` and its members are only sent when the advanced setting `Send Discord Profile` is enabled.
+`groupIronClanName` is only sent when the player is a GIM and has the advanced setting `Send GIM Clan Name` enabled.  
+The `discordUser` object is only sent when Discord is open and the advanced setting `Send Discord Profile` is enabled.
 
-Note: The examples below omit `embeds`, `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same.
+Note: The examples below omit `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same. Also, `embeds` is excluded for simplicity.
 
 ### Deaths
 
