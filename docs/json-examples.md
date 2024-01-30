@@ -1,8 +1,6 @@
 ### All
 
-<details>
-
-  <summary>JSON sent with every notification:</summary>
+JSON sent with every notification:
 
 ```json5
 {
@@ -16,11 +14,7 @@
 }
 ```
 
-</details>
-
-<details>
-
-  <summary>JSON sent with every notification but only in certain circumstances:</summary>
+JSON sent with every notification but only in certain circumstances:
 
 ```json5
 {
@@ -38,14 +32,11 @@
 `groupIronClanName` is only sent with the player is a GIM and has the advanced setting `Send GIM Clan Name` enabled  
 `discordUser` and its members are only sent when the advanced setting `Send Discord Profile` is enabled
 
-</details>
-
 Note: The examples below omit `embeds`, `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same.
 
 ### Deaths
 
-<details>
-  <summary>JSON for non-combat death:</summary>
+JSON for non-combat death:
 
 ```json5
 {
@@ -67,10 +58,7 @@ Note: The examples below omit `embeds`, `playerName`, `accountType`, and `dinkAc
 }
 ```
 
-</details>
-
-<details>
-  <summary>JSON for PvP scenarios:</summary>
+JSON for PvP scenarios:
 
 ```json5
 {
@@ -93,10 +81,7 @@ Note: The examples below omit `embeds`, `playerName`, `accountType`, and `dinkAc
 }
 ```
 
-</details>
-
-<details>
-  <summary>JSON for NPC scenarios:</summary>
+JSON for NPC scenarios:
 
 ```json5
 {
@@ -120,12 +105,9 @@ Note: The examples below omit `embeds`, `playerName`, `accountType`, and `dinkAc
 }
 ```
 
-</details>
-
 ### Collection
 
-<details>
-  <summary>JSON for Collection Notifications:</summary>
+JSON for Collection Notifications:
 
 ```json5
 {
@@ -141,12 +123,9 @@ Note: The examples below omit `embeds`, `playerName`, `accountType`, and `dinkAc
 }
 ```
 
-</details>
-
 ### Level
 
-<details>
-  <summary>JSON for Levelups:</summary>
+JSON for Levelups:
 
 ```json5
 {
@@ -172,12 +151,9 @@ Note: The examples below omit `embeds`, `playerName`, `accountType`, and `dinkAc
 
 Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M).
 
-</details>
-
 ### Loot
 
-<details>
-  <summary>JSON for Loot Notifications:</summary>
+JSON for Loot Notifications:
 
 ```json5
 {
@@ -204,12 +180,9 @@ Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M
 
 `killCount` is only specified for NPC loot with the base RuneLite Loot Tracker plugin enabled.
 
-</details>
-
 ### Slayer
 
-<details>
-  <summary>JSON for Slayer Notifications:</summary>
+JSON for Slayer Notifications:
 
 ```json5
 {
@@ -225,12 +198,9 @@ Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M
 }
 ```
 
-</details>
-
 ### Quests
 
-<details>
-  <summary>JSON for Quest Notifications:</summary>
+JSON for Quest Notifications:
 
 ```json5
 {
@@ -246,12 +216,9 @@ Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M
 }
 ```
 
-</details>
-
 ### Clue
 
-<details>
-  <summary>JSON for Clue Notifications:</summary>
+JSON for Clue Notifications:
 
 ```json5
 {
@@ -275,12 +242,9 @@ Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M
 }
 ```
 
-</details>
-
 ### Kill Count
 
-<details>
-  <summary>JSON for Kill Count Notifications:</summary>
+JSON for Kill Count Notifications:
 
 ```json5
 {
@@ -296,12 +260,9 @@ Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M
 
 Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble count, rather than kill count.
 
-</details>
-
 ### Combat Achievements
 
-<details>
-  <summary>JSON for Combat Achievement Notifications:</summary>
+JSON for Combat Achievement Notifications:
 
 ```json5
 {
@@ -318,10 +279,7 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 }
 ```
 
-</details>
-
-<details>
-  <summary>JSON for Combat Achievement Tier Completion Notifications:</summary>
+JSON for Combat Achievement Tier Completion Notifications:
 
 ```json5
 {
@@ -339,12 +297,9 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 }
 ```
 
-</details>
-
 ### Achievement Diary
 
-<details>
-  <summary>JSON for Achievement Diary Notifications:</summary>
+JSON for Achievement Diary Notifications:
 
 ```json5
 {
@@ -362,12 +317,9 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 }
 ```
 
-</details>
-
 ### Pets
 
-<details>
-  <summary>JSON for Pet Notifications:</summary>
+JSON for Pet Notifications:
 
 ```json5
 {
@@ -384,12 +336,9 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 `petName` is only included if the game sent it to the users chat via untradeable drop or collection log or clan notifications.
 `milestone` is only included if a clan notification was triggered.
 
-</details>
-
 ### Speedrunning
 
-<details>
-  <summary>JSON for Personal Best Speedrun Notifications:</summary>
+JSON for Personal Best Speedrun Notifications:
 
 ```json5
 {
@@ -404,10 +353,7 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 }
 ```
 
-</details>
-
-<details>
-  <summary>JSON for Normal Speedrun Notifications:</summary>
+JSON for Normal Speedrun Notifications:
 
 ```json5
 {
@@ -421,12 +367,9 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 }
 ```
 
-</details>
-
 ### BA Gambles
 
-<details>
-  <summary>JSON for BA Gambles Notifications:</summary>
+JSON for BA Gambles Notifications:
 
 ```json5
 {
@@ -446,12 +389,9 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 }
 ```
 
-</details>
-
 ### Player Kills
 
-<details>
-  <summary>JSON for PK Notifications:</summary>
+JSON for PK Notifications:
 
 ```json5
 {
@@ -501,12 +441,9 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 
 `world` and `location` are _not_ sent if the user has disabled the "Include Location" notifier setting.
 
-</details>
-
 ### Group Storage
 
-<details>
-  <summary>JSON for GIM Bank Notifications:</summary>
+JSON for GIM Bank Notifications:
 
 ```json5
 {
@@ -544,12 +481,9 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 
 `accountType` is always `GROUP_IRONMAN` or `HARDCORE_GROUP_IRONMAN`
 
-</details>
-
 ### Grand Exchange
 
-<details>
-  <summary>JSON for GE Notifications:</summary>
+JSON for GE Notifications:
 
 ```json5
 {
@@ -577,12 +511,9 @@ values can range from 1 to 8 (inclusive) for members, and 1 to 3 (inclusive) for
 
 See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/GrandExchangeOfferState.html) for the possible values of `extra.status`.
 
-</details>
-
 ### Player Trades
 
-<details>
-  <summary>JSON for Player Trade Notifications:</summary>
+JSON for Player Trade Notifications:
 
 ```json5
 {
@@ -612,12 +543,9 @@ See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/Gra
 }
 ```
 
-</details>
-
 ### Leagues
 
-<details>
-  <summary>JSON for Area Unlock Notifications:</summary>
+JSON for Area Unlock Notifications:
 
 ```json5
 {
@@ -638,10 +566,7 @@ Note: `index` refers to the order of region unlocks.
 Here, Kandarin was the second region selected.
 For all players, Karamja is the _zeroth_ region selected (and there is no notification for Misthalin).
 
-</details>
-
-<details>
-  <summary>JSON for Relic Chosen Notifications:</summary>
+JSON for Relic Chosen Notifications:
 
 ```json5
 {
@@ -659,10 +584,7 @@ For all players, Karamja is the _zeroth_ region selected (and there is no notifi
 }
 ```
 
-</details>
-
-<details>
-  <summary>JSON for Task Completed Notifications:</summary>
+JSON for Task Completed Notifications:
 
 ```json5
 {
@@ -683,10 +605,7 @@ For all players, Karamja is the _zeroth_ region selected (and there is no notifi
 }
 ```
 
-</details>
-
-<details>
-  <summary>JSON for Task Notifications that unlocked a Trophy:</summary>
+JSON for Task Notifications that unlocked a Trophy:
 
 ```json5
 {
@@ -708,8 +627,6 @@ For all players, Karamja is the _zeroth_ region selected (and there is no notifi
 }
 ```
 
-</details>
-
 Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntilNextTrophy` can be omitted if there is no next level of progression
 (i.e., all three regions selected, all relic tiers unlocked, all trophies acquired).
 
@@ -717,8 +634,7 @@ Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntil
 
 ### Metadata
 
-<details>
-  <summary>JSON for Login Notifications:</summary>
+JSON for Login Notifications:
 
 ```json5
 {
@@ -827,5 +743,3 @@ Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntil
 
 `extra.pets` requires the base Chat Commands plugin to be enabled.
 `collectionLog` data can be missing if the user does not have the Character Summary tab selected (since the client otherwise is not sent that data).
-
-</details>
