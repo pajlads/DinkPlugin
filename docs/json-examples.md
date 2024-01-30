@@ -162,7 +162,6 @@ JSON for Loot Notifications:
   "extra": {
     "items": [
       {
-
         "id": 1234,
         "quantity": 1,
         "priceEach": 42069,
@@ -229,7 +228,6 @@ JSON for Clue Notifications:
     "numberCompleted": 123,
     "items": [
       {
-
         "id": 1234,
         "quantity": 1,
         "priceEach": 42069,
