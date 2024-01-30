@@ -10,7 +10,7 @@
   "extra": {},
   "type": "NOTIFICATION_TYPE",
   "playerName": "your rsn",
-  "accountType": "NORMAL",
+  "accountType": "NORMAL | IRONMAN | HARDCORE_IRONMAN",
   "dinkAccountHash": "abcdefghijklmnopqrstuvwxyz1234abcdefghijklmnopqrstuvwxyz",
   "embeds": []
 }
