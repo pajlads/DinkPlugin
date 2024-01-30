@@ -479,7 +479,7 @@ JSON for GIM Bank Notifications:
 }
 ```
 
-`accountType` is always `GROUP_IRONMAN` or `HARDCORE_GROUP_IRONMAN`
+`accountType` is always `GROUP_IRONMAN` or `HARDCORE_GROUP_IRONMAN` for Group Storage notifications
 
 ### Grand Exchange
 
