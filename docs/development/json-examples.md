@@ -42,7 +42,7 @@
 
 Note: The examples below omit `embeds`, `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same.
 
-### Deaths 
+### Deaths
 
 <details>
   <summary>JSON for non-combat death:</summary>
@@ -169,6 +169,7 @@ Note: The examples below omit `embeds`, `playerName`, `accountType`, and `dinkAc
   "type": "LEVEL"
 }
 ```
+
 Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M).
 
 </details>
@@ -204,8 +205,6 @@ Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M
 `killCount` is only specified for NPC loot with the base RuneLite Loot Tracker plugin enabled.
 
 </details>
-
-
 
 ### Slayer
 
@@ -386,8 +385,6 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 `milestone` is only included if a clan notification was triggered.
 
 </details>
-
-
 
 ### Speedrunning
 
@@ -713,12 +710,12 @@ For all players, Karamja is the _zeroth_ region selected (and there is no notifi
 
 </details>
 
-Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntilNextTrophy` can be omitted if there is no next level of progression 
+Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntilNextTrophy` can be omitted if there is no next level of progression
 (i.e., all three regions selected, all relic tiers unlocked, all trophies acquired).
 
 `accountType` is always `IRONMAN` for Leagues, unrelated to what the user is outside of Leagues
 
-### Metadata 
+### Metadata
 
 <details>
   <summary>JSON for Login Notifications:</summary>
@@ -832,5 +829,3 @@ Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntil
 `collectionLog` data can be missing if the user does not have the Character Summary tab selected (since the client otherwise is not sent that data).
 
 </details>
-
-
