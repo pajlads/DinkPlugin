@@ -7,6 +7,7 @@ import com.google.gson.JsonSyntaxException;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Evaluable;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.message.templating.impl.JoiningReplacement;
@@ -198,16 +199,38 @@ public class LootNotifier extends BaseNotifier {
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
             long totalPrice = stack.getTotalPrice();
             boolean worthy = totalPrice >= minValue || matches(itemNameAllowlist, stack.getName());
-            if (worthy && !matches(itemNameDenylist, stack.getName())) {
-                sendMessage = true;
-                lootMessage.component(ItemUtils.templateStack(stack, true));
-                if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
+            if (!matches(itemNameDenylist, stack.getName())) {
+                if (worthy) {
+                    sendMessage = true;
+                    lootMessage.component(ItemUtils.templateStack(stack, true));
+                    if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
+                }
                 if (max == null || totalPrice > max.getTotalPrice()) {
                     max = stack;
                 }
             }
             serializedItems.add(stack);
             totalStackValue += totalPrice;
+        }
+
+        Evaluable lootMsg;
+        if (!sendMessage && totalStackValue >= minValue && max != null && "Loot Chest".equalsIgnoreCase(dropper)) {
+            // Special case: PK loot keys should trigger notification if total value exceeds configured minimum even
+            // if no single item itself would exceed the min value config - github.com/pajlads/DinkPlugin/issues/403
+            sendMessage = true;
+
+            JoiningReplacement msg = lootMessage.build();
+            if (msg.getComponents().isEmpty()) {
+                // ensure %LOOT% isn't empty
+                lootMsg = Replacements.ofMultiple(" ",
+                    Replacements.ofText("Various items including:"),
+                    ItemUtils.templateStack(max, true)
+                );
+            } else {
+                lootMsg = msg;
+            }
+        } else {
+            lootMsg = lootMessage.build();
         }
 
         if (sendMessage) {
@@ -222,7 +245,7 @@ public class LootNotifier extends BaseNotifier {
                 .template(config.lootNotifyMessage())
                 .replacementBoundary("%")
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
-                .replacement("%LOOT%", lootMessage.build())
+                .replacement("%LOOT%", lootMsg)
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))
                 .replacement("%SOURCE%", Replacements.ofText(dropper))
                 .build();
