@@ -6,13 +6,14 @@ import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.message.Embed;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
-import dinkplugin.util.ConfigUtil;
-import dinkplugin.util.ItemUtils;
-import dinkplugin.util.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.ConfigUtil;
+import dinkplugin.util.ItemUtils;
+import dinkplugin.util.Region;
+import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
@@ -234,7 +235,8 @@ public class DeathNotifier extends BaseNotifier {
             killerName,
             npc ? ((NPC) killer).getId() : null,
             keptStacks,
-            lostStacks
+            lostStacks,
+            Region.of(client, regionId)
         );
 
         createMessage(config.deathSendImage(), NotificationBody.builder()

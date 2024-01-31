@@ -11,6 +11,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.util.Region;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
@@ -102,7 +103,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
-                .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList(), Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -147,7 +148,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
-                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
+                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost, Region.of(client)))
                 .type(NotificationType.DEATH)
                 .embeds(embeds)
                 .build()
@@ -173,7 +174,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0)))
-                .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList(), Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -200,7 +201,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has been PKed by %s for %d gp", PLAYER_NAME, pker, 0)))
-                .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, true, pker, pker, null, Collections.emptyList(), Collections.emptyList(), Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -224,7 +225,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
-                .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, false, null, null, null, Collections.emptyList(), Collections.emptyList(), Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -272,7 +273,7 @@ class DeathNotifierTest extends MockedNotifierTest {
                         .replacement("{{npc}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new DeathNotificationData(0L, false, null, name, NpcID.GUARD, Collections.emptyList(), Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, false, null, name, NpcID.GUARD, Collections.emptyList(), Collections.emptyList(), Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -313,7 +314,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
-                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
+                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost, Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -353,7 +354,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
-                .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList(), Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -394,7 +395,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
-                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
+                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost, Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -431,7 +432,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
-                .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList(), Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -469,7 +470,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
-                .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList(), Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -517,7 +518,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
-                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
+                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost, Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -581,7 +582,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, 0)))
-                .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList()))
+                .extra(new DeathNotificationData(0L, false, null, null, null, kept, Collections.emptyList(), Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -621,7 +622,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
-                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost))
+                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost, Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );

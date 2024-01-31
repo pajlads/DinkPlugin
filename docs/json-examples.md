@@ -53,7 +53,12 @@ JSON for non-combat death:
         "priceEach": 3,
         "name": "Feather"
       }
-    ]
+    ],
+    "location": {
+      "regionId": 10546,
+      "plane": 0,
+      "instanced": false
+    }
   },
   "type": "DEATH"
 }
@@ -76,7 +81,12 @@ JSON for PvP scenarios:
         "priceEach": 3,
         "name": "Feather"
       }
-    ]
+    ],
+    "location": {
+      "regionId": 10546,
+      "plane": 0,
+      "instanced": false
+    }
   },
   "type": "DEATH"
 }
@@ -100,7 +110,12 @@ JSON for NPC scenarios:
         "priceEach": 3,
         "name": "Feather"
       }
-    ]
+    ],
+    "location": {
+      "regionId": 10546,
+      "plane": 0,
+      "instanced": false
+    }
   },
   "type": "DEATH"
 }
