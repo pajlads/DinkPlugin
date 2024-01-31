@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Allow customization of region IDs where deaths should be ignored. (#415)
+
 ## 1.8.3
 
 - Minor: Include Scurrius pet name in pet notifications. (#410)

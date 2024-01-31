@@ -95,6 +95,7 @@ public class DinkPlugin extends Plugin {
         log.debug("Started up Dink");
         settingsManager.init();
         lootNotifier.init();
+        deathNotifier.init();
     }
 
     @Override
@@ -110,6 +111,7 @@ public class DinkPlugin extends Plugin {
         clueNotifier.reset();
         diaryNotifier.reset();
         levelNotifier.reset();
+        deathNotifier.reset();
         slayerNotifier.reset();
         killCountNotifier.reset();
         groupStorageNotifier.reset();
@@ -140,6 +142,7 @@ public class DinkPlugin extends Plugin {
 
         settingsManager.onConfigChanged(event);
         lootNotifier.onConfigChanged(event.getKey(), event.getNewValue());
+        deathNotifier.onConfigChanged(event.getKey(), event.getNewValue());
     }
 
     @Subscribe
