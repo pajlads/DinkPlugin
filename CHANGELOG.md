@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Clarify the plugin description. (#419)
+
 ## 1.8.3
 
 - Minor: Include Scurrius pet name in pet notifications. (#410)
