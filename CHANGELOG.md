@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.8.4
+
 - Minor: Fire loot notification for PK loot chests with sufficiently high total value. (#417)
 - Minor: Include region information in death notification metadata. (#420)
 - Minor: Allow customization of region IDs where deaths should be ignored. (#415)
