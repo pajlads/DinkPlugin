@@ -36,6 +36,7 @@ public class WorldUtils {
     private final Set<Integer> TOA_REGIONS = ImmutableSet.of(14160, 14162, 14164, 14674, 14676, 15184, 15186, 15188, 15696, 15698, 15700);
     private final Set<Integer> TOB_REGIONS = ImmutableSet.of(12611, 12612, 12613, 12867, 12869, 13122, 13123, 13125, 13379);
     private final int INFERNO_REGION = 9043;
+    private final int CREATURE_GRAVEYARD_REGION = 13462;
     private final int NMZ_REGION = 9033;
     private final int TZHAAR_CAVE = 9551;
     public final @VisibleForTesting int TZHAAR_PIT = 9552;
@@ -123,6 +124,10 @@ public class WorldUtils {
         return widget != null && !widget.isHidden();
     }
 
+    public boolean isMageTrainingArena(int regionId) {
+        return regionId == CREATURE_GRAVEYARD_REGION;
+    }
+
     public boolean isNightmareZone(int regionId) {
         return regionId == NMZ_REGION;
     }
@@ -197,7 +202,8 @@ public class WorldUtils {
             return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.FIGHT_CAVE);
         }
 
-        if (isBarbarianAssault(regionId) || isNightmareZone(regionId) || isPestControl(client) || isGalvekRematch(client, regionId)) {
+        if (isBarbarianAssault(regionId) || isNightmareZone(regionId)  || isMageTrainingArena(regionId)
+            || isPestControl(client) || isGalvekRematch(client, regionId)) {
             // All PvM activities are dangerous for Hardcore group iron players
             return Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN ? Danger.DANGEROUS : Danger.SAFE;
         }
