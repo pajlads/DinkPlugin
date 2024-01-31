@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include region information in death notification metadata. (#420)
 - Minor: Allow customization of region IDs where deaths should be ignored. (#415)
 
 ## 1.8.3
