@@ -1,6 +1,18 @@
 ## Unreleased
 
+## 1.8.4
+
+- Minor: Fire loot notification for PK loot chests with sufficiently high total value. (#417)
+- Minor: Include region information in death notification metadata. (#420)
+- Minor: Allow customization of region IDs where deaths should be ignored. (#415)
+- Bugfix: Treat deaths in the graveyard room of the mage training arena as safe. (#418)
+- Dev: Clarify the plugin description. (#419)
+
+## 1.8.3
+
+- Minor: Include Scurrius pet name in pet notifications. (#410)
 - Bugfix: Update death safe exceptions on config import from clipboard. (#406)
+- Dev: Disable leagues notifier. (#411)
 
 ## 1.8.2
 
