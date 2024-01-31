@@ -132,7 +132,7 @@ contain some words that will be replaced with in-game values.
 
 `%VALUELOST%` will be replaced with the price of the items you lost. If you died in PvP, `%PKER%` will be replaced with the name of your killer.
 
-By default, to avoid spam, Dink will ignore deaths from the following [safe](https://oldschool.runescape.wiki/w/Minigames#Safe) activities/areas: Barbarian Assault, Castle Wars, Chambers of Xeric (CoX), Clan Wars, Last Man Standing (LMS), Nightmare Zone (NMZ), Pest Control, player-owned houses (POH), Soul Wars, TzHaar Fight Pit.
+By default, to avoid spam, Dink will ignore deaths from the following [safe](https://oldschool.runescape.wiki/w/Minigames#Safe) activities/areas: Barbarian Assault, Castle Wars, Chambers of Xeric (CoX), Clan Wars, Creature Graveyard of Mage Training Arena, Last Man Standing (LMS), Nightmare Zone (NMZ), Pest Control, player-owned houses (POH), Soul Wars, TzHaar Fight Pit.
 However, PvM deaths as a hardcore group ironman are _not_ considered to be safe (and _will_ trigger a notification in these areas).
 Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these areas _do_ trigger notifications (despite technically being safe).
 
