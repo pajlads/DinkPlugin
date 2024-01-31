@@ -35,7 +35,6 @@ public class WorldUtils {
     private final Set<Integer> SOUL_REGIONS = ImmutableSet.of(8493, 8748, 8749, 9005);
     private final Set<Integer> TOA_REGIONS = ImmutableSet.of(14160, 14162, 14164, 14674, 14676, 15184, 15186, 15188, 15696, 15698, 15700);
     private final Set<Integer> TOB_REGIONS = ImmutableSet.of(12611, 12612, 12613, 12867, 12869, 13122, 13123, 13125, 13379);
-    private final int BURTHORPE_REGION = 8781;
     private final int INFERNO_REGION = 9043;
     private final int CREATURE_GRAVEYARD_REGION = 13462;
     private final int NMZ_REGION = 9033;
@@ -83,10 +82,6 @@ public class WorldUtils {
 
     public boolean isBarbarianAssault(int regionId) {
         return BA_REGIONS.contains(regionId);
-    }
-
-    public boolean isBurthorpeGameRoom(int regionId) {
-        return regionId == BURTHORPE_REGION;
     }
 
     public boolean isCastleWars(int regionId) {
@@ -147,7 +142,7 @@ public class WorldUtils {
     }
 
     public boolean isSafeArea(Client client) {
-        return getDangerLevel(client, Collections.emptySet()) == Danger.SAFE;
+        return getDangerLevel(client, getLocation(client).getRegionID(), Collections.emptySet()) == Danger.SAFE;
     }
 
     public boolean isSoulWars(int regionId) {
@@ -170,9 +165,7 @@ public class WorldUtils {
         return regionId == TZHAAR_PIT;
     }
 
-    public Danger getDangerLevel(Client client, Set<ExceptionalDeath> exceptions) {
-        int regionId = getLocation(client).getRegionID();
-
+    public Danger getDangerLevel(Client client, int regionId, Set<ExceptionalDeath> exceptions) {
         if (isGauntlet(regionId)) {
             // Players can't take items in or out of (Corrupted) Gauntlet, so these deaths are effectively safe
             // However: any Gauntlet death is still dangerous for hardcore (group) ironmen

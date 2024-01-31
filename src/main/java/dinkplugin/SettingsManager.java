@@ -9,6 +9,7 @@ import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.PetNotifier;
 import dinkplugin.util.Utils;
+import dinkplugin.util.WorldUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
@@ -158,6 +159,9 @@ public class SettingsManager {
             }
 
             exportConfig(includeKey);
+        } else if ("DinkRegion".equalsIgnoreCase(cmd)) {
+            int regionId = WorldUtils.getLocation(client).getRegionID();
+            plugin.addChatSuccess(String.format("Your current region ID is: %d", regionId));
         }
     }
 
