@@ -793,7 +793,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "minLootValue",
         name = "Min Loot value",
-        description = "The minimum value of an item for a notification to be sent",
+        description = "The minimum value of an item for a notification to be sent.<br/>" +
+            "For PK chests, the <i>total</i> value of the items is compared with this threshold",
         position = 33,
         section = lootSection
     )

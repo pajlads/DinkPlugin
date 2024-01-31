@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Fire loot notification for PK loot chests with sufficiently high total value. (#417)
 - Minor: Include region information in death notification metadata. (#420)
 - Minor: Allow customization of region IDs where deaths should be ignored. (#415)
 - Bugfix: Treat deaths in the graveyard room of the mage training arena as safe. (#418)
