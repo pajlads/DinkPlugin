@@ -108,6 +108,15 @@ Note: There is no undo button for this command, so consider making a backup of y
 Warning: If you import override URLs for a notifier (that previously did not have any overrides), this will result in the plugin no longer sending messages from that notifier to your old primary URLs.
 As such, you can manually add your primary URLs to the newly populated override URL boxes so that notifications are still sent to the old primary URLs.
 
+### Get Current Region ID via `::dinkregion`
+
+The death notifier allows you to customize any region that should be ignored.
+This is particularly relevant for ultimate ironmen (UIM) who frequently use particular locations to deathbank/deathpile.
+
+To facilitate this process, the `::dinkregion` chat command outputs the player's current region ID.
+
+For example, Prifddinas spans the following region IDs: 12894, 12895, 13150, and 13151.
+
 ---
 
 ## Notifier Configuration
