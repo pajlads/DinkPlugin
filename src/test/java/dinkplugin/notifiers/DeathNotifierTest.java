@@ -664,6 +664,22 @@ class DeathNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnoreCustom() {
+        // update config mocks
+        when(config.deathIgnoredRegions()).thenReturn("12336");
+        notifier.init();
+
+        // mock tutorial island
+        when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(3100, 3100, 0));
+
+        // fire event
+        plugin.onActorDeath(new ActorDeath(localPlayer));
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testDisabled() {
         // disable notifier
         when(config.notifyDeath()).thenReturn(false);

@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Allow customization of region IDs where deaths should be ignored. (#415)
 - Dev: Clarify the plugin description. (#419)
 
 ## 1.8.3
