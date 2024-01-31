@@ -945,11 +945,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "deathIgnoredRegions",
+        name = "Ignored Region IDs",
+        description = "User-specified, comma-separated Region IDs where deaths should be ignored.<br/>" +
+            "Use the '::dinkregion' chat command or an online map to obtain the region IDs.<br/>" +
+            "For example, Prifddinas spans 12894, 12895, 13150, 13151",
+        position = 45,
+        section = deathSection
+    )
+    default String deathIgnoredRegions() {
+        return "123, 456, 789";
+    }
+
+    @ConfigItem(
         keyName = "deathMinValue",
         name = "Min Lost Value",
         description = "The minimum value of the lost items for a notification to be sent.<br/>" +
             "This setting does not apply for safe deaths",
-        position = 45,
+        position = 46,
         section = deathSection
     )
     default int deathMinValue() {
@@ -962,7 +975,7 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 46,
+        position = 47,
         section = deathSection
     )
     default String deathNotifyMessage() {
@@ -973,7 +986,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpEnabled",
         name = "Distinguish PvP deaths",
         description = "Should the plugin use a different message for dying in PvP?",
-        position = 47,
+        position = 48,
         section = deathSection
     )
     default boolean deathNotifPvpEnabled() {
@@ -987,7 +1000,7 @@ public interface DinkPluginConfig extends Config {
             "Use %PKER% to insert the killer<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 48,
+        position = 49,
         section = deathSection
     )
     default String deathNotifPvpMessage() {

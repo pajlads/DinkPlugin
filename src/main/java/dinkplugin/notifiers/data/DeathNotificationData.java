@@ -1,5 +1,6 @@
 package dinkplugin.notifiers.data;
 
+import dinkplugin.util.Region;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.jetbrains.annotations.NotNull;
@@ -33,5 +34,8 @@ public class DeathNotificationData extends NotificationData {
 
     @NotNull
     Collection<SerializedItemStack> lostItems;
+
+    @NotNull
+    Region location;
 
 }
