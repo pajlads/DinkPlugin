@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add chat command to obtain the player's dink hash. (#408)
+
 ## 1.8.4
 
 - Minor: Fire loot notification for PK loot chests with sufficiently high total value. (#417)

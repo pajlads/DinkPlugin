@@ -164,9 +164,9 @@ public class SettingsManager {
             CompletableFuture.completedFuture(client.getAccountHash())
                 .thenApplyAsync(Utils::dinkHash)
                 .thenCompose(Utils::copyToClipboard)
-                .thenRun(() -> plugin.addChatSuccess("Copied player dink hash to clipboard"))
+                .thenRun(() -> plugin.addChatSuccess("Copied your dink hash to clipboard"))
                 .exceptionally(t -> {
-                    plugin.addChatWarning("Failed to copy player dink hash to clipboard");
+                    plugin.addChatWarning("Failed to copy your dink hash to clipboard");
                     return null;
                 });
         } else if ("DinkRegion".equalsIgnoreCase(cmd)) {
