@@ -251,6 +251,7 @@ public class PetNotifier extends BaseNotifier {
             "Rock golem",
             "Rocky",
             "Scorpia's offspring",
+            "Scurry",
             "Skotos",
             "Smolcano",
             "Sraracha",

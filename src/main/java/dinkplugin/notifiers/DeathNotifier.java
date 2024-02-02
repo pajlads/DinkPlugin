@@ -6,13 +6,16 @@ import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.message.Embed;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
-import dinkplugin.util.ItemUtils;
-import dinkplugin.util.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.ConfigUtil;
+import dinkplugin.util.ItemUtils;
+import dinkplugin.util.Region;
+import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Item;
@@ -43,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -86,6 +90,11 @@ public class DeathNotifier extends BaseNotifier {
      */
     private static final Function<Player, Comparator<Player>> PK_COMPARATOR;
 
+    /**
+     * User-specified Region IDs where death notifications should not be triggered.
+     */
+    private final Collection<Integer> ignoredRegions = new HashSet<>();
+
     @Inject
     private ItemManager itemManager;
 
@@ -112,6 +121,20 @@ public class DeathNotifier extends BaseNotifier {
     @Override
     protected String getWebhookUrl() {
         return config.deathWebhook();
+    }
+
+    public void init() {
+        setIgnoredRegions(config.deathIgnoredRegions());
+    }
+
+    public void reset() {
+        setIgnoredRegions(null);
+    }
+
+    public void onConfigChanged(String key, String value) {
+        if ("deathIgnoredRegions".equals(key)) {
+            setIgnoredRegions(value);
+        }
     }
 
     public void onActorDeath(ActorDeath actor) {
@@ -153,7 +176,11 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Danger dangerOverride) {
-        Danger danger = dangerOverride != null ? dangerOverride : WorldUtils.getDangerLevel(client, config.deathSafeExceptions());
+        int regionId = WorldUtils.getLocation(client).getRegionID();
+        if (ignoredRegions.contains(regionId))
+            return;
+
+        Danger danger = dangerOverride != null ? dangerOverride : WorldUtils.getDangerLevel(client, regionId, config.deathSafeExceptions());
         if (danger == Danger.SAFE && config.deathIgnoreSafe())
             return;
 
@@ -208,7 +235,8 @@ public class DeathNotifier extends BaseNotifier {
             killerName,
             npc ? ((NPC) killer).getId() : null,
             keptStacks,
-            lostStacks
+            lostStacks,
+            Region.of(client, regionId)
         );
 
         createMessage(config.deathSendImage(), NotificationBody.builder()
@@ -258,6 +286,20 @@ public class DeathNotifier extends BaseNotifier {
 
         // notifier must be enabled to dink when the actually dangerous death occurs
         return isEnabled();
+    }
+
+    @Synchronized
+    private void setIgnoredRegions(@Nullable String configValue) {
+        ignoredRegions.clear();
+        ConfigUtil.readDelimited(configValue).forEach(str -> {
+            try {
+                int regionId = Integer.parseInt(str);
+                ignoredRegions.add(regionId);
+            } catch (NumberFormatException e) {
+                log.warn("Failed to parse death ignored region as integer: {}", str);
+            }
+        });
+        log.debug("Updated ignored regions to: {}", ignoredRegions);
     }
 
     /**
