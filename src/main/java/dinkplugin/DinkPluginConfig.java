@@ -1857,8 +1857,7 @@ public interface DinkPluginConfig extends Config {
         section = chatSection
     )
     default String chatPatterns() {
-        return "You have unlocked a new music track: *\n" +
-            "You've unlocked an emote: *\n" +
+        return "You've unlocked an emote: *\n" +
             "You've completed the * event*\n" + // for holiday events
             "You have accepted * into *.\n" + // for clan recruitment
             "You will be logged out in approximately 30 minutes.*\n" +
