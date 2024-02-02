@@ -166,6 +166,7 @@ public interface DinkPluginConfig extends Config {
     )
     String tradeSection = "Player Trades";
 
+    /*
     @ConfigSection(
         name = "System Chat Messages",
         description = "Settings for notifying when you receive specific messages from the game",
@@ -180,6 +181,7 @@ public interface DinkPluginConfig extends Config {
         position = 200,
         closedByDefault = true
     )
+     */
     String leaguesSection = "Leagues";
 
     @ConfigSection(
@@ -382,8 +384,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "ignoreSeasonalWorlds",
         name = "Ignore Seasonal Worlds",
-        description = "Whether to suppress notifications that occur on seasonal worlds like Leagues.<br/>" +
-            "Note: the Leagues-specific notifier uses an independent config toggle",
+        description = "Whether to suppress notifications that occur on seasonal worlds like Leagues.",
         position = 1015,
         section = advancedSection
     )
@@ -606,7 +607,8 @@ public interface DinkPluginConfig extends Config {
         description = "If non-empty, Leagues messages are sent to this URL, instead of the primary URL.<br/>" +
             "Note: this only applies to the Leagues notifier, not every notifier in a seasonal world",
         position = -1,
-        section = webhookSection
+        section = webhookSection,
+        hidden = true
     )
     default String leaguesWebhook() {
         return "";
@@ -812,7 +814,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "minLootValue",
         name = "Min Loot value",
-        description = "The minimum value of an item for a notification to be sent",
+        description = "The minimum value of an item for a notification to be sent.<br/>" +
+            "For PK chests, the <i>total</i> value of the items is compared with this threshold",
         position = 33,
         section = lootSection
     )
@@ -963,11 +966,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "deathIgnoredRegions",
+        name = "Ignored Region IDs",
+        description = "User-specified, comma-separated Region IDs where deaths should be ignored.<br/>" +
+            "Use the '::dinkregion' chat command or an online map to obtain the region IDs.<br/>" +
+            "For example, Prifddinas spans 12894, 12895, 13150, 13151",
+        position = 45,
+        section = deathSection
+    )
+    default String deathIgnoredRegions() {
+        return "123, 456, 789";
+    }
+
+    @ConfigItem(
         keyName = "deathMinValue",
         name = "Min Lost Value",
         description = "The minimum value of the lost items for a notification to be sent.<br/>" +
             "This setting does not apply for safe deaths",
-        position = 45,
+        position = 46,
         section = deathSection
     )
     default int deathMinValue() {
@@ -980,7 +996,7 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 46,
+        position = 47,
         section = deathSection
     )
     default String deathNotifyMessage() {
@@ -991,7 +1007,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpEnabled",
         name = "Distinguish PvP deaths",
         description = "Should the plugin use a different message for dying in PvP?",
-        position = 47,
+        position = 48,
         section = deathSection
     )
     default boolean deathNotifPvpEnabled() {
@@ -1005,7 +1021,7 @@ public interface DinkPluginConfig extends Config {
             "Use %PKER% to insert the killer<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 48,
+        position = 49,
         section = deathSection
     )
     default String deathNotifPvpMessage() {
@@ -1867,7 +1883,8 @@ public interface DinkPluginConfig extends Config {
         name = "Enable Leagues",
         description = "Enable notifications upon various leagues events",
         position = 200,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default boolean notifyLeagues() {
         return false;
@@ -1878,7 +1895,8 @@ public interface DinkPluginConfig extends Config {
         name = "Send Image",
         description = "Send image with the notification",
         position = 201,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default boolean leaguesSendImage() {
         return true;
@@ -1889,7 +1907,8 @@ public interface DinkPluginConfig extends Config {
         name = "Send Area Unlocks",
         description = "Send notifications upon area unlocks",
         position = 202,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default boolean leaguesAreaUnlock() {
         return true;
@@ -1900,7 +1919,8 @@ public interface DinkPluginConfig extends Config {
         name = "Send Relic Unlocks",
         description = "Send notifications upon relic unlocks",
         position = 203,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default boolean leaguesRelicUnlock() {
         return true;
@@ -1911,7 +1931,8 @@ public interface DinkPluginConfig extends Config {
         name = "Send Completed Tasks",
         description = "Send notifications upon completing a task",
         position = 204,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default boolean leaguesTaskCompletion() {
         return true;
@@ -1922,7 +1943,8 @@ public interface DinkPluginConfig extends Config {
         name = "Task Min Difficulty",
         description = "The minimum tier of a task for a notification to be sent",
         position = 205,
-        section = leaguesSection
+        section = leaguesSection,
+        hidden = true
     )
     default LeagueTaskDifficulty leaguesTaskMinTier() {
         return LeagueTaskDifficulty.EASY;

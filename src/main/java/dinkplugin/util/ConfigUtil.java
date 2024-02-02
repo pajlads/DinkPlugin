@@ -1,5 +1,6 @@
 package dinkplugin.util;
 
+import com.google.gson.Gson;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.ComponentID;
@@ -10,9 +11,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.Color;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -29,7 +32,7 @@ public class ConfigUtil {
     }
 
     @Nullable
-    public Object convertTypeFromJson(@NotNull Type type, @NotNull Object in) {
+    public Object convertTypeFromJson(@NotNull Gson gson, @NotNull Type type, @NotNull Object in) {
         if (in instanceof Boolean)
             return type == boolean.class || type == Boolean.class ? in : null;
 
@@ -92,6 +95,17 @@ public class ConfigUtil {
             if (type == Duration.class) {
                 try {
                     return Duration.parse(s);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+
+        if (in instanceof Collection && type instanceof ParameterizedType) {
+            Type rawType = ((ParameterizedType) type).getRawType();
+            if (rawType instanceof Class && Collection.class.isAssignableFrom((Class<?>) rawType)) {
+                try {
+                    return gson.fromJson(gson.toJson(in), type); // inefficient, but unimportant
                 } catch (Exception e) {
                     return null;
                 }
