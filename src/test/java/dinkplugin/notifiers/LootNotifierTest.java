@@ -7,6 +7,7 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.ItemUtils;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
@@ -26,6 +27,7 @@ import org.mockito.InjectMocks;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -393,6 +395,55 @@ class LootNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.LOOT)
                 .build()
         );
+    }
+
+    @Test
+    void testNotifyPkChest() {
+        // update mocks
+        final int minValue = 750;
+        when(config.minLootValue()).thenReturn(minValue);
+        assert OPAL_PRICE < minValue && TUNA_PRICE < minValue;
+
+        // fire event
+        String source = "Loot Chest";
+        List<ItemStack> items = List.of(new ItemStack(ItemID.OPAL, 1, null), new ItemStack(ItemID.TUNA, 2, null));
+        int totalValue = OPAL_PRICE + 2 * TUNA_PRICE;
+        LootReceived event = new LootReceived(source, -1, LootRecordType.EVENT, items, 1);
+        plugin.onLootReceived(event);
+
+        // verify notification message
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: Various items including: 1 x {{opal}} (%d) from %s for %s gp", PLAYER_NAME, OPAL_PRICE, source, QuantityFormatter.quantityToStackSize(totalValue)))
+                        .replacement("{{opal}}", Replacements.ofWiki("Opal"))
+                        .build()
+                )
+                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal"), new SerializedItemStack(ItemID.TUNA, 2, TUNA_PRICE, "Tuna")), source, LootRecordType.EVENT, null))
+                .type(NotificationType.LOOT)
+                .thumbnailUrl(ItemUtils.getItemImageUrl(ItemID.TUNA))
+                .build()
+        );
+    }
+
+    @Test
+    void testIgnorePkChest() {
+        // update mocks
+        final int minValue = 750;
+        when(config.minLootValue()).thenReturn(minValue);
+        assert OPAL_PRICE < minValue && TUNA_PRICE < minValue;
+
+        // fire event
+        String source = "Loot Chest";
+        List<ItemStack> items = List.of(new ItemStack(ItemID.OPAL, 1, null), new ItemStack(ItemID.TUNA, 1, null));
+        LootReceived event = new LootReceived(source, -1, LootRecordType.EVENT, items, 1);
+        plugin.onLootReceived(event);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test

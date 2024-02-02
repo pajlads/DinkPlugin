@@ -10,7 +10,6 @@ import dinkplugin.notifiers.GambleNotifier;
 import dinkplugin.notifiers.GrandExchangeNotifier;
 import dinkplugin.notifiers.GroupStorageNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
-import dinkplugin.notifiers.LeaguesNotifier;
 import dinkplugin.notifiers.LevelNotifier;
 import dinkplugin.notifiers.LootNotifier;
 import dinkplugin.notifiers.MetaNotifier;
@@ -60,7 +59,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 @PluginDescriptor(
     name = "Dink",
-    description = "A notifier for sending webhooks to Discord or other custom destinations",
+    description = "Discord-compatible webhook notifications for Loot, Death, Levels, CLog, KC, Diary, Quests, etc.",
     tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun",
         "diary", "combat achievements", "combat task", "barbarian assault", "high level gambles" }
 )
@@ -89,7 +88,6 @@ public class DinkPlugin extends Plugin {
     private @Inject PlayerKillNotifier pkNotifier;
     private @Inject GroupStorageNotifier groupStorageNotifier;
     private @Inject GrandExchangeNotifier grandExchangeNotifier;
-    private @Inject LeaguesNotifier leaguesNotifier;
     private @Inject MetaNotifier metaNotifier;
     private @Inject TradeNotifier tradeNotifier;
 
@@ -100,6 +98,7 @@ public class DinkPlugin extends Plugin {
         log.debug("Started up Dink");
         settingsManager.init();
         lootNotifier.init();
+        deathNotifier.init();
     }
 
     @Override
@@ -115,6 +114,7 @@ public class DinkPlugin extends Plugin {
         clueNotifier.reset();
         diaryNotifier.reset();
         levelNotifier.reset();
+        deathNotifier.reset();
         slayerNotifier.reset();
         killCountNotifier.reset();
         groupStorageNotifier.reset();
@@ -145,6 +145,7 @@ public class DinkPlugin extends Plugin {
 
         settingsManager.onConfigChanged(event);
         lootNotifier.onConfigChanged(event.getKey(), event.getNewValue());
+        deathNotifier.onConfigChanged(event.getKey(), event.getNewValue());
     }
 
     @Subscribe
@@ -210,7 +211,6 @@ public class DinkPlugin extends Plugin {
                 combatTaskNotifier.onGameMessage(chatMessage);
                 deathNotifier.onGameMessage(chatMessage);
                 speedrunNotifier.onGameMessage(chatMessage);
-                leaguesNotifier.onGameMessage(chatMessage);
                 break;
 
             case FRIENDSCHATNOTIFICATION:
