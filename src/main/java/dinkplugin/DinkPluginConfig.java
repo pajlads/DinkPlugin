@@ -166,7 +166,6 @@ public interface DinkPluginConfig extends Config {
     )
     String tradeSection = "Player Trades";
 
-    /*
     @ConfigSection(
         name = "System Chat Messages",
         description = "Settings for notifying when you receive specific messages from the game",
@@ -175,6 +174,7 @@ public interface DinkPluginConfig extends Config {
     )
     String chatSection = "System Chat Messages";
 
+    /*
     @ConfigSection(
         name = "Leagues",
         description = "Settings for notifying when you complete league tasks, unlock areas, and redeem relics",
