@@ -108,6 +108,12 @@ Note: There is no undo button for this command, so consider making a backup of y
 Warning: If you import override URLs for a notifier (that previously did not have any overrides), this will result in the plugin no longer sending messages from that notifier to your old primary URLs.
 As such, you can manually add your primary URLs to the newly populated override URL boxes so that notifications are still sent to the old primary URLs.
 
+### Get your Dink Hash via `::dinkhash`
+
+Dink notification metadata includes a player hash that custom webhook servers can utilize to uniquely identify players (persistent across name changes).
+
+You can obtain your dink hash via the `::dinkhash` chat command. Feel free to provide this value to third-party services that may request it.
+
 ### Get Current Region ID via `::dinkregion`
 
 The death notifier allows you to customize any region that should be ignored.
