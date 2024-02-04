@@ -132,8 +132,7 @@ public class KillCountService {
 
         // get kc from base runelite chat commands plugin (if enabled)
         if (!ConfigUtil.isPluginDisabled(configManager, RL_CHAT_CMD_PLUGIN_NAME)) {
-            String boss = sourceName.startsWith("Barrows") ? "barrows chests" : StringUtils.remove(sourceName.toLowerCase(), ':');
-            Integer kc = configManager.getRSProfileConfiguration("killcount", boss, int.class);
+            Integer kc = configManager.getRSProfileConfiguration("killcount", cleanBossName(sourceName), int.class);
             if (kc != null) {
                 return kc - 1; // decremented since chat event typically occurs before loot event
             }
@@ -158,6 +157,21 @@ public class KillCountService {
             log.warn("Failed to read kills from loot tracker config", e);
             return null;
         }
+    }
+
+    /**
+     * @param boss {@link LootReceived#getName()}
+     * @return lowercase boss name that {@link ChatCommandsPlugin} uses during serialization
+     */
+    private static String cleanBossName(String boss) {
+        if ("The Gauntlet".equalsIgnoreCase(boss)) return "gauntlet";
+        if ("The Leviathan".equalsIgnoreCase(boss)) return "leviathan";
+        if ("The Whisperer".equalsIgnoreCase(boss)) return "whisperer";
+        if (boss.startsWith("Barrows")) return "barrows chests";
+        if (boss.endsWith("Hallowed Sepulchre)")) return "hallowed sepulchre";
+        if (boss.endsWith("Tempoross)")) return "tempoross";
+        if (boss.endsWith("Wintertodt)")) return "wintertodt";
+        return StringUtils.remove(boss.toLowerCase(), ':');
     }
 
 }
