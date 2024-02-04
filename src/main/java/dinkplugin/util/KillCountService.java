@@ -15,6 +15,7 @@ import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.plugins.loottracker.LootTrackerConfig;
 import net.runelite.client.plugins.loottracker.LootTrackerPlugin;
 import net.runelite.http.api.loottracker.LootRecordType;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,13 +57,23 @@ public class KillCountService {
             return;
         }
 
-        this.incrementKillCount(npc.getName());
+        String name = npc.getName();
+        if (name != null) {
+            this.incrementKillCount(LootRecordType.NPC, name);
+        }
     }
 
     public void onLoot(LootReceived event) {
+        boolean increment;
         if (event.getType() == LootRecordType.NPC && "The Whisperer".equalsIgnoreCase(event.getName())) {
             // Special case: upstream fires LootReceived for the whisperer, but not NpcLootReceived
-            this.incrementKillCount(event.getName());
+            increment = true;
+        } else {
+            increment = event.getType() == LootRecordType.EVENT;
+        }
+
+        if (increment) {
+            this.incrementKillCount(event.getType(), event.getName());
         }
     }
 
@@ -85,22 +96,25 @@ public class KillCountService {
     }
 
     @Nullable
-    public Integer getKillCount(@NotNull String npcName) {
-        Integer stored = getStoredKillCount(npcName);
-        if (stored != null) {
-            return killCounts.asMap().merge(npcName, stored, Math::max);
+    public Integer getKillCount(LootRecordType type, String sourceName) {
+        if (sourceName == null || (type != LootRecordType.NPC && type != LootRecordType.EVENT)) {
+            return null;
         }
-        return killCounts.getIfPresent(npcName);
+        Integer stored = getStoredKillCount(type, sourceName);
+        if (stored != null) {
+            return killCounts.asMap().merge(sourceName, stored, Math::max);
+        }
+        return killCounts.getIfPresent(sourceName);
     }
 
-    private void incrementKillCount(String npcName) {
-        killCounts.asMap().compute(npcName, (name, cachedKc) -> {
+    private void incrementKillCount(@NotNull LootRecordType type, @NotNull String sourceName) {
+        killCounts.asMap().compute(sourceName, (name, cachedKc) -> {
             if (cachedKc != null) {
                 // increment kill count
                 return cachedKc + 1;
             } else {
-                // pull kc from loot tracker
-                Integer kc = getStoredKillCount(name);
+                // pull kc from loot tracker or chat commands plugin
+                Integer kc = getStoredKillCount(type, name);
                 // increment if found
                 return kc != null ? kc + 1 : null;
             }
@@ -108,25 +122,30 @@ public class KillCountService {
     }
 
     /**
-     * @param npcName {@link NPC#getName()}
-     * @return the kill count stored by the base runelite loot tracker plugin
+     * @param type       {@link LootReceived#getType()}
+     * @param sourceName {@link NPC#getName()} or {@link LootReceived#getName()}
+     * @return the kill count stored by base runelite plugins
      */
-    private Integer getStoredKillCount(String npcName) {
+    @Nullable
+    private Integer getStoredKillCount(@NotNull LootRecordType type, @NotNull String sourceName) {
+        assert type == LootRecordType.NPC || type == LootRecordType.EVENT;
+
         // get kc from base runelite chat commands plugin (if enabled)
         if (!ConfigUtil.isPluginDisabled(configManager, RL_CHAT_CMD_PLUGIN_NAME)) {
-            Integer kc = configManager.getRSProfileConfiguration("killcount", npcName, int.class);
+            String boss = sourceName.startsWith("Barrows") ? "barrows chests" : StringUtils.remove(sourceName.toLowerCase(), ':');
+            Integer kc = configManager.getRSProfileConfiguration("killcount", boss, int.class);
             if (kc != null) {
                 return kc - 1; // decremented since chat event typically occurs before loot event
             }
         }
 
-        if (ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
+        if (type != LootRecordType.NPC || ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
             // assume stored kc is useless if loot tracker plugin is disabled
             return null;
         }
         String json = configManager.getConfiguration(LootTrackerConfig.GROUP,
             configManager.getRSProfileKey(),
-            "drops_NPC_" + npcName
+            "drops_NPC_" + sourceName
         );
         if (json == null) {
             // no kc stored implies first kill

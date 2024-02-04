@@ -132,7 +132,7 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type) {
-        final Integer kc = type == LootRecordType.NPC ? killCountService.getKillCount(dropper) : null;
+        final Integer kc = killCountService.getKillCount(type, dropper);
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
 
