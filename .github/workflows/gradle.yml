@@ -51,7 +51,7 @@ jobs:
           name: dinkplugin-shadow
           path: release-artifacts/
       - name: Create release
-        uses: ncipollo/release-action@v1.13.0
+        uses: ncipollo/release-action@v1.14.0
         with:
           removeArtifacts: true
           allowUpdates: true
