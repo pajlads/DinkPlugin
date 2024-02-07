@@ -1,6 +1,8 @@
 ## Unreleased
 
+- Minor: Obtain kill count from chat commands plugin for loot notifications. (#392)
 - Minor: Add chat command to obtain the player's dink hash. (#408)
+- Dev: Refactor kill count tracking from `LootNotifier` to `KillCountService`. (#392)
 
 ## 1.8.4
 
