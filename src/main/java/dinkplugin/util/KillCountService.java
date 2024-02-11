@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import dinkplugin.notifiers.ClueNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -93,6 +95,15 @@ public class KillCountService {
     }
 
     public void onGameMessage(String message) {
+        // update cached clue casket count
+        Map.Entry<String, Integer> clue = ClueNotifier.parse(message);
+        if (clue != null) {
+            String tier = Utils.ucFirst(clue.getKey());
+            int count = clue.getValue() - 1; // decremented since onLoot will increment
+            killCounts.put("Clue Scroll (" + tier + ")", count);
+            return;
+        }
+
         // update cached KC via boss chat message with robustness for chat event coming before OR after the loot event
         KillCountNotifier.parseBoss(message).ifPresent(pair -> {
             String boss = pair.getKey();

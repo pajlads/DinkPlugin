@@ -8,6 +8,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.util.KillCountService;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
@@ -47,6 +48,10 @@ class LootNotifierTest extends MockedNotifierTest {
     @Bind
     @InjectMocks
     LootNotifier notifier;
+
+    @Bind
+    @InjectMocks
+    KillCountService killCountService;
 
     @Override
     @BeforeEach
@@ -274,6 +279,9 @@ class LootNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyClue() {
+        // prepare completion count
+        killCountService.onGameMessage("You have completed 42 medium Treasure Trails.");
+
         // fire event
         String source = "Clue Scroll (Medium)";
         LootReceived event = new LootReceived(source, -1, LootRecordType.EVENT, Collections.singletonList(new ItemStack(ItemID.RUBY, 1, null)), 1);
@@ -290,7 +298,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT, 1))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT, 42))
                 .type(NotificationType.LOOT)
                 .build()
         );
