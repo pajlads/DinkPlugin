@@ -19,6 +19,7 @@ import dinkplugin.notifiers.QuestNotifier;
 import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
 import dinkplugin.notifiers.TradeNotifier;
+import dinkplugin.util.KillCountService;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
@@ -68,6 +69,8 @@ public class DinkPlugin extends Plugin {
     private @Inject ChatMessageManager chatManager;
 
     private @Inject SettingsManager settingsManager;
+
+    private @Inject KillCountService killCountService;
 
     private @Inject CollectionNotifier collectionNotifier;
     private @Inject PetNotifier petNotifier;
@@ -148,7 +151,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onUsernameChanged(UsernameChanged usernameChanged) {
         levelNotifier.reset();
-        lootNotifier.reset();
+        killCountService.reset();
     }
 
     @Subscribe
@@ -201,7 +204,7 @@ public class DinkPlugin extends Plugin {
             case GAMEMESSAGE:
                 collectionNotifier.onChatMessage(chatMessage);
                 petNotifier.onChatMessage(chatMessage);
-                lootNotifier.onGameMessage(chatMessage);
+                killCountService.onGameMessage(chatMessage);
                 slayerNotifier.onChatMessage(chatMessage);
                 clueNotifier.onChatMessage(chatMessage);
                 killCountNotifier.onGameMessage(chatMessage);
@@ -263,6 +266,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
+        killCountService.onNpcKill(npcLootReceived);
         lootNotifier.onNpcLootReceived(npcLootReceived);
     }
 
@@ -273,6 +277,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onLootReceived(LootReceived lootReceived) {
+        killCountService.onLoot(lootReceived);
         lootNotifier.onLootReceived(lootReceived);
     }
 

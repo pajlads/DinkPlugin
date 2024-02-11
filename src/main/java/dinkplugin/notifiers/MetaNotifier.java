@@ -9,6 +9,7 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
+import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.SerializedPet;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +18,8 @@ import net.runelite.api.GameState;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -28,12 +27,10 @@ import org.jetbrains.annotations.VisibleForTesting;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @Singleton
@@ -149,7 +146,7 @@ public class MetaNotifier extends BaseNotifier {
 
     @VisibleForTesting
     List<SerializedPet> getPets() {
-        if ("false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, RL_CHAT_CMD_PLUGIN_NAME)))
+        if (ConfigUtil.isPluginDisabled(configManager, RL_CHAT_CMD_PLUGIN_NAME))
             return null;
 
         String json = configManager.getRSProfileConfiguration("chatcommands", "pets2");
