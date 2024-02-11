@@ -112,8 +112,6 @@ public class KillCountService {
     @Nullable
     public Integer getKillCount(LootRecordType type, String sourceName) {
         if (sourceName == null) return null;
-        if (type != LootRecordType.NPC && type != LootRecordType.EVENT) return null;
-
         Integer stored = getStoredKillCount(type, sourceName);
         if (stored != null) {
             return killCounts.asMap().merge(sourceName, stored, Math::max);
@@ -143,8 +141,6 @@ public class KillCountService {
      */
     @Nullable
     private Integer getStoredKillCount(@NotNull LootRecordType type, @NotNull String sourceName) {
-        assert type == LootRecordType.NPC || type == LootRecordType.EVENT;
-
         // get kc from base runelite chat commands plugin (if enabled)
         if (!ConfigUtil.isPluginDisabled(configManager, RL_CHAT_CMD_PLUGIN_NAME)) {
             Integer kc = configManager.getRSProfileConfiguration("killcount", cleanBossName(sourceName), int.class);
@@ -153,13 +149,13 @@ public class KillCountService {
             }
         }
 
-        if (type != LootRecordType.NPC || ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
+        if (ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
             // assume stored kc is useless if loot tracker plugin is disabled
             return null;
         }
         String json = configManager.getConfiguration(LootTrackerConfig.GROUP,
             configManager.getRSProfileKey(),
-            "drops_NPC_" + sourceName
+            "drops_" + type + "_" + sourceName
         );
         if (json == null) {
             // no kc stored implies first kill
