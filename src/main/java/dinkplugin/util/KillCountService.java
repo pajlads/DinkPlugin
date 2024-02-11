@@ -79,6 +79,7 @@ public class KillCountService {
                 increment = "The Whisperer".equalsIgnoreCase(event.getName());
                 break;
             case EVENT:
+            case PICKPOCKET:
                 increment = true;
                 break;
             default:
@@ -111,7 +112,7 @@ public class KillCountService {
 
     @Nullable
     public Integer getKillCount(LootRecordType type, String sourceName) {
-        if (sourceName == null) return null;
+        if (sourceName == null || type == LootRecordType.PLAYER) return null;
         Integer stored = getStoredKillCount(type, sourceName);
         if (stored != null) {
             return killCounts.asMap().merge(sourceName, stored, Math::max);

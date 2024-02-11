@@ -24,7 +24,7 @@ public class LootNotificationData extends NotificationData {
         if (killCount != null) {
             fields.add(
                 new Field(
-                    "Kill Count",
+                    "Completion Count",
                     Field.formatBlock("", QuantityFormatter.quantityToStackSize(killCount))
                 )
             );
