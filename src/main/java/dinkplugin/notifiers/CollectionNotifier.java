@@ -21,6 +21,7 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import java.time.Duration;
@@ -177,6 +178,7 @@ public class CollectionNotifier extends BaseNotifier {
             .build());
     }
 
+    @Nullable
     private Drop getLootSource(int itemId) {
         Drop drop = killCountService.getLastDrop();
         if (drop == null) return null;

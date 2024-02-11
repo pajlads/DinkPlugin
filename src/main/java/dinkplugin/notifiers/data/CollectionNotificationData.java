@@ -42,7 +42,7 @@ public class CollectionNotificationData extends NotificationData {
 
     @Override
     public List<Field> getFields() {
-        List<Field> fields = new ArrayList<>(2);
+        List<Field> fields = new ArrayList<>(3);
         if (completedEntries != null && totalEntries != null) {
             fields.add(
                 new Field("Completed Entries", Field.formatProgress(completedEntries, totalEntries))
@@ -51,8 +51,11 @@ public class CollectionNotificationData extends NotificationData {
         if (dropperKillCount != null) {
             assert dropperName != null && dropperType != null;
             fields.add(
+                new Field("Source", Field.formatBlock("", dropperName))
+            );
+            fields.add(
                 new Field(
-                    Drop.getAction(dropperType) + " Count: " + dropperName,
+                    Drop.getAction(dropperType) + " Count",
                     Field.formatBlock("", QuantityFormatter.quantityToStackSize(dropperKillCount))
                 )
             );
