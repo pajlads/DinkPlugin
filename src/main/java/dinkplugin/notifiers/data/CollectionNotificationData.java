@@ -1,6 +1,7 @@
 package dinkplugin.notifiers.data;
 
 import dinkplugin.message.Field;
+import dinkplugin.util.Drop;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.runelite.client.util.QuantityFormatter;
@@ -48,9 +49,10 @@ public class CollectionNotificationData extends NotificationData {
             );
         }
         if (dropperKillCount != null) {
+            assert dropperName != null && dropperType != null;
             fields.add(
                 new Field(
-                    dropperName + " Completion Count",
+                    Drop.getAction(dropperType) + " Count: " + dropperName,
                     Field.formatBlock("", QuantityFormatter.quantityToStackSize(dropperKillCount))
                 )
             );

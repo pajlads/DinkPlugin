@@ -13,4 +13,17 @@ public class Drop {
     LootRecordType category;
     Collection<ItemStack> items;
     Instant time = Instant.now();
+
+    public static String getAction(LootRecordType type) {
+        switch (type) {
+            case NPC:
+                return "Kill";
+            case PLAYER:
+                return "Player Kill";
+            case PICKPOCKET:
+                return "Pickpocket";
+            default:
+                return "Completion";
+        }
+    }
 }

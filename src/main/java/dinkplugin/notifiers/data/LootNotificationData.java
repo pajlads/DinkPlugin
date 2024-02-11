@@ -1,6 +1,7 @@
 package dinkplugin.notifiers.data;
 
 import dinkplugin.message.Field;
+import dinkplugin.util.Drop;
 import dinkplugin.util.ItemUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
@@ -24,7 +25,7 @@ public class LootNotificationData extends NotificationData {
         if (killCount != null) {
             fields.add(
                 new Field(
-                    "Completion Count",
+                    Drop.getAction(category) + " Count",
                     Field.formatBlock("", QuantityFormatter.quantityToStackSize(killCount))
                 )
             );
