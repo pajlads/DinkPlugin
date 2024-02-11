@@ -5,11 +5,13 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dinkplugin.notifiers.KillCountNotifier;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.NpcLootReceived;
+import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.plugins.loottracker.LootTrackerConfig;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collection;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -44,7 +47,12 @@ public class KillCountService {
         .expireAfterAccess(10, TimeUnit.MINUTES)
         .build();
 
+    @Getter
+    @Nullable
+    private Drop lastDrop = null;
+
     public void reset() {
+        this.lastDrop = null;
         this.killCounts.invalidateAll();
     }
 
@@ -59,7 +67,7 @@ public class KillCountService {
 
         String name = npc.getName();
         if (name != null) {
-            this.incrementKillCount(LootRecordType.NPC, name);
+            this.incrementKills(LootRecordType.NPC, name, event.getItems());
         }
     }
 
@@ -79,7 +87,7 @@ public class KillCountService {
         }
 
         if (increment) {
-            this.incrementKillCount(event.getType(), event.getName());
+            this.incrementKills(event.getType(), event.getName(), event.getItems());
         }
     }
 
@@ -113,7 +121,7 @@ public class KillCountService {
         return killCounts.getIfPresent(sourceName);
     }
 
-    private void incrementKillCount(@NotNull LootRecordType type, @NotNull String sourceName) {
+    private void incrementKills(@NotNull LootRecordType type, @NotNull String sourceName, @NotNull Collection<ItemStack> items) {
         killCounts.asMap().compute(sourceName, (name, cachedKc) -> {
             if (cachedKc != null) {
                 // increment kill count
@@ -125,6 +133,7 @@ public class KillCountService {
                 return kc != null ? kc + 1 : null;
             }
         });
+        this.lastDrop = new Drop(sourceName, type, items);
     }
 
     /**
