@@ -272,6 +272,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onPlayerLootReceived(PlayerLootReceived playerLootReceived) {
+        killCountService.onPlayerKill(playerLootReceived);
         lootNotifier.onPlayerLootReceived(playerLootReceived);
     }
 

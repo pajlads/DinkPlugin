@@ -12,6 +12,7 @@ import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.NpcLootReceived;
+import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
 import net.runelite.client.plugins.loottracker.LootReceived;
@@ -74,6 +75,13 @@ public class KillCountService {
         }
     }
 
+    public void onPlayerKill(PlayerLootReceived event) {
+        String name = event.getPlayer().getName();
+        if (name != null) {
+            this.incrementKills(LootRecordType.PLAYER, name, event.getItems());
+        }
+    }
+
     public void onLoot(LootReceived event) {
         boolean increment;
         switch (event.getType()) {
@@ -81,11 +89,11 @@ public class KillCountService {
                 // Special case: upstream fires LootReceived for the whisperer, but not NpcLootReceived
                 increment = "The Whisperer".equalsIgnoreCase(event.getName());
                 break;
-            case EVENT:
-                increment = true;
+            case PLAYER:
+                increment = false; // handled by PlayerLootReceived
                 break;
             default:
-                increment = false;
+                increment = true;
                 break;
         }
 
@@ -110,13 +118,14 @@ public class KillCountService {
             Integer kc = pair.getValue();
 
             // Update cache. We store kc - 1 since onNpcLootReceived will increment; kc - 1 + 1 == kc
-            killCounts.asMap().merge(boss, kc - 1, Math::max);
+            String cacheKey = getCacheKey(LootRecordType.UNKNOWN, boss);
+            killCounts.asMap().merge(cacheKey, kc - 1, Math::max);
 
             // However: we don't know if boss message appeared before/after the loot event.
             // If after, we should store kc. If before, we should store kc - 1.
             // Given this uncertainty, we wait so that the loot event has passed, and then we can store latest kc.
             executor.schedule(() -> {
-                killCounts.asMap().merge(boss, kc, Math::max);
+                killCounts.asMap().merge(cacheKey, kc, Math::max);
             }, 15, TimeUnit.SECONDS);
         });
     }
@@ -124,22 +133,22 @@ public class KillCountService {
     @Nullable
     public Integer getKillCount(LootRecordType type, String sourceName) {
         if (sourceName == null) return null;
-        if (type != LootRecordType.NPC && type != LootRecordType.EVENT) return null;
         Integer stored = getStoredKillCount(type, sourceName);
         if (stored != null) {
-            return killCounts.asMap().merge(sourceName, stored, Math::max);
+            return killCounts.asMap().merge(getCacheKey(type, sourceName), stored, Math::max);
         }
-        return killCounts.getIfPresent(sourceName);
+        return killCounts.getIfPresent(getCacheKey(type, sourceName));
     }
 
     private void incrementKills(@NotNull LootRecordType type, @NotNull String sourceName, @NotNull Collection<ItemStack> items) {
-        killCounts.asMap().compute(sourceName, (name, cachedKc) -> {
+        String cacheKey = getCacheKey(type, sourceName);
+        killCounts.asMap().compute(cacheKey, (key, cachedKc) -> {
             if (cachedKc != null) {
                 // increment kill count
                 return cachedKc + 1;
             } else {
                 // pull kc from loot tracker or chat commands plugin
-                Integer kc = getStoredKillCount(type, name);
+                Integer kc = getStoredKillCount(type, sourceName);
                 // increment if found
                 return kc != null ? kc + 1 : null;
             }
@@ -196,6 +205,17 @@ public class KillCountService {
         if (boss.endsWith("Tempoross)")) return "tempoross";
         if (boss.endsWith("Wintertodt)")) return "wintertodt";
         return StringUtils.remove(boss.toLowerCase(), ':');
+    }
+
+    private static String getCacheKey(@NotNull LootRecordType type, @NotNull String sourceName) {
+        switch (type) {
+            case PICKPOCKET:
+                return "pickpocket_" + sourceName;
+            case PLAYER:
+                return "player_" + sourceName;
+            default:
+                return sourceName;
+        }
     }
 
 }

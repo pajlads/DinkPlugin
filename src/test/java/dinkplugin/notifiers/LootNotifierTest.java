@@ -131,7 +131,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{tuna}}", Replacements.ofWiki("Tuna"))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -159,7 +159,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{tuna}}", Replacements.ofWiki("Tuna"))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -261,7 +261,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), LOOTED_NAME, LootRecordType.PICKPOCKET, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), LOOTED_NAME, LootRecordType.PICKPOCKET, 1))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -340,7 +340,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
                         .build()
                 )
-                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, null))
+                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -370,7 +370,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
                         .build()
                 )
-                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, null))
+                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -399,7 +399,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
                         .build()
                 )
-                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, null))
+                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1))
                 .type(NotificationType.LOOT)
                 .build()
         );
