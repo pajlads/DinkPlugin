@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class MathUtils {
+    public static final double EPSILON = 0.00001;
     private static final int[] FACTORIALS;
 
     public double binomialProbability(double p, int nTrials, int kSuccess) {

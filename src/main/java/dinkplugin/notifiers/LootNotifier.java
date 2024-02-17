@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.common.math.DoubleMath;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -12,6 +13,8 @@ import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
+import dinkplugin.util.MathUtils;
+import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +28,17 @@ import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.OptionalDouble;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -44,6 +52,9 @@ public class LootNotifier extends BaseNotifier {
 
     @Inject
     private KillCountService killCountService;
+
+    @Inject
+    private RarityService rarityService;
 
     private final Collection<Pattern> itemNameAllowlist = new CopyOnWriteArrayList<>();
     private final Collection<Pattern> itemNameDenylist = new CopyOnWriteArrayList<>();
@@ -163,21 +174,28 @@ public class LootNotifier extends BaseNotifier {
             totalStackValue += totalPrice;
         }
 
-        Evaluable lootMsg;
-        if (!sendMessage && totalStackValue >= minValue && max != null && "Loot Chest".equalsIgnoreCase(dropper)) {
-            // Special case: PK loot keys should trigger notification if total value exceeds configured minimum even
-            // if no single item itself would exceed the min value config - github.com/pajlads/DinkPlugin/issues/403
-            sendMessage = true;
+        Map.Entry<SerializedItemStack, Double> rarest = getRarestDropRate(items, dropper, type);
+        boolean sufficientlyRare = sufficientlyRare(rarest);
 
-            JoiningReplacement msg = lootMessage.build();
-            if (msg.getComponents().isEmpty()) {
-                // ensure %LOOT% isn't empty
+        Evaluable lootMsg;
+        if (!sendMessage) {
+            if (sufficientlyRare) {
+                // allow notifications for rare drops, even if below configured min loot value
+                sendMessage = true;
+                lootMsg = Replacements.ofMultiple(" ",
+                    Replacements.ofText("Various items including:"),
+                    ItemUtils.templateStack(rarest.getKey(), false)
+                );
+            } else if (totalStackValue >= minValue && max != null && "Loot Chest".equalsIgnoreCase(dropper)) {
+                // Special case: PK loot keys should trigger notification if total value exceeds configured minimum even
+                // if no single item itself would exceed the min value config - github.com/pajlads/DinkPlugin/issues/403
+                sendMessage = true;
                 lootMsg = Replacements.ofMultiple(" ",
                     Replacements.ofText("Various items including:"),
                     ItemUtils.templateStack(max, true)
                 );
             } else {
-                lootMsg = msg;
+                lootMsg = null;
             }
         } else {
             lootMsg = lootMessage.build();
@@ -190,6 +208,7 @@ public class LootNotifier extends BaseNotifier {
                     overrideUrl = config.pkWebhook();
                 }
             }
+            SerializedItemStack keyItem = sufficientlyRare ? rarest.getKey() : max;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Template notifyMessage = Template.builder()
                 .template(config.lootNotifyMessage())
@@ -205,10 +224,37 @@ public class LootNotifier extends BaseNotifier {
                     .embeds(embeds)
                     .extra(new LootNotificationData(serializedItems, dropper, type, kc))
                     .type(NotificationType.LOOT)
-                    .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
+                    .thumbnailUrl(ItemUtils.getItemImageUrl(keyItem.getId()))
                     .build()
             );
         }
+    }
+
+    @Nullable
+    private Map.Entry<SerializedItemStack, Double> getRarestDropRate(Collection<ItemStack> items, String dropper, LootRecordType type) {
+        if (type != LootRecordType.NPC) return null;
+        return items.stream()
+            .map(item -> {
+                OptionalDouble rarity = rarityService.getRarity(dropper, item.getId(), item.getQuantity());
+                if (rarity.isEmpty()) return null;
+                return Map.entry(item, rarity.getAsDouble());
+            })
+            .filter(Objects::nonNull)
+            .min(Comparator.comparingDouble(Map.Entry::getValue))
+            .map(pair -> {
+                ItemStack item = pair.getKey();
+                SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
+                return Map.entry(stack, pair.getValue());
+            })
+            .orElse(null);
+    }
+
+    private boolean sufficientlyRare(@Nullable Map.Entry<SerializedItemStack, Double> rarest) {
+        if (rarest == null) return false;
+        int configRareDenominator = config.lootRarityThreshold();
+        if (configRareDenominator <= 0) return false;
+        double rarityThreshold = 1.0 / configRareDenominator;
+        return DoubleMath.fuzzyCompare(rarest.getValue(), rarityThreshold, MathUtils.EPSILON) <= 0;
     }
 
     private static boolean matches(Collection<Pattern> regexps, String input) {

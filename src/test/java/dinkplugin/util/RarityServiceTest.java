@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 class RarityServiceTest extends MockedTestBase {
 
-    private static final double DELTA = 0.00001;
+    private static final double DELTA = MathUtils.EPSILON;
 
     @Bind
     private final Gson gson = RuneLiteAPI.GSON;
