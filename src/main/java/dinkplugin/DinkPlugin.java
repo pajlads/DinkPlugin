@@ -197,7 +197,7 @@ public class DinkPlugin extends Plugin {
         metaNotifier.onTick();
     }
 
-    @Subscribe
+    @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onChatMessage(ChatMessage message) {
         String chatMessage = Utils.sanitize(message.getMessage());
         switch (message.getType()) {
@@ -272,6 +272,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onPlayerLootReceived(PlayerLootReceived playerLootReceived) {
+        killCountService.onPlayerKill(playerLootReceived);
         lootNotifier.onPlayerLootReceived(playerLootReceived);
     }
 

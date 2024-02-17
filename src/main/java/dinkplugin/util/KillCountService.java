@@ -4,12 +4,16 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import dinkplugin.notifiers.ClueNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.NpcLootReceived;
+import net.runelite.client.events.PlayerLootReceived;
+import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.plugins.loottracker.LootTrackerConfig;
@@ -21,6 +25,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -42,9 +48,15 @@ public class KillCountService {
 
     private final Cache<String, Integer> killCounts = CacheBuilder.newBuilder()
         .expireAfterAccess(10, TimeUnit.MINUTES)
+        .maximumSize(64L)
         .build();
 
+    @Getter
+    @Nullable
+    private Drop lastDrop = null;
+
     public void reset() {
+        this.lastDrop = null;
         this.killCounts.invalidateAll();
     }
 
@@ -59,7 +71,14 @@ public class KillCountService {
 
         String name = npc.getName();
         if (name != null) {
-            this.incrementKillCount(LootRecordType.NPC, name);
+            this.incrementKills(LootRecordType.NPC, name, event.getItems());
+        }
+    }
+
+    public void onPlayerKill(PlayerLootReceived event) {
+        String name = event.getPlayer().getName();
+        if (name != null) {
+            this.incrementKills(LootRecordType.PLAYER, name, event.getItems());
         }
     }
 
@@ -70,33 +89,43 @@ public class KillCountService {
                 // Special case: upstream fires LootReceived for the whisperer, but not NpcLootReceived
                 increment = "The Whisperer".equalsIgnoreCase(event.getName());
                 break;
-            case EVENT:
-                increment = true;
+            case PLAYER:
+                increment = false; // handled by PlayerLootReceived
                 break;
             default:
-                increment = false;
+                increment = true;
                 break;
         }
 
         if (increment) {
-            this.incrementKillCount(event.getType(), event.getName());
+            this.incrementKills(event.getType(), event.getName(), event.getItems());
         }
     }
 
     public void onGameMessage(String message) {
+        // update cached clue casket count
+        Map.Entry<String, Integer> clue = ClueNotifier.parse(message);
+        if (clue != null) {
+            String tier = Utils.ucFirst(clue.getKey());
+            int count = clue.getValue() - 1; // decremented since onLoot will increment
+            killCounts.put("Clue Scroll (" + tier + ")", count);
+            return;
+        }
+
         // update cached KC via boss chat message with robustness for chat event coming before OR after the loot event
         KillCountNotifier.parseBoss(message).ifPresent(pair -> {
             String boss = pair.getKey();
             Integer kc = pair.getValue();
 
             // Update cache. We store kc - 1 since onNpcLootReceived will increment; kc - 1 + 1 == kc
-            killCounts.asMap().merge(boss, kc - 1, Math::max);
+            String cacheKey = getCacheKey(LootRecordType.UNKNOWN, boss);
+            killCounts.asMap().merge(cacheKey, kc - 1, Math::max);
 
             // However: we don't know if boss message appeared before/after the loot event.
             // If after, we should store kc. If before, we should store kc - 1.
             // Given this uncertainty, we wait so that the loot event has passed, and then we can store latest kc.
             executor.schedule(() -> {
-                killCounts.asMap().merge(boss, kc, Math::max);
+                killCounts.asMap().merge(cacheKey, kc, Math::max);
             }, 15, TimeUnit.SECONDS);
         });
     }
@@ -104,27 +133,27 @@ public class KillCountService {
     @Nullable
     public Integer getKillCount(LootRecordType type, String sourceName) {
         if (sourceName == null) return null;
-        if (type != LootRecordType.NPC && type != LootRecordType.EVENT) return null;
-
         Integer stored = getStoredKillCount(type, sourceName);
         if (stored != null) {
-            return killCounts.asMap().merge(sourceName, stored, Math::max);
+            return killCounts.asMap().merge(getCacheKey(type, sourceName), stored, Math::max);
         }
-        return killCounts.getIfPresent(sourceName);
+        return killCounts.getIfPresent(getCacheKey(type, sourceName));
     }
 
-    private void incrementKillCount(@NotNull LootRecordType type, @NotNull String sourceName) {
-        killCounts.asMap().compute(sourceName, (name, cachedKc) -> {
+    private void incrementKills(@NotNull LootRecordType type, @NotNull String sourceName, @NotNull Collection<ItemStack> items) {
+        String cacheKey = getCacheKey(type, sourceName);
+        killCounts.asMap().compute(cacheKey, (key, cachedKc) -> {
             if (cachedKc != null) {
                 // increment kill count
                 return cachedKc + 1;
             } else {
                 // pull kc from loot tracker or chat commands plugin
-                Integer kc = getStoredKillCount(type, name);
+                Integer kc = getStoredKillCount(type, sourceName);
                 // increment if found
                 return kc != null ? kc + 1 : null;
             }
         });
+        this.lastDrop = new Drop(sourceName, type, items);
     }
 
     /**
@@ -134,8 +163,6 @@ public class KillCountService {
      */
     @Nullable
     private Integer getStoredKillCount(@NotNull LootRecordType type, @NotNull String sourceName) {
-        assert type == LootRecordType.NPC || type == LootRecordType.EVENT;
-
         // get kc from base runelite chat commands plugin (if enabled)
         if (!ConfigUtil.isPluginDisabled(configManager, RL_CHAT_CMD_PLUGIN_NAME)) {
             Integer kc = configManager.getRSProfileConfiguration("killcount", cleanBossName(sourceName), int.class);
@@ -144,13 +171,13 @@ public class KillCountService {
             }
         }
 
-        if (type != LootRecordType.NPC || ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
+        if (ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
             // assume stored kc is useless if loot tracker plugin is disabled
             return null;
         }
         String json = configManager.getConfiguration(LootTrackerConfig.GROUP,
             configManager.getRSProfileKey(),
-            "drops_NPC_" + sourceName
+            "drops_" + type + "_" + sourceName
         );
         if (json == null) {
             // no kc stored implies first kill
@@ -178,6 +205,17 @@ public class KillCountService {
         if (boss.endsWith("Tempoross)")) return "tempoross";
         if (boss.endsWith("Wintertodt)")) return "wintertodt";
         return StringUtils.remove(boss.toLowerCase(), ':');
+    }
+
+    private static String getCacheKey(@NotNull LootRecordType type, @NotNull String sourceName) {
+        switch (type) {
+            case PICKPOCKET:
+                return "pickpocket_" + sourceName;
+            case PLAYER:
+                return "player_" + sourceName;
+            default:
+                return sourceName;
+        }
     }
 
 }

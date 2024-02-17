@@ -19,6 +19,7 @@ import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.util.QuantityFormatter;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -37,7 +38,7 @@ import java.util.regex.Pattern;
 public class ClueNotifier extends BaseNotifier {
     private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
     private final AtomicInteger badTicks = new AtomicInteger(); // used to prevent notifs from using stale data
-    private volatile String clueCount = "";
+    private volatile int clueCount = -1;
     private volatile String clueType = "";
 
     @Inject
@@ -55,14 +56,11 @@ public class ClueNotifier extends BaseNotifier {
 
     public void onChatMessage(String chatMessage) {
         if (isEnabled()) {
-            Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(chatMessage);
-            if (clueMatcher.find()) {
-                String tier = clueMatcher.group("scrollType");
-                if (checkClueTier(tier)) {
-                    // game message always occurs before widget load; save this data
-                    this.clueCount = clueMatcher.group("scrollCount");
-                    this.clueType = tier;
-                }
+            Map.Entry<String, Integer> result = parse(chatMessage);
+            if (result != null && checkClueTier(result.getKey())) {
+                // game message always occurs before widget load; save this data
+                this.clueCount = result.getValue();
+                this.clueType = result.getKey();
             }
         }
     }
@@ -120,14 +118,14 @@ public class ClueNotifier extends BaseNotifier {
                 .replacementBoundary("%")
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
                 .replacement("%CLUE%", Replacements.ofWiki(clueType, "Clue scroll (" + clueType + ")"))
-                .replacement("%COUNT%", Replacements.ofText(clueCount))
+                .replacement("%COUNT%", Replacements.ofText(String.valueOf(clueCount)))
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalPrice.get())))
                 .replacement("%LOOT%", lootMessage.build())
                 .build();
             createMessage(screenshot,
                 NotificationBody.builder()
                     .text(notifyMessage)
-                    .extra(new ClueNotificationData(clueType, Integer.parseInt(clueCount), itemStacks))
+                    .extra(new ClueNotificationData(clueType, clueCount, itemStacks))
                     .type(NotificationType.CLUE)
                     .embeds(embeds)
                     .build()
@@ -153,8 +151,18 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     public void reset() {
-        this.clueCount = "";
+        this.clueCount = -1;
         this.clueType = "";
         this.badTicks.set(0);
     }
+
+    @Nullable
+    public static Map.Entry<String, Integer> parse(String gameMessage) {
+        Matcher clueMatcher = CLUE_SCROLL_REGEX.matcher(gameMessage);
+        if (!clueMatcher.find()) return null;
+        String tier = clueMatcher.group("scrollType");
+        String count = clueMatcher.group("scrollCount");
+        return Map.entry(tier, Integer.parseInt(count));
+    }
+
 }

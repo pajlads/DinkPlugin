@@ -133,11 +133,16 @@ JSON for Collection Notifications:
     "itemId": 10372,
     "price": 500812,
     "completedEntries": 420,
-    "totalEntries": 1443
+    "totalEntries": 1443,
+    "dropperName": "Clue Scroll (Hard)",
+    "dropperType": "EVENT",
+    "dropperKillCount": 1500
   },
   "type": "COLLECTION"
 }
 ```
+
+Note: `dropperName`/`dropperType`/`dropperKillCount` may not be present for all collection log notifications.
 
 ### Level
 
