@@ -208,6 +208,7 @@ public class LootNotifier extends BaseNotifier {
                     overrideUrl = config.pkWebhook();
                 }
             }
+            Double rarity = sufficientlyRare ? rarest.getValue() : null;
             SerializedItemStack keyItem = sufficientlyRare ? rarest.getKey() : max;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Template notifyMessage = Template.builder()
@@ -222,7 +223,7 @@ public class LootNotifier extends BaseNotifier {
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
-                    .extra(new LootNotificationData(serializedItems, dropper, type, kc))
+                    .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity))
                     .type(NotificationType.LOOT)
                     .thumbnailUrl(ItemUtils.getItemImageUrl(keyItem.getId()))
                     .build()

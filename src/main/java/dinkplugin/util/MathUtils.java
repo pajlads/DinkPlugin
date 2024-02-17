@@ -2,10 +2,20 @@ package dinkplugin.util;
 
 import lombok.experimental.UtilityClass;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+
 @UtilityClass
 public class MathUtils {
     public static final double EPSILON = 0.00001;
     private static final int[] FACTORIALS;
+
+    public String formatPercentage(double d, int sigFigs) {
+        return BigDecimal.valueOf(d * 100)
+            .round(new MathContext(sigFigs))
+            .stripTrailingZeros()
+            .toPlainString() + '%';
+    }
 
     public double binomialProbability(double p, int nTrials, int kSuccess) {
         // https://en.wikipedia.org/wiki/Binomial_distribution#Probability_mass_function
