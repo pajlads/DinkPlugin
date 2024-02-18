@@ -3,7 +3,6 @@ package dinkplugin.notifiers.data;
 import dinkplugin.message.Field;
 import dinkplugin.util.Drop;
 import dinkplugin.util.ItemUtils;
-import dinkplugin.util.MathUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.runelite.client.util.QuantityFormatter;
@@ -44,12 +43,7 @@ public class LootNotificationData extends NotificationData {
             )
         );
         if (rarestProbability != null) {
-            fields.add(
-                new Field(
-                    "Item Rarity",
-                    Field.formatBlock("", MathUtils.formatPercentage(rarestProbability, 3))
-                )
-            );
+            fields.add(new Field("Item Rarity", Field.formatProbability(rarestProbability)));
         }
         return fields;
     }
