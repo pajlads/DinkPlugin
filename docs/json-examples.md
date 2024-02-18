@@ -190,7 +190,8 @@ JSON for Loot Notifications:
     ],
     "source": "Giant rat",
     "category": "NPC",
-    "killCount": 60
+    "killCount": 60,
+    "rarestProbability": 0.001
   },
   "type": "LOOT"
 }
