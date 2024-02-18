@@ -23,7 +23,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 - [Death](#death): Send a webhook message upon dying (with special configuration for PK deaths)
 - [Collection](#collection): Send a webhook message upon adding an item to your collection log
 - [Level](#level): Send a webhook message upon leveling up a skill (with support for virtual levels)
-- [Loot](#loot): Send a webhook message upon receiving valuable loot
+- [Loot](#loot): Send a webhook message upon receiving valuable loot (with item rarity for monster drops)
 - [Slayer](#slayer): Send a webhook message upon completing a slayer task (with a customizable point threshold)
 - [Quests](#quests): Send a webhook message upon completing a quest
 - [Clue Scrolls](#clue-scrolls): Send a webhook message upon solving a clue scroll (with customizable tier/value thresholds)
@@ -276,3 +276,6 @@ On login, Dink can submit a character summary containing data that spans multipl
 ## Credits
 
 This plugin uses code from [Universal Discord Notifier](https://github.com/MidgetJake/UniversalDiscordNotifier).
+
+Item rarity data is sourced from the OSRS Wiki (licensed under [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/)),
+which was conveniently parsed by [Flipping Utilities](https://github.com/Flipping-Utilities/parsed-osrs) (and transformed by pajlads).
