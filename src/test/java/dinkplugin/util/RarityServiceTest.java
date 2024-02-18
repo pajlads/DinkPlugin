@@ -8,7 +8,6 @@ import net.runelite.api.ItemID;
 import net.runelite.client.game.ItemManager;
 import net.runelite.http.api.RuneLiteAPI;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -46,7 +45,6 @@ class RarityServiceTest extends MockedTestBase {
 
         // default item mock
         Mockito.doAnswer(invocation -> {
-            int id = invocation.getArgument(0);
             ItemComposition comp = mock(ItemComposition.class);
             when(comp.getMembersName()).thenReturn("?");
             when(comp.getNote()).thenReturn(-1);
@@ -106,7 +104,7 @@ class RarityServiceTest extends MockedTestBase {
     }
 
     @Test
-    @Disabled("[BUG] doesn't distinguish by combat level: https://oldschool.runescape.wiki/w/Goblin#Drop_table_2")
+    @DisplayName("Ensure drops are de-duplicated across combat levels")
     void testCombatLevel() {
         test("Goblin", ItemID.GOBLIN_SKULL, 1, 1.0 / 4);
     }
