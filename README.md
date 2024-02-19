@@ -278,4 +278,4 @@ On login, Dink can submit a character summary containing data that spans multipl
 This plugin uses code from [Universal Discord Notifier](https://github.com/MidgetJake/UniversalDiscordNotifier).
 
 Item rarity data is sourced from the OSRS Wiki (licensed under [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/)),
-which was conveniently parsed by [Flipping Utilities](https://github.com/Flipping-Utilities/parsed-osrs) (and transformed by pajlads).
+which was conveniently parsed by [Flipping Utilities](https://github.com/Flipping-Utilities/parsed-osrs) (and [transformed](https://github.com/pajlads/DinkPlugin/blob/master/src/test/java/dinkplugin/RarityCalculator.java) by pajlads).
