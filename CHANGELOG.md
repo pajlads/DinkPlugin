@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Major: Add item rarity to NPC loot notifications. (#425)
 - Minor: Include relevant kill count in collection log notifications. (#424)
 - Minor: Obtain kill count from chat commands plugin for loot notifications. (#392)
 - Minor: Add chat command to obtain the player's dink hash. (#408)

@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,11 +18,16 @@ public class LootNotificationData extends NotificationData {
     List<SerializedItemStack> items;
     String source;
     LootRecordType category;
+
+    @Nullable
     Integer killCount;
+
+    @Nullable
+    Double rarestProbability;
 
     @Override
     public List<Field> getFields() {
-        List<Field> fields = new ArrayList<>(2);
+        List<Field> fields = new ArrayList<>(3);
         if (killCount != null) {
             fields.add(
                 new Field(
@@ -36,6 +42,9 @@ public class LootNotificationData extends NotificationData {
                 ItemUtils.formatGold(items.stream().mapToLong(SerializedItemStack::getTotalPrice).sum())
             )
         );
+        if (rarestProbability != null) {
+            fields.add(new Field("Item Rarity", Field.formatProbability(rarestProbability)));
+        }
         return fields;
     }
 }

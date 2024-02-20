@@ -50,7 +50,15 @@ tasks.withType<JavaCompile> {
 }
 
 tasks.test {
-    useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags("generator")
+    }
+}
+
+tasks.register(name = "generateResources", type = Test::class) {
+    useJUnitPlatform {
+        includeTags("generator")
+    }
 }
 
 tasks.register(name = "shadowJar", type = Jar::class) {
