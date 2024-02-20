@@ -113,6 +113,10 @@ class LootNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyNpcRarity() {
+        // update config mocks
+        when(config.minLootValue()).thenReturn(LARRAN_PRICE + 1);
+        when(config.lootRarityThreshold()).thenReturn(100);
+
         // prepare mocks
         NPC npc = mock(NPC.class);
         String name = "Ice spider";
@@ -131,7 +135,7 @@ class LootNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(
                     Template.builder()
-                        .template(String.format("%s has looted: 1 x {{key}} (%s) from %s for %s gp", PLAYER_NAME, value, name, value))
+                        .template(String.format("%s has looted: Various items including: 1 x {{key}} from %s for %s gp", PLAYER_NAME, name, value))
                         .replacement("{{key}}", Replacements.ofWiki("Larran's key"))
                         .build()
                 )
@@ -140,6 +144,26 @@ class LootNotifierTest extends MockedNotifierTest {
                 .thumbnailUrl(ItemUtils.getItemImageUrl(ItemID.LARRANS_KEY))
                 .build()
         );
+    }
+
+    @Test
+    void testIgnoreNpcRarity() {
+        // update config mocks
+        when(config.minLootValue()).thenReturn(LARRAN_PRICE + 1);
+        when(config.lootRarityThreshold()).thenReturn(300);
+
+        // prepare mocks
+        NPC npc = mock(NPC.class);
+        String name = "Ice spider";
+        when(npc.getName()).thenReturn(name);
+
+        // fire event
+        double rarity = 1.0 / 208;
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1, null)));
+        plugin.onNpcLootReceived(event);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test
