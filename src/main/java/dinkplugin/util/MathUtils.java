@@ -17,6 +17,11 @@ public class MathUtils {
             .toPlainString() + '%';
     }
 
+    public double cumulativeGeometric(double p, int kTrials) {
+        assert kTrials > 0;
+        return 1 - Math.pow(1 - p, kTrials); // https://en.wikipedia.org/wiki/Geometric_distribution
+    }
+
     public double binomialProbability(double p, int nTrials, int kSuccess) {
         // https://en.wikipedia.org/wiki/Binomial_distribution#Probability_mass_function
         return binomialCoefficient(nTrials, kSuccess) * Math.pow(p, kSuccess) * Math.pow(1 - p, nTrials - kSuccess);

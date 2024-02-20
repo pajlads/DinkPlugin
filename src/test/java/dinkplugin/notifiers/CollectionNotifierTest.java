@@ -79,10 +79,11 @@ class CollectionNotifierTest extends MockedNotifierTest {
         String item = "Seercull";
         int price = 23_000;
         when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
-        when(itemManager.getItemPrice(ItemID.SEERCULL)).thenReturn(price);
+        mockItem(ItemID.SEERCULL, price, item);
 
         // prepare kc
         int kc = 150;
+        double rarity = 1.0 / 128;
         String source = "Dagannoth Supreme";
         NPC npc = mock(NPC.class);
         when(npc.getName()).thenReturn(source);
@@ -104,7 +105,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, source, LootRecordType.NPC, kc))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -144,7 +145,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, null, null, null))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, null, null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -179,7 +180,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, null, null, null, null, null))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, null, null, null, null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -227,7 +228,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item2))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item2, ItemID.SEERS_RING, (long) price2, 101, TOTAL_ENTRIES, null, null, null))
+                .extra(new CollectionNotificationData(item2, ItemID.SEERS_RING, (long) price2, 101, TOTAL_ENTRIES, null, null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
