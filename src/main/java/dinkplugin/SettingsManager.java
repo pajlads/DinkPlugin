@@ -265,6 +265,20 @@ public class SettingsManager {
             clientThread.invoke(() -> checkVarbits(id, client.getVarbitValue(id)));
     }
 
+    boolean hasModifiedConfig() {
+        for (String webhookConfigKey : webhookConfigKeys) {
+            String webhookUrl = configManager.getConfiguration(SettingsManager.CONFIG_GROUP, webhookConfigKey);
+            if (!webhookUrl.isEmpty()) {
+                return true;
+            }
+        }
+        return config.notifyAchievementDiary() || config.notifyClue() || config.notifyCollectionLog() ||
+            config.notifyCombatTask() || config.notifyDeath() || config.notifyGamble() ||
+            config.notifyGrandExchange() || config.notifyGroupStorage() || config.notifyKillCount() ||
+            config.notifyLeagues() || config.notifyLevel() || config.notifyLoot() || config.notifyPet() ||
+            config.notifyPk() || config.notifyQuest() || config.notifySlayer() || config.notifySpeedrun() ||
+            config.notifyTrades();
+    }
     private boolean checkVarbits(int id, int value) {
         if (client.getGameState() != GameState.LOGGED_IN)
             return false; // try again on next tick

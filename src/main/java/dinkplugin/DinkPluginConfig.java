@@ -183,6 +183,16 @@ public interface DinkPluginConfig extends Config {
     String advancedSection = "Advanced";
 
     @ConfigItem(
+        keyName = VersionManager.VERSION_CONFIG_KEY,
+        name = "Plugin Version",
+        description = "The latest dink version used by the player that has a notable changelog entry",
+        hidden = true
+    )
+    default String pluginVersion() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "maxRetries",
         name = "Webhook Max Retries",
         description = "The maximum number of retry attempts for sending a webhook message. Negative implies no attempts",
