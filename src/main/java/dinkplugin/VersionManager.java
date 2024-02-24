@@ -12,17 +12,22 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Comparator;
 import java.util.NavigableMap;
+import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class VersionManager {
     public static final String VERSION_CONFIG_KEY = "pluginVersion";
-
+    private static final long NOTIFICATION_DELAY_SECONDS = 3;
     private static final NavigableMap<Version, String> VERSIONS = new TreeMap<>(
         Comparator.comparingInt(Version::getMajor)
             .thenComparingInt(Version::getMinor)
             .thenComparingInt(Version::getPatch)
     );
+
+    private final Version latest = VERSIONS.lastKey();
 
     @Inject
     private DinkPlugin plugin;
@@ -36,6 +41,9 @@ public class VersionManager {
     @Inject
     private SettingsManager settingsManager;
 
+    @Inject
+    private ScheduledExecutorService executor;
+
     void onStart() {
         if (config.pluginVersion().isEmpty()) {
             if (settingsManager.hasModifiedConfig()) {
@@ -43,7 +51,7 @@ public class VersionManager {
                 setStoredVersion("1.8.4");
             } else {
                 // first time launching Dink; no chat message necessary
-                setStoredVersion(getLatestVersion());
+                setStoredVersion(latest.toString());
             }
         }
     }
@@ -55,39 +63,34 @@ public class VersionManager {
         }
 
         Version storedVersion = Version.of(config.pluginVersion());
-        if (storedVersion == null) {
-            // this branch shouldn't be hit due to onStart()
+        if (storedVersion == null || storedVersion.equals(latest)) {
             return;
         }
 
-        NavigableMap<Version, String> latestUpdates = VERSIONS.tailMap(storedVersion, false);
-        if (latestUpdates.isEmpty()) {
-            return;
-        }
-
-        Version latest = latestUpdates.lastKey();
         setStoredVersion(latest.toString());
-        String displayVersion = latest.getPatch() == 0
-            ? String.format("%d.%d.X", latest.getMajor(), latest.getMinor()) // avoids needing changelog for each patch
-            : latest.toString();
-        plugin.addChatMessage(
-            "Updated to v" + displayVersion,
-            Utils.GREEN,
-            String.join("; ", latestUpdates.values())
-        );
+        executor.schedule(() -> {
+            SortedMap<Version, String> latestUpdates = VERSIONS.tailMap(storedVersion, false);
+            if (latestUpdates.isEmpty()) {
+                return;
+            }
+            String displayVersion = latest.getPatch() == 0
+                ? String.format("%d.%d.X", latest.getMajor(), latest.getMinor()) // avoids needing changelog for each patch
+                : latest.toString();
+            plugin.addChatMessage(
+                "Updated to v" + displayVersion,
+                Utils.GREEN,
+                String.join("; ", latestUpdates.values())
+            );
+        }, NOTIFICATION_DELAY_SECONDS, TimeUnit.SECONDS);
     }
 
     void onProfileChange() {
         // if profile changes, set pluginVersion to latest so users don't see old changelogs on login
-        setStoredVersion(getLatestVersion());
+        setStoredVersion(latest.toString());
     }
 
     private void setStoredVersion(String version) {
         configManager.setConfiguration(SettingsManager.CONFIG_GROUP, VERSION_CONFIG_KEY, version);
-    }
-
-    private static String getLatestVersion() {
-        return VERSIONS.lastKey().toString(); // technically: latest version with a notable changelog
     }
 
     private static void register(String version, String changelog) {
