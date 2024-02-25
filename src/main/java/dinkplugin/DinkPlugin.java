@@ -47,6 +47,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
+import net.runelite.client.events.ProfileChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
@@ -69,6 +70,7 @@ public class DinkPlugin extends Plugin {
     private @Inject ChatMessageManager chatManager;
 
     private @Inject SettingsManager settingsManager;
+    private @Inject VersionManager versionManager;
 
     private @Inject KillCountService killCountService;
 
@@ -97,6 +99,7 @@ public class DinkPlugin extends Plugin {
     protected void startUp() {
         log.debug("Started up Dink");
         settingsManager.init();
+        versionManager.onStart();
         lootNotifier.init();
         deathNotifier.init();
     }
@@ -168,6 +171,7 @@ public class DinkPlugin extends Plugin {
             return;
         }
 
+        versionManager.onGameState(previousState, newState);
         settingsManager.onGameState(previousState, newState);
         collectionNotifier.onGameState(newState);
         levelNotifier.onGameStateChanged(gameStateChanged);
@@ -277,6 +281,11 @@ public class DinkPlugin extends Plugin {
     }
 
     @Subscribe
+    public void onProfileChanged(ProfileChanged event) {
+        versionManager.onProfileChange();
+    }
+
+    @Subscribe
     public void onLootReceived(LootReceived lootReceived) {
         killCountService.onLoot(lootReceived);
         lootNotifier.onLootReceived(lootReceived);
@@ -313,7 +322,7 @@ public class DinkPlugin extends Plugin {
         addChatMessage("Warning", Utils.RED, message);
     }
 
-    private void addChatMessage(String category, Color color, String message) {
+    void addChatMessage(String category, Color color, String message) {
         String formatted = String.format("[%s] %s: %s",
             ColorUtil.wrapWithColorTag(getName(), Utils.PINK),
             category,

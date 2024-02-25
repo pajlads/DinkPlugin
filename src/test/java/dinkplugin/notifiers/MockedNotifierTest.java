@@ -120,6 +120,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(configDescriptor.getItems()).thenReturn(Collections.emptyList());
 
         // init config mocks
+        when(config.pluginVersion()).thenReturn("");
         when(config.primaryWebhook()).thenReturn(PRIMARY_WEBHOOK_URL);
         when(config.maxRetries()).thenReturn(0);
         when(config.baseRetryDelay()).thenReturn(2000);
