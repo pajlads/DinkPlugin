@@ -97,7 +97,7 @@ class RarityCalculator {
 
         public Transformed transform() {
             if (itemId == null || rarity == null || quantity == null) return null;
-            if (rarity.equals("Always") || rarity.equals("Varies") || rarity.equals("Random") || rarity.equals("Once")) return null;
+            if (rarity.equals("Always") || rarity.equals("Varies") || rarity.equals("Random") || rarity.equals("Once") || rarity.equals("Unknown")) return null;
             if (quantity.equals("Unknown") || quantity.equals("N/A")) return null;
 
             int item = itemId == ItemID.COINS_995 || itemId == ItemID.COINS_6964 || itemId == ItemID.COINS_8890 ? ItemID.COINS : itemId;
