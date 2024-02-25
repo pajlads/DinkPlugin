@@ -866,11 +866,25 @@ public interface DinkPluginConfig extends Config {
         name = "Item Denylist",
         description = "Never fire notifications for these items, despite value settings.<br/>" +
             "Place one item name per line (case-insensitive; asterisks are wildcards)",
-        position = 38,
+        position = 37,
         section = lootSection
     )
     default String lootItemDenylist() {
         return "";
+    }
+
+    @ConfigItem(
+        keyName = "lootRarityThreshold",
+        name = "Rarity Override (1 in X)",
+        description = "Fires notifications for sufficiently rare drops, despite the 'Min Loot value' threshold.<br/>" +
+            "Corresponds to a 1 in X chance. For example, 100 notifies for items with 1% drop rate or rarer.<br/>" +
+            "Has no effect when set to zero.<br/>" +
+            "Currently only applies to NPC drops",
+        position = 38,
+        section = lootSection
+    )
+    default int lootRarityThreshold() {
+        return 0;
     }
 
     @ConfigItem(

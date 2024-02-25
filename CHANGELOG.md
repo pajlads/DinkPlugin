@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Major: Add item rarity to monster loot and collection notifications. (#425, #427)
+- Minor: Allow loot notifications for rare items below the min value threshold. (#426)
 - Minor: Include relevant kill count in collection log notifications. (#424)
 - Minor: Obtain kill count from chat commands plugin for loot notifications. (#392)
 - Minor: Add chat command to obtain the player's dink hash. (#408)
