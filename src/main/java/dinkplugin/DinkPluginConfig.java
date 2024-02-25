@@ -877,7 +877,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "lootRarityThreshold",
         name = "Rarity Override (1 in X)",
         description = "Fires notifications for sufficiently rare drops, despite the 'Min Loot value' threshold.<br/>" +
-            "Corresponds to a 1 in X chance. For example, 100 notifies for items with 1% drop rate (or rarer).<br/>" +
+            "Corresponds to a 1 in X chance. For example, 100 notifies for items with 1% drop rate or rarer.<br/>" +
             "Has no effect when set to zero.<br/>" +
             "Currently only applies to NPC drops",
         position = 38,
