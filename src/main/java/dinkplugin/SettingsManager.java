@@ -279,6 +279,7 @@ public class SettingsManager {
             config.notifyPk() || config.notifyQuest() || config.notifySlayer() || config.notifySpeedrun() ||
             config.notifyTrades();
     }
+
     private boolean checkVarbits(int id, int value) {
         if (client.getGameState() != GameState.LOGGED_IN)
             return false; // try again on next tick
