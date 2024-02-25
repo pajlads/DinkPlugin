@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import com.google.common.math.DoubleMath;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -12,6 +13,7 @@ import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
+import dinkplugin.util.MathUtils;
 import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
@@ -175,20 +177,24 @@ public class LootNotifier extends BaseNotifier {
         Map.Entry<SerializedItemStack, Double> rarest = getRarestDropRate(items, dropper, type);
 
         Evaluable lootMsg;
-        if (!sendMessage && totalStackValue >= minValue && max != null && "Loot Chest".equalsIgnoreCase(dropper)) {
-            // Special case: PK loot keys should trigger notification if total value exceeds configured minimum even
-            // if no single item itself would exceed the min value config - github.com/pajlads/DinkPlugin/issues/403
-            sendMessage = true;
-
-            JoiningReplacement msg = lootMessage.build();
-            if (msg.getComponents().isEmpty()) {
-                // ensure %LOOT% isn't empty
+        if (!sendMessage) {
+            if (sufficientlyRare(rarest)) {
+                // allow notifications for rare drops, even if below configured min loot value
+                sendMessage = true;
+                lootMsg = Replacements.ofMultiple(" ",
+                    Replacements.ofText("Various items including:"),
+                    ItemUtils.templateStack(rarest.getKey(), false)
+                );
+            } else if (totalStackValue >= minValue && max != null && "Loot Chest".equalsIgnoreCase(dropper)) {
+                // Special case: PK loot keys should trigger notification if total value exceeds configured minimum even
+                // if no single item itself would exceed the min value config - github.com/pajlads/DinkPlugin/issues/403
+                sendMessage = true;
                 lootMsg = Replacements.ofMultiple(" ",
                     Replacements.ofText("Various items including:"),
                     ItemUtils.templateStack(max, true)
                 );
             } else {
-                lootMsg = msg;
+                lootMsg = null;
             }
         } else {
             lootMsg = lootMessage.build();
@@ -201,6 +207,7 @@ public class LootNotifier extends BaseNotifier {
                     overrideUrl = config.pkWebhook();
                 }
             }
+            SerializedItemStack keyItem = rarest != null ? rarest.getKey() : max;
             Double rarity = rarest != null ? rarest.getValue() : null;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Template notifyMessage = Template.builder()
@@ -217,7 +224,7 @@ public class LootNotifier extends BaseNotifier {
                     .embeds(embeds)
                     .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity))
                     .type(NotificationType.LOOT)
-                    .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
+                    .thumbnailUrl(ItemUtils.getItemImageUrl(keyItem.getId()))
                     .build()
             );
         }
@@ -240,6 +247,14 @@ public class LootNotifier extends BaseNotifier {
                 return Map.entry(stack, pair.getValue());
             })
             .orElse(null);
+    }
+
+    private boolean sufficientlyRare(@Nullable Map.Entry<SerializedItemStack, Double> rarest) {
+        if (rarest == null) return false;
+        int configRareDenominator = config.lootRarityThreshold();
+        if (configRareDenominator <= 0) return false;
+        double rarityThreshold = 1.0 / configRareDenominator;
+        return DoubleMath.fuzzyCompare(rarest.getValue(), rarityThreshold, MathUtils.EPSILON) <= 0;
     }
 
     private static boolean matches(Collection<Pattern> regexps, String input) {
