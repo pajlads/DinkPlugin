@@ -210,13 +210,16 @@ public class LootNotifier extends BaseNotifier {
             SerializedItemStack keyItem = rarest != null ? rarest.getKey() : max;
             Double rarity = rarest != null ? rarest.getValue() : null;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
+            Evaluable source = type == LootRecordType.PLAYER
+                ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))
+                : Replacements.ofWiki(dropper);
             Template notifyMessage = Template.builder()
                 .template(config.lootNotifyMessage())
                 .replacementBoundary("%")
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
                 .replacement("%LOOT%", lootMsg)
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))
-                .replacement("%SOURCE%", Replacements.ofText(dropper))
+                .replacement("%SOURCE%", source)
                 .build();
             createMessage(overrideUrl, screenshot,
                 NotificationBody.builder()
