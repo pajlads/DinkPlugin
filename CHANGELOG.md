@@ -7,6 +7,7 @@
 - Minor: Include relevant kill count in collection log notifications. (#424)
 - Minor: Obtain kill count from chat commands plugin for loot notifications. (#392)
 - Minor: Add chat command to obtain the player's dink hash. (#408)
+- Bugfix: Include estimated kills without drops in KC for loot and collection notifications. (#432)
 - Dev: Refactor kill count tracking from `LootNotifier` to `KillCountService`. (#392)
 
 ## 1.8.4
