@@ -29,6 +29,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 @Tag("generator")
 class RarityCalculator {
@@ -41,6 +42,8 @@ class RarityCalculator {
         .thenComparing(Transformed::getQuantity, Comparator.nullsLast(Comparator.naturalOrder()))
         .thenComparing(Transformed::getQuantMin, Comparator.nullsLast(Comparator.naturalOrder()))
         .thenComparing(Transformed::getQuantMax, Comparator.nullsLast(Comparator.naturalOrder()));
+
+    private static final Pattern PARENTHETICAL_SUFFIX = Pattern.compile("\\s\\(.+\\)$");
 
     private final Gson gson = new GsonBuilder().create();
     private final OkHttpClient httpClient = new OkHttpClient();
@@ -60,7 +63,7 @@ class RarityCalculator {
             Collection<Transformed> drops = npc.getTransformed();
             if (drops.isEmpty()) continue;
 
-            String name = Text.removeTags(npc.getName()).replace("&#039;", "'");
+            String name = PARENTHETICAL_SUFFIX.matcher(Text.removeTags(npc.getName()).replace("&#039;", "'")).replaceFirst("");
             map.putIfAbsent(name, drops);
         }
 
