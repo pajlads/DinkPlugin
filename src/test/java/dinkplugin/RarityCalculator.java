@@ -91,11 +91,16 @@ class RarityCalculator {
 
     @Data
     static class Drop {
+        private String name;
         private String quantity;
         private String rarity;
         private Integer itemId;
 
         public Transformed transform() {
+            if ("Nothing".equalsIgnoreCase(name)) {
+                this.itemId = -1;
+                this.quantity = "0";
+            }
             if (itemId == null || rarity == null || quantity == null) return null;
             if (rarity.equals("Always") || rarity.equals("Varies") || rarity.equals("Random") || rarity.equals("Once") || rarity.equals("Unknown")) return null;
             if (quantity.equals("Unknown") || quantity.equals("N/A")) return null;
@@ -140,7 +145,8 @@ class RarityCalculator {
                     denom = BigDecimal.valueOf(2000);
                     break;
                 default:
-                    String[] parts = StringUtils.split(cleanRarity, '/');
+                    String fraction = cleanRarity.endsWith("%") ? cleanRarity.substring(0, cleanRarity.length() - 1) + "/100" : cleanRarity;
+                    String[] parts = StringUtils.split(fraction, '/');
                     if (parts.length != 2) throw new IllegalArgumentException(rarity);
                     double d = Double.parseDouble(parts[1]) / Double.parseDouble(parts[0]);
                     denom = BigDecimal.valueOf(d).setScale(2, RoundingMode.HALF_EVEN);
