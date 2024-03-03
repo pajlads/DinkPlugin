@@ -242,7 +242,15 @@ class RarityServiceTest extends MockedTestBase {
     @Test
     @DisplayName("Ensure accurate drop rate for 'Nothing'")
     void testNothing() {
-        test("Afflicted", -1, 0, 1.0 / 16);
+        test("Air elemental", -1, 0, 1 / 128.2);
+    }
+
+    @Test
+    @DisplayName("Ignore 'Nothing' if an 'Always' drop is present")
+    void testFakeNothing() {
+        // bones are always dropped, so loot tracker kc is correct, even though wiki includes a 'Nothing' entry
+        OptionalDouble rarity = service.getRarity("Afflicted", -1, 0);
+        assertFalse(rarity.isPresent());
     }
 
     @Test
