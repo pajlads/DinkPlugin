@@ -9,6 +9,7 @@ import dinkplugin.util.Drop;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
+import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -21,11 +22,13 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
+import net.runelite.http.api.loottracker.LootRecordType;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.OptionalDouble;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -65,6 +68,9 @@ public class CollectionNotifier extends BaseNotifier {
 
     @Inject
     private KillCountService killCountService;
+
+    @Inject
+    private RarityService rarityService;
 
     @Override
     public boolean isEnabled() {
@@ -159,6 +165,8 @@ public class CollectionNotifier extends BaseNotifier {
         Long price = itemId != null ? ItemUtils.getPrice(itemManager, itemId) : null;
         Drop loot = itemId != null ? getLootSource(itemId) : null;
         Integer killCount = loot != null ? killCountService.getKillCount(loot.getCategory(), loot.getSource()) : null;
+        OptionalDouble rarity = loot != null && loot.getCategory() == LootRecordType.NPC ?
+            rarityService.getRarity(loot.getSource(), itemId, 1) : OptionalDouble.empty();
         CollectionNotificationData extra = new CollectionNotificationData(
             itemName,
             itemId,
@@ -167,7 +175,8 @@ public class CollectionNotifier extends BaseNotifier {
             varpValid ? total : null,
             loot != null ? loot.getSource() : null,
             loot != null ? loot.getCategory() : null,
-            killCount
+            killCount,
+            rarity.isPresent() ? rarity.getAsDouble() : null
         );
 
         createMessage(config.collectionSendImage(), NotificationBody.builder()
