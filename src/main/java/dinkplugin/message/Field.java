@@ -25,6 +25,17 @@ public class Field {
         this(name, value, true);
     }
 
+    public static Field ofLuck(double probability, int kTrials) {
+        return ofLuck(MathUtils.cumulativeGeometric(probability, kTrials));
+    }
+
+    public static Field ofLuck(double geomCdf) {
+        String percentile = geomCdf < 0.5
+            ? "Top " + MathUtils.formatPercentage(geomCdf, 2) + " (Lucky)"
+            : "Bottom " + MathUtils.formatPercentage(1 - geomCdf, 2) + " (Unlucky)";
+        return new Field("Luck", Field.formatBlock("", percentile));
+    }
+
     public static String formatBlock(String codeBlockLanguage, String content) {
         return String.format("```%s\n%s\n```", StringUtils.defaultString(codeBlockLanguage), content);
     }

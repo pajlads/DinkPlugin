@@ -36,6 +36,8 @@ public class KillCountService {
 
     private static final String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
     private static final String RL_LOOT_PLUGIN_NAME = LootTrackerPlugin.class.getSimpleName().toLowerCase();
+    private static final String RIFT_PREFIX = "Amount of rifts you have closed: ";
+    private static final String HERBIBOAR_PREFIX = "Your herbiboar harvest count is: ";
 
     @Inject
     private ConfigManager configManager;
@@ -109,6 +111,20 @@ public class KillCountService {
             String tier = Utils.ucFirst(clue.getKey());
             int count = clue.getValue() - 1; // decremented since onLoot will increment
             killCounts.put("Clue Scroll (" + tier + ")", count);
+            return;
+        }
+
+        // guardians of the rift count (for pet tracking)
+        if (message.startsWith(RIFT_PREFIX)) {
+            int riftCount = Integer.parseInt(message.substring(RIFT_PREFIX.length(), message.length() - 1));
+            killCounts.put("Guardians of the Rift", riftCount);
+            return;
+        }
+
+        // herbiboar count (for pet tracking)
+        if (message.startsWith(HERBIBOAR_PREFIX)) {
+            int harvestCount = Integer.parseInt(message.substring(HERBIBOAR_PREFIX.length(), message.length() - 1));
+            killCounts.put("Herbiboar", harvestCount);
             return;
         }
 

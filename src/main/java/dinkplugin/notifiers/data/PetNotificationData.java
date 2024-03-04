@@ -41,18 +41,41 @@ public class PetNotificationData extends NotificationData {
     @Nullable
     Boolean previouslyOwned;
 
+    /**
+     * The approximate drop rate of the pet.
+     * <p>
+     * This value is least accurate for skilling pets and raids.
+     */
+    @Nullable
+    Double rarity;
+
+    /**
+     * The approximate number of actions performed that would roll a drop table containing the pet.
+     * <p>
+     * This value is least accurate for skilling pets and pets dropped by multiple NPCs.
+     */
+    @Nullable
+    Integer estimatedActions;
+
+    @Nullable
+    transient Double luck;
+
     @Override
     public List<Field> getFields() {
         if (petName == null || petName.isEmpty())
             return super.getFields();
 
-        List<Field> fields = new ArrayList<>(3);
+        List<Field> fields = new ArrayList<>(5);
         fields.add(new Field("Name", Field.formatBlock("", petName)));
         String status = getStatus();
         if (status != null)
             fields.add(new Field("Status", Field.formatBlock("", status)));
         if (milestone != null)
             fields.add(new Field("Milestone", Field.formatBlock("", milestone)));
+        if (rarity != null)
+            fields.add(new Field("Rarity", Field.formatProbability(rarity)));
+        if (luck != null)
+            fields.add(Field.ofLuck(luck));
         return fields;
     }
 
