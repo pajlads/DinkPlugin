@@ -167,12 +167,12 @@ public interface DinkPluginConfig extends Config {
     String tradeSection = "Player Trades";
 
     @ConfigSection(
-        name = "System Chat Messages",
+        name = "Custom Chat Messages",
         description = "Settings for notifying when you receive specific messages from the game",
         position = 170,
         closedByDefault = true
     )
-    String chatSection = "System Chat Messages";
+    String chatSection = "Custom Chat Messages";
 
     /*
     @ConfigSection(
@@ -603,7 +603,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "chatWebhook",
         name = "Chat Webhook Override",
-        description = "If non-empty, Chat system messages are sent to this URL, instead of the primary URL",
+        description = "If non-empty, filtered chat messages are sent to this URL, instead of the primary URL",
         position = -2,
         section = webhookSection
     )
@@ -1842,7 +1842,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "notifyChat",
         name = "Enable Chat Notifications",
-        description = "Enable notifications upon receiving specific system chat messages",
+        description = "Enable notifications upon receiving specific chat messages",
         position = 170,
         section = chatSection
     )
@@ -1875,7 +1875,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = ChatNotifier.PATTERNS_CONFIG_KEY,
         name = "Message Filters",
-        description = "The chat notification patterns that should trigger notifications.<br/>" +
+        description = "The chat message patterns that should trigger notifications.<br/>" +
             "Place one pattern per line (case-insensitive; asterisks are wildcards)",
         position = 173,
         section = chatSection
@@ -1893,12 +1893,12 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %MESSAGE% to insert the system chat message",
+            "Use %MESSAGE% to insert the chat message",
         position = 174,
         section = chatSection
     )
     default String chatNotifyMessage() {
-        return "%USERNAME% received a chat notification:\n\n```\n%MESSAGE%\n```";
+        return "%USERNAME% received a chat message:\n\n```\n%MESSAGE%\n```";
     }
 
     @ConfigItem(

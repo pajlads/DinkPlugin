@@ -6,14 +6,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.runelite.api.ChatMessageType.*;
+
 /**
  * A condensed version of {@link ChatMessageType} for more user-friendly configuration.
  */
 public enum ChatNotificationType {
-    GAME("Game Engine", ChatMessageType.GAMEMESSAGE, ChatMessageType.ENGINE, ChatMessageType.MESBOX),
-    CLAN("Clan Notifications", ChatMessageType.CLAN_MESSAGE, ChatMessageType.CLAN_GIM_MESSAGE, ChatMessageType.CLAN_GUEST_MESSAGE, ChatMessageType.FRIENDSCHATNOTIFICATION),
-    TRADE("Trades and Duels", ChatMessageType.TRADE, ChatMessageType.TRADE_SENT, ChatMessageType.TRADEREQ,
-        ChatMessageType.CHALREQ_TRADE, ChatMessageType.CHALREQ_FRIENDSCHAT, ChatMessageType.CHALREQ_CLANCHAT);
+    GAME("Game Engine", GAMEMESSAGE, ENGINE, MESBOX, LOGINLOGOUTNOTIFICATION, PLAYERRELATED),
+    CLAN("Clan Notifications", CLAN_MESSAGE, CLAN_GIM_MESSAGE, CLAN_GUEST_MESSAGE, FRIENDSCHATNOTIFICATION),
+    TRADES("Trades and Duels", TRADE, TRADE_SENT, TRADEREQ, CHALREQ_TRADE, CHALREQ_FRIENDSCHAT, CHALREQ_CLANCHAT),
+    CHAT("User Messages (Discouraged)", PUBLICCHAT, PRIVATECHAT, PRIVATECHATOUT, MODCHAT, MODPRIVATECHAT, FRIENDSCHAT, CLAN_CHAT, CLAN_GUEST_CHAT, AUTOTYPER, MODAUTOTYPER);
 
     public static final Map<ChatMessageType, ChatNotificationType> MAPPINGS;
 
