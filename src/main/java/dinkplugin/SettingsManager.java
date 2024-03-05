@@ -268,7 +268,7 @@ public class SettingsManager {
     boolean hasModifiedConfig() {
         for (String webhookConfigKey : webhookConfigKeys) {
             String webhookUrl = configManager.getConfiguration(SettingsManager.CONFIG_GROUP, webhookConfigKey);
-            if (!webhookUrl.isEmpty()) {
+            if (webhookUrl != null && !webhookUrl.isEmpty()) {
                 return true;
             }
         }
