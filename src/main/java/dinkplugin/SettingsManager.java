@@ -126,6 +126,11 @@ public class SettingsManager {
             .addAll(keysBySection.getOrDefault(DinkPluginConfig.webhookSection.toLowerCase().replace(" ", ""), Collections.emptySet()))
             .add("metadataWebhook") // MetaNotifier's configuration is in the Advanced section
             .build();
+
+        if (configManager.getConfiguration(CONFIG_GROUP, "discordWebhook") == null) {
+            // avoids edge case where runelite hasn't initialized our config but plugin is launched via shadow jar
+            configManager.setDefaultConfiguration(config, false);
+        }
     }
 
     void onCommand(CommandExecuted event) {
