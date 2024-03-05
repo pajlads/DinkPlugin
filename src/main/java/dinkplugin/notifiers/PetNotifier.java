@@ -30,8 +30,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.IntToDoubleFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static dinkplugin.notifiers.CollectionNotifier.COLLECTION_LOG_REGEX;
@@ -346,7 +348,87 @@ public class PetNotifier extends BaseNotifier {
             entry("Bloodhound", new KcSource("Clue Scroll (master)", 1.0 / 1_000)),
             entry("Callisto cub", new MultiKcSource("Callisto", 1.0 / 1_500, "Artio", 1.0 / 2_800)),
             entry("Chompy chick", new KcSource("Chompy bird", 1.0 / 500)),
-            entry("Giant squirrel", new SkillSource(Skill.AGILITY, 9_779, client -> null)), // need aggregate lap count
+            entry("Giant squirrel", new Source() {
+                private final Map<String, Integer> courses = Map.ofEntries(
+                    entry("Gnome Stronghold Agility", 35_609),
+                    entry("Shayzien Agility Course", 31_804),
+                    entry("Shayzien Advanced Agility Course", 29_738),
+                    entry("Agility Pyramid", 9_901),
+                    entry("Penguin Agility", 9_779),
+                    entry("Barbarian Outpost", 44_376),
+                    entry("Agility Arena", 26_404),
+                    entry("Ape Atoll Agility", 37_720),
+                    entry("Wilderness Agility", 34_666),
+                    entry("Werewolf Agility", 32_597),
+                    entry("Dorgesh-Kaan Agility Course", 10_561),
+                    entry("Prifddinas Agility Course", 25_146),
+                    entry("Draynor Village Rooftop", 33_005),
+                    entry("Al Kharid Rooftop", 26_648),
+                    entry("Varrock Rooftop", 24_410),
+                    entry("Canifis Rooftop", 36_842),
+                    entry("Falador Rooftop", 26_806),
+                    entry("Seers' Village Rooftop", 35_205),
+                    entry("Pollnivneach Rooftop", 33_422),
+                    entry("Rellekka Rooftop", 31_063),
+                    entry("Ardougne Rooftop", 34_440),
+                    entry("Hallowed Sepulchre Floor 1", 35_000),
+                    entry("Hallowed Sepulchre Floor 2", 16_000),
+                    entry("Hallowed Sepulchre Floor 3", 8_000),
+                    entry("Hallowed Sepulchre Floor 4", 4_000),
+                    entry("Hallowed Sepulchre Floor 5", 2_000)
+                );
+
+                @Override
+                Double getProbability(Client client, KillCountService kcService) {
+                    double[] rates = getRates(client);
+                    int[] counts = getCounts(kcService);
+                    int total = Arrays.stream(counts).sum();
+                    if (total <= 0) return null;
+                    return IntStream.range(0, rates.length)
+                        .mapToDouble(i -> rates[i] * counts[i] / total)
+                        .sum();
+                }
+
+                @Override
+                Integer estimateActions(Client client, KillCountService kcService) {
+                    int total = Arrays.stream(getCounts(kcService)).sum();
+                    return total > 0 ? total : null;
+                }
+
+                @Override
+                Double calculateLuck(Client client, KillCountService kcService, double probability, int killCount) {
+                    final double[] rates = getRates(client);
+                    final int[] counts = getCounts(kcService);
+                    double p = 1;
+                    for (int i = 0, n = rates.length; i < n; i++) {
+                        p *= Math.pow(1 - rates[i], counts[i]); // see MultiKcSource
+                    }
+                    return 1 - p;
+                }
+
+                private int[] getCounts(KillCountService kcService) {
+                    return courses.keySet()
+                        .stream()
+                        .mapToInt(course -> {
+                            Integer count = kcService.getKillCount(LootRecordType.UNKNOWN, course);
+                            return count != null && count > 0 ? count + 1 : 0;
+                        })
+                        .toArray();
+                }
+
+                private double[] getRates(Client client) {
+                    int level = client.getRealSkillLevel(Skill.AGILITY);
+                    IntToDoubleFunction calc = base -> 1.0 / (base - level * 25); // see SkillSource
+                    return courses.entrySet()
+                        .stream()
+                        .mapToDouble(entry -> {
+                            if (entry.getKey().startsWith("Hallowed"))
+                                return 1.0 / entry.getValue();
+                            return calc.applyAsDouble(entry.getValue());
+                        })
+                        .toArray();
+                }
+            }),
             entry("Hellpuppy", new KcSource("Cerberus", 1.0 / 3_000)),
             entry("Herbi", new KcSource("Herbiboar", 1.0 / 6_500)),
             entry("Heron", new SkillSource(Skill.FISHING, 257_770, client -> client.getSkillExperience(Skill.FISHING) / 100)), // swordfish
