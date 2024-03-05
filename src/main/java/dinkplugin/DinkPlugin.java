@@ -20,6 +20,7 @@ import dinkplugin.notifiers.QuestNotifier;
 import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
 import dinkplugin.notifiers.TradeNotifier;
+import dinkplugin.util.KillCountService;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
@@ -47,6 +48,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
+import net.runelite.client.events.ProfileChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
@@ -69,6 +71,9 @@ public class DinkPlugin extends Plugin {
     private @Inject ChatMessageManager chatManager;
 
     private @Inject SettingsManager settingsManager;
+    private @Inject VersionManager versionManager;
+
+    private @Inject KillCountService killCountService;
 
     private @Inject CollectionNotifier collectionNotifier;
     private @Inject PetNotifier petNotifier;
@@ -96,6 +101,7 @@ public class DinkPlugin extends Plugin {
     protected void startUp() {
         log.debug("Started up Dink");
         settingsManager.init();
+        versionManager.onStart();
         lootNotifier.init();
         deathNotifier.init();
         chatNotifier.init();
@@ -153,7 +159,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onUsernameChanged(UsernameChanged usernameChanged) {
         levelNotifier.reset();
-        lootNotifier.reset();
+        killCountService.reset();
     }
 
     @Subscribe
@@ -170,6 +176,7 @@ public class DinkPlugin extends Plugin {
             return;
         }
 
+        versionManager.onGameState(previousState, newState);
         settingsManager.onGameState(previousState, newState);
         collectionNotifier.onGameState(newState);
         levelNotifier.onGameStateChanged(gameStateChanged);
@@ -199,7 +206,7 @@ public class DinkPlugin extends Plugin {
         metaNotifier.onTick();
     }
 
-    @Subscribe
+    @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onChatMessage(ChatMessage message) {
         String chatMessage = Utils.sanitize(message.getMessage());
         chatNotifier.onMessage(message.getType(), chatMessage);
@@ -207,7 +214,7 @@ public class DinkPlugin extends Plugin {
             case GAMEMESSAGE:
                 collectionNotifier.onChatMessage(chatMessage);
                 petNotifier.onChatMessage(chatMessage);
-                lootNotifier.onGameMessage(chatMessage);
+                killCountService.onGameMessage(chatMessage);
                 slayerNotifier.onChatMessage(chatMessage);
                 clueNotifier.onChatMessage(chatMessage);
                 killCountNotifier.onGameMessage(chatMessage);
@@ -269,16 +276,24 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
+        killCountService.onNpcKill(npcLootReceived);
         lootNotifier.onNpcLootReceived(npcLootReceived);
     }
 
     @Subscribe
     public void onPlayerLootReceived(PlayerLootReceived playerLootReceived) {
+        killCountService.onPlayerKill(playerLootReceived);
         lootNotifier.onPlayerLootReceived(playerLootReceived);
     }
 
     @Subscribe
+    public void onProfileChanged(ProfileChanged event) {
+        versionManager.onProfileChange();
+    }
+
+    @Subscribe
     public void onLootReceived(LootReceived lootReceived) {
+        killCountService.onLoot(lootReceived);
         lootNotifier.onLootReceived(lootReceived);
     }
 
@@ -313,7 +328,7 @@ public class DinkPlugin extends Plugin {
         addChatMessage("Warning", Utils.RED, message);
     }
 
-    private void addChatMessage(String category, Color color, String message) {
+    void addChatMessage(String category, Color color, String message) {
         String formatted = String.format("[%s] %s: %s",
             ColorUtil.wrapWithColorTag(getName(), Utils.PINK),
             category,

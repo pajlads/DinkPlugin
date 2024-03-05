@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
@@ -159,6 +160,15 @@ public class SettingsManager {
             }
 
             exportConfig(includeKey);
+        } else if ("DinkHash".equalsIgnoreCase(cmd)) {
+            CompletableFuture.completedFuture(client.getAccountHash())
+                .thenApplyAsync(Utils::dinkHash)
+                .thenCompose(Utils::copyToClipboard)
+                .thenRun(() -> plugin.addChatSuccess("Copied your dink hash to clipboard"))
+                .exceptionally(t -> {
+                    plugin.addChatWarning("Failed to copy your dink hash to clipboard");
+                    return null;
+                });
         } else if ("DinkRegion".equalsIgnoreCase(cmd)) {
             int regionId = WorldUtils.getLocation(client).getRegionID();
             plugin.addChatSuccess(String.format("Your current region ID is: %d", regionId));
@@ -253,6 +263,21 @@ public class SettingsManager {
         int id = event.getVarbitId();
         if (PROBLEMATIC_VARBITS.contains(id))
             clientThread.invoke(() -> checkVarbits(id, client.getVarbitValue(id)));
+    }
+
+    boolean hasModifiedConfig() {
+        for (String webhookConfigKey : webhookConfigKeys) {
+            String webhookUrl = configManager.getConfiguration(SettingsManager.CONFIG_GROUP, webhookConfigKey);
+            if (!webhookUrl.isEmpty()) {
+                return true;
+            }
+        }
+        return config.notifyAchievementDiary() || config.notifyClue() || config.notifyCollectionLog() ||
+            config.notifyCombatTask() || config.notifyDeath() || config.notifyGamble() ||
+            config.notifyGrandExchange() || config.notifyGroupStorage() || config.notifyKillCount() ||
+            config.notifyLeagues() || config.notifyLevel() || config.notifyLoot() || config.notifyPet() ||
+            config.notifyPk() || config.notifyQuest() || config.notifySlayer() || config.notifySpeedrun() ||
+            config.notifyTrades();
     }
 
     private boolean checkVarbits(int id, int value) {

@@ -7,22 +7,30 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.CollectionNotificationData;
 import dinkplugin.util.ItemSearcher;
+import dinkplugin.util.KillCountService;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
+import net.runelite.api.NPC;
+import net.runelite.api.NpcID;
 import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.client.events.NpcLootReceived;
+import net.runelite.client.game.ItemStack;
+import net.runelite.http.api.loottracker.LootRecordType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.util.List;
 import java.util.function.BiFunction;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,6 +46,10 @@ class CollectionNotifierTest extends MockedNotifierTest {
     @Bind
     @Mock
     ItemSearcher itemSearcher;
+
+    @Bind
+    @InjectMocks
+    KillCountService killCountService;
 
     @Override
     @BeforeEach
@@ -67,7 +79,17 @@ class CollectionNotifierTest extends MockedNotifierTest {
         String item = "Seercull";
         int price = 23_000;
         when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
-        when(itemManager.getItemPrice(ItemID.SEERCULL)).thenReturn(price);
+        mockItem(ItemID.SEERCULL, price, item);
+
+        // prepare kc
+        int kc = 150;
+        double rarity = 1.0 / 128;
+        String source = "Dagannoth Supreme";
+        NPC npc = mock(NPC.class);
+        when(npc.getName()).thenReturn(source);
+        when(npc.getId()).thenReturn(NpcID.DAGANNOTH_SUPREME);
+        when(configManager.getRSProfileConfiguration("killcount", source.toLowerCase(), int.class)).thenReturn(kc);
+        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SEERCULL, 1, null))));
 
         // send fake message
         notifier.onChatMessage("New item added to your collection log: " + item);
@@ -83,7 +105,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -123,7 +145,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, null, null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -158,7 +180,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, null, null))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, null, null, null, null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -206,7 +228,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item2))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item2, ItemID.SEERS_RING, (long) price2, 101, TOTAL_ENTRIES))
+                .extra(new CollectionNotificationData(item2, ItemID.SEERS_RING, (long) price2, 101, TOTAL_ENTRIES, null, null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );

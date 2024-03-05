@@ -4,10 +4,13 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
+import dinkplugin.notifiers.data.CollectionNotificationData;
+import dinkplugin.util.Drop;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.util.KillCountService;
+import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
-import dinkplugin.notifiers.data.CollectionNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -18,8 +21,14 @@ import net.runelite.api.annotations.Varp;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.ItemStack;
+import net.runelite.http.api.loottracker.LootRecordType;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.OptionalDouble;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -35,6 +44,8 @@ public class CollectionNotifier extends BaseNotifier {
      * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
      */
     public static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
+
+    private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
     /**
      * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.
@@ -54,6 +65,12 @@ public class CollectionNotifier extends BaseNotifier {
 
     @Inject
     private ItemSearcher itemSearcher;
+
+    @Inject
+    private KillCountService killCountService;
+
+    @Inject
+    private RarityService rarityService;
 
     @Override
     public boolean isEnabled() {
@@ -146,12 +163,20 @@ public class CollectionNotifier extends BaseNotifier {
 
         Integer itemId = itemSearcher.findItemId(itemName);
         Long price = itemId != null ? ItemUtils.getPrice(itemManager, itemId) : null;
+        Drop loot = itemId != null ? getLootSource(itemId) : null;
+        Integer killCount = loot != null ? killCountService.getKillCount(loot.getCategory(), loot.getSource()) : null;
+        OptionalDouble rarity = loot != null && loot.getCategory() == LootRecordType.NPC ?
+            rarityService.getRarity(loot.getSource(), itemId, 1) : OptionalDouble.empty();
         CollectionNotificationData extra = new CollectionNotificationData(
             itemName,
             itemId,
             price,
             varpValid ? completed : null,
-            varpValid ? total : null
+            varpValid ? total : null,
+            loot != null ? loot.getSource() : null,
+            loot != null ? loot.getCategory() : null,
+            killCount,
+            rarity.isPresent() ? rarity.getAsDouble() : null
         );
 
         createMessage(config.collectionSendImage(), NotificationBody.builder()
@@ -161,4 +186,18 @@ public class CollectionNotifier extends BaseNotifier {
             .type(NotificationType.COLLECTION)
             .build());
     }
+
+    @Nullable
+    private Drop getLootSource(int itemId) {
+        Drop drop = killCountService.getLastDrop();
+        if (drop == null) return null;
+        if (Duration.between(drop.getTime(), Instant.now()).compareTo(RECENT_DROP) > 0) return null;
+        for (ItemStack item : drop.getItems()) {
+            if (item.getId() == itemId) {
+                return drop;
+            }
+        }
+        return null;
+    }
+
 }

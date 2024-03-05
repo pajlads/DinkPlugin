@@ -120,6 +120,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(configDescriptor.getItems()).thenReturn(Collections.emptyList());
 
         // init config mocks
+        when(config.pluginVersion()).thenReturn("");
         when(config.primaryWebhook()).thenReturn(PRIMARY_WEBHOOK_URL);
         when(config.maxRetries()).thenReturn(0);
         when(config.baseRetryDelay()).thenReturn(2000);
@@ -138,6 +139,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         ItemComposition item = mock(ItemComposition.class);
         when(item.getName()).thenReturn(name);
         when(item.getMembersName()).thenReturn(name);
+        when(item.getNote()).thenReturn(-1);
         when(client.getItemDefinition(id)).thenReturn(item);
         when(itemManager.getItemComposition(id)).thenReturn(item);
         when(itemManager.canonicalize(id)).thenReturn(id);
