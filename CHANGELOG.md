@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Major: Add item rarity to monster loot and collection notifications. (#425, #427)
+- Minor: Add `%COMPLETED` and `%TOTAL_POSSIBLE%` variables for collection log template. (#439)
 - Minor: Add wiki link for loot source in rich embeds. (#431)
 - Minor: Add chat message upon noteworthy plugin updates. (#429, #436)
 - Minor: Allow loot notifications for rare items below the min value threshold. (#426)
