@@ -24,6 +24,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import java.time.Duration;
@@ -44,6 +45,8 @@ public class CollectionNotifier extends BaseNotifier {
      * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
      */
     public static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
+
+    static final @VisibleForTesting int TOTAL_ENTRIES = 1_491; // fallback if TOTAL_VARP is not populated
 
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
@@ -143,13 +146,6 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     private void handleNotify(String itemName) {
-        Template notifyMessage = Template.builder()
-            .template(config.collectionNotifyMessage())
-            .replacementBoundary("%")
-            .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
-            .replacement("%ITEM%", Replacements.ofWiki(itemName))
-            .build();
-
         // varp isn't updated for a few ticks, so we increment the count locally.
         // this approach also has the benefit of yielding incrementing values even when
         // multiple collection log entries are completed within a single tick.
@@ -161,6 +157,17 @@ public class CollectionNotifier extends BaseNotifier {
             log.debug("Collection log progress varps were invalid ({} / {})", completed, total);
         }
 
+        // build message
+        Template notifyMessage = Template.builder()
+            .template(config.collectionNotifyMessage())
+            .replacementBoundary("%")
+            .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+            .replacement("%ITEM%", Replacements.ofWiki(itemName))
+            .replacement("%COMPLETED%", Replacements.ofText(completed > 0 ? String.valueOf(completed) : "?"))
+            .replacement("%TOTAL_POSSIBLE%", Replacements.ofText(String.valueOf(total > 0 ? total : TOTAL_ENTRIES)))
+            .build();
+
+        // populate metadata
         Integer itemId = itemSearcher.findItemId(itemName);
         Long price = itemId != null ? ItemUtils.getPrice(itemManager, itemId) : null;
         Drop loot = itemId != null ? getLootSource(itemId) : null;

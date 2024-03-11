@@ -631,7 +631,9 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %ITEM% for the item",
+            "Use %ITEM% to insert the item name<br/>" +
+            "Use %COMPLETED% to insert the number of completed entries<br/>" +
+            "Use %TOTAL_POSSIBLE% to insert the number of possible entries",
         position = 3,
         section = collectionSection
     )
