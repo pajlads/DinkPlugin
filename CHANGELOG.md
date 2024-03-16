@@ -1,12 +1,16 @@
 ## Unreleased
 
+## 1.9.0
+
 - Major: Add item rarity to monster loot and collection notifications. (#425, #427)
+- Minor: Add `%COMPLETED` and `%TOTAL_POSSIBLE%` variables for collection log template. (#439)
 - Minor: Add wiki link for loot source in rich embeds. (#431)
-- Minor: Add chat message upon noteworthy plugin updates. (#429)
+- Minor: Add chat message upon noteworthy plugin updates. (#429, #436)
 - Minor: Allow loot notifications for rare items below the min value threshold. (#426)
 - Minor: Include relevant kill count in collection log notifications. (#424)
 - Minor: Obtain kill count from chat commands plugin for loot notifications. (#392)
 - Minor: Add chat command to obtain the player's dink hash. (#408)
+- Bugfix: Include estimated kills without drops in KC for loot and collection notifications. (#432)
 - Dev: Refactor kill count tracking from `LootNotifier` to `KillCountService`. (#392)
 
 ## 1.8.4

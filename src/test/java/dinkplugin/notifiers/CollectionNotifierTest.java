@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import static dinkplugin.notifiers.CollectionNotifier.TOTAL_ENTRIES;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -36,8 +37,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class CollectionNotifierTest extends MockedNotifierTest {
-
-    private static final int TOTAL_ENTRIES = 1443;
 
     @Bind
     @InjectMocks

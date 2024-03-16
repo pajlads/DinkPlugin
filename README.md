@@ -148,6 +148,12 @@ Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these
 
 `%ITEM%` will be replaced with the item that was dropped for the collection log.
 
+`%COMPLETED%` will be replaced with the number of unique entries that have been completed.
+
+`%TOTAL_POSSIBLE%` will be replaced with the total number of unique entries that are tracked in the collection log.
+
+Note: `%COMPLETED%` may not be populated if the [Character Summary](https://oldschool.runescape.wiki/w/Character_Summary) tab was never selected since logging in.
+
 ### Level:
 
 `%SKILL%` will be replaced with the skill name and level that was achieved
