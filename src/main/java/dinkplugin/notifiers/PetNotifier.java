@@ -507,7 +507,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Smolcano", new KcSource("Zalcano", 1.0 / 2_250)),
             entry("Sraracha", new KcSource("Sarachnis", 1.0 / 3_000)),
             entry("Tangleroot", new SkillSource(Skill.FARMING, 7_500, client -> client.getSkillExperience(Skill.FARMING) / 119)), // mushrooms
-            entry("Tiny tempor", new KcSource("Tempoross", 1.0 / 8_000)),
+            entry("Tiny tempor", new KcSource("Reward pool (Tempoross)", 1.0 / 8_000)),
             entry("Tumeken's guardian", new Source() {
                 @Override
                 Double getProbability(Client client, KillCountService kcService) {
