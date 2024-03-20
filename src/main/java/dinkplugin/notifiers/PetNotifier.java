@@ -339,7 +339,18 @@ public class PetNotifier extends BaseNotifier {
     static {
         PET_NAMES_TO_SOURCE = Map.<String, Source>ofEntries(
             entry("Abyssal orphan", new KcSource("Abyssal Sire", 1.0 / 2_560)),
-            entry("Abyssal protector", new KcSource("Guardians of the Rift", 1.0 / 4_000)),
+            entry("Abyssal protector", new Source() {
+                @Override
+                Double getProbability(Client client, KillCountService kcService) {
+                    return 1.0 / 4_000;
+                }
+
+                @Override
+                Integer estimateActions(Client client, KillCountService kcService) {
+                    Integer kc = kcService.getKillCount(LootRecordType.EVENT, "Guardians of the Rift");
+                    return kc != null && kc > 0 ? kc * 3 : null;
+                }
+            }),
             entry("Baby chinchompa", new SkillSource(Skill.HUNTER, 82_758, client -> client.getSkillExperience(Skill.HUNTER) / 315)), // black chinchompas
             entry("Baby mole", new KcSource("Giant Mole", 1.0 / 3_000)),
             entry("Baron", new KcSource("Duke Sucellus", 1.0 / 2_500)),
@@ -504,7 +515,7 @@ public class PetNotifier extends BaseNotifier {
                     int rewardPoints = client.getVarbitValue(Varbits.TOTAL_POINTS);
                     int raidLevels = Math.min(client.getVarbitValue(Varbits.TOA_RAID_LEVEL), 550);
                     int x = Math.min(raidLevels, 400);
-                    int y = Math.max(Math.min(raidLevels, 550) - 400, 0);
+                    int y = Math.max(raidLevels - 400, 0);
                     return 0.01 * rewardPoints / (350_000 - 700 * (x + y / 3)); // assume latest is representative
                 }
 
