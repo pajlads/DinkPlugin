@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Map;
+import java.util.OptionalDouble;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -45,6 +46,9 @@ public class KillCountService {
 
     @Inject
     private ScheduledExecutorService executor;
+
+    @Inject
+    private RarityService rarityService;
 
     private final Cache<String, Integer> killCounts = CacheBuilder.newBuilder()
         .expireAfterAccess(10, TimeUnit.MINUTES)
@@ -184,7 +188,16 @@ public class KillCountService {
             return 0;
         }
         try {
-            return gson.fromJson(json, SerializedLoot.class).getKills();
+            int kc = gson.fromJson(json, SerializedLoot.class).getKills();
+
+            // loot tracker doesn't count kill if no loot - https://github.com/runelite/runelite/issues/5077
+            OptionalDouble nothingProbability = rarityService.getRarity(sourceName, -1, 0);
+            if (nothingProbability.isPresent() && nothingProbability.getAsDouble() < 1.0) {
+                // estimate the actual kc (including kills with no loot)
+                kc = (int) Math.round(kc / (1 - nothingProbability.getAsDouble()));
+            }
+
+            return kc;
         } catch (JsonSyntaxException e) {
             // should not occur unless loot tracker changes stored loot POJO structure
             log.warn("Failed to read kills from loot tracker config", e);

@@ -239,6 +239,27 @@ class RarityServiceTest extends MockedTestBase {
         assertFalse(rarity.isPresent());
     }
 
+    @Test
+    @DisplayName("Ensure accurate drop rate for 'Nothing'")
+    void testNothing() {
+        test("Air elemental", -1, 0, 1 / 128.2);
+    }
+
+    @Test
+    @DisplayName("Ignore 'Nothing' if an 'Always' drop is present")
+    void testFakeNothing() {
+        // bones are always dropped, so loot tracker kc is correct, even though wiki includes a 'Nothing' entry
+        OptionalDouble rarity = service.getRarity("Afflicted", -1, 0);
+        assertFalse(rarity.isPresent());
+    }
+
+    @Test
+    @DisplayName("Ensure monster name excludes any parenthetical suffix from the wiki")
+    void testSuffix() {
+        // RarityCalculator removes wiki's (monster) suffix: https://oldschool.runescape.wiki/w/TzHaar-Mej_(monster)
+        test("TzHaar-Mej", ItemID.OBSIDIAN_CAPE, 1, 1.0 / 4_096);
+    }
+
     private void test(String npcName, int itemId, int quantity, double expectedProbability) {
         OptionalDouble rarity = service.getRarity(npcName, itemId, quantity);
         assertTrue(rarity.isPresent());

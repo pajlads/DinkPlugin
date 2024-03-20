@@ -58,9 +58,9 @@ public class RarityService {
     }
 
     public OptionalDouble getRarity(String npcName, int itemId, int quantity) {
-        ItemComposition composition = itemManager.getItemComposition(itemId);
-        int canonical = composition.getNote() != -1 ? composition.getLinkedNoteId() : itemId;
-        String itemName = composition.getMembersName();
+        ItemComposition composition = itemId >= 0 ? itemManager.getItemComposition(itemId) : null;
+        int canonical = composition != null && composition.getNote() != -1 ? composition.getLinkedNoteId() : itemId;
+        String itemName = composition != null ? composition.getMembersName() : "";
         Collection<Integer> variants = new HashSet<>(
             ItemVariationMapping.getVariations(ItemVariationMapping.map(canonical))
         );

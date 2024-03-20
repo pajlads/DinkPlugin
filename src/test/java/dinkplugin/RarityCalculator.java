@@ -29,6 +29,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 @Tag("generator")
 class RarityCalculator {
@@ -41,6 +42,8 @@ class RarityCalculator {
         .thenComparing(Transformed::getQuantity, Comparator.nullsLast(Comparator.naturalOrder()))
         .thenComparing(Transformed::getQuantMin, Comparator.nullsLast(Comparator.naturalOrder()))
         .thenComparing(Transformed::getQuantMax, Comparator.nullsLast(Comparator.naturalOrder()));
+
+    private static final Pattern PARENTHETICAL_SUFFIX = Pattern.compile("\\s\\(.+\\)$");
 
     private final Gson gson = new GsonBuilder().create();
     private final OkHttpClient httpClient = new OkHttpClient();
@@ -60,7 +63,7 @@ class RarityCalculator {
             Collection<Transformed> drops = npc.getTransformed();
             if (drops.isEmpty()) continue;
 
-            String name = Text.removeTags(npc.getName()).replace("&#039;", "'");
+            String name = PARENTHETICAL_SUFFIX.matcher(Text.removeTags(npc.getName()).replace("&#039;", "'")).replaceFirst("");
             map.putIfAbsent(name, drops);
         }
 
@@ -80,10 +83,12 @@ class RarityCalculator {
         Collection<Transformed> getTransformed() {
             if (drops == null || drops.isEmpty()) return Collections.emptyList();
             SortedSet<Transformed> set = new TreeSet<>(COMPARATOR);
+            boolean hasAlways = drops.stream().anyMatch(d -> "Always".equals(d.getRarity()));
             for (Drop drop : drops) {
                 Transformed transformed = drop.transform();
-                if (transformed != null)
-                    set.add(transformed);
+                if (transformed == null) continue;
+                if (hasAlways && transformed.getItemId() < 0) continue;
+                set.add(transformed);
             }
             return set;
         }
@@ -91,11 +96,16 @@ class RarityCalculator {
 
     @Data
     static class Drop {
+        private String name;
         private String quantity;
         private String rarity;
         private Integer itemId;
 
         public Transformed transform() {
+            if ("Nothing".equalsIgnoreCase(name)) {
+                this.itemId = -1;
+                this.quantity = "0";
+            }
             if (itemId == null || rarity == null || quantity == null) return null;
             if (rarity.equals("Always") || rarity.equals("Varies") || rarity.equals("Random") || rarity.equals("Once") || rarity.equals("Unknown")) return null;
             if (quantity.equals("Unknown") || quantity.equals("N/A")) return null;
@@ -140,7 +150,8 @@ class RarityCalculator {
                     denom = BigDecimal.valueOf(2000);
                     break;
                 default:
-                    String[] parts = StringUtils.split(cleanRarity, '/');
+                    String fraction = cleanRarity.endsWith("%") ? cleanRarity.substring(0, cleanRarity.length() - 1) + "/100" : cleanRarity;
+                    String[] parts = StringUtils.split(fraction, '/');
                     if (parts.length != 2) throw new IllegalArgumentException(rarity);
                     double d = Double.parseDouble(parts[1]) / Double.parseDouble(parts[0]);
                     denom = BigDecimal.valueOf(d).setScale(2, RoundingMode.HALF_EVEN);
