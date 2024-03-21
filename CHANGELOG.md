@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.9.1
+
 - Minor: Include Quetzin pet name in pet notifications. (#442)
 
 ## 1.9.0
