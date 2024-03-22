@@ -2,6 +2,10 @@
 
 - Minor: Include rarity and luck for pet notifications. (#433)
 
+## 1.9.1
+
+- Minor: Include Quetzin pet name in pet notifications. (#442)
+
 ## 1.9.0
 
 - Major: Add item rarity to monster loot and collection notifications. (#425, #427)
