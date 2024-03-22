@@ -247,6 +247,7 @@ public class PetNotifier extends BaseNotifier {
             "Olmlet",
             "Phoenix",
             "Prince black dragon",
+            "Quetzin",
             "Rift guardian",
             "Rock golem",
             "Rocky",
