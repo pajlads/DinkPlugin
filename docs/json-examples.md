@@ -652,6 +652,23 @@ Note: Fields like `tasksUntilNextArea`, `pointsUntilNextRelic`, and `pointsUntil
 
 `accountType` is always `IRONMAN` for Leagues, unrelated to what the user is outside of Leagues.
 
+### Chat
+
+JSON for Matching Chat Message Notifications:
+
+```json5
+{
+  "type": "CHAT",
+  "content": "%USERNAME% received a chat message: `You've been playing for a while, consider taking a break from your screen.`",
+  "extra": {
+    "type": "GAMEMESSAGE",
+    "message": "You've been playing for a while, consider taking a break from your screen."
+  }
+}
+```
+
+Note: The possible values for `extra.type` are documented in RuneLite's [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/ChatMessageType.html).
+
 ### Metadata
 
 JSON for Login Notifications:

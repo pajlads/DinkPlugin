@@ -1,6 +1,7 @@
 package dinkplugin;
 
 import com.google.inject.Provides;
+import dinkplugin.notifiers.ChatNotifier;
 import dinkplugin.notifiers.ClueNotifier;
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
@@ -92,6 +93,7 @@ public class DinkPlugin extends Plugin {
     private @Inject GrandExchangeNotifier grandExchangeNotifier;
     private @Inject MetaNotifier metaNotifier;
     private @Inject TradeNotifier tradeNotifier;
+    private @Inject ChatNotifier chatNotifier;
 
     private final AtomicReference<GameState> gameState = new AtomicReference<>();
 
@@ -102,6 +104,7 @@ public class DinkPlugin extends Plugin {
         versionManager.onStart();
         lootNotifier.init();
         deathNotifier.init();
+        chatNotifier.init();
     }
 
     @Override
@@ -123,6 +126,7 @@ public class DinkPlugin extends Plugin {
         groupStorageNotifier.reset();
         speedrunNotifier.reset();
         tradeNotifier.reset();
+        chatNotifier.reset();
     }
 
     @Provides
@@ -149,6 +153,7 @@ public class DinkPlugin extends Plugin {
         settingsManager.onConfigChanged(event);
         lootNotifier.onConfigChanged(event.getKey(), event.getNewValue());
         deathNotifier.onConfigChanged(event.getKey(), event.getNewValue());
+        chatNotifier.onConfig(event.getKey(), event.getNewValue());
     }
 
     @Subscribe
@@ -204,6 +209,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onChatMessage(ChatMessage message) {
         String chatMessage = Utils.sanitize(message.getMessage());
+        chatNotifier.onMessage(message.getType(), chatMessage);
         switch (message.getType()) {
             case GAMEMESSAGE:
                 collectionNotifier.onChatMessage(chatMessage);

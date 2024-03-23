@@ -1,12 +1,14 @@
 package dinkplugin;
 
 import dinkplugin.domain.AchievementDiary;
+import dinkplugin.domain.ChatNotificationType;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
+import dinkplugin.notifiers.ChatNotifier;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -163,6 +165,14 @@ public interface DinkPluginConfig extends Config {
         closedByDefault = true
     )
     String tradeSection = "Player Trades";
+
+    @ConfigSection(
+        name = "Custom Chat Messages",
+        description = "Settings for notifying when you receive specific messages from the game",
+        position = 170,
+        closedByDefault = true
+    )
+    String chatSection = "Custom Chat Messages";
 
     /*
     @ConfigSection(
@@ -587,6 +597,17 @@ public interface DinkPluginConfig extends Config {
         section = webhookSection
     )
     default String tradeWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "chatWebhook",
+        name = "Chat Webhook Override",
+        description = "If non-empty, filtered chat messages are sent to this URL, instead of the primary URL",
+        position = -2,
+        section = webhookSection
+    )
+    default String chatWebhook() {
         return "";
     }
 
@@ -1818,6 +1839,68 @@ public interface DinkPluginConfig extends Config {
     )
     default String tradeNotifyMessage() {
         return "%USERNAME% traded with %COUNTERPARTY%";
+    }
+
+    @ConfigItem(
+        keyName = "notifyChat",
+        name = "Enable Chat Notifications",
+        description = "Enable notifications upon receiving specific chat messages",
+        position = 170,
+        section = chatSection
+    )
+    default boolean notifyChat() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "chatSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 171,
+        section = chatSection
+    )
+    default boolean chatSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "chatMessageTypes",
+        name = "Message Types",
+        description = "The types of chat messages that can trigger notifications",
+        position = 172,
+        section = chatSection
+    )
+    default Set<ChatNotificationType> chatMessageTypes() {
+        return EnumSet.of(ChatNotificationType.GAME);
+    }
+
+    @ConfigItem(
+        keyName = ChatNotifier.PATTERNS_CONFIG_KEY,
+        name = "Message Filters",
+        description = "The chat message patterns that should trigger notifications.<br/>" +
+            "Place one pattern per line (case-insensitive; asterisks are wildcards)",
+        position = 173,
+        section = chatSection
+    )
+    default String chatPatterns() {
+        return "You've unlocked an emote: *\n" +
+            "You've completed the * event*\n" + // for holiday events
+            "You have accepted * into *.\n" + // for clan recruitment
+            "You will be logged out in approximately 30 minutes.*\n" +
+            "You will be logged out in approximately 10 minutes.*\n";
+    }
+
+    @ConfigItem(
+        keyName = "chatNotifyMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %MESSAGE% to insert the chat message",
+        position = 174,
+        section = chatSection
+    )
+    default String chatNotifyMessage() {
+        return "%USERNAME% received a chat message:\n\n```\n%MESSAGE%\n```";
     }
 
     @ConfigItem(
