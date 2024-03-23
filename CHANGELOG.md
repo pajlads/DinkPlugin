@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Major: Add notifier for chat messages that match custom patterns. (#391)
 - Minor: Include rarity and luck for pet notifications. (#433)
 
 ## 1.9.1
