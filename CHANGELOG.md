@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Major: Add notifier for chat messages that match custom patterns. (#391)
+
 ## 1.9.1
 
 - Minor: Include Quetzin pet name in pet notifications. (#442)

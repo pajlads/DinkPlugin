@@ -38,6 +38,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 - [Grand Exchange](#grand-exchange): Sends a webhook message upon buying or selling items on the GE (with customizable value threshold)
 - [Trades](#trades): Sends a webhook message upon completing a trade with another player (with customizable item value threshold)
 - [Leagues](#leagues): Sends a webhook message upon completing a Leagues IV task or unlocking a region/relic
+- [Chat](#chat): Sends a webhook message upon receiving a chat message that matches a user-specified pattern
 
 ## Other Setup
 
@@ -274,6 +275,14 @@ If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replac
 Leagues notifications include: region unlocked, relic unlocked, and task completed (with customizable difficulty threshold).
 
 Each of these events can be independently enabled or disabled in the notifier settings.
+
+### Chat:
+
+The chat notifier enables notifications for messages that are otherwise not covered by our other notifiers.
+
+You can customize the message patterns to your liking (`*` is a wildcard), and specify which types of messages to check (e.g., game, trade, clan notification, user chat).
+
+`%MESSAGE%` will be replaced with the chat message the matched one of the patterns.
 
 ### Metadata:
 
