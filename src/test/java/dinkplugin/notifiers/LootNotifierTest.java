@@ -168,6 +168,27 @@ class LootNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
+    @Test // https://github.com/pajlads/DinkPlugin/issues/446
+    void testIgnoreRarityDenyList() {
+        // update config mocks
+        when(config.minLootValue()).thenReturn(LARRAN_PRICE + 1);
+        when(config.lootRarityThreshold()).thenReturn(100);
+        notifier.onConfigChanged("lootItemDenylist", "Larran's key");
+
+        // prepare mocks
+        NPC npc = mock(NPC.class);
+        String name = "Ice spider";
+        when(npc.getName()).thenReturn(name);
+
+        // fire event
+        double rarity = 1.0 / 208;
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1, null)));
+        plugin.onNpcLootReceived(event);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
     @Test
     void testNotifyAllowlist() {
         // prepare mocks
