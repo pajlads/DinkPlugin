@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Major: Add notifier for chat messages that match custom patterns. (#391)
+- Bugfix: Exclude denylisted items from loot rarity override consideration. (#447)
 
 ## 1.9.1
 
