@@ -35,6 +35,7 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -155,6 +156,7 @@ public class LootNotifier extends BaseNotifier {
         long totalStackValue = 0;
         boolean sendMessage = false;
         SerializedItemStack max = null;
+        Collection<Integer> deniedIds = new HashSet<>(reduced.size());
 
         for (ItemStack item : reduced) {
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
@@ -169,12 +171,14 @@ public class LootNotifier extends BaseNotifier {
                 if (max == null || totalPrice > max.getTotalPrice()) {
                     max = stack;
                 }
+            } else {
+                deniedIds.add(item.getId());
             }
             serializedItems.add(stack);
             totalStackValue += totalPrice;
         }
 
-        Map.Entry<SerializedItemStack, Double> rarest = getRarestDropRate(items, dropper, type);
+        Map.Entry<SerializedItemStack, Double> rarest = getRarestDropRate(items, dropper, type, deniedIds);
 
         Evaluable lootMsg;
         if (!sendMessage) {
@@ -234,9 +238,10 @@ public class LootNotifier extends BaseNotifier {
     }
 
     @Nullable
-    private Map.Entry<SerializedItemStack, Double> getRarestDropRate(Collection<ItemStack> items, String dropper, LootRecordType type) {
+    private Map.Entry<SerializedItemStack, Double> getRarestDropRate(Collection<ItemStack> items, String dropper, LootRecordType type, Collection<Integer> deniedIds) {
         if (type != LootRecordType.NPC) return null;
         return items.stream()
+            .filter(item -> !deniedIds.contains(item.getId()))
             .map(item -> {
                 OptionalDouble rarity = rarityService.getRarity(dropper, item.getId(), item.getQuantity());
                 if (rarity.isEmpty()) return null;
