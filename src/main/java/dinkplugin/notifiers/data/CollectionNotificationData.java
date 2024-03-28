@@ -48,7 +48,7 @@ public class CollectionNotificationData extends NotificationData {
         List<Field> fields = new ArrayList<>(5);
         if (completedEntries != null && totalEntries != null) {
             fields.add(
-                new Field("Completed Entries", Field.formatProgress(completedEntries, totalEntries))
+                new Field("Completed", Field.formatProgress(completedEntries, totalEntries))
             );
         }
         if (dropperKillCount != null) {
