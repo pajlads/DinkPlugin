@@ -897,7 +897,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "lootItemDenylist",
         name = "Item Denylist",
-        description = "Never fire notifications for these items, despite value settings.<br/>" +
+        description = "Never fire notifications for these items, despite value or rarity settings.<br/>" +
             "Place one item name per line (case-insensitive; asterisks are wildcards)",
         position = 37,
         section = lootSection
