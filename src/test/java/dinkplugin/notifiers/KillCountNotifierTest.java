@@ -425,6 +425,29 @@ class KillCountNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyPerilousMoons() {
+        // update config mocks
+        when(config.killCountInterval()).thenReturn(10);
+
+        // fire events
+        String gameMessage = "Your Lunar Chest count is: 30.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .text(buildTemplate("Lunar Chest", 30))
+                .extra(new BossNotificationData("Lunar Chest", 30, gameMessage, null, null))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyBarbarianAssault() {
         // update mocks
         int count = 420;
