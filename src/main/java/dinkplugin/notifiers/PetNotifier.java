@@ -305,7 +305,7 @@ public class PetNotifier extends BaseNotifier {
             final int[] actions = new int[currentLevel];
             int prevXp = 0;
             for (int lvl = 1; lvl <= currentLevel; lvl++) {
-                int xp = Math.min(Experience.getXpForLevel(lvl), currentXp);
+                int xp = Math.min(Experience.getXpForLevel(lvl + 1), currentXp);
                 int deltaXp = xp - prevXp;
                 prevXp = xp;
                 actions[lvl - 1] = Math.round(1f * deltaXp / actionXp);
