@@ -15,6 +15,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import lombok.Value;
 import net.runelite.api.Client;
+import net.runelite.api.Experience;
 import net.runelite.api.Skill;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
@@ -24,12 +25,10 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.function.IntToDoubleFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -246,22 +245,78 @@ public class PetNotifier extends BaseNotifier {
         }
     }
 
-    @Value
-    @EqualsAndHashCode(callSuper = true)
-    private static class SkillSource extends Source {
-        Skill skill;
-        int baseChance;
-        Function<Client, Integer> estimateActions;
+    private static abstract class MultiSource extends Source {
+        abstract double[] getRates();
+
+        abstract int[] getActions(Client client, KillCountService kcService);
+
+        @Override
+        Integer estimateActions(Client client, KillCountService kcService) {
+            int sum = MathUtils.sum(getActions(client, kcService));
+            return sum > 0 ? sum : null;
+        }
 
         @Override
         Double getProbability(Client client, KillCountService kcService) {
-            int level = client.getRealSkillLevel(skill);
-            return 1.0 / (baseChance - 25 * level);
+            final int[] actions = getActions(client, kcService);
+            final int totalActions = MathUtils.sum(actions);
+            if (totalActions <= 0) return null;
+
+            final double[] rates = getRates();
+            double weighted = 0;
+            for (int i = 0, n = actions.length; i < n; i++) {
+                weighted += rates[i] * actions[i] / totalActions;
+            }
+            return weighted;
+        }
+
+        @Override
+        Double calculateLuck(Client client, KillCountService kcService, double probability, int killCount) {
+            final int[] actions = getActions(client, kcService);
+            final double[] rates = getRates();
+            double p = 1;
+            for (int i = 0, n = actions.length; i < n; i++) {
+                p *= Math.pow(1 - rates[i], actions[i]); // similar to geometric distribution survival function
+            }
+            return 1 - p;
+        }
+    }
+
+    @Value
+    @EqualsAndHashCode(callSuper = true)
+    private static class SkillSource extends MultiSource {
+        Skill skill;
+        int baseChance;
+        int actionXp;
+
+        @Override
+        double[] getRates() {
+            final int n = Experience.MAX_REAL_LEVEL;
+            double[] rates = new double[n];
+            for (int level = 1; level <= n; level++) {
+                rates[level - 1] = 1.0 / (baseChance - 25 * level);
+            }
+            return rates;
+        }
+
+        @Override
+        int[] getActions(Client client, KillCountService kcService) {
+            final int currentLevel = client.getRealSkillLevel(skill);
+            final int currentXp = client.getSkillExperience(skill);
+            final int[] actions = new int[currentLevel];
+            int prevXp = 0;
+            for (int lvl = 1; lvl <= currentLevel; lvl++) {
+                int xp = Math.min(Experience.getXpForLevel(lvl), currentXp);
+                int deltaXp = xp - prevXp;
+                prevXp = xp;
+                actions[lvl - 1] = Math.round(1f * deltaXp / actionXp);
+            }
+            return actions;
         }
 
         @Override
         Integer estimateActions(Client client, KillCountService kcService) {
-            return estimateActions.apply(client);
+            return client.getSkillExperience(skill) / actionXp;
         }
     }
 
@@ -285,7 +340,7 @@ public class PetNotifier extends BaseNotifier {
 
     @Value
     @EqualsAndHashCode(callSuper = false)
-    private static class MultiKcSource extends Source {
+    private static class MultiKcSource extends MultiSource {
         String[] names;
         double[] rates;
 
@@ -295,44 +350,15 @@ public class PetNotifier extends BaseNotifier {
         }
 
         @Override
-        Double getProbability(Client client, KillCountService kcService) {
+        int[] getActions(Client client, KillCountService kcService) {
             final int n = names.length;
-            int[] counts = new int[n];
-            int totalKc = 0;
+            int[] actions = new int[n];
             for (int i = 0; i < n; i++) {
                 Integer kc = kcService.getKillCount(LootRecordType.UNKNOWN, names[i]);
                 if (kc == null) continue;
-                totalKc += kc;
-                counts[i] = kc;
+                actions[i] = kc;
             }
-            if (totalKc <= 0) {
-                return null;
-            }
-            double weighted = 0;
-            for (int i = 0; i < n; i++) {
-                weighted += rates[i] * counts[i] / totalKc;
-            }
-            return weighted;
-        }
-
-        @Override
-        Integer estimateActions(Client client, KillCountService kcService) {
-            return Arrays.stream(names)
-                .map(name -> kcService.getKillCount(LootRecordType.UNKNOWN, name))
-                .filter(Objects::nonNull)
-                .reduce(Integer::sum)
-                .orElse(null);
-        }
-
-        @Override
-        Double calculateLuck(Client client, KillCountService kcService, double probability, int killCount) {
-            double p = 1;
-            for (int i = 0; i < names.length; i++) {
-                Integer kc = kcService.getKillCount(LootRecordType.UNKNOWN, names[i]);
-                if (kc == null) continue;
-                p *= Math.pow(1 - rates[i], kc); // similar to geometric distribution survival function
-            }
-            return 1 - p;
+            return actions;
         }
     }
 
@@ -351,11 +377,11 @@ public class PetNotifier extends BaseNotifier {
                     return kc != null && kc > 0 ? kc * 3 : null;
                 }
             }),
-            entry("Baby chinchompa", new SkillSource(Skill.HUNTER, 82_758, client -> client.getSkillExperience(Skill.HUNTER) / 315)), // black chinchompas
+            entry("Baby chinchompa", new SkillSource(Skill.HUNTER, 82_758, 315)), // black chinchompas
             entry("Baby mole", new KcSource("Giant Mole", 1.0 / 3_000)),
             entry("Baron", new KcSource("Duke Sucellus", 1.0 / 2_500)),
             entry("Butch", new KcSource("Vardorvis", 1.0 / 3_000)),
-            entry("Beaver", new SkillSource(Skill.WOODCUTTING, 264_336, client -> client.getSkillExperience(Skill.WOODCUTTING) / 85)), // teaks
+            entry("Beaver", new SkillSource(Skill.WOODCUTTING, 264_336, 85)), // teaks
             entry("Bloodhound", new KcSource("Clue Scroll (master)", 1.0 / 1_000)),
             entry("Callisto cub", new MultiKcSource("Callisto", 1.0 / 1_500, "Artio", 1.0 / 2_800)),
             entry("Chompy chick", new KcSource("Chompy bird", 1.0 / 500)),
@@ -393,7 +419,7 @@ public class PetNotifier extends BaseNotifier {
                 Double getProbability(Client client, KillCountService kcService) {
                     double[] rates = getRates(client);
                     int[] counts = getCounts(kcService);
-                    int total = Arrays.stream(counts).sum();
+                    int total = MathUtils.sum(counts);
                     if (total <= 0) return null;
                     return IntStream.range(0, rates.length)
                         .mapToDouble(i -> rates[i] * counts[i] / total)
@@ -402,7 +428,7 @@ public class PetNotifier extends BaseNotifier {
 
                 @Override
                 Integer estimateActions(Client client, KillCountService kcService) {
-                    int total = Arrays.stream(getCounts(kcService)).sum();
+                    int total = MathUtils.sum(getCounts(kcService));
                     return total > 0 ? total : null;
                 }
 
@@ -442,7 +468,7 @@ public class PetNotifier extends BaseNotifier {
             }),
             entry("Hellpuppy", new KcSource("Cerberus", 1.0 / 3_000)),
             entry("Herbi", new KcSource("Herbiboar", 1.0 / 6_500)),
-            entry("Heron", new SkillSource(Skill.FISHING, 257_770, client -> client.getSkillExperience(Skill.FISHING) / 100)), // swordfish
+            entry("Heron", new SkillSource(Skill.FISHING, 257_770, 100)), // swordfish
             entry("Ikkle hydra", new KcSource("Alchemical Hydra", 1.0 / 3_000)),
             entry("Jal-nib-rek", new KcSource("TzKal-Zuk", 1.0 / 100)),
             entry("Kalphite princess", new KcSource("Kalphite Queen", 1.0 / 3_000)),
@@ -504,15 +530,15 @@ public class PetNotifier extends BaseNotifier {
              * may be unrealistic, so we expect to update this probability as more concrete information is available.
              */
             entry("Quetzin", new MultiKcSource("Hunters' loot sack (expert)", 1.0 / 1_000, "Hunters' loot sack (master)", 1.0 / 1_000)),
-            entry("Rift guardian", new SkillSource(Skill.RUNECRAFT, 1_795_758, client -> client.getSkillExperience(Skill.RUNECRAFT) / 10)), // lava runes
-            entry("Rock golem", new SkillSource(Skill.MINING, 211_886, client -> client.getSkillExperience(Skill.MINING) / 65)), // gemstones
-            entry("Rocky", new SkillSource(Skill.THIEVING, 36_490, client -> client.getSkillExperience(Skill.THIEVING) / 42)), // stalls
+            entry("Rift guardian", new SkillSource(Skill.RUNECRAFT, 1_795_758, 10)), // lava runes
+            entry("Rock golem", new SkillSource(Skill.MINING, 211_886, 65)), // gemstones
+            entry("Rocky", new SkillSource(Skill.THIEVING, 36_490, 42)), // stalls
             entry("Scorpia's offspring", new KcSource("Scorpia", 1 / 2015.75)),
             entry("Scurry", new KcSource("Scurrius", 1.0 / 3_000)),
             entry("Skotos", new KcSource("Skotizo", 1.0 / 65)),
             entry("Smolcano", new KcSource("Zalcano", 1.0 / 2_250)),
             entry("Sraracha", new KcSource("Sarachnis", 1.0 / 3_000)),
-            entry("Tangleroot", new SkillSource(Skill.FARMING, 7_500, client -> client.getSkillExperience(Skill.FARMING) / 119)), // mushrooms
+            entry("Tangleroot", new SkillSource(Skill.FARMING, 7_500, 119)), // mushrooms
             entry("Tiny tempor", new KcSource("Reward pool (Tempoross)", 1.0 / 8_000)),
             entry("Tumeken's guardian", new Source() {
                 @Override
