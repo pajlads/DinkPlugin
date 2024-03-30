@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntToDoubleFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static dinkplugin.notifiers.CollectionNotifier.COLLECTION_LOG_REGEX;
@@ -246,7 +245,7 @@ public class PetNotifier extends BaseNotifier {
     }
 
     private static abstract class MultiSource extends Source {
-        abstract double[] getRates();
+        abstract double[] getRates(Client client);
 
         abstract int[] getActions(Client client, KillCountService kcService);
 
@@ -262,7 +261,7 @@ public class PetNotifier extends BaseNotifier {
             final int totalActions = MathUtils.sum(actions);
             if (totalActions <= 0) return null;
 
-            final double[] rates = getRates();
+            final double[] rates = getRates(client);
             double weighted = 0;
             for (int i = 0, n = actions.length; i < n; i++) {
                 weighted += rates[i] * actions[i] / totalActions;
@@ -273,7 +272,7 @@ public class PetNotifier extends BaseNotifier {
         @Override
         Double calculateLuck(Client client, KillCountService kcService, double probability, int killCount) {
             final int[] actions = getActions(client, kcService);
-            final double[] rates = getRates();
+            final double[] rates = getRates(client);
             double p = 1;
             for (int i = 0, n = actions.length; i < n; i++) {
                 p *= Math.pow(1 - rates[i], actions[i]); // similar to geometric distribution survival function
@@ -290,7 +289,7 @@ public class PetNotifier extends BaseNotifier {
         int actionXp;
 
         @Override
-        double[] getRates() {
+        double[] getRates(Client client) {
             final int n = Experience.MAX_REAL_LEVEL;
             double[] rates = new double[n];
             for (int level = 1; level <= n; level++) {
@@ -360,6 +359,11 @@ public class PetNotifier extends BaseNotifier {
             }
             return actions;
         }
+
+        @Override
+        double[] getRates(Client client) {
+            return this.rates;
+        }
     }
 
     static {
@@ -385,7 +389,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Bloodhound", new KcSource("Clue Scroll (master)", 1.0 / 1_000)),
             entry("Callisto cub", new MultiKcSource("Callisto", 1.0 / 1_500, "Artio", 1.0 / 2_800)),
             entry("Chompy chick", new KcSource("Chompy bird", 1.0 / 500)),
-            entry("Giant squirrel", new Source() {
+            entry("Giant squirrel", new MultiSource() {
                 private final Map<String, Integer> courses = Map.ofEntries(
                     entry("Gnome Stronghold Agility", 35_609),
                     entry("Shayzien Agility Course", 31_804),
@@ -416,34 +420,7 @@ public class PetNotifier extends BaseNotifier {
                 );
 
                 @Override
-                Double getProbability(Client client, KillCountService kcService) {
-                    double[] rates = getRates(client);
-                    int[] counts = getCounts(kcService);
-                    int total = MathUtils.sum(counts);
-                    if (total <= 0) return null;
-                    return IntStream.range(0, rates.length)
-                        .mapToDouble(i -> rates[i] * counts[i] / total)
-                        .sum();
-                }
-
-                @Override
-                Integer estimateActions(Client client, KillCountService kcService) {
-                    int total = MathUtils.sum(getCounts(kcService));
-                    return total > 0 ? total : null;
-                }
-
-                @Override
-                Double calculateLuck(Client client, KillCountService kcService, double probability, int killCount) {
-                    final double[] rates = getRates(client);
-                    final int[] counts = getCounts(kcService);
-                    double p = 1;
-                    for (int i = 0, n = rates.length; i < n; i++) {
-                        p *= Math.pow(1 - rates[i], counts[i]); // see MultiKcSource
-                    }
-                    return 1 - p;
-                }
-
-                private int[] getCounts(KillCountService kcService) {
+                public int[] getActions(Client client, KillCountService kcService) {
                     return courses.keySet()
                         .stream()
                         .mapToInt(course -> {
@@ -453,7 +430,8 @@ public class PetNotifier extends BaseNotifier {
                         .toArray();
                 }
 
-                private double[] getRates(Client client) {
+                @Override
+                public double[] getRates(Client client) {
                     int level = client.getRealSkillLevel(Skill.AGILITY);
                     IntToDoubleFunction calc = base -> 1.0 / (base - level * 25); // see SkillSource
                     return courses.entrySet()
