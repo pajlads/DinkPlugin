@@ -498,17 +498,12 @@ public class PetNotifier extends BaseNotifier {
             entry("Pet zilyana", new KcSource("Commander Zilyana", 1.0 / 5_000)),
             entry("Phoenix", new KcSource("Wintertodt", 1.0 / 5_000)),
             entry("Prince black dragon", new KcSource("King Black Dragon", 1.0 / 3_000)),
-            entry("Quetzin", new Source() {
-                @Override
-                Double getProbability(Client client, KillCountService kcService) {
-                    return null; // currently unknown
-                }
-
-                @Override
-                Integer estimateActions(Client client, KillCountService kcService) {
-                    return null; // currently untracked
-                }
-            }),
+            /*
+             * jagex reported 2,341,903 rumours completed and 2,050 quetzals obtained by 3/27. the below rarity
+             * assumes that 87.54% of rumours were expert/master and both tiers have same drop rate. these assumptions
+             * may be unrealistic, so we expect to update this probability as more concrete information is available.
+             */
+            entry("Quetzin", new MultiKcSource("Hunters' loot sack (expert)", 1.0 / 1_000, "Hunters' loot sack (master)", 1.0 / 1_000)),
             entry("Rift guardian", new SkillSource(Skill.RUNECRAFT, 1_795_758, client -> client.getSkillExperience(Skill.RUNECRAFT) / 10)), // lava runes
             entry("Rock golem", new SkillSource(Skill.MINING, 211_886, client -> client.getSkillExperience(Skill.MINING) / 65)), // gemstones
             entry("Rocky", new SkillSource(Skill.THIEVING, 36_490, client -> client.getSkillExperience(Skill.THIEVING) / 42)), // stalls
