@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Major: Add notifier for chat messages that match custom patterns. (#391)
+- Major: Add notifier for chat messages that match custom patterns. (#391, #450)
 - Minor: Include rarity and luck for pet notifications. (#433)
 - Minor: `Completed Entries` field in Discord rich embed is now called `Completed`. (#448)
 - Bugfix: Allow Lunar Chest openings to trigger kill count notifier. (#449)
