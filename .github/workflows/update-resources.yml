@@ -1,7 +1,7 @@
 name: Update Resources
 on:
   schedule:
-    - cron: '0 4 * * *'
+    - cron: "0 4 * * *"
 
 jobs:
   update-resources:
@@ -22,7 +22,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          title: 'chore: update rarity data from wiki'
-          commit-message: 'chore: update rarity data from wiki'
+          title: "chore: update rarity data from wiki"
+          commit-message: "chore: update rarity data from wiki"
           branch: automated/chore/update-resources
           reviewers: iProdigy
