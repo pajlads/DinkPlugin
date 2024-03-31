@@ -2,6 +2,7 @@ name: Update Resources
 on:
   schedule:
     - cron: "0 4 * * *"
+  workflow_dispatch:
 
 jobs:
   update-resources:
@@ -19,10 +20,14 @@ jobs:
       - name: Execute Resource Generator
         run: ./gradlew generateResources
 
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m')" >> $GITHUB_OUTPUT
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          title: "chore: update rarity data from wiki"
-          commit-message: "chore: update rarity data from wiki"
+          title: "chore: update rarity data from ${{ steps.date.outputs.date }} wiki"
+          commit-message: "chore: update rarity data from ${{ steps.date.outputs.date }} wiki"
           branch: automated/chore/update-resources
           reviewers: iProdigy
