@@ -9,13 +9,13 @@ Thus, any third-party consumer should utilize the body entity named `payload_jso
 Due to this structure, trying to parse the full `multipart/form-data` as JSON will not succeed until you specifically grab the `payload_json` entity. Competent web frameworks should handle the multipart parsing, so you can easily access the relevant form values.
 
 See [here](https://gitea.ivr.fi/Leppunen/runelite-dink-api/src/branch/master/handlers/dinkHandler.js) for an example project that leverages [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) to read the JSON payload and screenshot file.
-For Express, utilize the [`Multer`](https://github.com/expressjs/multer) middleware.
-For Golang, utilize the [`ParseMultipartForm`](https://pkg.go.dev/net/http#Request.ParseMultipartForm) function.
-For http4k, utilize the [`http4k-multipart`](https://www.http4k.org/guide/howto/use_multipart_forms/#lens_typesafe_validating_api_-_reads_all_contents_onto_diskmemory) module.
-For Ktor, utilize the [`receiveMultipart`](https://ktor.io/docs/requests.html#form_data) method.
-For Jooby, utilize the [`form`](https://javadoc.io/static/io.jooby/jooby/3.0.9/io.jooby/io/jooby/Context.html#form%28java.lang.String%29) method.
-For Vert.x-Web, utilize the [`formAttributes`](https://vertx.io/docs/apidocs/io/vertx/core/http/HttpServerRequest.html#formAttributes--) method.
-For Quarkus, utilize the [`@RestForm`](https://quarkus.io/guides/rest#multipart) annotation.
+For Express, utilize the [`Multer`](https://github.com/expressjs/multer) middleware.  
+For Golang, utilize the [`ParseMultipartForm`](https://pkg.go.dev/net/http#Request.ParseMultipartForm) function.  
+For http4k, utilize the [`http4k-multipart`](https://www.http4k.org/guide/howto/use_multipart_forms/#lens_typesafe_validating_api_-_reads_all_contents_onto_diskmemory) module.  
+For Ktor, utilize the [`receiveMultipart`](https://ktor.io/docs/requests.html#form_data) method.  
+For Jooby, utilize the [`form`](https://javadoc.io/static/io.jooby/jooby/3.0.9/io.jooby/io/jooby/Context.html#form%28java.lang.String%29) method.  
+For Vert.x-Web, utilize the [`formAttributes`](https://vertx.io/docs/apidocs/io/vertx/core/http/HttpServerRequest.html#formAttributes--) method.  
+For Quarkus, utilize the [`@RestForm`](https://quarkus.io/guides/rest#multipart) annotation.  
 For Spring, utilize the [`@RequestPart`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestPart.html) annotation.
 
 In the examples below, `content` is populated instead of `embeds` for simplicity; this would correspond to the advanced setting 'Use Rich Embeds' being disabled. Third-party integrations should rely on the `extra` object instead of `content`/`embeds`.
