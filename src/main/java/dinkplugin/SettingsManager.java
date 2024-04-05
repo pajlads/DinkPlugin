@@ -189,7 +189,7 @@ public class SettingsManager {
         if (value.isEmpty() && ("embedFooterText".equals(key) || "embedFooterIcon".equals(key) || "deathIgnoredRegions".equals(key)) || ChatNotifier.PATTERNS_CONFIG_KEY.equals(key)) {
             SwingUtilities.invokeLater(() -> {
                 if (StringUtils.isEmpty(configManager.getConfiguration(CONFIG_GROUP, key))) {
-                    // non-empty string so runelite doesn't overwrite the value on next start; see dink issue #453
+                    // non-empty string so runelite doesn't overwrite the value on next start; see https://github.com/pajlads/DinkPlugin/issues/453
                     configManager.setConfiguration(CONFIG_GROUP, key, " ");
                 }
             });
