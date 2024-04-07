@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dinkplugin.domain.FilterMode;
+import dinkplugin.notifiers.ChatNotifier;
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.swing.SwingUtilities;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
@@ -181,6 +183,16 @@ public class SettingsManager {
 
         if ("ignoredNames".equals(key)) {
             setFilteredNames(value);
+            return;
+        }
+
+        if (value.isEmpty() && ("embedFooterText".equals(key) || "embedFooterIcon".equals(key) || "deathIgnoredRegions".equals(key)) || ChatNotifier.PATTERNS_CONFIG_KEY.equals(key)) {
+            SwingUtilities.invokeLater(() -> {
+                if (StringUtils.isEmpty(configManager.getConfiguration(CONFIG_GROUP, key))) {
+                    // non-empty string so runelite doesn't overwrite the value on next start; see https://github.com/pajlads/DinkPlugin/issues/453
+                    configManager.setConfiguration(CONFIG_GROUP, key, " ");
+                }
+            });
             return;
         }
 
