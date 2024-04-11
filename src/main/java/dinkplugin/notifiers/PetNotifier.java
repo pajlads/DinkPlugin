@@ -255,6 +255,7 @@ public class PetNotifier extends BaseNotifier {
             "Scurry",
             "Skotos",
             "Smolcano",
+            "Smol heredit",
             "Sraracha",
             "Tangleroot",
             "Tiny tempor",
