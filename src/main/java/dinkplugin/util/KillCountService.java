@@ -191,6 +191,12 @@ public class KillCountService {
             }
         }
 
+        SerializedLoot lootRecord = getLootTrackerRecord(type, sourceName);
+        return lootRecord != null ? lootRecord.getKills() : null;
+    }
+
+    @Nullable
+    public SerializedLoot getLootTrackerRecord(@NotNull LootRecordType type, @NotNull String sourceName) {
         if (ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
             // assume stored kc is useless if loot tracker plugin is disabled
             return null;
@@ -201,19 +207,20 @@ public class KillCountService {
         );
         if (json == null) {
             // no kc stored implies first kill
-            return 0;
+            return new SerializedLoot();
         }
         try {
-            int kc = gson.fromJson(json, SerializedLoot.class).getKills();
+            SerializedLoot lootRecord = gson.fromJson(json, SerializedLoot.class);
 
             // loot tracker doesn't count kill if no loot - https://github.com/runelite/runelite/issues/5077
             OptionalDouble nothingProbability = rarityService.getRarity(sourceName, -1, 0);
             if (nothingProbability.isPresent() && nothingProbability.getAsDouble() < 1.0) {
                 // estimate the actual kc (including kills with no loot)
-                kc = (int) Math.round(kc / (1 - nothingProbability.getAsDouble()));
+                int kc = (int) Math.round(lootRecord.getKills() / (1 - nothingProbability.getAsDouble()));
+                return lootRecord.withKills(kc);
+            } else {
+                return lootRecord;
             }
-
-            return kc;
         } catch (JsonSyntaxException e) {
             // should not occur unless loot tracker changes stored loot POJO structure
             log.warn("Failed to read kills from loot tracker config", e);

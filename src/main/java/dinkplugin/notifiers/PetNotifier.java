@@ -9,6 +9,7 @@ import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.MathUtils;
+import dinkplugin.util.SerializedLoot;
 import dinkplugin.util.Utils;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -16,6 +17,7 @@ import lombok.Setter;
 import lombok.Value;
 import net.runelite.api.Client;
 import net.runelite.api.Experience;
+import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
@@ -510,6 +512,18 @@ public class PetNotifier extends BaseNotifier {
             entry("Scurry", new KcSource("Scurrius", 1.0 / 3_000)),
             entry("Skotos", new KcSource("Skotizo", 1.0 / 65)),
             entry("Smolcano", new KcSource("Zalcano", 1.0 / 2_250)),
+            entry("Smol heredit", new Source() {
+                @Override
+                Double getProbability(Client client, KillCountService kcService) {
+                    return 1.0 / 200;
+                }
+
+                @Override
+                Integer estimateActions(Client client, KillCountService kcService) {
+                    SerializedLoot lootRecord = kcService.getLootTrackerRecord(LootRecordType.EVENT, "Fortis Colosseum");
+                    return lootRecord != null ? lootRecord.getQuantity(ItemID.DIZANAS_QUIVER_UNCHARGED) : null;
+                }
+            }),
             entry("Sraracha", new KcSource("Sarachnis", 1.0 / 3_000)),
             entry("Tangleroot", new SkillSource(Skill.FARMING, 7_500, 119)), // mushrooms
             entry("Tiny tempor", new KcSource("Reward pool (Tempoross)", 1.0 / 8_000)),
