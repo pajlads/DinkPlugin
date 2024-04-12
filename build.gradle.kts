@@ -40,7 +40,7 @@ dependencies {
 }
 
 group = "dinkplugin"
-version = "1.9.1"
+version = "1.10.0"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
