@@ -3,7 +3,7 @@ package dinkplugin.domain;
 import net.runelite.api.ChatMessageType;
 
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import static net.runelite.api.ChatMessageType.*;
@@ -34,7 +34,7 @@ public enum ChatNotificationType {
     }
 
     static {
-        Map<ChatMessageType, ChatNotificationType> map = new HashMap<>();
+        Map<ChatMessageType, ChatNotificationType> map = new EnumMap<>(ChatMessageType.class);
         for (ChatNotificationType value : values()) {
             for (ChatMessageType type : value.types) {
                 map.put(type, value);
