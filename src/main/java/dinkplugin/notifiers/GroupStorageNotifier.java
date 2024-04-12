@@ -11,12 +11,13 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
+import net.runelite.api.annotations.Interface;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import org.apache.commons.lang3.StringUtils;
@@ -49,16 +50,15 @@ import java.util.stream.Collectors;
 public class GroupStorageNotifier extends BaseNotifier {
 
     /**
-     * The Group ID corresponding to {@link net.runelite.api.widgets.WidgetInfo#GROUP_STORAGE_ITEM_CONTAINER}
-     * for tracking when GIM shared storage is opened.
+     * The Group ID for tracking when GIM shared storage is opened.
      */
-    static final @VisibleForTesting int GROUP_STORAGE_WIDGET_GROUP = WidgetID.GROUP_STORAGE_GROUP_ID;
+    static final @VisibleForTesting int GROUP_STORAGE_WIDGET_GROUP = InterfaceID.GROUP_STORAGE;
 
     /**
-     * The ID of the widget that appears over the chat box
+     * The Group ID of the widget that appears over the chat box
      * when the storage transaction is saved/committed.
      */
-    static final @VisibleForTesting int GROUP_STORAGE_SAVING_WIDGET_ID = 293;
+    static final @VisibleForTesting @Interface int GROUP_STORAGE_SAVING_WIDGET_ID = 293;
 
     /**
      * The message to indicate that a list of deposits or withdrawals is empty.
@@ -245,8 +245,8 @@ public class GroupStorageNotifier extends BaseNotifier {
      */
     private int getItemId(Item item) {
         int id = item.getId();
-        if (id == ItemID.COINS || id == ItemID.COINS_8890 || id == ItemID.COINS_6964)
-            return ItemID.COINS_995; // use single ID for all coins
+        if (ItemUtils.COIN_VARIATIONS.contains(id))
+            return ItemID.COINS; // use single ID for all coins
         return itemManager.canonicalize(id); // un-noted, un-placeholdered, un-worn
     }
 

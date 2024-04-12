@@ -20,13 +20,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@387ac29b308b003ca37ba93a6cab5eb57c8f5f93
         with:
           distribution: temurin
           java-version: 11
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Execute Gradle build
         run: ./gradlew build
@@ -35,7 +35,7 @@ jobs:
         run: ./gradlew shadowJar
 
       - name: Upload shadowJar
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dinkplugin-shadow
           path: build/libs/dinkplugin-*-all.jar
@@ -46,12 +46,12 @@ jobs:
     if: (github.event_name == 'push' && github.ref == 'refs/heads/master')
 
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: dinkplugin-shadow
           path: release-artifacts/
       - name: Create release
-        uses: ncipollo/release-action@v1.13.0
+        uses: ncipollo/release-action@v1.14.0
         with:
           removeArtifacts: true
           allowUpdates: true

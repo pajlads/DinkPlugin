@@ -1,12 +1,10 @@
 package dinkplugin.notifiers;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.google.common.math.DoubleMath;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.message.templating.Evaluable;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.message.templating.impl.JoiningReplacement;
@@ -14,39 +12,35 @@ import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
-import dinkplugin.util.SerializedLoot;
+import dinkplugin.util.KillCountService;
+import dinkplugin.util.MathUtils;
+import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
-import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
-import net.runelite.client.callback.ClientThread;
-import net.runelite.client.config.ConfigManager;
-import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.loottracker.LootReceived;
-import net.runelite.client.plugins.loottracker.LootTrackerConfig;
-import net.runelite.client.plugins.loottracker.LootTrackerPlugin;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.OptionalDouble;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -54,29 +48,17 @@ import java.util.stream.Collectors;
 @Singleton
 public class LootNotifier extends BaseNotifier {
 
-    private static final String RL_LOOT_PLUGIN_NAME = LootTrackerPlugin.class.getSimpleName().toLowerCase();
-
-    @Inject
-    private Gson gson;
-
     @Inject
     private ItemManager itemManager;
 
     @Inject
-    private ClientThread clientThread;
+    private KillCountService killCountService;
 
     @Inject
-    private ConfigManager configManager;
-
-    @Inject
-    private ScheduledExecutorService executor;
+    private RarityService rarityService;
 
     private final Collection<Pattern> itemNameAllowlist = new CopyOnWriteArrayList<>();
     private final Collection<Pattern> itemNameDenylist = new CopyOnWriteArrayList<>();
-
-    private final Cache<String, Integer> killCounts = CacheBuilder.newBuilder()
-        .expireAfterAccess(10, TimeUnit.MINUTES)
-        .build();
 
     @Override
     public boolean isEnabled() {
@@ -86,10 +68,6 @@ public class LootNotifier extends BaseNotifier {
     @Override
     protected String getWebhookUrl() {
         return config.lootWebhook();
-    }
-
-    public void reset() {
-        killCounts.invalidateAll();
     }
 
     public void init() {
@@ -126,32 +104,8 @@ public class LootNotifier extends BaseNotifier {
         );
     }
 
-    public void onGameMessage(String message) {
-        // update cached KC via boss chat message with robustness for chat event coming before OR after the loot event
-        KillCountNotifier.parseBoss(message).ifPresent(pair -> {
-            String boss = pair.getKey();
-            Integer kc = pair.getValue();
-
-            // Update cache if no mapping exists (i.e., this is the first boss kill & chat event occurred first)
-            // We store kc - 1 since incrementAndGetKillCount will increment; kc - 1 + 1 == kc
-            Integer existingMapping = killCounts.asMap().putIfAbsent(boss, kc - 1);
-            if (existingMapping != null) {
-                // KC already cached, but we don't know if this boss message appeared before/after the loot event.
-                // If after, we should store kc. If before, we should store kc - 1.
-                // Given this uncertainty, we wait so that the loot event has passed, and then we can store latest kc.
-                executor.schedule(() -> {
-                    killCounts.asMap().merge(boss, kc, Math::max);
-                }, 15, TimeUnit.SECONDS);
-            }
-        });
-    }
-
     public void onNpcLootReceived(NpcLootReceived event) {
-        if (!isEnabled()) {
-            // increment kill count
-            killCounts.asMap().computeIfPresent(event.getNpc().getName(), (k, v) -> v + 1);
-            return;
-        }
+        if (!isEnabled()) return;
 
         NPC npc = event.getNpc();
         int id = npc.getId();
@@ -189,39 +143,8 @@ public class LootNotifier extends BaseNotifier {
         }
     }
 
-    public void onWidgetLoaded(WidgetLoaded event) {
-        if (!isEnabled()) return;
-
-        // special case: runelite client & loot tracker do not handle unsired loot at the time of writing
-        if (event.getGroupId() == WidgetID.DIALOG_SPRITE_GROUP_ID) {
-            clientThread.invokeAtTickEnd(() -> {
-                Widget textWidget = client.getWidget(WidgetInfo.DIALOG_SPRITE_TEXT);
-                if (textWidget != null && StringUtils.containsIgnoreCase(textWidget.getText(), "The Font consumes the Unsired")) {
-                    Widget spriteWidget = firstWithItem(WidgetInfo.DIALOG_SPRITE, WidgetInfo.DIALOG_SPRITE_SPRITE, WidgetInfo.DIALOG_SPRITE_TEXT);
-                    if (hasItem(spriteWidget)) {
-                        ItemStack item = new ItemStack(
-                            spriteWidget.getItemId(),
-                            1,
-                            client.getLocalPlayer().getLocalLocation()
-                        );
-                        this.handleNotify(Collections.singletonList(item), "The Font of Consumption", LootRecordType.EVENT);
-                    } else {
-                        Widget widget = client.getWidget(WidgetInfo.DIALOG_SPRITE);
-                        log.warn(
-                            "Failed to locate widget with item for Unsired loot. Children: {} - Nested: {} - Sprite: {} - Model: {}",
-                            widget != null && widget.getDynamicChildren() != null ? widget.getDynamicChildren().length : -1,
-                            widget != null && widget.getNestedChildren() != null ? widget.getNestedChildren().length : -1,
-                            widget != null ? widget.getSpriteId() : -1,
-                            widget != null ? widget.getModelId() : -1
-                        );
-                    }
-                }
-            });
-        }
-    }
-
     private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type) {
-        final Integer kc = type == LootRecordType.NPC ? incrementAndGetKillCount(dropper) : null;
+        final Integer kc = killCountService.getKillCount(type, dropper);
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
 
@@ -233,98 +156,113 @@ public class LootNotifier extends BaseNotifier {
         long totalStackValue = 0;
         boolean sendMessage = false;
         SerializedItemStack max = null;
+        Collection<Integer> deniedIds = new HashSet<>(reduced.size());
 
         for (ItemStack item : reduced) {
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
             long totalPrice = stack.getTotalPrice();
             boolean worthy = totalPrice >= minValue || matches(itemNameAllowlist, stack.getName());
-            if (worthy && !matches(itemNameDenylist, stack.getName())) {
-                sendMessage = true;
-                lootMessage.component(ItemUtils.templateStack(stack, true));
-                if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
+            if (!matches(itemNameDenylist, stack.getName())) {
+                if (worthy) {
+                    sendMessage = true;
+                    lootMessage.component(ItemUtils.templateStack(stack, true));
+                    if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
+                }
                 if (max == null || totalPrice > max.getTotalPrice()) {
                     max = stack;
                 }
+            } else {
+                deniedIds.add(item.getId());
             }
             serializedItems.add(stack);
             totalStackValue += totalPrice;
         }
 
+        Map.Entry<SerializedItemStack, Double> rarest = getRarestDropRate(items, dropper, type, deniedIds);
+
+        Evaluable lootMsg;
+        if (!sendMessage) {
+            if (sufficientlyRare(rarest)) {
+                // allow notifications for rare drops, even if below configured min loot value
+                sendMessage = true;
+                lootMsg = Replacements.ofMultiple(" ",
+                    Replacements.ofText("Various items including:"),
+                    ItemUtils.templateStack(rarest.getKey(), false)
+                );
+            } else if (totalStackValue >= minValue && max != null && "Loot Chest".equalsIgnoreCase(dropper)) {
+                // Special case: PK loot keys should trigger notification if total value exceeds configured minimum even
+                // if no single item itself would exceed the min value config - github.com/pajlads/DinkPlugin/issues/403
+                sendMessage = true;
+                lootMsg = Replacements.ofMultiple(" ",
+                    Replacements.ofText("Various items including:"),
+                    ItemUtils.templateStack(max, true)
+                );
+            } else {
+                lootMsg = null;
+            }
+        } else {
+            lootMsg = lootMessage.build();
+        }
+
         if (sendMessage) {
+            String overrideUrl = getWebhookUrl();
+            if (config.lootRedirectPlayerKill() && !config.pkWebhook().isBlank()) {
+                if (type == LootRecordType.PLAYER || (type == LootRecordType.EVENT && "Loot Chest".equals(dropper))) {
+                    overrideUrl = config.pkWebhook();
+                }
+            }
+            SerializedItemStack keyItem = rarest != null ? rarest.getKey() : max;
+            Double rarity = rarest != null ? rarest.getValue() : null;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
+            Evaluable source = type == LootRecordType.PLAYER
+                ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))
+                : Replacements.ofWiki(dropper);
             Template notifyMessage = Template.builder()
                 .template(config.lootNotifyMessage())
                 .replacementBoundary("%")
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
-                .replacement("%LOOT%", lootMessage.build())
+                .replacement("%LOOT%", lootMsg)
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))
-                .replacement("%SOURCE%", Replacements.ofText(dropper))
+                .replacement("%SOURCE%", source)
                 .build();
-            createMessage(screenshot,
+            createMessage(overrideUrl, screenshot,
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
-                    .extra(new LootNotificationData(serializedItems, dropper, type, kc))
+                    .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity))
                     .type(NotificationType.LOOT)
-                    .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
+                    .thumbnailUrl(ItemUtils.getItemImageUrl(keyItem.getId()))
                     .build()
             );
         }
     }
 
-    private Integer incrementAndGetKillCount(String npcName) {
-        Integer stored = getStoredKillCount(npcName);
-        if (stored == null) {
-            killCounts.asMap().computeIfPresent(npcName, (k, v) -> v + 1);
-            return null;
-        }
-        return killCounts.asMap().compute(npcName, (npc, cached) -> {
-            if (cached == null || cached < stored) {
-                return stored + 1;
-            }
-            return cached + 1;
-        });
+    @Nullable
+    private Map.Entry<SerializedItemStack, Double> getRarestDropRate(Collection<ItemStack> items, String dropper, LootRecordType type, Collection<Integer> deniedIds) {
+        if (type != LootRecordType.NPC) return null;
+        return items.stream()
+            .filter(item -> !deniedIds.contains(item.getId()))
+            .map(item -> {
+                OptionalDouble rarity = rarityService.getRarity(dropper, item.getId(), item.getQuantity());
+                if (rarity.isEmpty()) return null;
+                return Map.entry(item, rarity.getAsDouble());
+            })
+            .filter(Objects::nonNull)
+            .min(Comparator.comparingDouble(Map.Entry::getValue))
+            .map(pair -> {
+                ItemStack item = pair.getKey();
+                SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
+                return Map.entry(stack, pair.getValue());
+            })
+            .orElse(null);
     }
 
-    /**
-     * @param npcName {@link NPC#getName()}
-     * @return the kill count stored by the base runelite loot tracker plugin
-     */
-    private Integer getStoredKillCount(String npcName) {
-        if ("false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, RL_LOOT_PLUGIN_NAME))) {
-            // assume stored kc is useless if loot tracker plugin is disabled
-            return null;
-        }
-        String json = configManager.getConfiguration(LootTrackerConfig.GROUP,
-            configManager.getRSProfileKey(),
-            "drops_NPC_" + npcName
-        );
-        if (json == null) {
-            // no kc stored implies first kill
-            return 0;
-        }
-        try {
-            return gson.fromJson(json, SerializedLoot.class).getKills();
-        } catch (JsonSyntaxException e) {
-            // should not occur unless loot tracker changes stored loot pojo structure
-            log.warn("Failed to read kills from loot tracker config", e);
-            return null;
-        }
-    }
-
-    private Widget firstWithItem(WidgetInfo... widgets) {
-        for (WidgetInfo info : widgets) {
-            Widget widget = client.getWidget(info);
-            if (hasItem(widget)) {
-                log.debug("Obtained item from widget via {}", info);
-                return widget;
-            }
-        }
-        return null;
-    }
-
-    private static boolean hasItem(Widget widget) {
-        return widget != null && widget.getItemId() >= 0;
+    private boolean sufficientlyRare(@Nullable Map.Entry<SerializedItemStack, Double> rarest) {
+        if (rarest == null) return false;
+        int configRareDenominator = config.lootRarityThreshold();
+        if (configRareDenominator <= 0) return false;
+        double rarityThreshold = 1.0 / configRareDenominator;
+        return DoubleMath.fuzzyCompare(rarest.getValue(), rarityThreshold, MathUtils.EPSILON) <= 0;
     }
 
     private static boolean matches(Collection<Pattern> regexps, String input) {

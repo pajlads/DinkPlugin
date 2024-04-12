@@ -12,14 +12,17 @@ import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
+import net.runelite.api.ItemID;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
+import net.runelite.client.game.ItemVariationMapping;
 import net.runelite.client.util.QuantityFormatter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,11 +40,14 @@ public class ItemUtils {
 
     final String ITEM_CACHE_BASE_URL = "https://static.runelite.net/cache/item/";
 
+    public final Collection<Integer> COIN_VARIATIONS = new HashSet<>(ItemVariationMapping.getVariations(ItemID.COINS));
+
     private final Set<Integer> NEVER_KEPT_ITEMS = ImmutableSet.of(
-        CLUE_BOX, LOOTING_BAG,
-        AMULET_OF_THE_DAMNED, AMULET_OF_THE_DAMNED_FULL,
+        CLUE_BOX, LOOTING_BAG, FLAMTAER_BAG, JAR_GENERATOR,
+        AMULET_OF_THE_DAMNED, RING_OF_CHAROS, RING_OF_CHAROSA,
         BRACELET_OF_ETHEREUM, BRACELET_OF_ETHEREUM_UNCHARGED,
-        AVAS_ACCUMULATOR, AVAS_ATTRACTOR, MAGIC_SECATEURS,
+        AVAS_ACCUMULATOR, AVAS_ATTRACTOR, MAGIC_SECATEURS, MAGIC_BUTTERFLY_NET,
+        COOKING_GAUNTLETS, GOLDSMITH_GAUNTLETS, CHAOS_GAUNTLETS, STEEL_GAUNTLETS,
         SILLY_JESTER_HAT, SILLY_JESTER_TOP, SILLY_JESTER_TIGHTS, SILLY_JESTER_BOOTS,
         LUNAR_HELM, LUNAR_TORSO, LUNAR_LEGS, LUNAR_GLOVES, LUNAR_BOOTS,
         LUNAR_CAPE, LUNAR_AMULET, LUNAR_RING, LUNAR_STAFF,

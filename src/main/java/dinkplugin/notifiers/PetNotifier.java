@@ -133,8 +133,13 @@ public class PetNotifier extends BaseNotifier {
         if (petName == null)
             return;
 
-        if (milestone != null || ticksWaited.incrementAndGet() > MAX_TICKS_WAIT)
-            this.handleNotify();
+        if (milestone != null || ticksWaited.incrementAndGet() > MAX_TICKS_WAIT) {
+            // ensure notifier was not disabled during wait ticks
+            if (isEnabled()) {
+                this.handleNotify();
+            }
+            this.reset();
+        }
     }
 
     public void reset() {
@@ -188,8 +193,6 @@ public class PetNotifier extends BaseNotifier {
             .thumbnailUrl(thumbnail)
             .type(NotificationType.PET)
             .build());
-
-        reset();
     }
 
     private static Optional<ParseResult> parseItemFromGameMessage(String message) {
@@ -244,12 +247,15 @@ public class PetNotifier extends BaseNotifier {
             "Olmlet",
             "Phoenix",
             "Prince black dragon",
+            "Quetzin",
             "Rift guardian",
             "Rock golem",
             "Rocky",
             "Scorpia's offspring",
+            "Scurry",
             "Skotos",
             "Smolcano",
+            "Smol heredit",
             "Sraracha",
             "Tangleroot",
             "Tiny tempor",

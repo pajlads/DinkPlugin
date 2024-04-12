@@ -4,11 +4,13 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dinkplugin.domain.FilterMode;
+import dinkplugin.notifiers.ChatNotifier;
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.PetNotifier;
 import dinkplugin.util.Utils;
+import dinkplugin.util.WorldUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,6 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.CommandExecuted;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.swing.SwingUtilities;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,6 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
@@ -61,6 +64,11 @@ public class SettingsManager {
      * Maps section names to the corresponding config item keys to allow for selective export.
      */
     private final Map<String, Collection<String>> keysBySection = new HashMap<>();
+
+    /**
+     * The key names of config items that are hidden (and, thus, should not be exported).
+     */
+    private final Collection<String> hiddenConfigKeys = new HashSet<>();
 
     /**
      * Set of our config keys that correspond to webhook URL lists.
@@ -102,6 +110,10 @@ public class SettingsManager {
         configManager.getConfigDescriptor(config).getItems().forEach(item -> {
             String key = item.key();
             configValueTypes.put(key, item.getType());
+
+            if (item.getItem().hidden()) {
+                hiddenConfigKeys.add(key);
+            }
 
             String section = item.getItem().section();
             if (StringUtils.isNotEmpty(section)) {
@@ -150,6 +162,18 @@ public class SettingsManager {
             }
 
             exportConfig(includeKey);
+        } else if ("DinkHash".equalsIgnoreCase(cmd)) {
+            CompletableFuture.completedFuture(client.getAccountHash())
+                .thenApplyAsync(Utils::dinkHash)
+                .thenCompose(Utils::copyToClipboard)
+                .thenRun(() -> plugin.addChatSuccess("Copied your dink hash to clipboard"))
+                .exceptionally(t -> {
+                    plugin.addChatWarning("Failed to copy your dink hash to clipboard");
+                    return null;
+                });
+        } else if ("DinkRegion".equalsIgnoreCase(cmd)) {
+            int regionId = WorldUtils.getLocation(client).getRegionID();
+            plugin.addChatSuccess(String.format("Your current region ID is: %d", regionId));
         }
     }
 
@@ -159,6 +183,16 @@ public class SettingsManager {
 
         if ("ignoredNames".equals(key)) {
             setFilteredNames(value);
+            return;
+        }
+
+        if (value.isEmpty() && ("embedFooterText".equals(key) || "embedFooterIcon".equals(key) || "deathIgnoredRegions".equals(key)) || ChatNotifier.PATTERNS_CONFIG_KEY.equals(key)) {
+            SwingUtilities.invokeLater(() -> {
+                if (StringUtils.isEmpty(configManager.getConfiguration(CONFIG_GROUP, key))) {
+                    // non-empty string so runelite doesn't overwrite the value on next start; see https://github.com/pajlads/DinkPlugin/issues/453
+                    configManager.setConfiguration(CONFIG_GROUP, key, " ");
+                }
+            });
             return;
         }
 
@@ -200,12 +234,17 @@ public class SettingsManager {
         }
     }
 
-    void onGameState(GameStateChanged event) {
-        if (event.getGameState() != GameState.LOGGED_IN) {
+    void onGameState(GameState oldState, GameState newState) {
+        if (newState != GameState.LOGGED_IN) {
             justLoggedIn.set(false);
             return;
         } else {
             justLoggedIn.set(true);
+        }
+
+        if (oldState == GameState.HOPPING) {
+            // avoid repeated warnings after login
+            return;
         }
 
         // Since varbit values default to zero and no VarbitChanged occurs if the
@@ -236,6 +275,21 @@ public class SettingsManager {
         int id = event.getVarbitId();
         if (PROBLEMATIC_VARBITS.contains(id))
             clientThread.invoke(() -> checkVarbits(id, client.getVarbitValue(id)));
+    }
+
+    boolean hasModifiedConfig() {
+        for (String webhookConfigKey : webhookConfigKeys) {
+            String webhookUrl = configManager.getConfiguration(SettingsManager.CONFIG_GROUP, webhookConfigKey);
+            if (webhookUrl != null && !webhookUrl.isEmpty()) {
+                return true;
+            }
+        }
+        return config.notifyAchievementDiary() || config.notifyClue() || config.notifyCollectionLog() ||
+            config.notifyCombatTask() || config.notifyDeath() || config.notifyGamble() ||
+            config.notifyGrandExchange() || config.notifyGroupStorage() || config.notifyKillCount() ||
+            config.notifyLeagues() || config.notifyLevel() || config.notifyLoot() || config.notifyPet() ||
+            config.notifyPk() || config.notifyQuest() || config.notifySlayer() || config.notifySpeedrun() ||
+            config.notifyTrades();
     }
 
     private boolean checkVarbits(int id, int value) {
@@ -279,9 +333,6 @@ public class SettingsManager {
             .map(String::toLowerCase)
             .forEach(filteredNames::add);
         log.debug("Updated RSN Filter List to: {}", filteredNames);
-
-        // clear any outdated notifier state
-        plugin.resetNotifiers();
     }
 
     /**
@@ -294,6 +345,7 @@ public class SettingsManager {
         Map<String, Object> configMap = configManager.getConfigurationKeys(prefix)
             .stream()
             .map(prop -> prop.substring(prefix.length()))
+            .filter(key -> !hiddenConfigKeys.contains(key))
             .filter(exportKey)
             .map(key -> Pair.of(key, configValueTypes.get(key)))
             .filter(pair -> pair.getValue() != null)
@@ -365,7 +417,7 @@ public class SettingsManager {
                 return;
             }
 
-            Object value = convertTypeFromJson(valueType, rawValue);
+            Object value = convertTypeFromJson(gson, valueType, rawValue);
             if (value == null) {
                 log.debug("Encountered config value with incorrect type: {} = {}", key, rawValue);
                 return;

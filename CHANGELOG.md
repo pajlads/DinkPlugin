@@ -1,5 +1,88 @@
 ## Unreleased
 
+- Major: Add notifier for chat messages that match custom patterns. (#391, #450)
+- Minor: Include Smol heredit pet name in pet notifications. (#458)
+- Minor: Prevent RuneLite from resetting empty config values for footer, ignored death regions, and chat patterns. (#454)
+- Minor: `Completed Entries` field in Discord rich embed is now called `Completed`. (#448)
+- Bugfix: Allow Lunar Chest openings to trigger kill count notifier. (#449)
+- Bugfix: Exclude denylisted items from loot rarity override consideration. (#447)
+
+## 1.9.1
+
+- Minor: Include Quetzin pet name in pet notifications. (#442)
+
+## 1.9.0
+
+- Major: Add item rarity to monster loot and collection notifications. (#425, #427)
+- Minor: Add `%COMPLETED` and `%TOTAL_POSSIBLE%` variables for collection log template. (#439)
+- Minor: Add wiki link for loot source in rich embeds. (#431)
+- Minor: Add chat message upon noteworthy plugin updates. (#429, #436)
+- Minor: Allow loot notifications for rare items below the min value threshold. (#426)
+- Minor: Include relevant kill count in collection log notifications. (#424)
+- Minor: Obtain kill count from chat commands plugin for loot notifications. (#392)
+- Minor: Add chat command to obtain the player's dink hash. (#408)
+- Bugfix: Include estimated kills without drops in KC for loot and collection notifications. (#432)
+- Dev: Refactor kill count tracking from `LootNotifier` to `KillCountService`. (#392)
+
+## 1.8.4
+
+- Minor: Fire loot notification for PK loot chests with sufficiently high total value. (#417)
+- Minor: Include region information in death notification metadata. (#420)
+- Minor: Allow customization of region IDs where deaths should be ignored. (#415)
+- Bugfix: Treat deaths in the graveyard room of the mage training arena as safe. (#418)
+- Dev: Clarify the plugin description. (#419)
+
+## 1.8.3
+
+- Minor: Include Scurrius pet name in pet notifications. (#410)
+- Bugfix: Update death safe exceptions on config import from clipboard. (#406)
+- Dev: Disable leagues notifier. (#411)
+
+## 1.8.2
+
+- Dev: Dynamically obtain coin item variations. (#398)
+- Dev: Changed the plugin icon back to the original version. (#401)
+
+## 1.8.1
+
+- Dev: Changed the plugin icon to a Christmas version. (#393)
+- Dev: Refactor widget ID packing. (#389)
+
+## 1.8.0
+
+- Major: Add notifier to capture trades with other players. (#361)
+- Minor: Add loot notifier setting that redirects pk loot to the pk notifier override url. (#353)
+- Minor: Allow customization of which safe deaths can trigger notifications. (#363, #384, #385)
+- Bugfix: Avoid erroneous level notification on login when initial data is delayed. (#383)
+- Bugfix: Ensure diary notifications below the configured minimum difficulty are not sent. (#382)
+- Bugfix: Update set of items that are never kept on dangerous deaths. (#364)
+- Bugfix: Don't report inaccurate completed collections count, when character summary tab was not selected. (#374)
+- Bugfix: Avoid undercounting diary completions for notifications that occur shortly after a teleport. (#373)
+- Dev: Small refactor of leagues notifier. (#387)
+- Dev: Execute screenshot rescaling on background thread to minimize FPS impact. (#378)
+
+## 1.7.2
+
+- Dev: Utilize runelite event for unsired loot instead of custom widget handler (#375).
+
+## 1.7.1
+
+- Bugfix: Report correct remaining tasks until next area unlock in Leagues notifications. (#369)
+
+## 1.7.0
+
+- Major: Add leagues notifier for areas, relics, and tasks. (#366)
+
+## 1.6.5
+
+- Minor: Allow notifications on seasonal worlds to be ignored via advanced config. (#357)
+- Minor: Prefer historical name for first Recipe for Disaster quest. (#352)
+- Minor: Include owned pets in login notification metadata. (#347)
+- Minor: Include individual skill XP in login notification metadata. (#345)
+- Bugfix: Classify reminisced Galvek deaths as safe. (#351)
+- Bugfix: Improve handling of queued notifications upon concurrent config changes. (#355)
+- Dev: Migrate to new RuneLite Widget API. (#358, #359)
+
 ## 1.6.4
 
 - Minor: Add task progress metadata for diary notifications. (#331)

@@ -24,7 +24,12 @@ public enum NotificationType {
     PLAYER_KILL("Player Kill", "playerKillImage.png", WIKI_IMG_BASE_URL + "Skull_(status)_icon.png"),
     GROUP_STORAGE("Group Shared Storage", "groupStorage.png", WIKI_IMG_BASE_URL + "Coins_10000.png"),
     GRAND_EXCHANGE("Grand Exchange", "grandExchange.png", WIKI_IMG_BASE_URL + "Grand_Exchange_icon.png"),
-    LOGIN("Player Login", "login.png", WIKI_IMG_BASE_URL + "Prop_sword.png");
+    LEAGUES_AREA("Area Unlocked", "leaguesArea.png", WIKI_IMG_BASE_URL + "Trailblazer_Reloaded_League_-_%3F_Relic.png"),
+    LEAGUES_RELIC("Relic Chosen", "leaguesRelic.png", WIKI_IMG_BASE_URL + "Trailblazer_Reloaded_League_-_relics_icon.png"),
+    LEAGUES_TASK("Task Completed", "leaguesTask.png", WIKI_IMG_BASE_URL + "Trailblazer_Reloaded_League_icon.png"),
+    LOGIN("Player Login", "login.png", WIKI_IMG_BASE_URL + "Prop_sword.png"),
+    TRADE("Player Trade", "trade.png", WIKI_IMG_BASE_URL + "Inventory.png"),
+    CHAT("Chat Notification", "chat.png", WIKI_IMG_BASE_URL + "Toggle_Chat_effects.png");
 
     private final String title;
 

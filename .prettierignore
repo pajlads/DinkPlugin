@@ -1,2 +1,5 @@
 # Ignore build directory
 build/
+
+# Ignore runtime resources
+src/main/resources/

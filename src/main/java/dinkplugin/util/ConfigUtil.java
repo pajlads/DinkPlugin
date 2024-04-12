@@ -1,18 +1,23 @@
 package dinkplugin.util;
 
+import com.google.gson.Gson;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetInfo;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.util.ColorUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.Color;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
@@ -28,8 +33,12 @@ public class ConfigUtil {
             .filter(StringUtils::isNotEmpty);
     }
 
+    public boolean isPluginDisabled(ConfigManager configManager, String simpleLowerClassName) {
+        return "false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, simpleLowerClassName));
+    }
+
     @Nullable
-    public Object convertTypeFromJson(@NotNull Type type, @NotNull Object in) {
+    public Object convertTypeFromJson(@NotNull Gson gson, @NotNull Type type, @NotNull Object in) {
         if (in instanceof Boolean)
             return type == boolean.class || type == Boolean.class ? in : null;
 
@@ -98,11 +107,22 @@ public class ConfigUtil {
             }
         }
 
+        if (in instanceof Collection && type instanceof ParameterizedType) {
+            Type rawType = ((ParameterizedType) type).getRawType();
+            if (rawType instanceof Class && Collection.class.isAssignableFrom((Class<?>) rawType)) {
+                try {
+                    return gson.fromJson(gson.toJson(in), type); // inefficient, but unimportant
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        }
+
         return null;
     }
 
     public boolean isSettingsOpen(@NotNull Client client) {
-        Widget widget = client.getWidget(WidgetInfo.SETTINGS_INIT);
+        Widget widget = client.getWidget(ComponentID.SETTINGS_INIT);
         return widget != null && !widget.isHidden();
     }
 

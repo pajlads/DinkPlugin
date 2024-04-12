@@ -15,9 +15,9 @@ import net.runelite.api.NpcID;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetID;
-import net.runelite.api.widgets.WidgetInfo;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -43,7 +43,7 @@ public class KillCountNotifier extends BaseNotifier {
     public static final int KILL_COUNT_SPAM_FILTER = 4930;
     public static final String SPAM_WARNING = "Kill Count Notifier requires disabling the in-game setting: Filter out boss kill-count with spam-filter";
 
-    private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion)\\s?count is: (?<value>\\d+)\\b");
+    private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion)\\s?count is: (?<value>\\d+)\\b", Pattern.CASE_INSENSITIVE);
     private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>\\d+)\\b");
     private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(.\\d+)?)\\.?", Pattern.CASE_INSENSITIVE);
 
@@ -92,8 +92,8 @@ public class KillCountNotifier extends BaseNotifier {
             return;
 
         // Barbarian Assault: Track Penance Queen kills
-        if (config.killCountPenanceQueen() && event.getGroupId() == WidgetID.BA_REWARD_GROUP_ID) {
-            Widget widget = client.getWidget(WidgetInfo.BA_REWARD_TEXT);
+        if (config.killCountPenanceQueen() && event.getGroupId() == InterfaceID.BA_REWARD) {
+            Widget widget = client.getWidget(ComponentID.BA_REWARD_REWARD_TEXT);
             // https://oldschool.runescape.wiki/w/Barbarian_Assault/Rewards#Earning_Honour_points
             if (widget != null && widget.getText().contains("80 ") && widget.getText().contains("5 ")) {
                 int gambleCount = client.getVarbitValue(Varbits.BA_GC);
@@ -106,8 +106,11 @@ public class KillCountNotifier extends BaseNotifier {
         BossNotificationData data = this.data.get();
         if (data != null) {
             if (data.getBoss() != null) {
-                // once boss name has arrived, we notify at tick end (even if duration hasn't arrived)
-                handleKill(data);
+                // ensure notifier was not disabled during bad ticks wait period
+                if (isEnabled()) {
+                    // once boss name has arrived, we notify at tick end (even if duration hasn't arrived)
+                    handleKill(data);
+                }
                 reset();
             } else if (badTicks.incrementAndGet() > MAX_BAD_TICKS) {
                 // after receiving fight duration, allow up to 10 ticks for boss name to arrive.
@@ -245,9 +248,13 @@ public class KillCountNotifier extends BaseNotifier {
 
     @Nullable
     private static String parsePrimaryBoss(String boss, String type) {
-        switch (type) {
+        switch (type.toLowerCase()) {
             case "chest":
-                return "Barrows".equalsIgnoreCase(boss) ? boss : null;
+                if ("Barrows".equalsIgnoreCase(boss))
+                    return boss;
+                if ("Lunar".equals(boss))
+                    return boss + " " + type;
+                return null;
 
             case "completion":
                 if ("Gauntlet".equalsIgnoreCase(boss))

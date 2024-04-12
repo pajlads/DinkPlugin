@@ -1,19 +1,23 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.domain.AccountType;
+import dinkplugin.domain.Danger;
+import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.message.Embed;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
-import dinkplugin.util.ItemUtils;
-import dinkplugin.util.Utils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.ConfigUtil;
+import dinkplugin.util.ItemUtils;
+import dinkplugin.util.Region;
+import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
-import net.runelite.api.Client;
 import net.runelite.api.Item;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
@@ -24,6 +28,7 @@ import net.runelite.api.Prayer;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
+import net.runelite.api.events.ScriptPreFired;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
 import org.apache.commons.lang3.ArrayUtils;
@@ -41,6 +46,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -56,6 +62,13 @@ public class DeathNotifier extends BaseNotifier {
     private static final String ATTACK_OPTION = "Attack";
 
     private static final String TOA_DEATH_MSG = "You failed to survive the Tombs of Amascut";
+
+    private static final String TOB_DEATH_MSG = "Your party has failed";
+
+    /**
+     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,tob_hud_portal%5D.cs2">CS2 Reference</a>
+     */
+    private static final int TOB_HUB_PORTAL_SCRIPT = 2307;
 
     /**
      * Checks whether the actor is alive and interacting with the specified player.
@@ -76,6 +89,11 @@ public class DeathNotifier extends BaseNotifier {
      * Orders actors by their likelihood of being the killer of the specified player.
      */
     private static final Function<Player, Comparator<Player>> PK_COMPARATOR;
+
+    /**
+     * User-specified Region IDs where death notifications should not be triggered.
+     */
+    private final Collection<Integer> ignoredRegions = new HashSet<>();
 
     @Inject
     private ItemManager itemManager;
@@ -105,6 +123,20 @@ public class DeathNotifier extends BaseNotifier {
         return config.deathWebhook();
     }
 
+    public void init() {
+        setIgnoredRegions(config.deathIgnoredRegions());
+    }
+
+    public void reset() {
+        setIgnoredRegions(null);
+    }
+
+    public void onConfigChanged(String key, String value) {
+        if ("deathIgnoredRegions".equals(key)) {
+            setIgnoredRegions(value);
+        }
+    }
+
     public void onActorDeath(ActorDeath actor) {
         boolean self = client.getLocalPlayer() == actor.getActor();
 
@@ -116,10 +148,24 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     public void onGameMessage(String message) {
-        if (config.deathIgnoreSafe() && !Utils.getAccountType(client).isHardcore() && message.contains(TOA_DEATH_MSG) && isEnabled()) {
+        if (shouldNotifyExceptionalDangerousDeath(ExceptionalDeath.TOA) && message.contains(TOA_DEATH_MSG)) {
             // https://github.com/pajlads/DinkPlugin/issues/316
             // though, hardcore (group) ironmen just use the normal ActorDeath trigger for TOA
             handleNotify(Danger.DANGEROUS);
+        }
+    }
+
+    public void onScript(ScriptPreFired event) {
+        if (event.getScriptId() == TOB_HUB_PORTAL_SCRIPT && event.getScriptEvent() != null &&
+            shouldNotifyExceptionalDangerousDeath(ExceptionalDeath.TOB)) {
+            Object[] args = event.getScriptEvent().getArguments();
+            if (args != null && args.length > 1) {
+                Object text = args[1];
+                if (text instanceof String && ((String) text).contains(TOB_DEATH_MSG)) {
+                    // https://oldschool.runescape.wiki/w/Theatre_of_Blood#Death_within_the_Theatre
+                    handleNotify(Danger.DANGEROUS);
+                }
+            }
         }
     }
 
@@ -130,7 +176,11 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Danger dangerOverride) {
-        Danger danger = dangerOverride != null ? dangerOverride : getDangerLevel(client);
+        int regionId = WorldUtils.getLocation(client).getRegionID();
+        if (ignoredRegions.contains(regionId))
+            return;
+
+        Danger danger = dangerOverride != null ? dangerOverride : WorldUtils.getDangerLevel(client, regionId, config.deathSafeExceptions());
         if (danger == Danger.SAFE && config.deathIgnoreSafe())
             return;
 
@@ -185,7 +235,8 @@ public class DeathNotifier extends BaseNotifier {
             killerName,
             npc ? ((NPC) killer).getId() : null,
             keptStacks,
-            lostStacks
+            lostStacks,
+            Region.of(client, regionId)
         );
 
         createMessage(config.deathSendImage(), NotificationBody.builder()
@@ -215,6 +266,40 @@ public class DeathNotifier extends BaseNotifier {
             builder.replacement("%NPC%", Replacements.ofWiki(killer));
         }
         return builder.build();
+    }
+
+    private boolean shouldNotifyExceptionalDangerousDeath(ExceptionalDeath death) {
+        if (!config.deathIgnoreSafe()) {
+            // safe death notifications are enabled => we already notified
+            return false;
+        }
+
+        if (config.deathSafeExceptions().contains(death)) {
+            // safe deaths are ignored, but this death is exceptional => we already notified
+            return false;
+        }
+
+        if (Utils.getAccountType(client).isHardcore() && death != ExceptionalDeath.FIGHT_CAVE) {
+            // the PvM death is actually dangerous since hardcore => we already notified
+            return false;
+        }
+
+        // notifier must be enabled to dink when the actually dangerous death occurs
+        return isEnabled();
+    }
+
+    @Synchronized
+    private void setIgnoredRegions(@Nullable String configValue) {
+        ignoredRegions.clear();
+        ConfigUtil.readDelimited(configValue).forEach(str -> {
+            try {
+                int regionId = Integer.parseInt(str);
+                ignoredRegions.add(regionId);
+            } catch (NumberFormatException e) {
+                log.warn("Failed to parse death ignored region as integer: {}", str);
+            }
+        });
+        log.debug("Updated ignored regions to: {}", ignoredRegions);
     }
 
     /**
@@ -362,29 +447,6 @@ public class DeathNotifier extends BaseNotifier {
         return items.stream()
             .map(item -> ItemUtils.stackFromItem(itemManager, item))
             .collect(Collectors.toList());
-    }
-
-    /**
-     * @param client {@link Client}
-     * @return whether the player is not in a safe area (excluding inferno and fight cave)
-     */
-    private static Danger getDangerLevel(Client client) {
-        if (!WorldUtils.isSafeArea(client))
-            return Danger.DANGEROUS;
-
-        // inferno and fight cave are technically safe, but we want death notification regardless
-        int regionId = WorldUtils.getLocation(client).getRegionID();
-        if (WorldUtils.isInferno(regionId) || WorldUtils.isTzHaarFightCave(regionId))
-            return Danger.EXCEPTIONAL;
-
-        // otherwise actually safe
-        return Danger.SAFE;
-    }
-
-    private enum Danger {
-        SAFE,
-        DANGEROUS,
-        EXCEPTIONAL // safe areas that should trigger death notification when ignoreSafe is enabled
     }
 
     static {

@@ -1,6 +1,7 @@
 package dinkplugin;
 
 import com.google.inject.Provides;
+import dinkplugin.notifiers.ChatNotifier;
 import dinkplugin.notifiers.ClueNotifier;
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
@@ -11,16 +12,19 @@ import dinkplugin.notifiers.GrandExchangeNotifier;
 import dinkplugin.notifiers.GroupStorageNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.LevelNotifier;
-import dinkplugin.notifiers.MetaNotifier;
 import dinkplugin.notifiers.LootNotifier;
+import dinkplugin.notifiers.MetaNotifier;
 import dinkplugin.notifiers.PetNotifier;
 import dinkplugin.notifiers.PlayerKillNotifier;
 import dinkplugin.notifiers.QuestNotifier;
 import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
+import dinkplugin.notifiers.TradeNotifier;
+import dinkplugin.util.KillCountService;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
+import net.runelite.api.GameState;
 import net.runelite.api.events.AccountHashChanged;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.ChatMessage;
@@ -44,6 +48,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
+import net.runelite.client.events.ProfileChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
@@ -51,11 +56,12 @@ import net.runelite.client.util.ColorUtil;
 
 import javax.inject.Inject;
 import java.awt.Color;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @PluginDescriptor(
     name = "Dink",
-    description = "A notifier for sending webhooks to Discord or other custom destinations",
+    description = "Discord-compatible webhook notifications for Loot, Death, Levels, CLog, KC, Diary, Quests, etc.",
     tags = { "loot", "logger", "collection", "pet", "death", "xp", "level", "notifications", "discord", "speedrun",
         "diary", "combat achievements", "combat task", "barbarian assault", "high level gambles" }
 )
@@ -65,6 +71,9 @@ public class DinkPlugin extends Plugin {
     private @Inject ChatMessageManager chatManager;
 
     private @Inject SettingsManager settingsManager;
+    private @Inject VersionManager versionManager;
+
+    private @Inject KillCountService killCountService;
 
     private @Inject CollectionNotifier collectionNotifier;
     private @Inject PetNotifier petNotifier;
@@ -83,19 +92,26 @@ public class DinkPlugin extends Plugin {
     private @Inject GroupStorageNotifier groupStorageNotifier;
     private @Inject GrandExchangeNotifier grandExchangeNotifier;
     private @Inject MetaNotifier metaNotifier;
+    private @Inject TradeNotifier tradeNotifier;
+    private @Inject ChatNotifier chatNotifier;
+
+    private final AtomicReference<GameState> gameState = new AtomicReference<>();
 
     @Override
     protected void startUp() {
-        log.info("Started up Dink");
+        log.debug("Started up Dink");
         settingsManager.init();
+        versionManager.onStart();
         lootNotifier.init();
-        levelNotifier.initLevels();
+        deathNotifier.init();
+        chatNotifier.init();
     }
 
     @Override
     protected void shutDown() {
-        log.info("Shutting down Dink");
+        log.debug("Shutting down Dink");
         this.resetNotifiers();
+        gameState.lazySet(null);
     }
 
     void resetNotifiers() {
@@ -104,10 +120,13 @@ public class DinkPlugin extends Plugin {
         clueNotifier.reset();
         diaryNotifier.reset();
         levelNotifier.reset();
+        deathNotifier.reset();
         slayerNotifier.reset();
         killCountNotifier.reset();
         groupStorageNotifier.reset();
         speedrunNotifier.reset();
+        tradeNotifier.reset();
+        chatNotifier.reset();
     }
 
     @Provides
@@ -133,22 +152,37 @@ public class DinkPlugin extends Plugin {
 
         settingsManager.onConfigChanged(event);
         lootNotifier.onConfigChanged(event.getKey(), event.getNewValue());
+        deathNotifier.onConfigChanged(event.getKey(), event.getNewValue());
+        chatNotifier.onConfig(event.getKey(), event.getNewValue());
     }
 
     @Subscribe
     public void onUsernameChanged(UsernameChanged usernameChanged) {
         levelNotifier.reset();
-        lootNotifier.reset();
+        killCountService.reset();
     }
 
     @Subscribe
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
-        settingsManager.onGameState(gameStateChanged);
-        collectionNotifier.onGameState(gameStateChanged);
+        GameState newState = gameStateChanged.getGameState();
+        if (newState == GameState.LOADING) {
+            // an intermediate state that is irrelevant for our notifiers; ignore
+            return;
+        }
+
+        GameState previousState = gameState.getAndSet(newState);
+        if (previousState == newState) {
+            // no real change occurred (just momentarily went through LOADING); ignore
+            return;
+        }
+
+        versionManager.onGameState(previousState, newState);
+        settingsManager.onGameState(previousState, newState);
+        collectionNotifier.onGameState(newState);
         levelNotifier.onGameStateChanged(gameStateChanged);
         diaryNotifier.onGameState(gameStateChanged);
         grandExchangeNotifier.onGameStateChange(gameStateChanged);
-        metaNotifier.onGameState(gameStateChanged);
+        metaNotifier.onGameState(previousState, newState);
     }
 
     @Subscribe
@@ -172,14 +206,15 @@ public class DinkPlugin extends Plugin {
         metaNotifier.onTick();
     }
 
-    @Subscribe
+    @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onChatMessage(ChatMessage message) {
         String chatMessage = Utils.sanitize(message.getMessage());
+        chatNotifier.onMessage(message.getType(), chatMessage);
         switch (message.getType()) {
             case GAMEMESSAGE:
                 collectionNotifier.onChatMessage(chatMessage);
                 petNotifier.onChatMessage(chatMessage);
-                lootNotifier.onGameMessage(chatMessage);
+                killCountService.onGameMessage(chatMessage);
                 slayerNotifier.onChatMessage(chatMessage);
                 clueNotifier.onChatMessage(chatMessage);
                 killCountNotifier.onGameMessage(chatMessage);
@@ -201,6 +236,10 @@ public class DinkPlugin extends Plugin {
             case MESBOX:
                 diaryNotifier.onMessageBox(chatMessage);
                 gambleNotifier.onMesBoxNotification(chatMessage);
+                break;
+
+            case TRADE:
+                tradeNotifier.onTradeMessage(chatMessage);
                 break;
 
             default:
@@ -232,20 +271,29 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onScriptPreFired(ScriptPreFired event) {
         collectionNotifier.onScript(event.getScriptId());
+        deathNotifier.onScript(event);
     }
 
     @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
+        killCountService.onNpcKill(npcLootReceived);
         lootNotifier.onNpcLootReceived(npcLootReceived);
     }
 
     @Subscribe
     public void onPlayerLootReceived(PlayerLootReceived playerLootReceived) {
+        killCountService.onPlayerKill(playerLootReceived);
         lootNotifier.onPlayerLootReceived(playerLootReceived);
     }
 
     @Subscribe
+    public void onProfileChanged(ProfileChanged event) {
+        versionManager.onProfileChange();
+    }
+
+    @Subscribe
     public void onLootReceived(LootReceived lootReceived) {
+        killCountService.onLoot(lootReceived);
         lootNotifier.onLootReceived(lootReceived);
     }
 
@@ -261,14 +309,15 @@ public class DinkPlugin extends Plugin {
         questNotifier.onWidgetLoaded(event);
         clueNotifier.onWidgetLoaded(event);
         speedrunNotifier.onWidgetLoaded(event);
-        lootNotifier.onWidgetLoaded(event);
         groupStorageNotifier.onWidgetLoad(event);
         killCountNotifier.onWidget(event);
+        tradeNotifier.onWidgetLoad(event);
     }
 
     @Subscribe
     public void onWidgetClosed(WidgetClosed event) {
         groupStorageNotifier.onWidgetClose(event);
+        tradeNotifier.onWidgetClose(event);
     }
 
     public void addChatSuccess(String message) {
@@ -279,7 +328,7 @@ public class DinkPlugin extends Plugin {
         addChatMessage("Warning", Utils.RED, message);
     }
 
-    private void addChatMessage(String category, Color color, String message) {
+    void addChatMessage(String category, Color color, String message) {
         String formatted = String.format("[%s] %s: %s",
             ColorUtil.wrapWithColorTag(getName(), Utils.PINK),
             category,

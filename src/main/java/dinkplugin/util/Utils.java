@@ -9,6 +9,9 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
+import net.runelite.api.annotations.Component;
+import net.runelite.api.widgets.Widget;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 import okhttp3.Call;
@@ -168,7 +171,10 @@ public class Utils {
     }
 
     @Nullable
-    public String getChatBadge(@NotNull AccountType type) {
+    public String getChatBadge(@NotNull AccountType type, boolean seasonal) {
+        if (seasonal) {
+            return WIKI_IMG_BASE_URL + "Leagues_chat_badge.png";
+        }
         switch (type) {
             case IRONMAN:
                 return WIKI_IMG_BASE_URL + "Ironman_chat_badge.png";
@@ -181,10 +187,33 @@ public class Utils {
             case HARDCORE_GROUP_IRONMAN:
                 return WIKI_IMG_BASE_URL + "Hardcore_group_ironman_chat_badge.png";
             case UNRANKED_GROUP_IRONMAN:
-                return WIKI_IMG_BASE_URL + "Unranked_group_ironman_chat_badge";
+                return WIKI_IMG_BASE_URL + "Unranked_group_ironman_chat_badge.png";
             default:
                 return null;
         }
+    }
+
+    public static boolean hideWidget(boolean shouldHide, Client client, @Component int info) {
+        if (!shouldHide)
+            return false;
+
+        Widget widget = client.getWidget(info);
+        if (widget == null || widget.isHidden())
+            return false;
+
+        widget.setHidden(true);
+        return true;
+    }
+
+    public static void unhideWidget(boolean shouldUnhide, Client client, ClientThread clientThread, @Component int info) {
+        if (!shouldUnhide)
+            return;
+
+        clientThread.invoke(() -> {
+            Widget widget = client.getWidget(info);
+            if (widget != null)
+                widget.setHidden(false);
+        });
     }
 
     public BufferedImage rescale(BufferedImage input, double percent) {

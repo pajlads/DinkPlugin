@@ -1,5 +1,7 @@
 package dinkplugin.notifiers;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -7,34 +9,45 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
+import dinkplugin.util.ConfigUtil;
+import dinkplugin.util.SerializedPet;
 import dinkplugin.util.Utils;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
-import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Singleton
 public class MetaNotifier extends BaseNotifier {
+    static final @VisibleForTesting String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
     static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
 
     private final AtomicInteger loginTicks = new AtomicInteger(-1);
-    private final AtomicReference<GameState> gameState = new AtomicReference<>();
 
     @Inject
     private ClientThread clientThread;
+
+    @Inject
+    private ConfigManager configManager;
+
+    @Inject
+    private Gson gson;
 
     @Override
     public boolean isEnabled() {
@@ -46,13 +59,8 @@ public class MetaNotifier extends BaseNotifier {
         return config.metadataWebhook();
     }
 
-    public void onGameState(GameStateChanged event) {
-        GameState newState = event.getGameState();
-        if (newState == GameState.LOADING) {
-            // ignore this intermediate state
-            return;
-        }
-        GameState oldState = gameState.getAndSet(newState);
+    public void onGameState(GameState oldState, GameState newState) {
+        // inspect oldState because we don't want a notification on each world hop
         if (oldState == GameState.LOGGING_IN && newState == GameState.LOGGED_IN) {
             loginTicks.set(INIT_TICKS);
         }
@@ -88,10 +96,15 @@ public class MetaNotifier extends BaseNotifier {
 
         long experienceTotal = client.getOverallExperience();
         int levelTotal = client.getTotalLevel();
-        Map<String, Integer> skillLevels = Arrays.stream(Skill.values()).collect(Collectors.toMap(Skill::getName, skill -> {
+        Map<String, Integer> skillLevels = new HashMap<>(32);
+        Map<String, Integer> skillExperience = new HashMap<>(32);
+        for (Skill skill : Skill.values()) {
+            int xp = client.getSkillExperience(skill);
             int lvl = client.getRealSkillLevel(skill);
-            return lvl < 99 ? lvl : Experience.getLevelForXp(client.getSkillExperience(skill));
-        }));
+            int virtualLevel = lvl < 99 ? lvl : Experience.getLevelForXp(xp);
+            skillExperience.put(skill.getName(), xp);
+            skillLevels.put(skill.getName(), virtualLevel);
+        }
 
         int questsCompleted = client.getVarbitValue(QuestNotifier.COMPLETED_ID);
         int questsTotal = client.getVarbitValue(QuestNotifier.TOTAL_ID);
@@ -116,10 +129,11 @@ public class MetaNotifier extends BaseNotifier {
             Progress.of(diaryCompleted, diaryTotal),
             Progress.of(diaryTaskCompleted, diaryTaskTotal),
             new LoginNotificationData.BarbarianAssault(gambleCount),
-            new LoginNotificationData.SkillData(experienceTotal, levelTotal, skillLevels),
+            new LoginNotificationData.SkillData(experienceTotal, levelTotal, skillLevels, skillExperience),
             Progress.of(questsCompleted, questsTotal),
             Progress.of(questPoints, questPointsTotal),
-            new LoginNotificationData.SlayerData(slayerPoints, slayerStreak)
+            new LoginNotificationData.SlayerData(slayerPoints, slayerStreak),
+            getPets()
         );
         createMessage(false, NotificationBody.builder()
             .type(NotificationType.LOGIN)
@@ -128,6 +142,30 @@ public class MetaNotifier extends BaseNotifier {
             .playerName(playerName)
             .build()
         );
+    }
+
+    @VisibleForTesting
+    List<SerializedPet> getPets() {
+        if (ConfigUtil.isPluginDisabled(configManager, RL_CHAT_CMD_PLUGIN_NAME))
+            return null;
+
+        String json = configManager.getRSProfileConfiguration("chatcommands", "pets2");
+        if (json == null || json.isEmpty())
+            return null;
+
+        int[] petItemIds;
+        try {
+            petItemIds = gson.fromJson(json, int[].class);
+        } catch (JsonSyntaxException e) {
+            log.info("Failed to deserialize owned pet IDs", e);
+            return null;
+        }
+
+        List<SerializedPet> pets = new ArrayList<>(petItemIds.length);
+        for (int itemId : petItemIds) {
+            pets.add(new SerializedPet(itemId, client.getItemDefinition(itemId).getMembersName()));
+        }
+        return pets;
     }
 
 }

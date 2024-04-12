@@ -10,6 +10,7 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GrandExchangeNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.SerializedOffer;
 import dinkplugin.util.Utils;
@@ -23,7 +24,6 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemID;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.config.RuneLiteConfig;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.grandexchange.GrandExchangePlugin;
 
@@ -129,7 +129,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
 
             // require GE plugin to be enabled so that observed trades are written to config
             // however: not bullet-proof since GE plugin could've been disabled during the initial trade completion
-            if ("false".equals(configManager.getConfiguration(RuneLiteConfig.GROUP_NAME, RL_GE_PLUGIN_NAME)))
+            if (ConfigUtil.isPluginDisabled(configManager, RL_GE_PLUGIN_NAME))
                 return false;
 
             // check whether the completion has already been observed

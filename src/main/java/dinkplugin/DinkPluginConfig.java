@@ -1,16 +1,23 @@
 package dinkplugin;
 
 import dinkplugin.domain.AchievementDiary;
+import dinkplugin.domain.ChatNotificationType;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
+import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.domain.FilterMode;
+import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
+import dinkplugin.notifiers.ChatNotifier;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 import net.runelite.client.config.Units;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 @ConfigGroup(SettingsManager.CONFIG_GROUP)
 public interface DinkPluginConfig extends Config {
@@ -152,12 +159,48 @@ public interface DinkPluginConfig extends Config {
     String grandExchangeSection = "Grand Exchange";
 
     @ConfigSection(
+        name = "Player Trades",
+        description = "Settings for notifying when you trade with another player",
+        position = 160,
+        closedByDefault = true
+    )
+    String tradeSection = "Player Trades";
+
+    @ConfigSection(
+        name = "Custom Chat Messages",
+        description = "Settings for notifying when you receive specific messages from the game",
+        position = 170,
+        closedByDefault = true
+    )
+    String chatSection = "Custom Chat Messages";
+
+    /*
+    @ConfigSection(
+        name = "Leagues",
+        description = "Settings for notifying when you complete league tasks, unlock areas, and redeem relics",
+        position = 200,
+        closedByDefault = true
+    )
+     */
+    String leaguesSection = "Leagues";
+
+    @ConfigSection(
         name = "Advanced",
         description = "Do not modify without fully understanding these settings",
         position = 1000,
         closedByDefault = true
     )
     String advancedSection = "Advanced";
+
+    @ConfigItem(
+        keyName = VersionManager.VERSION_CONFIG_KEY,
+        name = "Plugin Version",
+        description = "The latest dink version used by the player that has a notable changelog entry",
+        hidden = true
+    )
+    default String pluginVersion() {
+        return "";
+    }
 
     @ConfigItem(
         keyName = "maxRetries",
@@ -349,6 +392,17 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "ignoreSeasonalWorlds",
+        name = "Ignore Seasonal Worlds",
+        description = "Whether to suppress notifications that occur on seasonal worlds like Leagues.",
+        position = 1015,
+        section = advancedSection
+    )
+    default boolean ignoreSeasonal() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
@@ -536,6 +590,41 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "tradeWebhook",
+        name = "Trade Webhook Override",
+        description = "If non-empty, Trading messages are sent to this URL, instead of the primary URL",
+        position = -3,
+        section = webhookSection
+    )
+    default String tradeWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "chatWebhook",
+        name = "Chat Webhook Override",
+        description = "If non-empty, filtered chat messages are sent to this URL, instead of the primary URL",
+        position = -2,
+        section = webhookSection
+    )
+    default String chatWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "leaguesWebhook",
+        name = "Leagues Webhook Override",
+        description = "If non-empty, Leagues messages are sent to this URL, instead of the primary URL.<br/>" +
+            "Note: this only applies to the Leagues notifier, not every notifier in a seasonal world",
+        position = -1,
+        section = webhookSection,
+        hidden = true
+    )
+    default String leaguesWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "collectionLogEnabled",
         name = "Enable collection log",
         description = "Enable notifications for collection log.<br/>" +
@@ -563,7 +652,9 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %ITEM% for the item",
+            "Use %ITEM% to insert the item name<br/>" +
+            "Use %COMPLETED% to insert the number of completed entries<br/>" +
+            "Use %TOTAL_POSSIBLE% to insert the number of possible entries",
         position = 3,
         section = collectionSection
     )
@@ -735,7 +826,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "minLootValue",
         name = "Min Loot value",
-        description = "The minimum value of an item for a notification to be sent",
+        description = "The minimum value of an item for a notification to be sent.<br/>" +
+            "For PK chests, the <i>total</i> value of the items is compared with this threshold",
         position = 33,
         section = lootSection
     )
@@ -767,6 +859,19 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootRedirectPlayerKill",
+        name = "Send PK Loot to PK URL",
+        description = "Whether to send PK loot to the PK override webhook URL, rather than the loot URL.<br/>" +
+            "Must have 'Include PK Loot' (above) enabled.<br/>" +
+            "Has no effect if the Player Kills notifier override URL is absent",
+        position = 35,
+        section = lootSection
+    )
+    default boolean lootRedirectPlayerKill() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "lootIncludeClueScrolls",
         name = "Include Clue Loot",
         description = "Allow notifications for loot from Clue Scrolls",
@@ -792,13 +897,27 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "lootItemDenylist",
         name = "Item Denylist",
-        description = "Never fire notifications for these items, despite value settings.<br/>" +
+        description = "Never fire notifications for these items, despite value or rarity settings.<br/>" +
             "Place one item name per line (case-insensitive; asterisks are wildcards)",
-        position = 38,
+        position = 37,
         section = lootSection
     )
     default String lootItemDenylist() {
         return "";
+    }
+
+    @ConfigItem(
+        keyName = "lootRarityThreshold",
+        name = "Rarity Override (1 in X)",
+        description = "Fires notifications for sufficiently rare drops, despite the 'Min Loot value' threshold.<br/>" +
+            "Corresponds to a 1 in X chance. For example, 100 notifies for items with 1% drop rate or rarer.<br/>" +
+            "Has no effect when set to zero.<br/>" +
+            "Currently only applies to NPC drops",
+        position = 38,
+        section = lootSection
+    )
+    default int lootRarityThreshold() {
+        return 0;
     }
 
     @ConfigItem(
@@ -852,7 +971,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathIgnoreSafe",
         name = "Ignore Safe Deaths",
         description = "Whether deaths in safe areas should be ignored.<br/>" +
-            "Note: Inferno and TzHaar Fight Cave deaths are still sent with this setting enabled",
+            "Exceptions to this rule can be configured below",
         position = 43,
         section = deathSection
     )
@@ -861,11 +980,36 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "deathSafeExceptions",
+        name = "Safe Exceptions",
+        description = "Safe deaths that should trigger notifications even when 'Ignore Safe Deaths' is enabled.<br/>" +
+            "Hold Control while clicking on the options to select multiple exceptions",
+        position = 44,
+        section = deathSection
+    )
+    default Set<ExceptionalDeath> deathSafeExceptions() {
+        return EnumSet.of(ExceptionalDeath.FIGHT_CAVE, ExceptionalDeath.INFERNO);
+    }
+
+    @ConfigItem(
+        keyName = "deathIgnoredRegions",
+        name = "Ignored Region IDs",
+        description = "User-specified, comma-separated Region IDs where deaths should be ignored.<br/>" +
+            "Use the '::dinkregion' chat command or an online map to obtain the region IDs.<br/>" +
+            "For example, Prifddinas spans 12894, 12895, 13150, 13151",
+        position = 45,
+        section = deathSection
+    )
+    default String deathIgnoredRegions() {
+        return "123, 456, 789";
+    }
+
+    @ConfigItem(
         keyName = "deathMinValue",
         name = "Min Lost Value",
         description = "The minimum value of the lost items for a notification to be sent.<br/>" +
             "This setting does not apply for safe deaths",
-        position = 44,
+        position = 46,
         section = deathSection
     )
     default int deathMinValue() {
@@ -878,7 +1022,7 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 45,
+        position = 47,
         section = deathSection
     )
     default String deathNotifyMessage() {
@@ -889,7 +1033,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpEnabled",
         name = "Distinguish PvP deaths",
         description = "Should the plugin use a different message for dying in PvP?",
-        position = 46,
+        position = 48,
         section = deathSection
     )
     default boolean deathNotifPvpEnabled() {
@@ -903,7 +1047,7 @@ public interface DinkPluginConfig extends Config {
             "Use %PKER% to insert the killer<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 47,
+        position = 49,
         section = deathSection
     )
     default String deathNotifPvpMessage() {
@@ -1647,6 +1791,188 @@ public interface DinkPluginConfig extends Config {
     )
     default String grandExchangeNotifyMessage() {
         return "%USERNAME% %TYPE% %ITEM% on the GE";
+    }
+
+    @ConfigItem(
+        keyName = "notifyTrades",
+        name = "Enable Trades",
+        description = "Enable notifications upon completed player trades",
+        position = 160,
+        section = tradeSection
+    )
+    default boolean notifyTrades() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "tradeSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 161,
+        section = tradeSection
+    )
+    default boolean tradeSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "tradeMinValue",
+        name = "Min Value",
+        description = "The minimum total value of the traded items to send a notification",
+        position = 162,
+        section = tradeSection
+    )
+    default int tradeMinValue() {
+        return 0;
+    }
+
+    @ConfigItem(
+        keyName = "tradeNotifyMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %COUNTERPARTY% to insert the name of the other player<br/>" +
+            "Use %IN_VALUE% to insert the value of the items received from the counterparty<br/>" +
+            "Use %OUT_VALUE% to insert the value of the items given to the counterparty",
+        position = 163,
+        section = tradeSection
+    )
+    default String tradeNotifyMessage() {
+        return "%USERNAME% traded with %COUNTERPARTY%";
+    }
+
+    @ConfigItem(
+        keyName = "notifyChat",
+        name = "Enable Chat Notifications",
+        description = "Enable notifications upon receiving specific chat messages",
+        position = 170,
+        section = chatSection
+    )
+    default boolean notifyChat() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "chatSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 171,
+        section = chatSection
+    )
+    default boolean chatSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "chatMessageTypes",
+        name = "Message Types",
+        description = "The types of chat messages that can trigger notifications",
+        position = 172,
+        section = chatSection
+    )
+    default Set<ChatNotificationType> chatMessageTypes() {
+        return EnumSet.of(ChatNotificationType.GAME);
+    }
+
+    @ConfigItem(
+        keyName = ChatNotifier.PATTERNS_CONFIG_KEY,
+        name = "Message Filters",
+        description = "The chat message patterns that should trigger notifications.<br/>" +
+            "Place one pattern per line (case-insensitive; asterisks are wildcards)",
+        position = 173,
+        section = chatSection
+    )
+    default String chatPatterns() {
+        return "You've unlocked an emote: *\n" +
+            "You've completed the * event*\n" + // for holiday events
+            "You have accepted * into *.\n" + // for clan recruitment
+            "You will be logged out in approximately 30 minutes.*\n" +
+            "You will be logged out in approximately 10 minutes.*\n";
+    }
+
+    @ConfigItem(
+        keyName = "chatNotifyMessage",
+        name = "Notification Message",
+        description = "The message to be sent through the webhook.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %MESSAGE% to insert the chat message",
+        position = 174,
+        section = chatSection
+    )
+    default String chatNotifyMessage() {
+        return "%USERNAME% received a chat message:\n\n```\n%MESSAGE%\n```";
+    }
+
+    @ConfigItem(
+        keyName = "notifyLeagues",
+        name = "Enable Leagues",
+        description = "Enable notifications upon various leagues events",
+        position = 200,
+        section = leaguesSection,
+        hidden = true
+    )
+    default boolean notifyLeagues() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 201,
+        section = leaguesSection,
+        hidden = true
+    )
+    default boolean leaguesSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesAreaUnlock",
+        name = "Send Area Unlocks",
+        description = "Send notifications upon area unlocks",
+        position = 202,
+        section = leaguesSection,
+        hidden = true
+    )
+    default boolean leaguesAreaUnlock() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesRelicUnlock",
+        name = "Send Relic Unlocks",
+        description = "Send notifications upon relic unlocks",
+        position = 203,
+        section = leaguesSection,
+        hidden = true
+    )
+    default boolean leaguesRelicUnlock() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesTaskCompletion",
+        name = "Send Completed Tasks",
+        description = "Send notifications upon completing a task",
+        position = 204,
+        section = leaguesSection,
+        hidden = true
+    )
+    default boolean leaguesTaskCompletion() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "leaguesTaskMinTier",
+        name = "Task Min Difficulty",
+        description = "The minimum tier of a task for a notification to be sent",
+        position = 205,
+        section = leaguesSection,
+        hidden = true
+    )
+    default LeagueTaskDifficulty leaguesTaskMinTier() {
+        return LeagueTaskDifficulty.EASY;
     }
 
 }

@@ -2,6 +2,7 @@
 
 Dink sends webhook messages upon noteworthy in-game events.
 While Dink supports the Discord webhook format (with rich embeds and optional screenshots), it also includes additional metadata that allows custom webhook servers to analyze messages or even generate their own messages.
+Examples of the additional metadata can be found [here](docs/json-examples.md).
 This project was forked from UniversalDiscordNotifier, but has more features, reliability, configurability, testing, and maintainer activity.
 
 Have a suggestion (e.g., new notifier, additional data), bug report (as rare as it may be), or question? Let us know on our [issue tracker](https://github.com/pajlads/DinkPlugin/issues)!
@@ -22,7 +23,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 - [Death](#death): Send a webhook message upon dying (with special configuration for PK deaths)
 - [Collection](#collection): Send a webhook message upon adding an item to your collection log
 - [Level](#level): Send a webhook message upon leveling up a skill (with support for virtual levels)
-- [Loot](#loot): Send a webhook message upon receiving valuable loot
+- [Loot](#loot): Send a webhook message upon receiving valuable loot (with item rarity for monster drops)
 - [Slayer](#slayer): Send a webhook message upon completing a slayer task (with a customizable point threshold)
 - [Quests](#quests): Send a webhook message upon completing a quest
 - [Clue Scrolls](#clue-scrolls): Send a webhook message upon solving a clue scroll (with customizable tier/value thresholds)
@@ -35,6 +36,9 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 - [Player Kills](#player-kills): Sends a webhook message upon killing another player (while hitsplats are still visible)
 - [Group Storage](#group-storage): Sends a webhook message upon Group Ironman Shared Bank transactions (i.e., depositing or withdrawing items)
 - [Grand Exchange](#grand-exchange): Sends a webhook message upon buying or selling items on the GE (with customizable value threshold)
+- [Trades](#trades): Sends a webhook message upon completing a trade with another player (with customizable item value threshold)
+- [Leagues](#leagues): Sends a webhook message upon completing a Leagues IV task or unlocking a region/relic
+- [Chat](#chat): Sends a webhook message upon receiving a chat message that matches a user-specified pattern
 
 ## Other Setup
 
@@ -105,6 +109,21 @@ Note: There is no undo button for this command, so consider making a backup of y
 Warning: If you import override URLs for a notifier (that previously did not have any overrides), this will result in the plugin no longer sending messages from that notifier to your old primary URLs.
 As such, you can manually add your primary URLs to the newly populated override URL boxes so that notifications are still sent to the old primary URLs.
 
+### Get your Dink Hash via `::dinkhash`
+
+Dink notification metadata includes a player hash that custom webhook servers can utilize to uniquely identify players (persistent across name changes).
+
+You can obtain your dink hash via the `::dinkhash` chat command. Feel free to provide this value to third-party services that may request it.
+
+### Get Current Region ID via `::dinkregion`
+
+The death notifier allows you to customize any region that should be ignored.
+This is particularly relevant for ultimate ironmen (UIM) who frequently use particular locations to deathbank/deathpile.
+
+To facilitate this process, the `::dinkregion` chat command outputs the player's current region ID.
+
+For example, Prifddinas spans the following region IDs: 12894, 12895, 13150, and 13151.
+
 ---
 
 ## Notifier Configuration
@@ -116,168 +135,31 @@ contain some words that will be replaced with in-game values.
 
 `%USERNAME%` will be replaced with the username of the player.
 
-<details>
-  <summary>JSON Example:</summary>
-
-```json5
-{
-  "content": "Text message as set by the user",
-  "extra": {},
-  "type": "NOTIFICATION_TYPE",
-  "playerName": "your rsn",
-  "embeds": []
-}
-```
-
-</details>
-
-The examples below omit `embeds` and `playerName` keys because they are always the same.
-
 ### Death:
 
 `%VALUELOST%` will be replaced with the price of the items you lost. If you died in PvP, `%PKER%` will be replaced with the name of your killer.
 
-By default, to avoid spam, Dink will ignore deaths from the following [safe](https://oldschool.runescape.wiki/w/Minigames#Safe) activities/areas: Barbarian Assault, Castle Wars, Chambers of Xeric (CoX), Clan Wars, Last Man Standing (LMS), Nightmare Zone (NMZ), Pest Control, player-owned houses (POH), Soul Wars, TzHaar Fight Pit.
+By default, to avoid spam, Dink will ignore deaths from the following [safe](https://oldschool.runescape.wiki/w/Minigames#Safe) activities/areas: Barbarian Assault, Castle Wars, Chambers of Xeric (CoX), Clan Wars, Creature Graveyard of Mage Training Arena, Last Man Standing (LMS), Nightmare Zone (NMZ), Pest Control, player-owned houses (POH), Soul Wars, TzHaar Fight Pit.
 However, PvM deaths as a hardcore group ironman are _not_ considered to be safe (and _will_ trigger a notification in these areas).
 Lastly, Dink makes exceptions for Inferno and TzHaar Fight Cave; deaths in these areas _do_ trigger notifications (despite technically being safe).
 
 **Note**: If _Distinguish PvP deaths_ is disabled, the message content will be the non-PvP version.
 
-<details>
-  <summary>JSON for non-combat death:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has died...",
-  "extra": {
-    "valueLost": 300,
-    "isPvp": false,
-    "keptItems": [],
-    "lostItems": [
-      {
-        "id": 314,
-        "quantity": 100,
-        "priceEach": 3,
-        "name": "Feather"
-      }
-    ]
-  },
-  "type": "DEATH"
-}
-```
-
-</details>
-
-<details>
-  <summary>JSON for PvP scenarios:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has just been PKed by %PKER% for %VALUELOST% gp...",
-  "extra": {
-    "valueLost": 300,
-    "isPvp": true,
-    "killerName": "%PKER%",
-    "keptItems": [],
-    "lostItems": [
-      {
-        "id": 314,
-        "quantity": 100,
-        "priceEach": 3,
-        "name": "Feather"
-      }
-    ]
-  },
-  "type": "DEATH"
-}
-```
-
-</details>
-
-<details>
-  <summary>JSON for NPC scenarios:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has died...",
-  "extra": {
-    "valueLost": 300,
-    "isPvp": false,
-    "killerName": "%NPC%",
-    "killerNpcId": 69,
-    "keptItems": [],
-    "lostItems": [
-      {
-        "id": 314,
-        "quantity": 100,
-        "priceEach": 3,
-        "name": "Feather"
-      }
-    ]
-  },
-  "type": "DEATH"
-}
-```
-
-</details>
-
 ### Collection:
 
 `%ITEM%` will be replaced with the item that was dropped for the collection log.
 
-<details>
-  <summary>JSON for Collection Notifications:</summary>
+`%COMPLETED%` will be replaced with the number of unique entries that have been completed.
 
-```json5
-{
-  "content": "%USERNAME% has added %ITEM% to their collection",
-  "extra": {
-    "itemName": "Zamorak chaps",
-    "itemId": 10372,
-    "price": 500812,
-    "completedEntries": 420,
-    "totalEntries": 1443
-  },
-  "type": "COLLECTION"
-}
-```
+`%TOTAL_POSSIBLE%` will be replaced with the total number of unique entries that are tracked in the collection log.
 
-</details>
+Note: `%COMPLETED%` may not be populated if the [Character Summary](https://oldschool.runescape.wiki/w/Character_Summary) tab was never selected since logging in.
 
 ### Level:
 
 `%SKILL%` will be replaced with the skill name and level that was achieved
 
 `%TOTAL_LEVEL%` will be replaced with the updated total level across all skills.
-
-<details>
-  <summary>JSON for Levelups:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has levelled %SKILL%",
-  "extra": {
-    "levelledSkills": {
-      // These are the skills that dinked
-      "Skill name": 30
-    },
-    "allSkills": {
-      // These are all the skills
-      "Skill name": 30,
-      "Other skill": 1
-    },
-    "combatLevel": {
-      "value": 50,
-      "increased": false
-    }
-  },
-  "type": "LEVEL"
-}
-```
-
-Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M).
-
-</details>
 
 ### Loot:
 
@@ -287,36 +169,6 @@ Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M
 
 `%SOURCE%` will be replace with the source that dropped or gave the loot
 
-<details>
-  <summary>JSON for Loot Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has looted: \n\n%LOOT%\nFrom: %SOURCE%",
-  "extra": {
-    "items": [
-      {
-        // type of this object is SerializedItemStack
-
-        "id": 1234,
-        "quantity": 1,
-        "priceEach": 42069,
-        // priceEach is the GE price of the item
-        "name": "Some item"
-      }
-    ],
-    "source": "Giant rat",
-    "category": "NPC",
-    "killCount": 60
-  },
-  "type": "LOOT"
-}
-```
-
-Note: `killCount` is only specified for NPC loot with the base RuneLite Loot Tracker plugin enabled.
-
-</details>
-
 ### Slayer:
 
 `%TASK%` will be replaced with the task that you have completed. E.g. `50 monkeys`
@@ -325,47 +177,9 @@ Note: `killCount` is only specified for NPC loot with the base RuneLite Loot Tra
 
 `%POINTS%` will be replaced with the number of points you obtained from the task
 
-<details>
-  <summary>JSON for Slayer Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has completed a slayer task: %TASK%, getting %POINTS% points and making that %TASKCOUNT% tasks completed",
-  "extra": {
-    "slayerTask": "Slayer task name",
-    "slayerCompleted": "30",
-    "slayerPoints": "15",
-    "killCount": 135,
-    "monster": "Kalphite"
-  },
-  "type": "SLAYER"
-}
-```
-
-</details>
-
 ### Quests:
 
 `%QUEST%` will be replaced with the name of the quest completed
-
-<details>
-  <summary>JSON for Quest Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has completed a quest: %QUEST%",
-  "extra": {
-    "questName": "Dragon Slayer I",
-    "completedQuests": 22,
-    "totalQuests": 156,
-    "questPoints": 44,
-    "totalQuestPoints": 293
-  },
-  "type": "QUEST"
-}
-```
-
-</details>
 
 ### Clue Scrolls:
 
@@ -377,57 +191,11 @@ Note: `killCount` is only specified for NPC loot with the base RuneLite Loot Tra
 
 `%COUNT%` will be replaced by the number of times that you have completed that tier of clue scrolls
 
-<details>
-  <summary>JSON for Clue Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has completed a %CLUE% clue, they have completed %COUNT%.\nThey obtained:\n\n%LOOT%",
-  "extra": {
-    "clueType": "Beginner",
-    "numberCompleted": 123,
-    "items": [
-      {
-        // the type of this object SerializedItemStack
-
-        "id": 1234,
-        "quantity": 1,
-        "priceEach": 42069,
-        // priceEach is the GE price of the item
-        "name": "Some item"
-      }
-    ]
-  },
-  "type": "CLUE"
-}
-```
-
-</details>
-
 ### Kill Count:
 
 `%BOSS%` will be replaced with the boss name (be it the NPC, raid, etc.)
 
 `%COUNT%` will be replaced with the kill count (or, generically: completion count)
-
-<details>
-  <summary>JSON for Kill Count Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has defeated %BOSS% with a completion count of %COUNT%",
-  "extra": {
-    "boss": "King Black Dragon",
-    "count": 69,
-    "gameMessage": "Your King Black Dragon kill count is: 69."
-  },
-  "type": "KILL_COUNT"
-}
-```
-
-Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble count, rather than kill count.
-
-</details>
 
 ### Combat Achievements:
 
@@ -440,47 +208,6 @@ Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble co
 `%TOTAL_POINTS%` will be replaced with the total points that have been earned across tasks.
 
 If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replaced with the tier that was completed.
-
-<details>
-  <summary>JSON for Combat Achievement Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has completed %TIER% combat task: %TASK%",
-  "extra": {
-    "tier": "GRANDMASTER",
-    "task": "Peach Conjurer",
-    "taskPoints": 6,
-    "totalPoints": 1337,
-    "tierProgress": 517,
-    "tierTotalPoints": 645
-  },
-  "type": "COMBAT_ACHIEVEMENT"
-}
-```
-
-</details>
-
-<details>
-  <summary>JSON for Combat Achievement Tier Completion Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has unlocked the rewards for the %COMPLETED% tier, by completing the combat task: %TASK%",
-  "extra": {
-    "tier": "GRANDMASTER",
-    "task": "Peach Conjurer",
-    "taskPoints": 6,
-    "totalPoints": 1465,
-    "tierProgress": 0,
-    "tierTotalPoints": 540,
-    "justCompletedTier": "MASTER"
-  },
-  "type": "COMBAT_ACHIEVEMENT"
-}
-```
-
-</details>
 
 ### Achievement Diary:
 
@@ -498,47 +225,9 @@ If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replac
 
 `%AREA_TASKS_TOTAL%` will be replaced with the total number of tasks possible within the area
 
-<details>
-  <summary>JSON for Achievement Diary Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has completed the %DIFFICULTY% %AREA% Achievement Diary, for a total of %TOTAL% diaries completed",
-  "extra": {
-    "area": "Varrock",
-    "difficulty": "HARD",
-    "total": 15,
-    "tasksCompleted": 152,
-    "tasksTotal": 492,
-    "areaTasksCompleted": 37,
-    "areaTasksTotal": 42
-  },
-  "type": "ACHIEVEMENT_DIARY"
-}
-```
-
-</details>
-
 ### Pet:
 
-<details>
-  <summary>JSON for Pet Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has a funny feeling they are being followed",
-  "extra": {
-    "petName": "Ikkle hydra",
-    "milestone": "5,000 killcount",
-    "duplicate": false
-  },
-  "type": "PET"
-}
-```
-
-Note: `petName` is only included if the game sent it to your chat via untradeable drop or collection log or clan notifications. `milestone` is only included if a clan notification was triggered.
-
-</details>
+`%GAME_MESSAGE%` will be replaced with the game message associated with this type of pet drop
 
 ### Speedrunning:
 
@@ -548,41 +237,6 @@ Note: `petName` is only included if the game sent it to your chat via untradeabl
 
 `%BEST%` will be replaced with the personal best time for this quest (note: only if the run was not a PB)
 
-<details>
-  <summary>JSON for Personal Best Speedrun Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has just beat their personal best in a speedrun of %QUEST% with a time of %TIME%",
-  "extra": {
-    "questName": "Cook's Assistant",
-    "personalBest": "1:13.20",
-    "currentTime": "1:13.20",
-    "isPersonalBest": true
-  },
-  "type": "SPEEDRUN"
-}
-```
-
-</details>
-
-<details>
-  <summary>JSON for Normal Speedrun Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has just finished a speedrun of %QUEST% with a time of %TIME% (their PB is %BEST%)",
-  "extra": {
-    "questName": "Cook's Assistant",
-    "personalBest": "1:13.20",
-    "currentTime": "1:22.20"
-  },
-  "type": "SPEEDRUN"
-}
-```
-
-</details>
-
 ### BA Gambles:
 
 `%COUNT%` will be replaced with the high level gamble count
@@ -590,133 +244,15 @@ Note: `petName` is only included if the game sent it to your chat via untradeabl
 `%LOOT%` will be replaced with the loot received from the gamble
 (by default, this is included only in rare loot notifications)
 
-<details>
-  <summary>JSON for BA Gambles Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has reached %COUNT% high gambles",
-  "extra": {
-    "gambleCount": 500,
-    "items": [
-      {
-        "id": 3122,
-        "quantity": 1,
-        "priceEach": 35500,
-        "name": "Granite shield"
-      }
-    ]
-  },
-  "type": "BARBARIAN_ASSAULT_GAMBLE"
-}
-```
-
-</details>
-
 ### Player Kills:
 
 `%TARGET%` will be replaced with the victim's user name
-
-Note: `world` and `location` are _not_ sent if the user has disabled the "Include Location" notifier setting.
-
-<details>
-  <summary>JSON for PK Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has PK'd %TARGET%",
-  "type": "PLAYER_KILL",
-  "playerName": "%USERNAME%",
-  "accountType": "NORMAL",
-  "extra": {
-    "victimName": "%TARGET%",
-    "victimCombatLevel": 69,
-    "victimEquipment": {
-      "AMULET": {
-        "id": 1731,
-        "priceEach": 1987,
-        "name": "Amulet of power"
-      },
-      "WEAPON": {
-        "id": 1333,
-        "priceEach": 14971,
-        "name": "Rune scimitar"
-      },
-      "TORSO": {
-        "id": 1135,
-        "priceEach": 4343,
-        "name": "Green d'hide body"
-      },
-      "LEGS": {
-        "id": 1099,
-        "priceEach": 2077,
-        "name": "Green d'hide chaps"
-      },
-      "HANDS": {
-        "id": 1065,
-        "priceEach": 1392,
-        "name": "Green d'hide vambraces"
-      }
-    },
-    "world": 394,
-    "location": {
-      "x": 3334,
-      "y": 4761,
-      "plane": 0
-    },
-    "myHitpoints": 20,
-    "myLastDamage": 12
-  }
-}
-```
-
-</details>
 
 ### Group Storage:
 
 `%DEPOSITED%` will be replaced with the list of deposited items
 
 `%WITHDRAWN%` will be replaced with the list of withdrawn items
-
-<details>
-  <summary>JSON for GIM Bank Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% has deposited: %DEPOSITED% | %USERNAME% has withdrawn: %WITHDRAWN%",
-  "type": "GROUP_STORAGE",
-  "playerName": "%USERNAME%",
-  "accountType": "HARDCORE_GROUP_IRONMAN",
-  "extra": {
-    "groupName": "group name",
-    "deposits": [
-      {
-        "id": 315,
-        "name": "Shrimps",
-        "quantity": 2,
-        "priceEach": 56
-      },
-      {
-        "id": 1205,
-        "name": "Bronze dagger",
-        "quantity": 1,
-        "priceEach": 53
-      }
-    ],
-    "withdrawals": [
-      {
-        "id": 1265,
-        "name": "Bronze pickaxe",
-        "quantity": 1,
-        "priceEach": 22
-      }
-    ],
-    "netValue": 143
-  }
-}
-```
-
-</details>
 
 ### Grand Exchange:
 
@@ -726,123 +262,35 @@ Note: `world` and `location` are _not_ sent if the user has disabled the "Includ
 
 `%STATUS%` will be replaced with the offer status (i.e., Completed, In Progress, or Cancelled)
 
-<details>
-  <summary>JSON for GE Notifications:</summary>
+### Trades:
 
-```json5
-{
-  "content": "%USERNAME% %TYPE% %ITEM% on the GE",
-  "type": "GRAND_EXCHANGE",
-  "playerName": "%USERNAME%",
-  "accountType": "NORMAL",
-  "extra": {
-    "slot": 1,
-    "status": "SOLD",
-    "item": {
-      "id": 314,
-      "quantity": 2,
-      "priceEach": 3,
-      "name": "Feather"
-    },
-    "marketPrice": 2,
-    "targetPrice": 3,
-    "targetQuantity": 2,
-    "sellerTax": 0
-  }
-}
-```
+`%COUNTERPARTY%` will be replaced with the name of the other user involved in the trade
 
-Unlike `GrandExchangeOfferChanged#getSlot`, `extra.slot` is one-indexed;
-values can range from 1 to 8 (inclusive) for members, and 1 to 3 (inclusive) for F2P.
+`%GROSS_VALUE%` will be replaced with the sum of item values offered by both parties in the transaction.
 
-See [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/GrandExchangeOfferState.html) for the possible values of `extra.status`.
+`%NET_VALUE%` will be replaced with the value of the received items _minus_ the value of the given items.
 
-</details>
+### Leagues:
+
+Leagues notifications include: region unlocked, relic unlocked, and task completed (with customizable difficulty threshold).
+
+Each of these events can be independently enabled or disabled in the notifier settings.
+
+### Chat:
+
+The chat notifier enables notifications for messages that are otherwise not covered by our other notifiers.
+
+You can customize the message patterns to your liking (`*` is a wildcard), and specify which types of messages to check (e.g., game, trade, clan notification, user chat).
+
+`%MESSAGE%` will be replaced with the chat message the matched one of the patterns.
 
 ### Metadata:
 
-On login, Dink can submit a character summary containing data that spans multiple notifiers to a custom webhook handler (configurable in the `Advanced` section). This login notification is delayed by at least 5 seconds in order to gather all of the relevant data. However, `collectionLog` data can be missing if the user does not have the Character Summary tab selected (since the client otherwise is not sent that data).
-
-<details>
-  <summary>JSON for Login Notifications:</summary>
-
-```json5
-{
-  "content": "%USERNAME% logged into World %WORLD%",
-  "type": "LOGIN",
-  "playerName": "%USERNAME%",
-  "accountType": "NORMAL",
-  "clanName": "Dink QA",
-  "extra": {
-    "world": 338,
-    "collectionLog": {
-      "completed": 651,
-      "total": 1477
-    },
-    "combatAchievementPoints": {
-      "completed": 503,
-      "total": 2005
-    },
-    "achievementDiary": {
-      "completed": 42,
-      "total": 48
-    },
-    "achievementDiaryTasks": {
-      "completed": 477,
-      "total": 492
-    },
-    "barbarianAssault": {
-      "highGambleCount": 0
-    },
-    "skills": {
-      "totalExperience": 337810454,
-      "totalLevel": 2164,
-      "levels": {
-        "Hunter": 90,
-        "Thieving": 86,
-        "Runecraft": 86,
-        "Construction": 86,
-        "Cooking": 103,
-        "Magic": 106,
-        "Fletching": 99,
-        "Herblore": 91,
-        "Firemaking": 100,
-        "Attack": 107,
-        "Fishing": 92,
-        "Crafting": 96,
-        "Hitpoints": 111,
-        "Ranged": 110,
-        "Mining": 88,
-        "Smithing": 91,
-        "Agility": 82,
-        "Woodcutting": 96,
-        "Slayer": 104,
-        "Defence": 103,
-        "Strength": 104,
-        "Prayer": 91,
-        "Farming": 100
-      }
-    },
-    "questCount": {
-      "completed": 156,
-      "total": 158
-    },
-    "questPoints": {
-      "completed": 296,
-      "total": 300
-    },
-    "slayer": {
-      "points": 2204,
-      "streak": 1074
-    }
-  }
-}
-```
-
-Note: `clanName` requires `Advanced > Send Clan Name` to be enabled (default: on). The `groupIronClanName` and `discordUser` fields also have similar toggles in the Advanced config section.
-
-</details>
+On login, Dink can submit a character summary containing data that spans multiple notifiers to a custom webhook handler (configurable in the `Advanced` section). This login notification is delayed by at least 5 seconds in order to gather all of the relevant data.
 
 ## Credits
 
 This plugin uses code from [Universal Discord Notifier](https://github.com/MidgetJake/UniversalDiscordNotifier).
+
+Item rarity data is sourced from the OSRS Wiki (licensed under [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/)),
+which was conveniently parsed by [Flipping Utilities](https://github.com/Flipping-Utilities/parsed-osrs) (and [transformed](https://github.com/pajlads/DinkPlugin/blob/master/src/test/java/dinkplugin/RarityCalculator.java) by pajlads).

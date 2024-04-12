@@ -1,5 +1,6 @@
 package dinkplugin.message;
 
+import dinkplugin.util.MathUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
@@ -32,5 +33,11 @@ public class Field {
         assert total != 0;
         double percent = 100.0 * completed / total;
         return Field.formatBlock("", String.format("%d/%d (%.1f%%)", completed, total, percent));
+    }
+
+    public static String formatProbability(double p) {
+        String percentage = MathUtils.formatPercentage(p, 3);
+        double denominator = 1 / p;
+        return Field.formatBlock("", String.format("1 in %.1f (%s)", denominator, percentage));
     }
 }
