@@ -150,8 +150,8 @@ public class LevelNotifier extends BaseNotifier {
         checkLevelUp(enabled, skillName, previousLevel, virtualLevel);
 
         // Check if xp milestone reached
-        int xpInterval = config.xpInterval();
-        if (enabled && xpInterval > 0 && (level >= MAX_REAL_LEVEL || !config.ignoreXpBelowMax())) {
+        int xpInterval = config.xpInterval() * 1_000_000;
+        if (enabled && xpInterval > 0 && level >= MAX_REAL_LEVEL) {
             int remainder = xp % xpInterval;
             if (remainder == 0 || xp - remainder > previousXp) {
                 log.debug("Observed XP milestone for {} to {}", skill, xp);
@@ -208,7 +208,7 @@ public class LevelNotifier extends BaseNotifier {
         final int n = xpReached.size();
         if (n == 0) return;
 
-        int interval = config.xpInterval();
+        int interval = Math.max(config.xpInterval(), 1) * 1_000_000;
         Map<Skill, Integer> current = new EnumMap<>(currentXp);
         List<Skill> milestones = new ArrayList<>(n);
         JoiningReplacement.JoiningReplacementBuilder skillMessage = JoiningReplacement.builder().delimiter(", ");

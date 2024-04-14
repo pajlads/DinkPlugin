@@ -778,24 +778,16 @@ public interface DinkPluginConfig extends Config {
 
     @ConfigItem(
         keyName = "xpInterval",
-        name = "XP Interval",
-        description = "XP interval at which to fire notifications (disabled if set to 0)",
+        name = "Post-99 XP Interval",
+        description = "XP interval at which to fire notifications (in millions).<br/>" +
+            "Does not apply to skills that are below level 99<br/>" +
+            "Disabled if set to 0",
         position = 27,
         section = levelSection
     )
+    @Units("M xp")
     default int xpInterval() {
-        return 5_000_000;
-    }
-
-    @ConfigItem(
-        keyName = "ignoreXpBelowMax",
-        name = "Skip XP Interval below Lvl 99",
-        description = "Prevent XP interval notifications for levels below 99",
-        position = 28,
-        section = levelSection
-    )
-    default boolean ignoreXpBelowMax() {
-        return true;
+        return 5;
     }
 
     @ConfigItem(
