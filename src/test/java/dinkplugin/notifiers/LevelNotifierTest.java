@@ -101,7 +101,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         Map<String, Integer> expectedSkills = skillsMap("Hunter", 6);
 
         // fire skill event (4 => 6, skipping 5 while 5 is level interval)
-        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 200, 6, 6));
+        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 600, 6, 6));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());

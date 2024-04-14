@@ -744,7 +744,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "levelInterval",
         name = "Notify Interval",
-        description = "Interval between when a notification should be sent",
+        description = "Level interval between when a notification should be sent",
         position = 24,
         section = levelSection
     )
@@ -777,13 +777,36 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "xpInterval",
+        name = "XP Interval",
+        description = "XP interval at which to fire notifications (disabled if set to 0)",
+        position = 27,
+        section = levelSection
+    )
+    default int xpInterval() {
+        return 5_000_000;
+    }
+
+    @ConfigItem(
+        keyName = "ignoreXpBelowMax",
+        name = "Skip XP Interval below Lvl 99",
+        description = "Prevent XP interval notifications for levels below 99",
+        position = 28,
+        section = levelSection
+    )
+    default boolean ignoreXpBelowMax() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "levelNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %SKILL% to insert the levelled skill(s)<br/>" +
-            "Use %TOTAL_LEVEL% to insert the updated total level",
-        position = 27,
+            "Use %TOTAL_LEVEL% to insert the updated total level<br/>" +
+            "Use %TOTAL_XP% to insert the updated overall experience",
+        position = 29,
         section = levelSection
     )
     default String levelNotifyMessage() {
