@@ -151,7 +151,7 @@ public class LevelNotifier extends BaseNotifier {
 
         // Check if xp milestone reached
         int xpInterval = config.xpInterval() * 1_000_000;
-        if (enabled && xpInterval > 0 && level >= MAX_REAL_LEVEL) {
+        if (enabled && xpInterval > 0 && level >= MAX_REAL_LEVEL && xp > previousXp) {
             int remainder = xp % xpInterval;
             if (remainder == 0 || xp - remainder > previousXp) {
                 log.debug("Observed XP milestone for {} to {}", skill, xp);
