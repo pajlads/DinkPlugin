@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Fire notifications for XP milestones beyond level 99. (#462)
+
 ## 1.10.0
 
 - Major: Add notifier for chat messages that match custom patterns. (#391, #450)
