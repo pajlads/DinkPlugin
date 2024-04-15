@@ -192,6 +192,27 @@ JSON for Levelups:
 
 Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M).
 
+JSON for XP Milestones:
+
+```json5
+{
+  "content": "%USERNAME% has levelled %SKILL%",
+  "extra": {
+    "xpData": {
+      // The XP for each skill
+      "SKILL_ONE": 1234567,
+      "SKILL_TWO": 2345678,
+      "SKILL_THREE": 3456789
+    },
+    "milestoneAchieved": ["SKILL_NAME"], // The skill(s) that hit a milestone
+    "interval": 5000000 // The configured XP interval
+  },
+  "type": "XP"
+}
+```
+
+Note: Unlike `LEVEL` notifications, the skill name is in all caps for `XP` notification metadata.
+
 ### Loot
 
 JSON for Loot Notifications:
