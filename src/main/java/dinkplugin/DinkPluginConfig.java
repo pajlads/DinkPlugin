@@ -722,7 +722,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "levelNotifyVirtual",
         name = "Notify on Virtual Levels",
-        description = "Whether notifications should be fired beyond level 99",
+        description = "Whether level notifications should be fired beyond level 99",
         position = 22,
         section = levelSection
     )
