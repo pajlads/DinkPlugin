@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Avoid benign NPE when config items are reset. (#464)
+
 ## 1.10.0
 
 - Major: Add notifier for chat messages that match custom patterns. (#391, #450)
