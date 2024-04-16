@@ -64,7 +64,7 @@ public class RarityService {
         Collection<Integer> variants = new HashSet<>(
             ItemVariationMapping.getVariations(ItemVariationMapping.map(canonical))
         );
-        return dropsByNpcName.getOrDefault(npcName, Collections.emptyList())
+        return getDrops(npcName)
             .stream()
             .filter(drop -> drop.getMinQuantity() <= quantity && quantity <= drop.getMaxQuantity())
             .filter(drop -> {
@@ -76,8 +76,12 @@ public class RarityService {
             .reduce(Double::sum);
     }
 
+    public Collection<Drop> getDrops(String npcName) {
+        return dropsByNpcName.getOrDefault(npcName, Collections.emptyList());
+    }
+
     @Value
-    private static class Drop {
+    public static class Drop {
         int itemId;
         int minQuantity;
         int maxQuantity;

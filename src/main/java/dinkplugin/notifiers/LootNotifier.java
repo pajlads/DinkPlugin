@@ -9,6 +9,7 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.LootNotificationData;
+import dinkplugin.notifiers.data.RareItemStack;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
@@ -18,12 +19,14 @@ import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ItemComposition;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
+import net.runelite.client.game.ItemVariationMapping;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
@@ -35,12 +38,12 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.OptionalDouble;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -178,7 +181,8 @@ public class LootNotifier extends BaseNotifier {
             totalStackValue += totalPrice;
         }
 
-        Map.Entry<SerializedItemStack, Double> rarest = getRarestDropRate(items, dropper, type, deniedIds);
+        Collection<RareItemStack> rareData = type == LootRecordType.NPC ? getItemRarities(dropper, serializedItems) : null;
+        RareItemStack rarest = getRarestDropRate(rareData, deniedIds);
 
         Evaluable lootMsg;
         if (!sendMessage) {
@@ -187,7 +191,7 @@ public class LootNotifier extends BaseNotifier {
                 sendMessage = true;
                 lootMsg = Replacements.ofMultiple(" ",
                     Replacements.ofText("Various items including:"),
-                    ItemUtils.templateStack(rarest.getKey(), false)
+                    ItemUtils.templateStack(rarest, false)
                 );
             } else if (totalStackValue >= minValue && max != null && "Loot Chest".equalsIgnoreCase(dropper)) {
                 // Special case: PK loot keys should trigger notification if total value exceeds configured minimum even
@@ -211,8 +215,9 @@ public class LootNotifier extends BaseNotifier {
                     overrideUrl = config.pkWebhook();
                 }
             }
-            SerializedItemStack keyItem = rarest != null ? rarest.getKey() : max;
-            Double rarity = rarest != null ? rarest.getValue() : null;
+            SerializedItemStack keyItem = rarest != null ? rarest : max;
+            Double rarity = rarest != null ? rarest.getRarity() : null;
+            Collection<? extends SerializedItemStack>  augmentedItems = rareData != null ? rareData : serializedItems;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Evaluable source = type == LootRecordType.PLAYER
                 ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))
@@ -229,7 +234,7 @@ public class LootNotifier extends BaseNotifier {
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
-                    .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity))
+                    .extra(new LootNotificationData(augmentedItems, dropper, type, kc, rarity))
                     .type(NotificationType.LOOT)
                     .thumbnailUrl(ItemUtils.getItemImageUrl(keyItem.getId()))
                     .build()
@@ -237,32 +242,51 @@ public class LootNotifier extends BaseNotifier {
         }
     }
 
+    private Collection<RareItemStack> getItemRarities(String npcName, Collection<SerializedItemStack> reduced) {
+        // Precondition: reduced.size() == reduced.stream().mapToInt(SerializedItemStack::getId).distinct().count()
+
+        // O(n) to enable O(1) item id lookup in second loop
+        Map<Integer, SerializedItemStack> m = new HashMap<>();
+        for (SerializedItemStack item : reduced) {
+            ItemComposition comp = itemManager.getItemComposition(item.getId());
+            int canonical = comp.getNote() != -1 ? comp.getLinkedNoteId() : item.getId();
+            int baseId = ItemVariationMapping.map(canonical);
+            m.put(baseId, item);
+        }
+
+        // O(m) loop over possible drops for the npc
+        Map<Integer, RareItemStack> augmented = new HashMap<>();
+        BinaryOperator<RareItemStack> mergeFunction = (a, b) -> a.withRarity(a.getRarity() + b.getRarity());
+        for (RarityService.Drop drop : rarityService.getDrops(npcName)) {
+            int id = ItemVariationMapping.map(drop.getItemId());
+            SerializedItemStack i = m.get(id);
+            if (i != null && drop.getMinQuantity() <= i.getQuantity() && i.getQuantity() <= drop.getMaxQuantity()) {
+                augmented.merge(id, RareItemStack.of(i, drop.getProbability()), mergeFunction);
+            }
+        }
+
+        // O(n) loop to add any remaining items without rarity data
+        m.forEach((k, v) -> augmented.putIfAbsent(k, RareItemStack.of(v, null)));
+
+        return augmented.values();
+    }
+
     @Nullable
-    private Map.Entry<SerializedItemStack, Double> getRarestDropRate(Collection<ItemStack> items, String dropper, LootRecordType type, Collection<Integer> deniedIds) {
-        if (type != LootRecordType.NPC) return null;
+    private RareItemStack getRarestDropRate(Collection<RareItemStack> items, Collection<Integer> deniedIds) {
+        if (items == null) return null;
         return items.stream()
-            .filter(item -> !deniedIds.contains(item.getId()))
-            .map(item -> {
-                OptionalDouble rarity = rarityService.getRarity(dropper, item.getId(), item.getQuantity());
-                if (rarity.isEmpty()) return null;
-                return Map.entry(item, rarity.getAsDouble());
-            })
-            .filter(Objects::nonNull)
-            .min(Comparator.comparingDouble(Map.Entry::getValue))
-            .map(pair -> {
-                ItemStack item = pair.getKey();
-                SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
-                return Map.entry(stack, pair.getValue());
-            })
+            .filter(i -> i.getRarity() != null)
+            .filter(i -> !deniedIds.contains(i.getId()))
+            .min(Comparator.comparingDouble(RareItemStack::getRarity))
             .orElse(null);
     }
 
-    private boolean sufficientlyRare(@Nullable Map.Entry<SerializedItemStack, Double> rarest) {
+    private boolean sufficientlyRare(@Nullable RareItemStack rarest) {
         if (rarest == null) return false;
         int configRareDenominator = config.lootRarityThreshold();
         if (configRareDenominator <= 0) return false;
         double rarityThreshold = 1.0 / configRareDenominator;
-        return DoubleMath.fuzzyCompare(rarest.getValue(), rarityThreshold, MathUtils.EPSILON) <= 0;
+        return DoubleMath.fuzzyCompare(rarest.getRarity(), rarityThreshold, MathUtils.EPSILON) <= 0;
     }
 
     private static boolean matches(Collection<Pattern> regexps, String input) {
