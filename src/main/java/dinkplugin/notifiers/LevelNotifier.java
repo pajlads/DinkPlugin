@@ -21,7 +21,6 @@ import net.runelite.client.util.QuantityFormatter;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -43,7 +42,7 @@ public class LevelNotifier extends BaseNotifier {
     private static final String COMBAT_NAME = "Combat";
     private static final Set<String> COMBAT_COMPONENTS;
     private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(Skill.values().length + 1);
-    private final Collection<Skill> xpReached = EnumSet.noneOf(Skill.class);
+    private final Set<Skill> xpReached = EnumSet.noneOf(Skill.class);
     private final Map<String, Integer> currentLevels = new HashMap<>();
     private final Map<Skill, Integer> currentXp = new EnumMap<>(Skill.class);
     private final AtomicInteger ticksWaited = new AtomicInteger();
@@ -155,7 +154,7 @@ public class LevelNotifier extends BaseNotifier {
         int xpInterval = config.xpInterval() * 1_000_000;
         if (enabled && xpInterval > 0 && level >= MAX_REAL_LEVEL && xp > previousXp) {
             int remainder = xp % xpInterval;
-            if (remainder == 0 || xp - remainder > previousXp) {
+            if (remainder == 0 || xp - remainder > previousXp || (xp >= Experience.MAX_SKILL_XP && !config.levelNotifyVirtual())) {
                 log.debug("Observed XP milestone for {} to {}", skill, xp);
                 xpReached.add(skill);
                 ticksWaited.set(0);

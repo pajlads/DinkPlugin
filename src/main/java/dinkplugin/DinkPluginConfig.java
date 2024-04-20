@@ -9,6 +9,7 @@ import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.notifiers.ChatNotifier;
+import net.runelite.api.Experience;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -722,7 +723,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "levelNotifyVirtual",
         name = "Notify on Virtual Levels",
-        description = "Whether level notifications should be fired beyond level 99",
+        description = "Whether level notifications should be fired beyond level 99.<br/>" +
+            "Will also notify upon reaching 200M XP",
         position = 22,
         section = levelSection
     )
@@ -782,11 +784,13 @@ public interface DinkPluginConfig extends Config {
         description = "XP interval at which to fire notifications (in millions).<br/>" +
             "Does not apply to skills that are below level 99.<br/>" +
             "Does <i>not</i> depend on the 'Notify on Virtual Levels' setting.<br/>" +
+            "If enabled, fires for 200M XP, even if not divisible by the interval.<br/>" +
             "Disabled if set to 0",
         position = 27,
         section = levelSection
     )
     @Units("M xp")
+    @Range(max = Experience.MAX_SKILL_XP / 1_000_000) // [0, 200]
     default int xpInterval() {
         return 5;
     }
