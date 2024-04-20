@@ -780,7 +780,8 @@ public interface DinkPluginConfig extends Config {
         keyName = "xpInterval",
         name = "Post-99 XP Interval",
         description = "XP interval at which to fire notifications (in millions).<br/>" +
-            "Does not apply to skills that are below level 99<br/>" +
+            "Does not apply to skills that are below level 99.<br/>" +
+            "Does <i>not</i> depend on the 'Notify on Virtual Levels' setting.<br/>" +
             "Disabled if set to 0",
         position = 27,
         section = levelSection
