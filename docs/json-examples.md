@@ -207,7 +207,7 @@ JSON for XP Milestones:
     "milestoneAchieved": ["Skill name"], // The skill(s) that hit a milestone
     "interval": 5000000 // The configured XP interval
   },
-  "type": "XP"
+  "type": "XP_MILESTONE"
 }
 ```
 

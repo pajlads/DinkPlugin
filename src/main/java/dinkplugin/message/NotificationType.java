@@ -30,7 +30,7 @@ public enum NotificationType {
     LOGIN("Player Login", "login.png", WIKI_IMG_BASE_URL + "Prop_sword.png"),
     TRADE("Player Trade", "trade.png", WIKI_IMG_BASE_URL + "Inventory.png"),
     CHAT("Chat Notification", "chat.png", WIKI_IMG_BASE_URL + "Toggle_Chat_effects.png"),
-    XP("XP Milestone", "xpImage.png", WIKI_IMG_BASE_URL + "Lamp.png");
+    XP_MILESTONE("XP Milestone", "xpImage.png", WIKI_IMG_BASE_URL + "Lamp.png");
 
     private final String title;
 

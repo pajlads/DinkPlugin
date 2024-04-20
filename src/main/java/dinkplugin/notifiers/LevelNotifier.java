@@ -146,7 +146,7 @@ public class LevelNotifier extends BaseNotifier {
         }
 
         // Check normal skill level up
-        boolean enabled = config.notifyLevel();
+        final boolean enabled = config.notifyLevel();
         checkLevelUp(enabled, skillName, previousLevel, virtualLevel);
 
         // Check if xp milestone reached
@@ -171,7 +171,7 @@ public class LevelNotifier extends BaseNotifier {
         if (COMBAT_COMPONENTS.contains(skillName)) {
             int combatLevel = calculateCombatLevel();
             Integer previousCombatLevel = currentLevels.put(COMBAT_NAME, combatLevel);
-            checkLevelUp(config.notifyLevel() && config.levelNotifyCombat(), COMBAT_NAME, previousCombatLevel, combatLevel);
+            checkLevelUp(enabled && config.levelNotifyCombat(), COMBAT_NAME, previousCombatLevel, combatLevel);
         }
     }
 
@@ -240,7 +240,7 @@ public class LevelNotifier extends BaseNotifier {
         createMessage(config.levelSendImage(), NotificationBody.builder()
             .text(fullNotification)
             .extra(new XpNotificationData(current, milestones, interval))
-            .type(NotificationType.XP)
+            .type(NotificationType.XP_MILESTONE)
             .thumbnailUrl(thumbnail)
             .build());
     }

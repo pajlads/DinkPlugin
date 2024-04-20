@@ -345,7 +345,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .build()
                 )
                 .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName()), 5_000_000))
-                .type(NotificationType.XP)
+                .type(NotificationType.XP_MILESTONE)
                 .build()
         );
     }
@@ -381,7 +381,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .build()
                 )
                 .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName()), 5_000_000))
-                .type(NotificationType.XP)
+                .type(NotificationType.XP_MILESTONE)
                 .build()
         );
     }
@@ -417,7 +417,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .build()
                 )
                 .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName()), 5_000_000))
-                .type(NotificationType.XP)
+                .type(NotificationType.XP_MILESTONE)
                 .build()
         );
     }
@@ -457,7 +457,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .build()
                 )
                 .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName(), Skill.SLAYER.getName()), 5_000_000))
-                .type(NotificationType.XP)
+                .type(NotificationType.XP_MILESTONE)
                 .build()
         );
     }
