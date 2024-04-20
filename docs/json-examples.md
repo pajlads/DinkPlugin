@@ -200,18 +200,16 @@ JSON for XP Milestones:
   "extra": {
     "xpData": {
       // The XP for each skill
-      "SKILL_ONE": 1234567,
-      "SKILL_TWO": 2345678,
-      "SKILL_THREE": 3456789
+      "Skill one": 1234567,
+      "Skill two": 2345678,
+      "Skill three": 3456789
     },
-    "milestoneAchieved": ["SKILL_NAME"], // The skill(s) that hit a milestone
+    "milestoneAchieved": ["Skill name"], // The skill(s) that hit a milestone
     "interval": 5000000 // The configured XP interval
   },
   "type": "XP"
 }
 ```
-
-Note: Unlike `LEVEL` notifications, the skill name is in all caps for `XP` notification metadata.
 
 ### Loot
 

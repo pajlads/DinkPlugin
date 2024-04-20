@@ -209,13 +209,14 @@ public class LevelNotifier extends BaseNotifier {
         if (n == 0) return;
 
         int interval = Math.max(config.xpInterval(), 1) * 1_000_000;
-        Map<Skill, Integer> current = new EnumMap<>(currentXp);
-        List<Skill> milestones = new ArrayList<>(n);
+        Map<String, Integer> current = new HashMap<>(32);
+        currentXp.forEach((k, v) -> current.put(k.getName(), v));
+        List<String> milestones = new ArrayList<>(n);
         JoiningReplacement.JoiningReplacementBuilder skillMessage = JoiningReplacement.builder().delimiter(", ");
         for (Skill skill : xpReached) {
-            int xp = current.getOrDefault(skill, 0);
+            int xp = currentXp.getOrDefault(skill, 0);
             xp -= xp % interval;
-            milestones.add(skill);
+            milestones.add(skill.getName());
             skillMessage.component(
                 JoiningReplacement.builder()
                     .component(Replacements.ofWiki(skill.getName()))
@@ -226,7 +227,7 @@ public class LevelNotifier extends BaseNotifier {
         xpReached.clear();
 
         String totalXp = QuantityFormatter.formatNumber(client.getOverallExperience());
-        String thumbnail = n == 1 ? getSkillIcon(milestones.get(0).getName()) : null;
+        String thumbnail = n == 1 ? getSkillIcon(milestones.get(0)) : null;
         Template fullNotification = Template.builder()
             .template(config.levelNotifyMessage())
             .replacementBoundary("%")

@@ -18,7 +18,7 @@ import org.mockito.InjectMocks;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -323,7 +323,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         // prepare state
         int attackXp = 15_000_100;
         when(client.getSkillExperience(Skill.ATTACK)).thenReturn(attackXp);
-        Map<Skill, Integer> map = xpMap();
+        Map<String, Integer> map = xpMap();
         long total = map.values().stream().mapToInt(i -> i).sum();
         when(client.getOverallExperience()).thenReturn(total);
 
@@ -344,7 +344,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{skill}}", Replacements.ofWiki("Attack"))
                         .build()
                 )
-                .extra(new XpNotificationData(map, List.of(Skill.ATTACK), 5_000_000))
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName()), 5_000_000))
                 .type(NotificationType.XP)
                 .build()
         );
@@ -359,7 +359,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         // prepare state
         int attackXp = 15_000_000;
         when(client.getSkillExperience(Skill.ATTACK)).thenReturn(attackXp);
-        Map<Skill, Integer> map = xpMap();
+        Map<String, Integer> map = xpMap();
         long total = map.values().stream().mapToInt(i -> i).sum();
         when(client.getOverallExperience()).thenReturn(total);
 
@@ -380,7 +380,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{skill}}", Replacements.ofWiki("Attack"))
                         .build()
                 )
-                .extra(new XpNotificationData(map, List.of(Skill.ATTACK), 5_000_000))
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName()), 5_000_000))
                 .type(NotificationType.XP)
                 .build()
         );
@@ -395,7 +395,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         // prepare state
         int attackXp = 20_000_999;
         when(client.getSkillExperience(Skill.ATTACK)).thenReturn(attackXp);
-        Map<Skill, Integer> map = xpMap();
+        Map<String, Integer> map = xpMap();
         long total = map.values().stream().mapToInt(i -> i).sum();
         when(client.getOverallExperience()).thenReturn(total);
 
@@ -416,7 +416,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{skill}}", Replacements.ofWiki("Attack"))
                         .build()
                 )
-                .extra(new XpNotificationData(map, List.of(Skill.ATTACK), 5_000_000))
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName()), 5_000_000))
                 .type(NotificationType.XP)
                 .build()
         );
@@ -433,7 +433,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         when(client.getSkillExperience(Skill.ATTACK)).thenReturn(skillXp);
         when(client.getSkillExperience(Skill.SLAYER)).thenReturn(skillXp);
 
-        Map<Skill, Integer> map = xpMap();
+        Map<String, Integer> map = xpMap();
         long total = map.values().stream().mapToInt(i -> i).sum();
         when(client.getOverallExperience()).thenReturn(total);
 
@@ -456,7 +456,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{s2}}", Replacements.ofWiki("Slayer"))
                         .build()
                 )
-                .extra(new XpNotificationData(map, List.of(Skill.ATTACK, Skill.SLAYER), 5_000_000))
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName(), Skill.SLAYER.getName()), 5_000_000))
                 .type(NotificationType.XP)
                 .build()
         );
@@ -624,10 +624,11 @@ class LevelNotifierTest extends MockedNotifierTest {
         return m;
     }
 
-    private Map<Skill, Integer> xpMap() {
-        Map<Skill, Integer> m = new EnumMap<>(Skill.class);
-        for (Skill skill : Skill.values()) {
-            m.put(skill, client.getSkillExperience(skill));
+    private Map<String, Integer> xpMap() {
+        Skill[] skills = Skill.values();
+        Map<String, Integer> m = new HashMap<>(skills.length);
+        for (Skill skill : skills) {
+            m.put(skill.getName(), client.getSkillExperience(skill));
         }
         return m;
     }
