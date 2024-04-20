@@ -78,9 +78,11 @@ public class LevelNotifier extends BaseNotifier {
         initTicks.set(0);
         levelledSkills.clear();
         ticksWaited.set(0);
-        clientThread.invoke(xpReached::clear);
-        clientThread.invoke(currentLevels::clear);
-        clientThread.invokeLater(currentXp::clear);
+        clientThread.invoke(() -> {
+            xpReached.clear();
+            currentXp.clear();
+            currentLevels.clear();
+        });
     }
 
     public void onTick() {
