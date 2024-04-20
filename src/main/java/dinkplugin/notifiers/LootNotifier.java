@@ -214,7 +214,7 @@ public class LootNotifier extends BaseNotifier {
             }
             SerializedItemStack keyItem = rarest != null ? rarest : max;
             Double rarity = rarest != null ? rarest.getRarity() : null;
-            Collection<? extends SerializedItemStack>  augmentedItems = rareData != null ? rareData : serializedItems;
+            Collection<? extends SerializedItemStack> augmentedItems = rareData != null ? rareData : serializedItems;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Evaluable source = type == LootRecordType.PLAYER
                 ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))
@@ -239,6 +239,14 @@ public class LootNotifier extends BaseNotifier {
         }
     }
 
+    /**
+     * Converts {@link SerializedItemStack} loot to {@link RareItemStack}
+     *
+     * @param npcName the name of the NPC that dropped these items
+     * @param reduced the items dropped by the NPC (after {@link ItemUtils#reduceItemStack(Iterable)} was performed)
+     * @return the dropped items augmented with rarity information (as available)
+     * @implNote Runs in linear time: O(m+n) = O(max{m, n}) = O(m) where m is the number of items on the NPCs drop table (and m >= n)
+     */
     private Collection<RareItemStack> getItemRarities(String npcName, Collection<SerializedItemStack> reduced) {
         // O(n) to enable O(1) lookup in second loop
         Map<String, SerializedItemStack> m = new HashMap<>(reduced.size());
