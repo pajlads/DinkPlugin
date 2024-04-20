@@ -238,7 +238,7 @@ public class LevelNotifier extends BaseNotifier {
 
         createMessage(config.levelSendImage(), NotificationBody.builder()
             .text(fullNotification)
-            .extra(new XpNotificationData(current, milestones, interval, totalXp))
+            .extra(new XpNotificationData(current, milestones, interval))
             .type(NotificationType.XP)
             .thumbnailUrl(thumbnail)
             .build());

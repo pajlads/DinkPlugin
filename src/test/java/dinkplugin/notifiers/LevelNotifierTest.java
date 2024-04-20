@@ -11,7 +11,6 @@ import dinkplugin.notifiers.data.XpNotificationData;
 import net.runelite.api.Experience;
 import net.runelite.api.Skill;
 import net.runelite.api.events.StatChanged;
-import net.runelite.client.util.QuantityFormatter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -345,7 +344,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{skill}}", Replacements.ofWiki("Attack"))
                         .build()
                 )
-                .extra(new XpNotificationData(map, List.of(Skill.ATTACK), 5_000_000, QuantityFormatter.formatNumber(total)))
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK), 5_000_000))
                 .type(NotificationType.XP)
                 .build()
         );
@@ -381,7 +380,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{skill}}", Replacements.ofWiki("Attack"))
                         .build()
                 )
-                .extra(new XpNotificationData(map, List.of(Skill.ATTACK), 5_000_000, QuantityFormatter.formatNumber(total)))
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK), 5_000_000))
                 .type(NotificationType.XP)
                 .build()
         );
@@ -417,7 +416,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{skill}}", Replacements.ofWiki("Attack"))
                         .build()
                 )
-                .extra(new XpNotificationData(map, List.of(Skill.ATTACK), 5_000_000, QuantityFormatter.formatNumber(total)))
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK), 5_000_000))
                 .type(NotificationType.XP)
                 .build()
         );
@@ -457,7 +456,7 @@ class LevelNotifierTest extends MockedNotifierTest {
                         .replacement("{{s2}}", Replacements.ofWiki("Slayer"))
                         .build()
                 )
-                .extra(new XpNotificationData(map, List.of(Skill.ATTACK, Skill.SLAYER), 5_000_000, QuantityFormatter.formatNumber(total)))
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK, Skill.SLAYER), 5_000_000))
                 .type(NotificationType.XP)
                 .build()
         );
