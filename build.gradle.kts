@@ -40,7 +40,7 @@ dependencies {
 }
 
 group = "dinkplugin"
-version = "1.9.1"
+version = "1.10.0"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -59,6 +59,11 @@ tasks.register(name = "generateResources", type = Test::class) {
     useJUnitPlatform {
         includeTags("generator")
     }
+}
+
+tasks.withType<AbstractArchiveTask>().configureEach {
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
 }
 
 tasks.register(name = "shadowJar", type = Jar::class) {

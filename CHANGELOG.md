@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Dev: Avoid benign NPE when config items are reset. (#464)
+
+## 1.10.0
+
 - Major: Add notifier for chat messages that match custom patterns. (#391, #450)
 - Minor: Include rarity and luck for pet notifications. (#433)
 - Minor: Include Smol heredit pet name in pet notifications. (#458)
@@ -7,6 +11,7 @@
 - Minor: `Completed Entries` field in Discord rich embed is now called `Completed`. (#448)
 - Bugfix: Allow Lunar Chest openings to trigger kill count notifier. (#449)
 - Bugfix: Exclude denylisted items from loot rarity override consideration. (#447)
+- Dev: Enable reproducible builds. (#344)
 
 ## 1.9.1
 
