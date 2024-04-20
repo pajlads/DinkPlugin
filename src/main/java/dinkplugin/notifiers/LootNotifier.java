@@ -19,14 +19,12 @@ import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ItemComposition;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
-import net.runelite.client.game.ItemVariationMapping;
 import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
@@ -43,7 +41,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BinaryOperator;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -243,25 +240,22 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private Collection<RareItemStack> getItemRarities(String npcName, Collection<SerializedItemStack> reduced) {
-        // Precondition: reduced.size() == reduced.stream().mapToInt(SerializedItemStack::getId).distinct().count()
-
-        // O(n) to enable O(1) item id lookup in second loop
-        Map<Integer, SerializedItemStack> m = new HashMap<>();
+        // O(n) to enable O(1) lookup in second loop
+        Map<String, SerializedItemStack> m = new HashMap<>(reduced.size());
         for (SerializedItemStack item : reduced) {
-            ItemComposition comp = itemManager.getItemComposition(item.getId());
-            int canonical = comp.getNote() != -1 ? comp.getLinkedNoteId() : item.getId();
-            int baseId = ItemVariationMapping.map(canonical);
-            m.put(baseId, item);
+            m.merge(item.getName(), item, (a, b) -> a.withQuantity(a.getQuantity() + b.getQuantity()));
         }
 
         // O(m) loop over possible drops for the npc
-        Map<Integer, RareItemStack> augmented = new HashMap<>();
-        BinaryOperator<RareItemStack> mergeFunction = (a, b) -> a.withRarity(a.getRarity() + b.getRarity());
-        for (RarityService.Drop drop : rarityService.getDrops(npcName)) {
-            int id = ItemVariationMapping.map(drop.getItemId());
-            SerializedItemStack i = m.get(id);
+        Map<String, RareItemStack> augmented = new HashMap<>();
+        for (var drop : rarityService.getDrops(npcName)) {
+            var comp = itemManager.getItemComposition(drop.getItemId());
+            // noinspection ConstantValue - allowing null composition simplifies our testing
+            if (comp == null) continue;
+            String name = comp.getMembersName();
+            SerializedItemStack i = m.get(name); // O(1) so this loop isn't O(m*n)
             if (i != null && drop.getMinQuantity() <= i.getQuantity() && i.getQuantity() <= drop.getMaxQuantity()) {
-                augmented.merge(id, RareItemStack.of(i, drop.getProbability()), mergeFunction);
+                augmented.merge(name, RareItemStack.of(i, drop.getProbability()), (a, b) -> a.withRarity(a.getRarity() + b.getRarity()));
             }
         }
 
