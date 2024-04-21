@@ -154,7 +154,7 @@ public class LevelNotifier extends BaseNotifier {
         int xpInterval = config.xpInterval() * 1_000_000;
         if (enabled && xpInterval > 0 && level >= MAX_REAL_LEVEL && xp > previousXp) {
             int remainder = xp % xpInterval;
-            if (remainder == 0 || xp - remainder > previousXp || (xp >= Experience.MAX_SKILL_XP && !config.levelNotifyVirtual())) {
+            if (remainder == 0 || xp - remainder > previousXp || xp >= Experience.MAX_SKILL_XP) {
                 log.debug("Observed XP milestone for {} to {}", skill, xp);
                 xpReached.add(skill);
                 ticksWaited.set(0);
