@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Fire notifications for XP milestones beyond level 99. (#462)
 - Dev: Avoid benign NPE when config items are reset. (#464)
 
 ## 1.10.0
