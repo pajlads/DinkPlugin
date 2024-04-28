@@ -29,7 +29,8 @@ public enum NotificationType {
     LEAGUES_TASK("Task Completed", "leaguesTask.png", WIKI_IMG_BASE_URL + "Trailblazer_Reloaded_League_icon.png"),
     LOGIN("Player Login", "login.png", WIKI_IMG_BASE_URL + "Prop_sword.png"),
     TRADE("Player Trade", "trade.png", WIKI_IMG_BASE_URL + "Inventory.png"),
-    CHAT("Chat Notification", "chat.png", WIKI_IMG_BASE_URL + "Toggle_Chat_effects.png");
+    CHAT("Chat Notification", "chat.png", WIKI_IMG_BASE_URL + "Toggle_Chat_effects.png"),
+    XP_MILESTONE("XP Milestone", "xpImage.png", WIKI_IMG_BASE_URL + "Lamp.png");
 
     private final String title;
 
