@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.OptionalDouble;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,6 +35,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Singleton
 public class KillCountService {
+
+    public static final String GAUNTLET_NAME = "Gauntlet", GAUNTLET_BOSS = "Crystalline Hunllef";
+    public static final String CG_NAME = "Corrupted Gauntlet", CG_BOSS = "Corrupted Hunllef";
 
     private static final String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
     private static final String RL_LOOT_PLUGIN_NAME = LootTrackerPlugin.class.getSimpleName().toLowerCase();
@@ -74,6 +78,10 @@ public class KillCountService {
         }
 
         String name = npc.getName();
+        if (GAUNTLET_BOSS.equals(name) || CG_BOSS.equals(name)) {
+            // already handled by onGameMessage
+            return;
+        }
         if (name != null) {
             this.incrementKills(LootRecordType.NPC, name, event.getItems());
         }
@@ -102,7 +110,8 @@ public class KillCountService {
         }
 
         if (increment) {
-            this.incrementKills(event.getType(), event.getName(), event.getItems());
+            String source = isCorruptedGauntlet(event) ? CG_NAME : event.getName();
+            this.incrementKills(event.getType(), source, event.getItems());
         }
     }
 
@@ -125,6 +134,17 @@ public class KillCountService {
             String cacheKey = getCacheKey(LootRecordType.UNKNOWN, boss);
             killCounts.asMap().merge(cacheKey, kc - 1, Math::max);
 
+            if (boss.equals(GAUNTLET_BOSS) || boss.equals(CG_BOSS)) {
+                // populate lastDrop for isCorruptedGauntlet to function
+                this.lastDrop = new Drop(boss, LootRecordType.EVENT, Collections.emptyList());
+
+                if (!ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
+                    // onLoot will already increment kc, no need to schedule task below.
+                    // this early return also simplifies our test code
+                    return;
+                }
+            }
+
             // However: we don't know if boss message appeared before/after the loot event.
             // If after, we should store kc. If before, we should store kc - 1.
             // Given this uncertainty, we wait so that the loot event has passed, and then we can store latest kc.
@@ -132,6 +152,17 @@ public class KillCountService {
                 killCounts.asMap().merge(cacheKey, kc, Math::max);
             }, 15, TimeUnit.SECONDS);
         });
+    }
+
+    /**
+     * @param event a loot received event that was just fired
+     * @return whether the event represents corrupted gauntlet
+     * @apiNote Useful to distinguish normal vs. corrupted gauntlet since the base loot tracker plugin does not,
+     * which was <a href="https://github.com/pajlads/DinkPlugin/issues/469">reported</a> to our issue tracker.
+     */
+    public boolean isCorruptedGauntlet(@NotNull LootReceived event) {
+        return event.getType() == LootRecordType.EVENT && lastDrop != null && "The Gauntlet".equals(event.getName())
+            && (CG_NAME.equals(lastDrop.getSource()) || CG_BOSS.equals(lastDrop.getSource()));
     }
 
     @Nullable
@@ -227,6 +258,8 @@ public class KillCountService {
             case PLAYER:
                 return "player_" + sourceName;
             default:
+                if ("The Gauntlet".equals(sourceName)) return GAUNTLET_BOSS;
+                if (CG_NAME.equals(sourceName)) return CG_BOSS;
                 return sourceName;
         }
     }
