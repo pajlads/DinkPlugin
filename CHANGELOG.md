@@ -2,6 +2,7 @@
 
 - Minor: Fire notifications for XP milestones beyond level 99. (#462)
 - Bugfix: Distinguish corrupted from normal Gauntlet for loot notifications. (#470)
+- Bugfix: Avoid double PK notification when multi-tick special attack had already killed the target. (#467)
 - Dev: Avoid benign NPE when config items are reset. (#464)
 
 ## 1.10.0
