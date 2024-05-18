@@ -60,7 +60,7 @@ public class ItemUtils {
     );
 
     private final BinaryOperator<Item> SUM_ITEM_QUANTITIES = (a, b) -> new Item(a.getId(), a.getQuantity() + b.getQuantity());
-    private final BinaryOperator<ItemStack> SUM_ITEM_STACK_QUANTITIES = (a, b) -> new ItemStack(a.getId(), a.getQuantity() + b.getQuantity(), a.getLocation());
+    private final BinaryOperator<ItemStack> SUM_ITEM_STACK_QUANTITIES = (a, b) -> new ItemStack(a.getId(), a.getQuantity() + b.getQuantity());
 
     public boolean isItemNeverKeptOnDeath(int itemId) {
         // https://oldschool.runescape.wiki/w/Items_Kept_on_Death#Items_that_are_never_kept
