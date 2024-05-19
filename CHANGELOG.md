@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Add raid party members to loot notification metadata. (#478)
+
 ## 1.10.1
 
 - Minor: Fire notifications for XP milestones beyond level 99. (#462)
