@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Component;
+import net.runelite.api.annotations.VarCStr;
+import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.util.ColorUtil;
@@ -41,7 +43,11 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -57,6 +63,10 @@ public class Utils {
     public final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
 
     private final char ELLIPSIS = '\u2026'; // '…'
+
+    @SuppressWarnings("MagicConstant")
+    private final @VarCStr int TOA_MEMBER_NAME = 1099, TOB_MEMBER_NAME = 330;
+    private final int TOA_PARTY_MAX_SIZE = 8, TOB_PARTY_MAX_SIZE = 5;
 
     /**
      * Custom padding for applying SHA-256 to a long.
@@ -191,6 +201,42 @@ public class Utils {
             default:
                 return null;
         }
+    }
+
+    public Collection<String> getXericChambersParty(@NotNull Client client) {
+        Widget widget = client.getWidget(InterfaceID.RAIDING_PARTY, 10);
+        if (widget == null) return Collections.emptyList();
+
+        Widget[] children = widget.getChildren();
+        if (children == null) return Collections.emptyList();
+
+        List<String> names = new ArrayList<>(children.length);
+        for (Widget child : children) {
+            String text = child.getText();
+            if (text.startsWith("<col=ffffff>")) {
+                names.add(sanitize(text));
+            }
+        }
+        return names;
+    }
+
+    public Collection<String> getAmascutTombsParty(@NotNull Client client) {
+        return getVarcStrings(client, TOA_MEMBER_NAME, TOA_PARTY_MAX_SIZE);
+    }
+
+    public Collection<String> getBloodTheatreParty(@NotNull Client client) {
+        return getVarcStrings(client, TOB_MEMBER_NAME, TOB_PARTY_MAX_SIZE);
+    }
+
+    private List<String> getVarcStrings(@NotNull Client client, @VarCStr final int initialVarcId, final int maxSize) {
+        List<String> strings = new ArrayList<>(maxSize);
+        for (int i = 0; i < maxSize; i++) {
+            // noinspection MagicConstant
+            String name = client.getVarcStrValue(initialVarcId + i);
+            if (name == null || name.isEmpty()) continue;
+            strings.add(name.replace('\u00A0', ' '));
+        }
+        return strings;
     }
 
     public static boolean hideWidget(boolean shouldHide, Client client, @Component int info) {
