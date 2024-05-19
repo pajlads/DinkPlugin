@@ -53,7 +53,8 @@ public class ChatNotifier extends BaseNotifier {
     public void onMessage(@NotNull ChatMessageType messageType, @Nullable String source, @NotNull String message) {
         ChatNotificationType type = ChatNotificationType.MAPPINGS.get(messageType);
         if (type != null && config.chatMessageTypes().contains(type) && isEnabled() && hasMatch(message)) {
-            this.handleNotify(messageType, source, message);
+            String cleanSource = source != null ? source.replace('\u00A0', ' ') : null;
+            this.handleNotify(messageType, cleanSource, message);
         }
     }
 
