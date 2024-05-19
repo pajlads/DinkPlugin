@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Fire death notifications for Doom modifier in Fortis Colosseum. (#474)
+
 ## 1.10.1
 
 - Minor: Fire notifications for XP milestones beyond level 99. (#462)
