@@ -227,8 +227,9 @@ JSON for Loot Notifications:
         "name": "Some item"
       }
     ],
-    "source": "Giant rat",
-    "category": "NPC",
+    "source": "Tombs of Amascut",
+    "party": ["%USERNAME%", "another RSN", "yet another RSN"],
+    "category": "EVENT",
     "killCount": 60,
     "rarestProbability": 0.001
   },
@@ -236,9 +237,13 @@ JSON for Loot Notifications:
 }
 ```
 
-`killCount` is only specified for NPC loot with the base RuneLite Loot Tracker plugin enabled.
+The possible values for `extra.category` correspond to the [`LootRecordType`](https://github.com/runelite/api.runelite.net/blob/master/http-api/src/main/java/net/runelite/http/api/loottracker/LootRecordType.java) enum.
+
+`killCount` is only specified for NPC/EVENT loot with the base RuneLite Loot Tracker plugin enabled.
 
 The items are valued at GE prices (when possible) if the user has not disabled the `Use actively traded price` base RuneLite setting. Otherwise, the store price of the item is used.
+
+The `extra.party` field is only populated for raids loot (i.e., COX, TOA, TOB).
 
 ### Slayer
 
