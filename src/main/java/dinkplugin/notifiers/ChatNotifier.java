@@ -10,6 +10,8 @@ import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.Utils;
 import lombok.Synchronized;
 import net.runelite.api.ChatMessageType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Singleton;
 import java.util.Collection;
@@ -48,14 +50,15 @@ public class ChatNotifier extends BaseNotifier {
         }
     }
 
-    public void onMessage(ChatMessageType messageType, String message) {
+    public void onMessage(@NotNull ChatMessageType messageType, @Nullable String source, @NotNull String message) {
         ChatNotificationType type = ChatNotificationType.MAPPINGS.get(messageType);
         if (type != null && config.chatMessageTypes().contains(type) && isEnabled() && hasMatch(message)) {
-            this.handleNotify(messageType, message);
+            String cleanSource = source != null ? source.replace('\u00A0', ' ') : null;
+            this.handleNotify(messageType, cleanSource, message);
         }
     }
 
-    private void handleNotify(ChatMessageType type, String message) {
+    private void handleNotify(ChatMessageType type, String source, String message) {
         String playerName = Utils.getPlayerName(client);
         Template template = Template.builder()
             .template(config.chatNotifyMessage())
@@ -66,7 +69,7 @@ public class ChatNotifier extends BaseNotifier {
         createMessage(config.chatSendImage(), NotificationBody.builder()
             .text(template)
             .type(NotificationType.CHAT)
-            .extra(new ChatNotificationData(type, message))
+            .extra(new ChatNotificationData(type, source, message))
             .playerName(playerName)
             .build());
     }

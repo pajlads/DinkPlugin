@@ -209,7 +209,8 @@ public class DinkPlugin extends Plugin {
     @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onChatMessage(ChatMessage message) {
         String chatMessage = Utils.sanitize(message.getMessage());
-        chatNotifier.onMessage(message.getType(), chatMessage);
+        String source = message.getName() != null && !message.getName().isEmpty() ? message.getName() : message.getSender();
+        chatNotifier.onMessage(message.getType(), source, chatMessage);
         switch (message.getType()) {
             case GAMEMESSAGE:
                 collectionNotifier.onChatMessage(chatMessage);
