@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Fire death notifications for Doom modifier in Fortis Colosseum. (#474)
 - Dev: Add message source to chat notification metadata. (#476)
 
 ## 1.10.1
