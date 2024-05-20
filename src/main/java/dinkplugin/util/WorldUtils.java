@@ -40,6 +40,7 @@ public class WorldUtils {
     private final int NMZ_REGION = 9033;
     private final int TZHAAR_CAVE = 9551;
     public final @VisibleForTesting int TZHAAR_PIT = 9552;
+    public final int FORTIS_REGION = 7216;
 
     /**
      * @see <a href="https://oldschool.runescape.wiki/w/RuneScape:Varbit/6104">Wiki</a>

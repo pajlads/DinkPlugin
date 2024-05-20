@@ -706,12 +706,16 @@ JSON for Matching Chat Message Notifications:
   "content": "%USERNAME% received a chat message: `You've been playing for a while, consider taking a break from your screen.`",
   "extra": {
     "type": "GAMEMESSAGE",
-    "message": "You've been playing for a while, consider taking a break from your screen."
+    "message": "You've been playing for a while, consider taking a break from your screen.",
+    "source": null
   }
 }
 ```
 
 Note: The possible values for `extra.type` are documented in RuneLite's [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/ChatMessageType.html).
+
+When `extra.type` corresponds to a player-sent message (e.g., `PUBLICCHAT`, `PRIVATECHAT`, `FRIENDSCHAT`, `CLAN_CHAT`, `CLAN_GUEST_CHAT`),
+the `extra.source` value is set to the player's name that sent the message.
 
 ### Metadata
 

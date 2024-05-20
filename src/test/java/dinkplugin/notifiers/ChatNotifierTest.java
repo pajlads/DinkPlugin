@@ -42,7 +42,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
     void testNotify() {
         // fire event
         String message = "You will be logged out in approximately 10 minutes.";
-        notifier.onMessage(ChatMessageType.GAMEMESSAGE, message);
+        notifier.onMessage(ChatMessageType.GAMEMESSAGE, null, message);
 
         // verify notification message
         verify(messageHandler).createMessage(
@@ -54,7 +54,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
                         .template(PLAYER_NAME + " received a chat message:\n\n```\n" + message + "\n```")
                         .build()
                 )
-                .extra(new ChatNotificationData(ChatMessageType.GAMEMESSAGE, message))
+                .extra(new ChatNotificationData(ChatMessageType.GAMEMESSAGE, null, message))
                 .type(NotificationType.CHAT)
                 .playerName(PLAYER_NAME)
                 .build()
@@ -64,10 +64,10 @@ public class ChatNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnore() {
         // fire event
-        notifier.onMessage(ChatMessageType.GAMEMESSAGE, "You will be logged out in approximately 30 minutes.");
-        notifier.onMessage(ChatMessageType.PUBLICCHAT, "You will be logged out in approximately 10 minutes.");
-        notifier.onMessage(ChatMessageType.TRADE, "You will be logged out in approximately 10 minutes.");
-        notifier.onMessage(ChatMessageType.CLAN_MESSAGE, "You will be logged out in approximately 10 minutes.");
+        notifier.onMessage(ChatMessageType.GAMEMESSAGE, null, "You will be logged out in approximately 30 minutes.");
+        notifier.onMessage(ChatMessageType.PUBLICCHAT, null, "You will be logged out in approximately 10 minutes.");
+        notifier.onMessage(ChatMessageType.TRADE, null, "You will be logged out in approximately 10 minutes.");
+        notifier.onMessage(ChatMessageType.CLAN_MESSAGE, null, "You will be logged out in approximately 10 minutes.");
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -79,7 +79,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
         when(config.notifyChat()).thenReturn(false);
 
         // fire event
-        notifier.onMessage(ChatMessageType.GAMEMESSAGE, "You will be logged out in approximately 10 minutes.");
+        notifier.onMessage(ChatMessageType.GAMEMESSAGE, null, "You will be logged out in approximately 10 minutes.");
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
