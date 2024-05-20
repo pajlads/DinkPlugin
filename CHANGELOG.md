@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Add message source to chat notification metadata. (#476)
+
 ## 1.10.1
 
 - Minor: Fire notifications for XP milestones beyond level 99. (#462)
