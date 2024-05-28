@@ -96,6 +96,25 @@ public class DiscordMessageHandler {
                 }
                 return updatedChain.proceed(request);
             })
+            .addInterceptor(chain -> {
+                Request request = chain.request();
+                Response response = chain.proceed(request);
+                String method = request.method();
+                // http status code 307 can be useful for custom webhook handlers to redirect requests as seen in https://github.com/pajlads/DinkPlugin/issues/482
+                // however, runelite uses okhttp 3.14.9, which does not follow RFC 7231 for code 307 (or RFC 7238 for code 308).
+                // while this was fixed in okhttp 4.6.0 (released on 2020-04-28), we need this interceptor to patch this issue for now
+                if (!method.equals("GET") && !method.equals("HEAD")) {
+                    int code = response.code();
+                    if (code == 307 || code == 308) {
+                        String redirectUrl = response.header("Location");
+                        if (redirectUrl != null) {
+                            Request updatedRequest = request.newBuilder().url(redirectUrl).build();
+                            return chain.proceed(updatedRequest);
+                        }
+                    }
+                }
+                return response;
+            })
             .build();
     }
 
