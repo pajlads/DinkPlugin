@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Distinguish raid modes for loot notifications such as Entry Mode or Expert Mode. (#483)
 - Bugfix: Fire death notifications for Doom modifier in Fortis Colosseum. (#474)
 - Dev: Add message source to chat notification metadata. (#476)
 
