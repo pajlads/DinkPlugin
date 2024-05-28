@@ -136,7 +136,7 @@ public class LootNotifier extends BaseNotifier {
                 return;
             }
 
-            String source = killCountService.isCorruptedGauntlet(lootReceived) ? KillCountService.CG_NAME : lootReceived.getName();
+            String source = killCountService.getStandardizedSource(lootReceived);
             this.handleNotify(lootReceived.getItems(), source, lootReceived.getType());
         } else if (lootReceived.getType() == LootRecordType.NPC && "The Whisperer".equalsIgnoreCase(lootReceived.getName())) {
             // Special case: upstream fires LootReceived for the whisperer, but not NpcLootReceived
