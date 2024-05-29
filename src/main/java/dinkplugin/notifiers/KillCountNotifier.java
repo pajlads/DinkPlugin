@@ -4,6 +4,7 @@ import dinkplugin.message.Embed;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.util.KillCountService;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.util.Utils;
 import dinkplugin.message.NotificationBody;
@@ -257,10 +258,10 @@ public class KillCountNotifier extends BaseNotifier {
                 return null;
 
             case "completion":
-                if ("Gauntlet".equalsIgnoreCase(boss))
-                    return "Crystalline Hunllef";
-                if ("Corrupted Gauntlet".equalsIgnoreCase(boss))
-                    return "Corrupted Hunllef";
+                if (KillCountService.GAUNTLET_NAME.equalsIgnoreCase(boss))
+                    return KillCountService.GAUNTLET_BOSS;
+                if (KillCountService.CG_NAME.equalsIgnoreCase(boss))
+                    return KillCountService.CG_BOSS;
                 return null;
 
             case "kill":

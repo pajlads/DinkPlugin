@@ -88,7 +88,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         when(npc.getName()).thenReturn(source);
         when(npc.getId()).thenReturn(NpcID.DAGANNOTH_SUPREME);
         when(configManager.getRSProfileConfiguration("killcount", source.toLowerCase(), int.class)).thenReturn(kc);
-        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SEERCULL, 1, null))));
+        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SEERCULL, 1))));
 
         // send fake message
         notifier.onChatMessage("New item added to your collection log: " + item);

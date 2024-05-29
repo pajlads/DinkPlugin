@@ -41,26 +41,26 @@ class UtilsTest {
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                 Arguments.of(Collections.emptyList(), Collections.emptyList()),
-                Arguments.of(Collections.singletonList(new ItemStack(69, 1, null)), Collections.singletonList(new ItemStack(69, 1, null))),
+                Arguments.of(Collections.singletonList(new ItemStack(69, 1)), Collections.singletonList(new ItemStack(69, 1))),
                 Arguments.of(
-                    Arrays.asList(new ItemStack(69, 1, null), new ItemStack(70, 1, null)),
-                    Arrays.asList(new ItemStack(69, 1, null), new ItemStack(70, 1, null))
+                    Arrays.asList(new ItemStack(69, 1), new ItemStack(70, 1)),
+                    Arrays.asList(new ItemStack(69, 1), new ItemStack(70, 1))
                 ),
                 Arguments.of(
-                    Arrays.asList(new ItemStack(69, 1, null), new ItemStack(69, 1, null)),
-                    Collections.singletonList(new ItemStack(69, 2, null))
+                    Arrays.asList(new ItemStack(69, 1), new ItemStack(69, 1)),
+                    Collections.singletonList(new ItemStack(69, 2))
                 ),
                 Arguments.of(
-                    Arrays.asList(new ItemStack(69, 1, null), new ItemStack(69, 2, null)),
-                    Collections.singletonList(new ItemStack(69, 3, null))
+                    Arrays.asList(new ItemStack(69, 1), new ItemStack(69, 2)),
+                    Collections.singletonList(new ItemStack(69, 3))
                 ),
                 Arguments.of(
-                    Arrays.asList(new ItemStack(69, 1, null), new ItemStack(70, 2, null), new ItemStack(69, 3, null)),
-                    Arrays.asList(new ItemStack(69, 4, null), new ItemStack(70, 2, null))
+                    Arrays.asList(new ItemStack(69, 1), new ItemStack(70, 2), new ItemStack(69, 3)),
+                    Arrays.asList(new ItemStack(69, 4), new ItemStack(70, 2))
                 ),
                 Arguments.of(
-                    Arrays.asList(new ItemStack(69, 1, null), new ItemStack(69, 2, null), new ItemStack(69, 3, null)),
-                    Collections.singletonList(new ItemStack(69, 6, null))
+                    Arrays.asList(new ItemStack(69, 1), new ItemStack(69, 2), new ItemStack(69, 3)),
+                    Collections.singletonList(new ItemStack(69, 6))
                 )
             );
         }

@@ -7,6 +7,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LevelNotificationData;
+import dinkplugin.notifiers.data.XpNotificationData;
 import net.runelite.api.Experience;
 import net.runelite.api.Skill;
 import net.runelite.api.events.StatChanged;
@@ -17,6 +18,8 @@ import org.mockito.InjectMocks;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -55,6 +58,8 @@ class LevelNotifierTest extends MockedNotifierTest {
         mockLevel(Skill.HITPOINTS, 10);
         mockLevel(Skill.HUNTER, 4);
         mockLevel(Skill.SLAYER, 96);
+        mockLevel(Skill.FARMING, 99);
+        when(client.getSkillExperience(Skill.FARMING)).thenReturn(Experience.MAX_SKILL_XP);
         initialCombatLevel = Experience.getCombatLevel(99, 1, 1, 10, 1, 1, 1);
         unchangedCombatLevel = new LevelNotificationData.CombatLevel(initialCombatLevel, false);
         plugin.onStatChanged(new StatChanged(Skill.AGILITY, 0, 1, 1));
@@ -62,6 +67,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         plugin.onStatChanged(new StatChanged(Skill.HITPOINTS, 1200, 10, 10));
         plugin.onStatChanged(new StatChanged(Skill.HUNTER, 300, 4, 4));
         plugin.onStatChanged(new StatChanged(Skill.SLAYER, 9_800_000, 96, 96));
+        plugin.onStatChanged(new StatChanged(Skill.FARMING, Experience.MAX_SKILL_XP, 99, 99));
         notifier.onTick();
     }
 
@@ -101,7 +107,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         Map<String, Integer> expectedSkills = skillsMap("Hunter", 6);
 
         // fire skill event (4 => 6, skipping 5 while 5 is level interval)
-        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 200, 6, 6));
+        plugin.onStatChanged(new StatChanged(Skill.HUNTER, 600, 6, 6));
 
         // let ticks pass
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
@@ -309,6 +315,170 @@ class LevelNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyXp() {
+        // update config mocks
+        when(config.xpInterval()).thenReturn(5);
+        when(config.levelNotifyVirtual()).thenReturn(false);
+
+        // prepare state
+        int attackXp = 15_000_100;
+        when(client.getSkillExperience(Skill.ATTACK)).thenReturn(attackXp);
+        Map<String, Integer> map = xpMap();
+        long total = map.values().stream().mapToInt(i -> i).sum();
+        when(client.getOverallExperience()).thenReturn(total);
+
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(Skill.ATTACK, attackXp, 99, 99));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{skill}} to 15,000,000 XP")
+                        .replacement("{{skill}}", Replacements.ofWiki("Attack"))
+                        .build()
+                )
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName()), 5_000_000))
+                .type(NotificationType.XP_MILESTONE)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyXpExact() {
+        // update config mocks
+        when(config.xpInterval()).thenReturn(5);
+        when(config.levelNotifyVirtual()).thenReturn(false);
+
+        // prepare state
+        int attackXp = 15_000_000;
+        when(client.getSkillExperience(Skill.ATTACK)).thenReturn(attackXp);
+        Map<String, Integer> map = xpMap();
+        long total = map.values().stream().mapToInt(i -> i).sum();
+        when(client.getOverallExperience()).thenReturn(total);
+
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(Skill.ATTACK, attackXp, 99, 99));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{skill}} to 15,000,000 XP")
+                        .replacement("{{skill}}", Replacements.ofWiki("Attack"))
+                        .build()
+                )
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName()), 5_000_000))
+                .type(NotificationType.XP_MILESTONE)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyXpJump() {
+        // update config mocks
+        when(config.xpInterval()).thenReturn(5);
+        when(config.levelNotifyVirtual()).thenReturn(false);
+
+        // prepare state
+        int attackXp = 20_000_999;
+        when(client.getSkillExperience(Skill.ATTACK)).thenReturn(attackXp);
+        Map<String, Integer> map = xpMap();
+        long total = map.values().stream().mapToInt(i -> i).sum();
+        when(client.getOverallExperience()).thenReturn(total);
+
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(Skill.ATTACK, attackXp, 99, 99));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{skill}} to 20,000,000 XP")
+                        .replacement("{{skill}}", Replacements.ofWiki("Attack"))
+                        .build()
+                )
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName()), 5_000_000))
+                .type(NotificationType.XP_MILESTONE)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyXpMultiple() {
+        // update config mocks
+        when(config.xpInterval()).thenReturn(5);
+        when(config.levelNotifyVirtual()).thenReturn(false);
+
+        // prepare state
+        int skillXp = 15_000_100;
+        when(client.getSkillExperience(Skill.ATTACK)).thenReturn(skillXp);
+        when(client.getSkillExperience(Skill.SLAYER)).thenReturn(skillXp);
+
+        Map<String, Integer> map = xpMap();
+        long total = map.values().stream().mapToInt(i -> i).sum();
+        when(client.getOverallExperience()).thenReturn(total);
+
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(Skill.ATTACK, skillXp, 99, 99));
+        plugin.onStatChanged(new StatChanged(Skill.SLAYER, skillXp, 99, 99));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(PLAYER_NAME + " has levelled {{s1}} to 15,000,000 XP, {{s2}} to 15,000,000 XP")
+                        .replacement("{{s1}}", Replacements.ofWiki("Attack"))
+                        .replacement("{{s2}}", Replacements.ofWiki("Slayer"))
+                        .build()
+                )
+                .extra(new XpNotificationData(map, List.of(Skill.ATTACK.getName(), Skill.SLAYER.getName()), 5_000_000))
+                .type(NotificationType.XP_MILESTONE)
+                .build()
+        );
+    }
+
+    @Test
+    void testIgnoreXpMax() {
+        // update config mocks
+        when(config.xpInterval()).thenReturn(5);
+        when(config.levelNotifyVirtual()).thenReturn(false);
+
+        // fire skill event
+        plugin.onStatChanged(new StatChanged(Skill.FARMING, Experience.MAX_SKILL_XP, 99, 99));
+
+        // let ticks pass
+        IntStream.range(0, 4).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     @DisplayName("Ensure the combat level notification isn't fired when notifyLevel is disabled")
     void testDisabledCombatLevel() {
         // update config mocks
@@ -441,9 +611,24 @@ class LevelNotifierTest extends MockedNotifierTest {
 
     private Map<String, Integer> skillsMap(String[] skills, int[] updatedLevels) {
         Map<String, Integer> m = Arrays.stream(Skill.values())
-            .collect(Collectors.toMap(Skill::getName, client::getRealSkillLevel));
+            .collect(Collectors.toMap(Skill::getName, skill -> {
+                int lvl = client.getRealSkillLevel(skill);
+                if (lvl < 99) return lvl;
+                int xp = client.getSkillExperience(skill);
+                if (xp == Experience.MAX_SKILL_XP) return LevelNotifier.LEVEL_FOR_MAX_XP;
+                return Experience.getLevelForXp(xp);
+            }));
         for (int i = 0; i < skills.length; i++) {
             m.put(skills[i], updatedLevels[i]);
+        }
+        return m;
+    }
+
+    private Map<String, Integer> xpMap() {
+        Skill[] skills = Skill.values();
+        Map<String, Integer> m = new HashMap<>(skills.length);
+        for (Skill skill : skills) {
+            m.put(skill.getName(), client.getSkillExperience(skill));
         }
         return m;
     }
