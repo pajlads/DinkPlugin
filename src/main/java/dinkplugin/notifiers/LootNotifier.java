@@ -178,7 +178,7 @@ public class LootNotifier extends BaseNotifier {
             totalStackValue += totalPrice;
         }
 
-        Collection<RareItemStack> rareData = type == LootRecordType.NPC ? getItemRarities(dropper, serializedItems) : null;
+        Collection<RareItemStack> rareData = getItemRarities(type, dropper, serializedItems);
         RareItemStack rarest = getRarestDropRate(rareData, deniedIds);
 
         Evaluable lootMsg;
@@ -242,14 +242,17 @@ public class LootNotifier extends BaseNotifier {
     /**
      * Converts {@link SerializedItemStack} loot to {@link RareItemStack}
      *
-     * @param npcName the name of the NPC that dropped these items
-     * @param reduced the items dropped by the NPC (after {@link ItemUtils#reduceItemStack(Iterable)} was performed)
-     * @return the dropped items augmented with rarity information (as available)
+     * @param type the type of loot source
+     * @param source the name of the loot source
+     * @param reduced the looted items (after {@link ItemUtils#reduceItemStack(Iterable)} was performed)
+     * @return the dropped items augmented with rarity information (as available from the NPC drop table)
      */
-    private Collection<RareItemStack> getItemRarities(String npcName, Collection<SerializedItemStack> reduced) {
+    @Nullable
+    private Collection<RareItemStack> getItemRarities(LootRecordType type, String source, Collection<SerializedItemStack> reduced) {
+        if (type != LootRecordType.NPC) return null;
         return reduced.stream()
             .map(item -> {
-                OptionalDouble rarity = rarityService.getRarity(npcName, item.getId(), item.getQuantity());
+                OptionalDouble rarity = rarityService.getRarity(source, item.getId(), item.getQuantity());
                 return RareItemStack.of(item, rarity.isPresent() ? rarity.getAsDouble() : null);
             })
             .collect(Collectors.toList());
