@@ -36,10 +36,9 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.OptionalDouble;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -246,32 +245,14 @@ public class LootNotifier extends BaseNotifier {
      * @param npcName the name of the NPC that dropped these items
      * @param reduced the items dropped by the NPC (after {@link ItemUtils#reduceItemStack(Iterable)} was performed)
      * @return the dropped items augmented with rarity information (as available)
-     * @implNote Runs in linear time: O(m+n) = O(max{m, n}) = O(m) where m is the number of items on the NPCs drop table (and m >= n)
      */
     private Collection<RareItemStack> getItemRarities(String npcName, Collection<SerializedItemStack> reduced) {
-        // O(n) to enable O(1) lookup in second loop
-        Map<String, SerializedItemStack> m = new HashMap<>(reduced.size());
-        for (SerializedItemStack item : reduced) {
-            m.merge(item.getName(), item, (a, b) -> a.withQuantity(a.getQuantity() + b.getQuantity()));
-        }
-
-        // O(m) loop over possible drops for the npc
-        Map<String, RareItemStack> augmented = new HashMap<>();
-        for (var drop : rarityService.getDrops(npcName)) {
-            var comp = itemManager.getItemComposition(drop.getItemId());
-            // noinspection ConstantValue - allowing null composition simplifies our testing
-            if (comp == null) continue;
-            String name = comp.getMembersName();
-            SerializedItemStack i = m.get(name); // O(1) so this loop isn't O(m*n)
-            if (i != null && drop.getMinQuantity() <= i.getQuantity() && i.getQuantity() <= drop.getMaxQuantity()) {
-                augmented.merge(name, RareItemStack.of(i, drop.getProbability()), (a, b) -> a.withRarity(a.getRarity() + b.getRarity()));
-            }
-        }
-
-        // O(n) loop to add any remaining items without rarity data
-        m.forEach((k, v) -> augmented.putIfAbsent(k, RareItemStack.of(v, null)));
-
-        return augmented.values();
+        return reduced.stream()
+            .map(item -> {
+                OptionalDouble rarity = rarityService.getRarity(npcName, item.getId(), item.getQuantity());
+                return RareItemStack.of(item, rarity.isPresent() ? rarity.getAsDouble() : null);
+            })
+            .collect(Collectors.toList());
     }
 
     @Nullable

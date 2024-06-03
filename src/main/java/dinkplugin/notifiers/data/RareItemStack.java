@@ -15,10 +15,6 @@ public class RareItemStack extends SerializedItemStack {
         this.rarity = rarity;
     }
 
-    public RareItemStack withRarity(Double rarity) {
-        return new RareItemStack(getId(), getQuantity(), getPriceEach(), getName(), rarity);
-    }
-
     public static RareItemStack of(SerializedItemStack i, Double rarity) {
         return new RareItemStack(i.getId(), i.getQuantity(), i.getPriceEach(), i.getName(), rarity);
     }
