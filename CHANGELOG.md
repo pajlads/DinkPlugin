@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Bugfix: Fire death notifications for Doom modifier in Fortis Colosseum. (#474)
+- Dev: Include the rarity of each item within loot notification metadata for NPC drops. (#465)
 - Dev: Allow custom webhook handlers to use HTTP status code 307 and 308 to redirect requests. (#484)
 - Dev: Add message source to chat notification metadata. (#476)
 
