@@ -22,6 +22,13 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +37,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
@@ -90,6 +98,7 @@ public class SettingsManager {
     private final DinkPlugin plugin;
     private final DinkPluginConfig config;
     private final ConfigManager configManager;
+    private final OkHttpClient httpClient;
 
     /**
      * Check whether a username complies with the configured RSN filter list.
@@ -128,6 +137,7 @@ public class SettingsManager {
             .addAll(keysBySection.getOrDefault(DinkPluginConfig.webhookSection.toLowerCase().replace(" ", ""), Collections.emptySet()))
             .add("metadataWebhook") // MetaNotifier's configuration is in the Advanced section
             .build();
+        importDynamicConfig(config.dynamicConfigUrl());
     }
 
     void onCommand(CommandExecuted event) {
@@ -183,6 +193,11 @@ public class SettingsManager {
 
         if ("ignoredNames".equals(key)) {
             setFilteredNames(value);
+            return;
+        }
+
+        if ("dynamicConfigUrl".equals(key)) {
+            importDynamicConfig(value);
             return;
         }
 
@@ -335,6 +350,45 @@ public class SettingsManager {
         log.debug("Updated RSN Filter List to: {}", filteredNames);
     }
 
+    private void importDynamicConfig(String url) {
+        if (url == null || url.isBlank()) return;
+
+        HttpUrl httpUrl = HttpUrl.parse(url);
+        if (httpUrl == null) {
+            plugin.addChatWarning("The specified Dynamic Config URL is invalid");
+            return;
+        }
+
+        Request request = new Request.Builder().url(httpUrl).get().build();
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                ResponseBody body = response.body();
+                if (body == null) {
+                    plugin.addChatWarning("The specified Dynamic Config URL did not provide any settings to import");
+                    return;
+                }
+
+                Map<String, Object> map;
+                try {
+                    map = gson.fromJson(body.charStream(), new TypeToken<Map<String, Object>>() {}.getType());
+                } catch (Exception e) {
+                    log.warn("Could not deserialize dynamic config", e);
+                    plugin.addChatWarning("Failed to parse settings from the Dynamic Config URL");
+                    return;
+                }
+
+                handleImport(map, true);
+            }
+
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                log.warn("Could not reach dynamic config url", e);
+                plugin.addChatWarning("Failed to read the specified Dynamic Config URL");
+            }
+        });
+    }
+
     /**
      * Exports the full Dink config to a JSON map, excluding empty lists,
      * which is copied to the user's clipboard in string form
@@ -392,7 +446,7 @@ public class SettingsManager {
                     return null;
                 }
             })
-            .thenAcceptAsync(this::handleImport)
+            .thenAcceptAsync(m -> handleImport(m, false))
             .exceptionally(e -> {
                 plugin.addChatWarning("Failed to read clipboard");
                 return null;
@@ -400,7 +454,7 @@ public class SettingsManager {
     }
 
     @Synchronized
-    private void handleImport(Map<String, Object> map) {
+    private void handleImport(Map<String, Object> map, boolean quiet) {
         if (map == null) return;
 
         AtomicInteger numUpdated = new AtomicInteger();
@@ -462,11 +516,17 @@ public class SettingsManager {
             }
         });
 
+        int count = numUpdated.get();
+        if (quiet && count <= 0) {
+            log.debug("Updated 0 config settings from map of size {}", map.size());
+            return;
+        }
+
         plugin.addChatSuccess(
             String.format(
                 "Updated %d config settings (from %d total specified in import). " +
                     "Please close and open the plugin settings panel for these changes to be visually reflected.",
-                numUpdated.get(),
+                count,
                 map.size()
             )
         );
