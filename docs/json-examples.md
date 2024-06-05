@@ -32,6 +32,7 @@ JSON sent with every notification:
   "type": "NOTIFICATION_TYPE",
   "playerName": "your rsn",
   "accountType": "NORMAL | IRONMAN | HARDCORE_IRONMAN",
+  "seasonalWorld": "true | false",
   "dinkAccountHash": "abcdefghijklmnopqrstuvwxyz1234abcdefghijklmnopqrstuvwxyz",
   "embeds": []
 }
