@@ -9,6 +9,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.DiscordProfile;
 import dinkplugin.util.Utils;
+import dinkplugin.util.WorldUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -237,6 +238,14 @@ public class DiscordMessageHandler {
 
         if (!config.ignoreSeasonal() && !mBody.isSeasonalWorld() && client.getWorldType().contains(WorldType.SEASONAL)) {
             mBody = mBody.withSeasonalWorld(true);
+        }
+
+        if (mBody.getWorld() == null) {
+            mBody = mBody.withWorld(client.getWorld());
+        }
+
+        if (mBody.getRegionId() == null) {
+            mBody = mBody.withRegionId(WorldUtils.getLocation(client).getRegionID());
         }
 
         NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
