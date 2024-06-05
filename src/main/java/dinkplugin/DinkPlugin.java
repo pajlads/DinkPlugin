@@ -142,6 +142,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onCommandExecuted(CommandExecuted event) {
         settingsManager.onCommand(event);
+        chatNotifier.onCommand(event);
     }
 
     @Subscribe
