@@ -39,7 +39,9 @@ public class NotificationBody<T extends NotificationData> {
     @Nullable
     String groupIronClanName;
     boolean seasonalWorld;
+    @Nullable
     Integer world;
+    @Nullable
     Integer regionId;
     @Nullable
     T extra;
