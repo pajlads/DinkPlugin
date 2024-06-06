@@ -240,15 +240,17 @@ public class DiscordMessageHandler {
             mBody = mBody.withSeasonalWorld(true);
         }
 
-        if (mBody.getWorld() == null) {
-            mBody = mBody.withWorld(client.getWorld());
-        }
-
-        if (mBody.getRegionId() == null) {
-            mBody = mBody.withRegionId(WorldUtils.getLocation(client).getRegionID());
-        }
-
         NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
+
+        if (config.includeLocation()) {
+            if (mBody.getWorld() == null) {
+                builder.world(client.getWorld());
+            }
+
+            if (mBody.getRegionId() == null) {
+                builder.regionId(WorldUtils.getLocation(client).getRegionID());
+            }
+        }
 
         if (config.sendDiscordUser()) {
             builder.discordUser(DiscordProfile.of(discordService.getCurrentUser()));

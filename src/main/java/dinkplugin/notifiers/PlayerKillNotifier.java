@@ -116,7 +116,7 @@ public class PlayerKillNotifier extends BaseNotifier {
         if (value < minValue)
             return;
 
-        boolean sendLocation = config.pkIncludeLocation();
+        boolean sendLocation = config.includeLocation();
         PlayerKillNotificationData extra = new PlayerKillNotificationData(
             target.getName(),
             target.getCombatLevel(),
