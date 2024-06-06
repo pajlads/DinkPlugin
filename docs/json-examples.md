@@ -33,8 +33,6 @@ JSON sent with every notification:
   "playerName": "your rsn",
   "accountType": "NORMAL | IRONMAN | HARDCORE_IRONMAN",
   "seasonalWorld": "true | false",
-  "world": 518,
-  "regionId": 12850,
   "dinkAccountHash": "abcdefghijklmnopqrstuvwxyz1234abcdefghijklmnopqrstuvwxyz",
   "embeds": []
 }
@@ -50,12 +48,15 @@ JSON sent with every notification but only in certain circumstances:
     "id":"012345678910111213",
     "name":"Gamer",
     "avatarHash":"abc123def345abc123def345abc123de"
-   },
+  },
+  "world": 518,
+  "regionId": 12850,
 ```
 
 `clanName` is only sent when the player is in a clan and has the advanced setting `Send Clan Name` enabled.  
 `groupIronClanName` is only sent when the player is a GIM and has the advanced setting `Send GIM Clan Name` enabled.  
-The `discordUser` object is only sent when Discord is open and the advanced setting `Send Discord Profile` is enabled.
+The `discordUser` object is only sent when Discord is open and the advanced setting `Send Discord Profile` is enabled.  
+`world` and `regionId` are only sent when the advanced setting `Include Location` is enabled (default: true).
 
 Note: The examples below omit `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same.
 
