@@ -64,6 +64,11 @@ public class MetaNotifier extends BaseNotifier {
         if (oldState == GameState.LOGGING_IN && newState == GameState.LOGGED_IN) {
             loginTicks.set(INIT_TICKS);
         }
+        // check if the oldState is any that can be considered "in game", and if the new state is "LOGIN_SCREEN"
+        if ((oldState == GameState.LOGGED_IN || oldState == GameState.CONNECTION_LOST || oldState == GameState.LOADING)
+            && newState == GameState.LOGIN_SCREEN && isEnabled()) {
+            NotifyLogout();
+        }
     }
 
     public void onTick() {
@@ -139,6 +144,22 @@ public class MetaNotifier extends BaseNotifier {
             .type(NotificationType.LOGIN)
             .text(message)
             .extra(extra)
+            .playerName(playerName)
+            .build()
+        );
+    }
+
+    private void NotifyLogout() {
+        String playerName = Utils.getPlayerName(client);
+        Template message = Template.builder()
+            .replacementBoundary("%")
+            .template("%USERNAME% logged out")
+            .replacement("%USERNAME%", Replacements.ofText(playerName))
+            .build();
+
+        createMessage(false, NotificationBody.builder()
+            .type(NotificationType.LOGOUT)
+            .text(message)
             .playerName(playerName)
             .build()
         );

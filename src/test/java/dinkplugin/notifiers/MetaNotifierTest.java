@@ -185,4 +185,34 @@ class MetaNotifierTest extends MockedNotifierTest {
         );
         Assertions.assertEquals(expected, notifier.getPets());
     }
+
+    @Test
+    void TestLogoutNotify() {
+        // Update config mock
+        when(config.metadataWebhook()).thenReturn(url);
+
+        // fire event
+        notifier.onGameState(GameState.LOGGED_IN, GameState.LOGIN_SCREEN);
+        // verify notifier
+        verify(messageHandler).createMessage(
+            url,
+            false,
+            NotificationBody.builder()
+                .text(buildTemplate(PLAYER_NAME + " logged out"))
+                .type(NotificationType.LOGOUT)
+                .playerName(PLAYER_NAME)
+                .build()
+        );
+    }
+
+    @Test
+    void testLogoutDisabled() {
+        // update config mock
+        when(config.metadataWebhook()).thenReturn("");
+
+        // fire event
+        notifier.onGameState(GameState.LOGGED_IN, GameState.LOGIN_SCREEN);
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
 }
