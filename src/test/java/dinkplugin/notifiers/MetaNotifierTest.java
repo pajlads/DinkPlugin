@@ -187,7 +187,7 @@ class MetaNotifierTest extends MockedNotifierTest {
     }
 
     @Test
-    void TestLogoutNotify() {
+    void testLogoutNotify() {
         // Update config mock
         when(config.metadataWebhook()).thenReturn(url);
 

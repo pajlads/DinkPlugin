@@ -67,7 +67,7 @@ public class MetaNotifier extends BaseNotifier {
         // check if the oldState is any that can be considered "in game", and if the new state is "LOGIN_SCREEN"
         if ((oldState == GameState.LOGGED_IN || oldState == GameState.CONNECTION_LOST || oldState == GameState.LOADING)
             && newState == GameState.LOGIN_SCREEN && isEnabled()) {
-            NotifyLogout();
+            notifyLogout();
         }
     }
 
@@ -149,7 +149,7 @@ public class MetaNotifier extends BaseNotifier {
         );
     }
 
-    private void NotifyLogout() {
+    private void notifyLogout() {
         String playerName = Utils.getPlayerName(client);
         Template message = Template.builder()
             .replacementBoundary("%")
