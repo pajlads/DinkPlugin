@@ -830,6 +830,6 @@ JSON for Logout Notifications:
 ```json5
 {
   "type": "LOGOUT",
-  "content": "%USERNAME% logged out",
+  "content": "%USERNAME% logged out"
 }
 ```
