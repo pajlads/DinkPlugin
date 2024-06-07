@@ -65,7 +65,7 @@ public class MetaNotifier extends BaseNotifier {
             loginTicks.set(INIT_TICKS);
         }
         // check if the oldState is any that can be considered "in game", and if the new state is "LOGIN_SCREEN"
-        if ((oldState == GameState.LOGGED_IN || oldState == GameState.CONNECTION_LOST || oldState == GameState.LOADING)
+        if ((oldState == GameState.LOGGED_IN || oldState == GameState.CONNECTION_LOST || oldState == GameState.HOPPING)
             && newState == GameState.LOGIN_SCREEN && isEnabled()) {
             notifyLogout();
         }
