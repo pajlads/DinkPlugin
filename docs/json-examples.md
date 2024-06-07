@@ -824,3 +824,12 @@ JSON for Login Notifications:
 
 `extra.pets` requires the base Chat Commands plugin to be enabled.  
 `collectionLog` data can be missing if the user does not have the Character Summary tab selected (since the client otherwise is not sent that data).
+
+JSON for Logout Notifications:
+
+```json5
+{
+  "type": "LOGOUT",
+  "content": "%USERNAME% logged out",
+}
+```
