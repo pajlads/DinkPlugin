@@ -1891,7 +1891,7 @@ public interface DinkPluginConfig extends Config {
         section = chatSection
     )
     default Set<ChatNotificationType> chatMessageTypes() {
-        return EnumSet.of(ChatNotificationType.GAME, ChatNotificationType.COMMAND, ChatNotificationType.RUNELITE);
+        return EnumSet.of(ChatNotificationType.GAME, ChatNotificationType.COMMAND);
     }
 
     @ConfigItem(
