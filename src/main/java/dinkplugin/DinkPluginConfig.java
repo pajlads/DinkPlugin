@@ -1891,7 +1891,7 @@ public interface DinkPluginConfig extends Config {
         section = chatSection
     )
     default Set<ChatNotificationType> chatMessageTypes() {
-        return EnumSet.of(ChatNotificationType.GAME);
+        return EnumSet.of(ChatNotificationType.GAME, ChatNotificationType.COMMAND);
     }
 
     @ConfigItem(
@@ -1907,7 +1907,8 @@ public interface DinkPluginConfig extends Config {
             "You've completed the * event*\n" + // for holiday events
             "You have accepted * into *.\n" + // for clan recruitment
             "You will be logged out in approximately 30 minutes.*\n" +
-            "You will be logged out in approximately 10 minutes.*\n";
+            "You will be logged out in approximately 10 minutes.*\n" +
+            "::TriggerDink\n";
     }
 
     @ConfigItem(
