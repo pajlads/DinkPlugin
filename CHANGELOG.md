@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Allow RuneLite notifier messages to trigger the Dink chat notifier. (#493)
 - Minor: Allow client commands to trigger the chat notifier. (#489)
 - Minor: Send logout notifications to the Custom Metadata Handler in advanced settings. (#492)
 - Bugfix: Fire death notifications for Doom modifier in Fortis Colosseum. (#474)
