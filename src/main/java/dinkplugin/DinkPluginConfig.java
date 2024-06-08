@@ -404,7 +404,7 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "pkIncludeLocation", // legacy name to avoid config migration code
+        keyName = "includeLocation",
         name = "Include Location",
         description = "Whether to include the player location and world in notification metadata.",
         position = 1016,
@@ -1656,12 +1656,23 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "pkIncludeLocation",
+        name = "Include Location",
+        description = "Whether notifications should include the world and location of the killed player.",
+        position = 135,
+        section = pkSection
+    )
+    default boolean pkIncludeLocation() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "pkNotifyMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %TARGET% to insert the victim's username",
-        position = 135,
+        position = 136,
         section = pkSection
     )
     default String pkNotifyMessage() {
