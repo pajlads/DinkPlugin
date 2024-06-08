@@ -10,6 +10,7 @@ import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.Utils;
 import lombok.Synchronized;
 import net.runelite.api.ChatMessageType;
+import net.runelite.api.events.CommandExecuted;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,6 +59,15 @@ public class ChatNotifier extends BaseNotifier {
         }
     }
 
+    public void onCommand(CommandExecuted event) {
+        if (config.chatMessageTypes().contains(ChatNotificationType.COMMAND) && isEnabled()) {
+            String fullMessage = join(event);
+            if (hasMatch(fullMessage)) {
+                this.handleNotify(ChatMessageType.UNKNOWN, "CommandExecuted", fullMessage);
+            }
+        }
+    }
+
     private void handleNotify(ChatMessageType type, String source, String message) {
         String playerName = Utils.getPlayerName(client);
         Template template = Template.builder()
@@ -90,5 +100,18 @@ public class ChatNotifier extends BaseNotifier {
                 .map(Utils::regexify)
                 .collect(Collectors.toList())
         );
+    }
+
+    private static String join(CommandExecuted event) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("::").append(event.getCommand());
+
+        String[] args = event.getArguments();
+        if (args != null) {
+            for (String arg : args) {
+                sb.append(' ').append(arg);
+            }
+        }
+        return sb.toString();
     }
 }
