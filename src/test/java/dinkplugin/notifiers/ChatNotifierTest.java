@@ -40,7 +40,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
         when(config.chatNotifyMessage()).thenReturn("%USERNAME% received a chat message:\n\n```\n%MESSAGE%\n```");
         setPatterns("You will be logged out in approximately 10 minutes.*\n" +
             "You will be logged out in approximately 5 minutes.*\n" +
-            "Your bird houses are ready to be dismantled.\n" +
+            "Dragon impling is in the area\n" +
             "::TriggerDink\n");
     }
 
@@ -93,7 +93,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyTray() {
         // fire event
-        String message = "Your bird houses are ready to be dismantled.";
+        String message = "Dragon impling is in the area";
         notifier.onNotification(new NotificationFired(Notification.ON, message, TrayIcon.MessageType.INFO));
 
         // verify notification message
