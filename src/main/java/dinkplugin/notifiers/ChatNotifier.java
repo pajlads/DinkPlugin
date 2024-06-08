@@ -10,7 +10,9 @@ import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.Utils;
 import lombok.Synchronized;
 import net.runelite.api.ChatMessageType;
+import net.runelite.api.GameState;
 import net.runelite.api.events.CommandExecuted;
+import net.runelite.client.events.NotificationFired;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,6 +67,16 @@ public class ChatNotifier extends BaseNotifier {
             if (hasMatch(fullMessage)) {
                 this.handleNotify(ChatMessageType.UNKNOWN, "CommandExecuted", fullMessage);
             }
+        }
+    }
+
+    public void onNotification(NotificationFired event) {
+        var types = config.chatMessageTypes();
+        if (event.getNotification().isGameMessage() && client.getGameState() == GameState.LOGGED_IN && types.contains(ChatNotificationType.GAME)) {
+            return; // avoid duplicate notification (since runelite will also post to chat)
+        }
+        if (types.contains(ChatNotificationType.RUNELITE) && isEnabled() && hasMatch(event.getMessage())) {
+            this.handleNotify(ChatMessageType.UNKNOWN, "NotificationFired", event.getMessage());
         }
     }
 
