@@ -2,6 +2,7 @@
 
 - Minor: Send logout notifications to the Custom Metadata Handler in advanced settings. (#492)
 - Bugfix: Fire death notifications for Doom modifier in Fortis Colosseum. (#474)
+- Dev: Add raid party members to loot notification metadata. (#478)
 - Dev: Allow custom webhook handlers to use HTTP status code 307 and 308 to redirect requests. (#484)
 - Dev: Add message source to chat notification metadata. (#476)
 
