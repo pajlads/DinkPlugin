@@ -713,6 +713,8 @@ Note: The possible values for `extra.type` are documented in RuneLite's [javadoc
 When `extra.type` corresponds to a player-sent message (e.g., `PUBLICCHAT`, `PRIVATECHAT`, `FRIENDSCHAT`, `CLAN_CHAT`, `CLAN_GUEST_CHAT`),
 the `extra.source` value is set to the player's name that sent the message.
 
+When `extra.type` is `UNKNOWN`, the `extra.source` value is set to the originating runelite event (e.g., `CommandExecuted`, `NotificationFired`).
+
 ### Metadata
 
 JSON for Login Notifications:
