@@ -15,7 +15,7 @@ import java.util.Objects;
 
 @Value
 public class LootNotificationData extends NotificationData {
-    Collection<? extends SerializedItemStack> items;
+    Collection<SerializedItemStack> items;
     String source;
     LootRecordType category;
 
@@ -49,7 +49,6 @@ public class LootNotificationData extends NotificationData {
     }
 
     @Override
-    @SuppressWarnings("SuspiciousMethodCalls")
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof LootNotificationData)) return false;

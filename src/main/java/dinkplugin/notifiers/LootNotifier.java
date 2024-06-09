@@ -178,7 +178,7 @@ public class LootNotifier extends BaseNotifier {
             totalStackValue += totalPrice;
         }
 
-        Collection<RareItemStack> rareData = getItemRarities(type, dropper, serializedItems);
+        Collection<SerializedItemStack> rareData = getItemRarities(type, dropper, serializedItems);
         RareItemStack rarest = getRarestDropRate(rareData, deniedIds);
 
         Evaluable lootMsg;
@@ -214,7 +214,7 @@ public class LootNotifier extends BaseNotifier {
             }
             SerializedItemStack keyItem = rarest != null ? rarest : max;
             Double rarity = rarest != null ? rarest.getRarity() : null;
-            Collection<? extends SerializedItemStack> augmentedItems = rareData != null ? rareData : serializedItems;
+            Collection<SerializedItemStack> augmentedItems = rareData != null ? rareData : serializedItems;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Evaluable source = type == LootRecordType.PLAYER
                 ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))
@@ -248,7 +248,7 @@ public class LootNotifier extends BaseNotifier {
      * @return the dropped items augmented with rarity information (as available from the NPC drop table)
      */
     @Nullable
-    private Collection<RareItemStack> getItemRarities(LootRecordType type, String source, Collection<SerializedItemStack> reduced) {
+    private Collection<SerializedItemStack> getItemRarities(LootRecordType type, String source, Collection<SerializedItemStack> reduced) {
         if (type != LootRecordType.NPC) return null;
         return reduced.stream()
             .map(item -> {
@@ -259,9 +259,11 @@ public class LootNotifier extends BaseNotifier {
     }
 
     @Nullable
-    private RareItemStack getRarestDropRate(Collection<RareItemStack> items, Collection<Integer> deniedIds) {
+    private RareItemStack getRarestDropRate(Collection<SerializedItemStack> items, Collection<Integer> deniedIds) {
         if (items == null) return null;
         return items.stream()
+            .filter(RareItemStack.class::isInstance)
+            .map(RareItemStack.class::cast)
             .filter(i -> i.getRarity() != null)
             .filter(i -> !deniedIds.contains(i.getId()))
             .min(Comparator.comparingDouble(RareItemStack::getRarity))
