@@ -29,15 +29,17 @@ import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
@@ -178,8 +180,9 @@ public class LootNotifier extends BaseNotifier {
             totalStackValue += totalPrice;
         }
 
-        Collection<SerializedItemStack> rareData = getItemRarities(type, dropper, serializedItems);
-        RareItemStack rarest = getRarestDropRate(rareData, deniedIds);
+        var rarityResult = getItemRarities(type, dropper, serializedItems, deniedIds);
+        Collection<SerializedItemStack> augmentedItems = rarityResult.getKey();
+        RareItemStack rarest = rarityResult.getValue().orElse(null);
 
         Evaluable lootMsg;
         if (!sendMessage) {
@@ -214,7 +217,6 @@ public class LootNotifier extends BaseNotifier {
             }
             SerializedItemStack keyItem = rarest != null ? rarest : max;
             Double rarity = rarest != null ? rarest.getRarity() : null;
-            Collection<SerializedItemStack> augmentedItems = rareData != null ? rareData : serializedItems;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Evaluable source = type == LootRecordType.PLAYER
                 ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))
@@ -245,29 +247,33 @@ public class LootNotifier extends BaseNotifier {
      * @param type the type of loot source
      * @param source the name of the loot source
      * @param reduced the looted items (after {@link ItemUtils#reduceItemStack(Iterable)} was performed)
-     * @return the dropped items augmented with rarity information (as available from the NPC drop table)
+     * @param rarestDeniedIds the item IDs that should be ignored when finding the rarest drop
+     * @return the dropped items augmented with rarity information (as available from the NPC drop table), and the single rarest item
      */
-    @Nullable
-    private Collection<SerializedItemStack> getItemRarities(LootRecordType type, String source, Collection<SerializedItemStack> reduced) {
-        if (type != LootRecordType.NPC) return null;
-        return reduced.stream()
-            .map(item -> {
-                OptionalDouble rarity = rarityService.getRarity(source, item.getId(), item.getQuantity());
-                return RareItemStack.of(item, rarity.isPresent() ? rarity.getAsDouble() : null);
-            })
-            .collect(Collectors.toList());
-    }
+    @NotNull
+    private Map.Entry<Collection<SerializedItemStack>, Optional<RareItemStack>> getItemRarities(LootRecordType type, String source, Collection<SerializedItemStack> reduced, Collection<Integer> rarestDeniedIds) {
+        if (type != LootRecordType.NPC) {
+            return Map.entry(reduced, Optional.empty());
+        }
 
-    @Nullable
-    private RareItemStack getRarestDropRate(Collection<SerializedItemStack> items, Collection<Integer> deniedIds) {
-        if (items == null) return null;
-        return items.stream()
-            .filter(RareItemStack.class::isInstance)
-            .map(RareItemStack.class::cast)
-            .filter(i -> i.getRarity() != null)
-            .filter(i -> !deniedIds.contains(i.getId()))
-            .min(Comparator.comparingDouble(RareItemStack::getRarity))
-            .orElse(null);
+        RareItemStack rarest = null;
+        List<SerializedItemStack> transformed = new ArrayList<>(reduced.size());
+        for (SerializedItemStack item : reduced) {
+            final int id = item.getId();
+            OptionalDouble rarity = rarityService.getRarity(source, id, item.getQuantity());
+            if (rarity.isPresent()) {
+                RareItemStack rareItem = RareItemStack.of(item, rarity.getAsDouble());
+                transformed.add(rareItem);
+
+                // check if this stack is the rarest so far
+                if ((rarest == null || rareItem.getRarity() < rarest.getRarity()) && !rarestDeniedIds.contains(id)) {
+                    rarest = rareItem;
+                }
+            } else {
+                transformed.add(item);
+            }
+        }
+        return Map.entry(transformed, Optional.ofNullable(rarest));
     }
 
     private boolean sufficientlyRare(@Nullable RareItemStack rarest) {
