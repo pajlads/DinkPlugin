@@ -6,6 +6,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LootNotificationData;
+import dinkplugin.notifiers.data.RareItemStack;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
@@ -141,7 +142,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.LARRANS_KEY, 1, LARRAN_PRICE, "Larran's key")), name, LootRecordType.NPC, 1, rarity))
+                .extra(new LootNotificationData(List.of(new RareItemStack(ItemID.LARRANS_KEY, 1, LARRAN_PRICE, "Larran's key", rarity)), name, LootRecordType.NPC, 1, rarity))
                 .type(NotificationType.LOOT)
                 .thumbnailUrl(ItemUtils.getItemImageUrl(ItemID.LARRANS_KEY))
                 .build()
