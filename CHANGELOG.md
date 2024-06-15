@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include player region and world for non-Discord custom webhook handlers via metadata for all notifiers. (#490)
 - Minor: Allow client commands to trigger the chat notifier. (#489)
 - Minor: Send logout notifications to the Custom Metadata Handler in advanced settings. (#492)
 - Bugfix: Distinguish raid modes for loot notifications such as Entry Mode or Expert Mode. (#483)
