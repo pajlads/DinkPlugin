@@ -2,6 +2,7 @@
 
 - Minor: Allow client commands to trigger the chat notifier. (#489)
 - Minor: Send logout notifications to the Custom Metadata Handler in advanced settings. (#492)
+- Bugfix: Distinguish raid modes for loot notifications such as Entry Mode or Expert Mode. (#483)
 - Bugfix: Fire death notifications for Doom modifier in Fortis Colosseum. (#474)
 - Dev: Include the rarity of each item within loot notification metadata for NPC drops. (#465, #494)
 - Dev: Allow custom webhook handlers to use HTTP status code 307 and 308 to redirect requests. (#484)
