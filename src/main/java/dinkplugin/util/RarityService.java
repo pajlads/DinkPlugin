@@ -69,7 +69,7 @@ public class RarityService {
             .filter(drop -> drop.getMinQuantity() <= quantity && quantity <= drop.getMaxQuantity())
             .filter(drop -> {
                 int id = drop.getItemId();
-                if (id == canonical) return true;
+                if (id == itemId) return true;
                 return variants.contains(id) && itemName.equals(itemManager.getItemComposition(id).getMembersName());
             })
             .mapToDouble(Drop::getProbability)

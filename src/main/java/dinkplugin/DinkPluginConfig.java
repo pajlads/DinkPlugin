@@ -404,6 +404,17 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "includeLocation",
+        name = "Include Location",
+        description = "Whether to include the player location and world in notification metadata.",
+        position = 1016,
+        section = advancedSection
+    )
+    default boolean includeLocation() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
