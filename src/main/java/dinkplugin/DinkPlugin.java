@@ -46,6 +46,7 @@ import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.events.NotificationFired;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.events.ProfileChanged;
@@ -297,6 +298,11 @@ public class DinkPlugin extends Plugin {
     public void onLootReceived(LootReceived lootReceived) {
         killCountService.onLoot(lootReceived);
         lootNotifier.onLootReceived(lootReceived);
+    }
+
+    @Subscribe
+    public void onNotificationFired(NotificationFired event) {
+        chatNotifier.onNotification(event);
     }
 
     @Subscribe

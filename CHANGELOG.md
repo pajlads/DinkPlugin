@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Allow RuneLite notifier messages to trigger the Dink chat notifier. (#493)
 - Minor: Include player region and world for non-Discord custom webhook handlers via metadata for all notifiers. (#490)
 - Minor: Allow client commands to trigger the chat notifier. (#489)
 - Minor: Send logout notifications to the Custom Metadata Handler in advanced settings. (#492)

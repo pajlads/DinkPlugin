@@ -17,7 +17,8 @@ public enum ChatNotificationType {
     TRADES("Trades and Duels", TRADE, TRADE_SENT, TRADEREQ, CHALREQ_TRADE, CHALREQ_FRIENDSCHAT, CHALREQ_CLANCHAT),
     PUBLIC("Public Chats", PUBLICCHAT, MODCHAT, AUTOTYPER, MODAUTOTYPER),
     PRIVATE("Non-Public Chats", PRIVATECHAT, PRIVATECHATOUT, MODPRIVATECHAT, FRIENDSCHAT, CLAN_CHAT, CLAN_GUEST_CHAT),
-    COMMAND("Client Commands");
+    COMMAND("Client Commands"),
+    RUNELITE("RuneLite Notifications");
 
     public static final Map<ChatMessageType, ChatNotificationType> MAPPINGS;
 
