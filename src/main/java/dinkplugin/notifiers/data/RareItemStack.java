@@ -8,14 +8,14 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class RareItemStack extends SerializedItemStack {
-    private final Double rarity;
+    private final double rarity;
 
-    public RareItemStack(int id, int quantity, int priceEach, String name, Double rarity) {
+    public RareItemStack(int id, int quantity, int priceEach, String name, double rarity) {
         super(id, quantity, priceEach, name);
         this.rarity = rarity;
     }
 
-    public static RareItemStack of(SerializedItemStack i, Double rarity) {
+    public static RareItemStack of(SerializedItemStack i, double rarity) {
         return new RareItemStack(i.getId(), i.getQuantity(), i.getPriceEach(), i.getName(), rarity);
     }
 }

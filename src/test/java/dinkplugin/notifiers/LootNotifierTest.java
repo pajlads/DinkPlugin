@@ -107,7 +107,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new RareItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby", null)), name, LootRecordType.NPC, kc + 1, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), name, LootRecordType.NPC, kc + 1, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -293,7 +293,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new RareItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby", null)), name, LootRecordType.NPC, 1, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), name, LootRecordType.NPC, 1, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
