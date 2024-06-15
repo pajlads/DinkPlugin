@@ -229,7 +229,8 @@ JSON for Loot Notifications:
         "id": 1234,
         "quantity": 1,
         "priceEach": 42069,
-        "name": "Some item"
+        "name": "Some item",
+        "rarity": null
       }
     ],
     "source": "Giant rat",
@@ -242,6 +243,8 @@ JSON for Loot Notifications:
 ```
 
 `killCount` is only specified for NPC loot with the base RuneLite Loot Tracker plugin enabled.
+
+`rarity` is currently only populated for NPC drops. This data is (imperfectly) scraped from the wiki, so it may not be 100% accurate. Also, we do not report a rarity if the NPC always drops the item on every kill.
 
 The items are valued at GE prices (when possible) if the user has not disabled the `Use actively traded price` base RuneLite setting. Otherwise, the store price of the item is used.
 
