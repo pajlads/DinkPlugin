@@ -19,4 +19,4 @@ jobs:
           gradle-version: 7.4 # https://github.com/runelite/plugin-hub/blob/master/package/gradle/wrapper/gradle-wrapper.properties
 
       - name: Build plugin using hub gradle version
-        run: ./gradlew shadowJar -x test # tests are already executed by primary gradle task
+        run: ./gradlew shadowJar --exclude-task test # tests are already executed by primary gradle task
