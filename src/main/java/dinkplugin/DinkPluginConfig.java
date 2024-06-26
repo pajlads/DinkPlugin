@@ -9,6 +9,7 @@ import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.notifiers.ChatNotifier;
+import net.runelite.api.Experience;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -403,6 +404,17 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "includeLocation",
+        name = "Include Location",
+        description = "Whether to include the player location and world in notification metadata.",
+        position = 1016,
+        section = advancedSection
+    )
+    default boolean includeLocation() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
@@ -722,7 +734,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "levelNotifyVirtual",
         name = "Notify on Virtual Levels",
-        description = "Whether notifications should be fired beyond level 99",
+        description = "Whether level notifications should be fired beyond level 99.<br/>" +
+            "Will also notify upon reaching 200M XP",
         position = 22,
         section = levelSection
     )
@@ -744,7 +757,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "levelInterval",
         name = "Notify Interval",
-        description = "Interval between when a notification should be sent",
+        description = "Level interval between when a notification should be sent",
         position = 24,
         section = levelSection
     )
@@ -777,13 +790,31 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "xpInterval",
+        name = "Post-99 XP Interval",
+        description = "XP interval at which to fire notifications (in millions).<br/>" +
+            "Does not apply to skills that are below level 99.<br/>" +
+            "Does <i>not</i> depend on the 'Notify on Virtual Levels' setting.<br/>" +
+            "If enabled, fires for 200M XP, even if not divisible by the interval.<br/>" +
+            "Disabled if set to 0",
+        position = 27,
+        section = levelSection
+    )
+    @Units("M xp")
+    @Range(max = Experience.MAX_SKILL_XP / 1_000_000) // [0, 200]
+    default int xpInterval() {
+        return 5;
+    }
+
+    @ConfigItem(
         keyName = "levelNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %SKILL% to insert the levelled skill(s)<br/>" +
-            "Use %TOTAL_LEVEL% to insert the updated total level",
-        position = 27,
+            "Use %TOTAL_LEVEL% to insert the updated total level<br/>" +
+            "Use %TOTAL_XP% to insert the updated overall experience",
+        position = 29,
         section = levelSection
     )
     default String levelNotifyMessage() {
@@ -1871,7 +1902,7 @@ public interface DinkPluginConfig extends Config {
         section = chatSection
     )
     default Set<ChatNotificationType> chatMessageTypes() {
-        return EnumSet.of(ChatNotificationType.GAME);
+        return EnumSet.of(ChatNotificationType.GAME, ChatNotificationType.COMMAND);
     }
 
     @ConfigItem(
@@ -1887,7 +1918,8 @@ public interface DinkPluginConfig extends Config {
             "You've completed the * event*\n" + // for holiday events
             "You have accepted * into *.\n" + // for clan recruitment
             "You will be logged out in approximately 30 minutes.*\n" +
-            "You will be logged out in approximately 10 minutes.*\n";
+            "You will be logged out in approximately 10 minutes.*\n" +
+            "::TriggerDink\n";
     }
 
     @ConfigItem(

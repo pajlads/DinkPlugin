@@ -7,6 +7,7 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.LevelNotificationData;
+import dinkplugin.notifiers.data.XpNotificationData;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
@@ -15,10 +16,13 @@ import net.runelite.api.Skill;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.util.QuantityFormatter;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +42,9 @@ public class LevelNotifier extends BaseNotifier {
     private static final String COMBAT_NAME = "Combat";
     private static final Set<String> COMBAT_COMPONENTS;
     private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(Skill.values().length + 1);
+    private final Set<Skill> xpReached = EnumSet.noneOf(Skill.class);
     private final Map<String, Integer> currentLevels = new HashMap<>();
+    private final Map<Skill, Integer> currentXp = new EnumMap<>(Skill.class);
     private final AtomicInteger ticksWaited = new AtomicInteger();
     private final AtomicInteger initTicks = new AtomicInteger();
     private final AtomicBoolean shouldInit = new AtomicBoolean();
@@ -53,11 +59,13 @@ public class LevelNotifier extends BaseNotifier {
 
     private void initLevels() {
         for (Skill skill : Skill.values()) {
+            int xp = client.getSkillExperience(skill);
             int level = client.getRealSkillLevel(skill); // O(1)
             if (level >= MAX_REAL_LEVEL) {
-                level = getLevel(client.getSkillExperience(skill));
+                level = getLevel(xp);
             }
             currentLevels.put(skill.getName(), level);
+            currentXp.put(skill, xp);
         }
         currentLevels.put(COMBAT_NAME, calculateCombatLevel());
         initTicks.set(0);
@@ -69,7 +77,11 @@ public class LevelNotifier extends BaseNotifier {
         initTicks.set(0);
         levelledSkills.clear();
         ticksWaited.set(0);
-        clientThread.invoke(currentLevels::clear);
+        clientThread.invoke(() -> {
+            xpReached.clear();
+            currentXp.clear();
+            currentLevels.clear();
+        });
     }
 
     public void onTick() {
@@ -83,7 +95,7 @@ public class LevelNotifier extends BaseNotifier {
             return;
         }
 
-        if (levelledSkills.isEmpty()) {
+        if (levelledSkills.isEmpty() && xpReached.isEmpty()) {
             return;
         }
 
@@ -101,7 +113,7 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void onStatChanged(StatChanged statChange) {
-        this.handleLevelUp(statChange.getSkill().getName(), statChange.getLevel(), statChange.getXp());
+        this.handleLevelUp(statChange.getSkill(), statChange.getLevel(), statChange.getXp());
     }
 
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
@@ -110,25 +122,44 @@ public class LevelNotifier extends BaseNotifier {
         }
     }
 
-    private void handleLevelUp(String skill, int level, int xp) {
+    private void handleLevelUp(Skill skill, int level, int xp) {
         if (!isEnabled()) return;
 
+        Integer previousXp = currentXp.put(skill, xp);
+        if (previousXp == null) {
+            shouldInit.set(true);
+            return;
+        }
+
+        String skillName = skill.getName();
         int virtualLevel = level < MAX_REAL_LEVEL ? level : getLevel(xp); // avoid log(n) query when not needed
-        Integer previousLevel = currentLevels.put(skill, virtualLevel);
+        Integer previousLevel = currentLevels.put(skillName, virtualLevel);
 
         if (previousLevel == null) {
             shouldInit.set(true);
             return;
         }
 
-        if (virtualLevel < previousLevel) {
+        if (virtualLevel < previousLevel || xp < previousXp) {
             // base skill level should never regress; reset notifier state
             reset();
             return;
         }
 
         // Check normal skill level up
-        checkLevelUp(config.notifyLevel(), skill, previousLevel, virtualLevel);
+        final boolean enabled = config.notifyLevel();
+        checkLevelUp(enabled, skillName, previousLevel, virtualLevel);
+
+        // Check if xp milestone reached
+        int xpInterval = config.xpInterval() * 1_000_000;
+        if (enabled && xpInterval > 0 && level >= MAX_REAL_LEVEL && xp > previousXp) {
+            int remainder = xp % xpInterval;
+            if (remainder == 0 || xp - remainder > previousXp || xp >= Experience.MAX_SKILL_XP) {
+                log.debug("Observed XP milestone for {} to {}", skill, xp);
+                xpReached.add(skill);
+                ticksWaited.set(0);
+            }
+        }
 
         // Skip combat level checking if no level up has occurred
         if (virtualLevel <= previousLevel) {
@@ -138,10 +169,10 @@ public class LevelNotifier extends BaseNotifier {
         }
 
         // Check for combat level increase
-        if (COMBAT_COMPONENTS.contains(skill)) {
+        if (COMBAT_COMPONENTS.contains(skillName)) {
             int combatLevel = calculateCombatLevel();
             Integer previousCombatLevel = currentLevels.put(COMBAT_NAME, combatLevel);
-            checkLevelUp(config.notifyLevel() && config.levelNotifyCombat(), COMBAT_NAME, previousCombatLevel, combatLevel);
+            checkLevelUp(enabled && config.levelNotifyCombat(), COMBAT_NAME, previousCombatLevel, combatLevel);
         }
     }
 
@@ -170,11 +201,61 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     private void attemptNotify() {
+        notifyLevels();
+        notifyXp();
+    }
+
+    private void notifyXp() {
+        final int n = xpReached.size();
+        if (n == 0) return;
+
+        int interval = Math.max(config.xpInterval(), 1) * 1_000_000;
+        Map<String, Integer> current = new HashMap<>(32);
+        currentXp.forEach((k, v) -> current.put(k.getName(), v));
+        List<String> milestones = new ArrayList<>(n);
+        JoiningReplacement.JoiningReplacementBuilder skillMessage = JoiningReplacement.builder().delimiter(", ");
+        for (Skill skill : xpReached) {
+            int xp = currentXp.getOrDefault(skill, 0);
+            xp -= xp % interval;
+            milestones.add(skill.getName());
+            skillMessage.component(
+                JoiningReplacement.builder()
+                    .component(Replacements.ofWiki(skill.getName()))
+                    .component(Replacements.ofText(String.format(" to %s XP", QuantityFormatter.formatNumber(xp))))
+                    .build()
+            );
+        }
+        xpReached.clear();
+
+        String totalXp = QuantityFormatter.formatNumber(client.getOverallExperience());
+        String thumbnail = n == 1 ? getSkillIcon(milestones.get(0)) : null;
+        Template fullNotification = Template.builder()
+            .template(config.levelNotifyMessage())
+            .replacementBoundary("%")
+            .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+            .replacement("%SKILL%", skillMessage.build())
+            .replacement("%TOTAL_LEVEL%", Replacements.ofText(String.valueOf(client.getTotalLevel())))
+            .replacement("%TOTAL_XP%", Replacements.ofText(totalXp))
+            .build();
+
+        createMessage(config.levelSendImage(), NotificationBody.builder()
+            .text(fullNotification)
+            .extra(new XpNotificationData(current, milestones, interval))
+            .type(NotificationType.XP_MILESTONE)
+            .thumbnailUrl(thumbnail)
+            .build());
+    }
+
+    private void notifyLevels() {
+        int n = levelledSkills.size();
+        if (n == 0) return;
+
         // Prepare level state
         int totalLevel = client.getTotalLevel();
-        List<String> levelled = new ArrayList<>(levelledSkills.size());
-        levelledSkills.drainTo(levelled);
-        int count = levelled.size();
+        List<String> levelled = new ArrayList<>(n);
+        int count = levelledSkills.drainTo(levelled);
+        if (count == 0) return;
+
         Map<String, Integer> lSkills = new HashMap<>(count);
         Map<String, Integer> currentLevels = new HashMap<>(this.currentLevels);
 
@@ -232,6 +313,7 @@ public class LevelNotifier extends BaseNotifier {
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%SKILL%", skillMessage.build())
             .replacement("%TOTAL_LEVEL%", Replacements.ofText(String.valueOf(totalLevel)))
+            .replacement("%TOTAL_XP%", Replacements.ofText(QuantityFormatter.formatNumber(client.getOverallExperience())))
             .build();
 
         // Fire notification

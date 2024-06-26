@@ -1,5 +1,7 @@
 package dinkplugin.notifiers;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
@@ -25,6 +27,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class PlayerKillNotifier extends BaseNotifier {
@@ -38,6 +41,11 @@ public class PlayerKillNotifier extends BaseNotifier {
      * (and avoid synchronization if we were forced to do Map#clear on plugin shutdown).
      */
     private final Map<Player, Integer> attacked = new WeakHashMap<>(4);
+
+    private final Cache<Actor, Boolean> recentlyNotified = CacheBuilder.newBuilder()
+        .weakKeys()
+        .expireAfterAccess(5, TimeUnit.SECONDS)
+        .build();
 
     @Inject
     private ItemManager itemManager;
@@ -69,6 +77,10 @@ public class PlayerKillNotifier extends BaseNotifier {
 
         Actor actor = event.getActor();
         if (actor == client.getLocalPlayer() || !(actor instanceof Player))
+            return;
+
+        // multi-tick spec already killed them on a previous tick - https://github.com/pajlads/DinkPlugin/issues/466
+        if (recentlyNotified.getIfPresent(actor) != null)
             return;
 
         Player target = (Player) actor;
@@ -129,6 +141,8 @@ public class PlayerKillNotifier extends BaseNotifier {
             .extra(extra)
             .playerName(localPlayer)
             .build());
+
+        recentlyNotified.put(target, Boolean.TRUE);
     }
 
     private boolean isFriendly(Player target) {
