@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include rarity and luck for pet notifications. (#433)
+
 ## 1.10.2
 
 - Minor: Allow RuneLite notifier messages to trigger the Dink chat notifier. (#493)

@@ -2,7 +2,6 @@ package dinkplugin.notifiers.data;
 
 import dinkplugin.message.Field;
 import dinkplugin.util.Drop;
-import dinkplugin.util.MathUtils;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.runelite.client.util.QuantityFormatter;
@@ -68,11 +67,7 @@ public class CollectionNotificationData extends NotificationData {
             fields.add(new Field("Drop Rate", Field.formatProbability(dropRate)));
         }
         if (dropperKillCount != null && dropRate != null) {
-            double geomCdf = MathUtils.cumulativeGeometric(dropRate, dropperKillCount);
-            String percentile = geomCdf < 0.5
-                ? "Top " + MathUtils.formatPercentage(geomCdf, 2) + " (Lucky)"
-                : "Bottom " + MathUtils.formatPercentage(1 - geomCdf, 2) + " (Unlucky)";
-            fields.add(new Field("Luck", Field.formatBlock("", percentile)));
+            fields.add(Field.ofLuck(dropRate, dropperKillCount));
         }
         return fields;
     }
