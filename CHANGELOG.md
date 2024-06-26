@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include rarity and luck for pet notifications. (#433)
+
 ## 1.10.2
 
 - Minor: Allow RuneLite notifier messages to trigger the Dink chat notifier. (#493)
@@ -22,7 +24,6 @@
 ## 1.10.0
 
 - Major: Add notifier for chat messages that match custom patterns. (#391, #450)
-- Minor: Include rarity and luck for pet notifications. (#433)
 - Minor: Include Smol heredit pet name in pet notifications. (#458)
 - Minor: Prevent RuneLite from resetting empty config values for footer, ignored death regions, and chat patterns. (#454)
 - Minor: `Completed Entries` field in Discord rich embed is now called `Completed`. (#448)
