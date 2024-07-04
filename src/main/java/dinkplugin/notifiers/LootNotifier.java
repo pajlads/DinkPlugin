@@ -37,6 +37,7 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -158,17 +159,17 @@ public class LootNotifier extends BaseNotifier {
         long totalStackValue = 0;
         boolean sendMessage = false;
         SerializedItemStack max = null;
+        Collection<Integer> allowedIds = new HashSet<>(reduced.size());
         Collection<Integer> deniedIds = new HashSet<>(reduced.size());
+        Map<Integer, SerializedItemStack> candidates = new LinkedHashMap<>(reduced.size() * 3 / 2 + 1); // maintaining insertion order simplifies testing
 
         for (ItemStack item : reduced) {
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
             long totalPrice = stack.getTotalPrice();
-            boolean worthy = totalPrice >= minValue || matches(itemNameAllowlist, stack.getName());
+            boolean worthy = matches(itemNameAllowlist, stack.getName()) ? allowedIds.add(item.getId()) : totalPrice >= minValue;
             if (!matches(itemNameDenylist, stack.getName())) {
                 if (worthy) {
-                    sendMessage = true;
-                    lootMessage.component(ItemUtils.templateStack(stack, true));
-                    if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
+                    candidates.put(item.getId(), stack);
                 }
                 if (max == null || totalPrice > max.getTotalPrice()) {
                     max = stack;
@@ -184,9 +185,28 @@ public class LootNotifier extends BaseNotifier {
         Collection<SerializedItemStack> augmentedItems = rarityResult.getKey();
         RareItemStack rarest = rarityResult.getValue().orElse(null);
 
+        if (config.lootRarityValueIntersection() && config.lootRarityThreshold() > 0) {
+            final double rarityThreshold = 1.0 / config.lootRarityThreshold();
+            for (SerializedItemStack augmented : augmentedItems) {
+                if (augmented instanceof RareItemStack) {
+                    int id = augmented.getId();
+                    double rarity = ((RareItemStack) augmented).getRarity();
+                    if (DoubleMath.fuzzyCompare(rarity, rarityThreshold, MathUtils.EPSILON) > 0 && !allowedIds.contains(id)) {
+                        candidates.remove(id);
+                    }
+                }
+            }
+        }
+
+        sendMessage = !candidates.isEmpty();
+        for (SerializedItemStack stack : candidates.values()) {
+            lootMessage.component(ItemUtils.templateStack(stack, true));
+            if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(stack.getId())));
+        }
+
         Evaluable lootMsg;
         if (!sendMessage) {
-            if (sufficientlyRare(rarest)) {
+            if (!config.lootRarityValueIntersection() && sufficientlyRare(rarest)) {
                 // allow notifications for rare drops, even if below configured min loot value
                 sendMessage = true;
                 lootMsg = Replacements.ofMultiple(" ",
