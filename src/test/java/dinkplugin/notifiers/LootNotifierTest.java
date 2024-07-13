@@ -818,7 +818,7 @@ class LootNotifierTest extends MockedNotifierTest {
     }
 
     @Test
-    void testNotifyRarityValueIntersectionRarityTooLow() {
+    void testIgnoreRarityValueIntersectionRarityTooLow() {
         // update config mocks
         when(config.minLootValue()).thenReturn(LARRAN_PRICE - 1);
         when(config.lootRarityThreshold()).thenReturn(1000);
@@ -838,7 +838,7 @@ class LootNotifierTest extends MockedNotifierTest {
     }
 
     @Test
-    void testNotifyRarityValueIntersectionValueTooLow() {
+    void testIgnoreRarityValueIntersectionValueTooLow() {
         // update config mocks
         when(config.minLootValue()).thenReturn(LARRAN_PRICE + 1);
         when(config.lootRarityThreshold()).thenReturn(100);
