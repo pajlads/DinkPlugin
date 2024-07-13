@@ -137,7 +137,7 @@ class LootNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(
                     Template.builder()
-                        .template(String.format("%s has looted: Various items including: 1 x {{key}} from {{source}} for %s gp", PLAYER_NAME, value))
+                        .template(String.format("%s has looted: 1 x {{key}} (%s) from {{source}} for %s gp", PLAYER_NAME, value, value))
                         .replacement("{{key}}", Replacements.ofWiki("Larran's key"))
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
