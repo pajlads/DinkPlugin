@@ -781,6 +781,26 @@ class LootNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyRarityValueIntersectionRarityTooLow() {
+        // update config mocks
+        when(config.minLootValue()).thenReturn(LARRAN_PRICE - 1);
+        when(config.lootRarityThreshold()).thenReturn(1000);
+        when(config.lootRarityValueIntersection()).thenReturn(true);
+
+        // prepare mocks
+        NPC npc = mock(NPC.class);
+        String name = "Ice spider";
+        when(npc.getName()).thenReturn(name);
+
+        // fire event
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1)));
+        plugin.onNpcLootReceived(event);
+
+        // verify notification message doesn't fire
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testNotifyRarityValueIntersectionValueTooLow() {
         // update config mocks
         when(config.minLootValue()).thenReturn(LARRAN_PRICE + 1);
