@@ -77,6 +77,8 @@ class RarityServiceTest extends MockedTestBase {
         mockItem(ItemID.FIRE_TALISMAN, "Fire talisman");
         mockItem(ItemID.CLUE_SCROLL_ELITE, "Clue scroll (elite)");
         mockItem(ItemID.CLUE_SCROLL_ELITE_12157, "Clue scroll (elite)"); // wiki prefers this ID
+        mockItem(ItemID.SUPERANTIPOISON2, "Superantipoison(2)");
+        mockItem(ItemID.SUPERANTIPOISON3, "Superantipoison(3)");
     }
 
     @Test
@@ -258,6 +260,13 @@ class RarityServiceTest extends MockedTestBase {
     void testSuffix() {
         // RarityCalculator removes wiki's (monster) suffix: https://oldschool.runescape.wiki/w/TzHaar-Mej_(monster)
         test("TzHaar-Mej", ItemID.OBSIDIAN_CAPE, 1, 1.0 / 4_096);
+    }
+
+    @Test
+    @DisplayName("Ensure accurate rate when monster can drop multiple variations of the same item")
+    void testVariations() {
+        test("Tribesman", ItemID.SUPERANTIPOISON2, 1, 1.0 / 46);
+        test("Tribesman", ItemID.SUPERANTIPOISON3, 1, 1.0 / 138);
     }
 
     private void test(String npcName, int itemId, int quantity, double expectedProbability) {

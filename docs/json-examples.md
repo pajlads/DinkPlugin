@@ -32,6 +32,7 @@ JSON sent with every notification:
   "type": "NOTIFICATION_TYPE",
   "playerName": "your rsn",
   "accountType": "NORMAL | IRONMAN | HARDCORE_IRONMAN",
+  "seasonalWorld": "true | false",
   "dinkAccountHash": "abcdefghijklmnopqrstuvwxyz1234abcdefghijklmnopqrstuvwxyz",
   "embeds": []
 }
@@ -47,12 +48,15 @@ JSON sent with every notification but only in certain circumstances:
     "id":"012345678910111213",
     "name":"Gamer",
     "avatarHash":"abc123def345abc123def345abc123de"
-   },
+  },
+  "world": 518,
+  "regionId": 12850,
 ```
 
 `clanName` is only sent when the player is in a clan and has the advanced setting `Send Clan Name` enabled.  
 `groupIronClanName` is only sent when the player is a GIM and has the advanced setting `Send GIM Clan Name` enabled.  
-The `discordUser` object is only sent when Discord is open and the advanced setting `Send Discord Profile` is enabled.
+The `discordUser` object is only sent when Discord is open and the advanced setting `Send Discord Profile` is enabled.  
+`world` and `regionId` are only sent when the advanced setting `Include Location` is enabled (default: true).
 
 Note: The examples below omit `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same.
 
@@ -225,7 +229,8 @@ JSON for Loot Notifications:
         "id": 1234,
         "quantity": 1,
         "priceEach": 42069,
-        "name": "Some item"
+        "name": "Some item",
+        "rarity": null
       }
     ],
     "source": "Giant rat",
@@ -238,6 +243,8 @@ JSON for Loot Notifications:
 ```
 
 `killCount` is only specified for NPC loot with the base RuneLite Loot Tracker plugin enabled.
+
+`rarity` is currently only populated for NPC drops. This data is (imperfectly) scraped from the wiki, so it may not be 100% accurate. Also, we do not report a rarity if the NPC always drops the item on every kill.
 
 The items are valued at GE prices (when possible) if the user has not disabled the `Use actively traded price` base RuneLite setting. Otherwise, the store price of the item is used.
 
@@ -713,6 +720,8 @@ Note: The possible values for `extra.type` are documented in RuneLite's [javadoc
 When `extra.type` corresponds to a player-sent message (e.g., `PUBLICCHAT`, `PRIVATECHAT`, `FRIENDSCHAT`, `CLAN_CHAT`, `CLAN_GUEST_CHAT`),
 the `extra.source` value is set to the player's name that sent the message.
 
+When `extra.type` is `UNKNOWN`, the `extra.source` value is set to the originating runelite event (e.g., `CommandExecuted`, `NotificationFired`).
+
 ### Metadata
 
 JSON for Login Notifications:
@@ -824,3 +833,12 @@ JSON for Login Notifications:
 
 `extra.pets` requires the base Chat Commands plugin to be enabled.  
 `collectionLog` data can be missing if the user does not have the Character Summary tab selected (since the client otherwise is not sent that data).
+
+JSON for Logout Notifications:
+
+```json5
+{
+  "type": "LOGOUT",
+  "content": "%USERNAME% logged out"
+}
+```

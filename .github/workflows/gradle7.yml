@@ -13,8 +13,10 @@ jobs:
           distribution: temurin
           java-version: 11
 
-      - name: Build plugin using hub gradle version
+      - name: Setup hub gradle version
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 7.4 # https://github.com/runelite/plugin-hub/blob/master/package/gradle/wrapper/gradle-wrapper.properties
-          arguments: shadowJar -x test # tests are already executed by primary gradle task
+
+      - name: Build plugin using hub gradle version
+        run: ./gradlew shadowJar --exclude-task test # tests are already executed by primary gradle task

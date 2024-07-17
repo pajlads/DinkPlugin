@@ -404,19 +404,30 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "includeLocation",
+        name = "Include Location",
+        description = "Whether to include the player location and world in notification metadata.",
+        position = 1016,
+        section = advancedSection
+    )
+    default boolean includeLocation() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "dynamicConfigUrl",
         name = "Dynamic Config URL",
         description = "Synchronizes your Dink configuration with the specified URL.<br/>" +
             "Whenever Dink starts, it imports the config offered by the URL.<br/>" +
             "The config applies to all webhooks, so ensure you trust this URL.<br/>" +
             "Only one URL is supported",
-        position = 1016,
+        position = 1017,
         section = advancedSection
     )
     default String dynamicConfigUrl() {
         return "";
     }
-
+  
     @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
@@ -1905,7 +1916,7 @@ public interface DinkPluginConfig extends Config {
         section = chatSection
     )
     default Set<ChatNotificationType> chatMessageTypes() {
-        return EnumSet.of(ChatNotificationType.GAME);
+        return EnumSet.of(ChatNotificationType.GAME, ChatNotificationType.COMMAND);
     }
 
     @ConfigItem(
@@ -1921,7 +1932,8 @@ public interface DinkPluginConfig extends Config {
             "You've completed the * event*\n" + // for holiday events
             "You have accepted * into *.\n" + // for clan recruitment
             "You will be logged out in approximately 30 minutes.*\n" +
-            "You will be logged out in approximately 10 minutes.*\n";
+            "You will be logged out in approximately 10 minutes.*\n" +
+            "::TriggerDink\n";
     }
 
     @ConfigItem(
