@@ -61,6 +61,8 @@ import static dinkplugin.util.ConfigUtil.*;
 @RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class SettingsManager {
     public static final String CONFIG_GROUP = "dinkplugin";
+    public static final String DYNAMIC_IMPORT_CONFIG_KEY = "dynamicConfigUrl";
+
     private static final Set<Integer> PROBLEMATIC_VARBITS;
 
     /**
@@ -196,7 +198,7 @@ public class SettingsManager {
             return;
         }
 
-        if ("dynamicConfigUrl".equals(key)) {
+        if (DYNAMIC_IMPORT_CONFIG_KEY.equals(key)) {
             importDynamicConfig(value);
             return;
         }
@@ -376,7 +378,12 @@ public class SettingsManager {
                     log.warn("Could not deserialize dynamic config", e);
                     plugin.addChatWarning("Failed to parse settings from the Dynamic Config URL");
                     return;
+                } finally {
+                    body.close();
                 }
+
+                // prevent never-ending requests if service always yields a different config URL
+                map.remove(DYNAMIC_IMPORT_CONFIG_KEY);
 
                 handleImport(map, true);
             }

@@ -415,7 +415,7 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "dynamicConfigUrl",
+        keyName = SettingsManager.DYNAMIC_IMPORT_CONFIG_KEY,
         name = "Dynamic Config URL",
         description = "Synchronizes your Dink configuration with the specified URL.<br/>" +
             "Whenever Dink starts, it imports the config offered by the URL.<br/>" +
@@ -427,7 +427,7 @@ public interface DinkPluginConfig extends Config {
     default String dynamicConfigUrl() {
         return "";
     }
-  
+
     @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
