@@ -952,13 +952,26 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootRarityValueIntersection",
+        name = "Require both Rarity and Value",
+        description = "Whether items must exceed <i>both</i> the Min Value AND Rarity thresholds to be notified.<br/>" +
+            "Does not apply to drops where Dink lacks rarity data.<br/>" +
+            "Currently only impacts NPC drops",
+        position = 39,
+        section = lootSection
+    )
+    default boolean lootRarityValueIntersection() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "lootNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %LOOT% to insert the loot<br/>" +
             "Use %SOURCE% to show the source of the loot",
-        position = 39,
+        position = 40,
         section = lootSection
     )
     default String lootNotifyMessage() {
