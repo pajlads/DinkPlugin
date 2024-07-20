@@ -6,6 +6,9 @@ repositories {
     mavenLocal()
     maven {
         url = uri("https://repo.runelite.net")
+        content {
+            includeGroupByRegex("net\\.runelite.*")
+        }
     }
     mavenCentral()
 }
