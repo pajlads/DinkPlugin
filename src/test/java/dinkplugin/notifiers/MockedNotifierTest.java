@@ -93,7 +93,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
     protected ConfigManager configManager = Mockito.mock(ConfigManager.class);
 
     @Bind
-    protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(gson, client, clientThread, plugin, config, configManager));
+    protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(gson, client, clientThread, plugin, config, configManager, httpClient));
 
     @Bind
     protected DiscordMessageHandler messageHandler = Mockito.spy(new DiscordMessageHandler(gson, client, drawManager, httpClient, config, executor, clientThread, discordService));
