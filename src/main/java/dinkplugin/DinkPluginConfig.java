@@ -404,6 +404,31 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "includeLocation",
+        name = "Include Location",
+        description = "Whether to include the player location and world in notification metadata.",
+        position = 1016,
+        section = advancedSection
+    )
+    default boolean includeLocation() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = SettingsManager.DYNAMIC_IMPORT_CONFIG_KEY,
+        name = "Dynamic Config URL",
+        description = "Synchronizes your Dink configuration with the specified URL.<br/>" +
+            "Whenever Dink starts, it imports the config offered by the URL.<br/>" +
+            "The config applies to all webhooks, so ensure you trust this URL.<br/>" +
+            "Only one URL is supported",
+        position = 1017,
+        section = advancedSection
+    )
+    default String dynamicConfigUrl() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
@@ -941,13 +966,26 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootRarityValueIntersection",
+        name = "Require both Rarity and Value",
+        description = "Whether items must exceed <i>both</i> the Min Value AND Rarity thresholds to be notified.<br/>" +
+            "Does not apply to drops where Dink lacks rarity data.<br/>" +
+            "Currently only impacts NPC drops",
+        position = 39,
+        section = lootSection
+    )
+    default boolean lootRarityValueIntersection() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "lootNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %LOOT% to insert the loot<br/>" +
             "Use %SOURCE% to show the source of the loot",
-        position = 39,
+        position = 40,
         section = lootSection
     )
     default String lootNotifyMessage() {
@@ -1891,7 +1929,7 @@ public interface DinkPluginConfig extends Config {
         section = chatSection
     )
     default Set<ChatNotificationType> chatMessageTypes() {
-        return EnumSet.of(ChatNotificationType.GAME);
+        return EnumSet.of(ChatNotificationType.GAME, ChatNotificationType.COMMAND);
     }
 
     @ConfigItem(
@@ -1907,7 +1945,8 @@ public interface DinkPluginConfig extends Config {
             "You've completed the * event*\n" + // for holiday events
             "You have accepted * into *.\n" + // for clan recruitment
             "You will be logged out in approximately 30 minutes.*\n" +
-            "You will be logged out in approximately 10 minutes.*\n";
+            "You will be logged out in approximately 10 minutes.*\n" +
+            "::TriggerDink\n";
     }
 
     @ConfigItem(

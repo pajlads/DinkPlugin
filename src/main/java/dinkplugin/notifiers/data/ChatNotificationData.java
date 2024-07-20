@@ -16,6 +16,7 @@ public class ChatNotificationData extends NotificationData {
 
     /**
      * {@link ChatMessage#getName()} when available; otherwise {@link  ChatMessage#getSender()}.
+     * When {@link #getType()} is {@link ChatMessageType#UNKNOWN}, this field corresponds to the originating runelite event.
      */
     @Nullable
     String source;
