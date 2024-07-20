@@ -137,7 +137,7 @@ class LootNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(
                     Template.builder()
-                        .template(String.format("%s has looted: Various items including: 1 x {{key}} from {{source}} for %s gp", PLAYER_NAME, value))
+                        .template(String.format("%s has looted: 1 x {{key}} (%s) from {{source}} for %s gp", PLAYER_NAME, value, value))
                         .replacement("{{key}}", Replacements.ofWiki("Larran's key"))
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
@@ -778,6 +778,83 @@ class LootNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.LOOT)
                 .build()
         );
+    }
+
+    @Test
+    void testNotifyRarityValueIntersectionValue() {
+        // update config mocks
+        when(config.minLootValue()).thenReturn(LARRAN_PRICE);
+        when(config.lootRarityThreshold()).thenReturn(100);
+        when(config.lootRarityValueIntersection()).thenReturn(true);
+
+        // prepare mocks
+        NPC npc = mock(NPC.class);
+        String name = "Ice spider";
+        when(npc.getName()).thenReturn(name);
+
+        // fire event
+        double rarity = 1.0 / 208;
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1)));
+        plugin.onNpcLootReceived(event);
+
+        // verify notification message
+        String value = QuantityFormatter.quantityToStackSize(LARRAN_PRICE);
+        verify(messageHandler).createMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: 1 x {{key}} (%s) from {{source}} for %s gp", PLAYER_NAME, value, value))
+                        .replacement("{{key}}", Replacements.ofWiki("Larran's key"))
+                        .replacement("{{source}}", Replacements.ofWiki(name))
+                        .build()
+                )
+                .extra(new LootNotificationData(List.of(new RareItemStack(ItemID.LARRANS_KEY, 1, LARRAN_PRICE, "Larran's key", rarity)), name, LootRecordType.NPC, 1, rarity))
+                .type(NotificationType.LOOT)
+                .thumbnailUrl(ItemUtils.getItemImageUrl(ItemID.LARRANS_KEY))
+                .build()
+        );
+    }
+
+    @Test
+    void testIgnoreRarityValueIntersectionRarityTooLow() {
+        // update config mocks
+        when(config.minLootValue()).thenReturn(LARRAN_PRICE - 1);
+        when(config.lootRarityThreshold()).thenReturn(1000);
+        when(config.lootRarityValueIntersection()).thenReturn(true);
+
+        // prepare mocks
+        NPC npc = mock(NPC.class);
+        String name = "Ice spider";
+        when(npc.getName()).thenReturn(name);
+
+        // fire event
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1)));
+        plugin.onNpcLootReceived(event);
+
+        // verify notification message doesn't fire
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreRarityValueIntersectionValueTooLow() {
+        // update config mocks
+        when(config.minLootValue()).thenReturn(LARRAN_PRICE + 1);
+        when(config.lootRarityThreshold()).thenReturn(100);
+        when(config.lootRarityValueIntersection()).thenReturn(true);
+
+        // prepare mocks
+        NPC npc = mock(NPC.class);
+        String name = "Ice spider";
+        when(npc.getName()).thenReturn(name);
+
+        // fire event
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1)));
+        plugin.onNpcLootReceived(event);
+
+        // verify notification message doesn't fire
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test

@@ -6,6 +6,7 @@ import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.util.WorldUtils;
 import net.runelite.api.Client;
+import net.runelite.api.Player;
 import net.runelite.api.WorldType;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,7 +35,8 @@ public abstract class BaseNotifier {
         if (WorldUtils.isIgnoredWorld(world)) {
             return false;
         }
-        return settingsManager.isNamePermitted(client.getLocalPlayer().getName());
+        Player player = client.getLocalPlayer();
+        return player != null && settingsManager.isNamePermitted(player.getName());
     }
 
     protected abstract String getWebhookUrl();

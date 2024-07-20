@@ -1,5 +1,6 @@
 package dinkplugin.util;
 
+import com.google.common.math.DoubleMath;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
@@ -16,6 +17,10 @@ public class MathUtils {
             x += i;
         }
         return x;
+    }
+
+    public boolean lessThanOrEqual(double a, double b) {
+        return a < b || DoubleMath.fuzzyEquals(a, b, EPSILON);
     }
 
     public String formatPercentage(double d, int sigFigs) {

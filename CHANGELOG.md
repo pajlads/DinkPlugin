@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Include rarity and luck for pet notifications. (#433)
+- Minor: Allow filtering of loot notifications if both rarity and value thresholds are not met. (#499)
 
 ## 1.10.2
 
