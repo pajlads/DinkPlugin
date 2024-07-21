@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.3
+
 - Minor: Allow filtering of loot notifications if both rarity and value thresholds are not met. (#499)
 
 ## 1.10.2
