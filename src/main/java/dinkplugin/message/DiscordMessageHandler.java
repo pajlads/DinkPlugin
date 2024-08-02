@@ -383,7 +383,7 @@ public class DiscordMessageHandler {
             ? body.getThumbnailUrl()
             : type.getThumbnail();
 
-        List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
+        List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds().subList(0, Math.min(body.getEmbeds().size(), Embed.MAX_EMBEDS - 1)) : Collections.emptyList());
         embeds.add(0,
             Embed.builder()
                 .author(author)
