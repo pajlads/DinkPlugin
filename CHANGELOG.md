@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Fire death and loot notifications when 10 or more item icons were embedded. (#509)
+
 ## 1.10.3
 
 - Minor: Add advanced setting to keep config synchronized with a remote URL. (#488)
