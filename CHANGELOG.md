@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.4
+
 - Bugfix: Fire death and loot notifications when 10 or more item icons were embedded. (#509)
 
 ## 1.10.3
