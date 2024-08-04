@@ -1,6 +1,14 @@
 ## Unreleased
 
 - Minor: Include rarity and luck for pet notifications. (#433)
+
+## 1.10.4
+
+- Bugfix: Fire death and loot notifications when 10 or more item icons were embedded. (#509)
+
+## 1.10.3
+
+- Minor: Add advanced setting to keep config synchronized with a remote URL. (#488)
 - Minor: Allow filtering of loot notifications if both rarity and value thresholds are not met. (#499)
 
 ## 1.10.2
