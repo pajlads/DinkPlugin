@@ -10,6 +10,11 @@ import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.Utils;
 import lombok.Synchronized;
 import net.runelite.api.ChatMessageType;
+import net.runelite.api.GameState;
+import net.runelite.api.events.CommandExecuted;
+import net.runelite.client.events.NotificationFired;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Singleton;
 import java.util.Collection;
@@ -48,14 +53,34 @@ public class ChatNotifier extends BaseNotifier {
         }
     }
 
-    public void onMessage(ChatMessageType messageType, String message) {
+    public void onMessage(@NotNull ChatMessageType messageType, @Nullable String source, @NotNull String message) {
         ChatNotificationType type = ChatNotificationType.MAPPINGS.get(messageType);
         if (type != null && config.chatMessageTypes().contains(type) && isEnabled() && hasMatch(message)) {
-            this.handleNotify(messageType, message);
+            String cleanSource = source != null ? source.replace('\u00A0', ' ') : null;
+            this.handleNotify(messageType, cleanSource, message);
         }
     }
 
-    private void handleNotify(ChatMessageType type, String message) {
+    public void onCommand(CommandExecuted event) {
+        if (config.chatMessageTypes().contains(ChatNotificationType.COMMAND) && isEnabled()) {
+            String fullMessage = join(event);
+            if (hasMatch(fullMessage)) {
+                this.handleNotify(ChatMessageType.UNKNOWN, "CommandExecuted", fullMessage);
+            }
+        }
+    }
+
+    public void onNotification(NotificationFired event) {
+        var types = config.chatMessageTypes();
+        if (event.getNotification().isGameMessage() && client.getGameState() == GameState.LOGGED_IN && types.contains(ChatNotificationType.GAME)) {
+            return; // avoid duplicate notification (since runelite will also post to chat)
+        }
+        if (types.contains(ChatNotificationType.RUNELITE) && isEnabled() && hasMatch(event.getMessage())) {
+            this.handleNotify(ChatMessageType.UNKNOWN, "NotificationFired", event.getMessage());
+        }
+    }
+
+    private void handleNotify(ChatMessageType type, String source, String message) {
         String playerName = Utils.getPlayerName(client);
         Template template = Template.builder()
             .template(config.chatNotifyMessage())
@@ -66,7 +91,7 @@ public class ChatNotifier extends BaseNotifier {
         createMessage(config.chatSendImage(), NotificationBody.builder()
             .text(template)
             .type(NotificationType.CHAT)
-            .extra(new ChatNotificationData(type, message))
+            .extra(new ChatNotificationData(type, source, message))
             .playerName(playerName)
             .build());
     }
@@ -87,5 +112,18 @@ public class ChatNotifier extends BaseNotifier {
                 .map(Utils::regexify)
                 .collect(Collectors.toList())
         );
+    }
+
+    private static String join(CommandExecuted event) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("::").append(event.getCommand());
+
+        String[] args = event.getArguments();
+        if (args != null) {
+            for (String arg : args) {
+                sb.append(' ').append(arg);
+            }
+        }
+        return sb.toString();
     }
 }

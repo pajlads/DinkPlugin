@@ -46,6 +46,7 @@ import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.events.NotificationFired;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.events.ProfileChanged;
@@ -142,6 +143,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onCommandExecuted(CommandExecuted event) {
         settingsManager.onCommand(event);
+        chatNotifier.onCommand(event);
     }
 
     @Subscribe
@@ -209,7 +211,8 @@ public class DinkPlugin extends Plugin {
     @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onChatMessage(ChatMessage message) {
         String chatMessage = Utils.sanitize(message.getMessage());
-        chatNotifier.onMessage(message.getType(), chatMessage);
+        String source = message.getName() != null && !message.getName().isEmpty() ? message.getName() : message.getSender();
+        chatNotifier.onMessage(message.getType(), source, chatMessage);
         switch (message.getType()) {
             case GAMEMESSAGE:
                 collectionNotifier.onChatMessage(chatMessage);
@@ -295,6 +298,11 @@ public class DinkPlugin extends Plugin {
     public void onLootReceived(LootReceived lootReceived) {
         killCountService.onLoot(lootReceived);
         lootNotifier.onLootReceived(lootReceived);
+    }
+
+    @Subscribe
+    public void onNotificationFired(NotificationFired event) {
+        chatNotifier.onNotification(event);
     }
 
     @Subscribe

@@ -9,6 +9,7 @@ Thus, any third-party consumer should utilize the body entity named `payload_jso
 Due to this structure, trying to parse the full `multipart/form-data` as JSON will not succeed until you specifically grab the `payload_json` entity. Competent web frameworks should handle the multipart parsing, so you can easily access the relevant form values.
 
 See [here](https://gitea.ivr.fi/Leppunen/runelite-dink-api/src/branch/master/handlers/dinkHandler.js) for an example project that leverages [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) to read the JSON payload and screenshot file.  
+For Cloudflare Workers, utilize the [`request.formData()`](https://developer.mozilla.org/en-US/docs/Web/API/Request/formData) method.  
 For Express, utilize the [`Multer`](https://github.com/expressjs/multer) middleware.  
 For Golang, utilize the [`ParseMultipartForm`](https://pkg.go.dev/net/http#Request.ParseMultipartForm) function.  
 For http4k, utilize the [`http4k-multipart`](https://www.http4k.org/guide/howto/use_multipart_forms/#lens_typesafe_validating_api_-_reads_all_contents_onto_diskmemory) module.  
@@ -31,6 +32,7 @@ JSON sent with every notification:
   "type": "NOTIFICATION_TYPE",
   "playerName": "your rsn",
   "accountType": "NORMAL | IRONMAN | HARDCORE_IRONMAN",
+  "seasonalWorld": "true | false",
   "dinkAccountHash": "abcdefghijklmnopqrstuvwxyz1234abcdefghijklmnopqrstuvwxyz",
   "embeds": []
 }
@@ -46,12 +48,15 @@ JSON sent with every notification but only in certain circumstances:
     "id":"012345678910111213",
     "name":"Gamer",
     "avatarHash":"abc123def345abc123def345abc123de"
-   },
+  },
+  "world": 518,
+  "regionId": 12850,
 ```
 
 `clanName` is only sent when the player is in a clan and has the advanced setting `Send Clan Name` enabled.  
 `groupIronClanName` is only sent when the player is a GIM and has the advanced setting `Send GIM Clan Name` enabled.  
-The `discordUser` object is only sent when Discord is open and the advanced setting `Send Discord Profile` is enabled.
+The `discordUser` object is only sent when Discord is open and the advanced setting `Send Discord Profile` is enabled.  
+`world` and `regionId` are only sent when the advanced setting `Include Location` is enabled (default: true).
 
 Note: The examples below omit `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same.
 
@@ -192,6 +197,25 @@ JSON for Levelups:
 
 Note: Level 127 in JSON corresponds to attaining max experience in a skill (200M).
 
+JSON for XP Milestones:
+
+```json5
+{
+  "content": "%USERNAME% has levelled %SKILL%",
+  "extra": {
+    "xpData": {
+      // The XP for each skill
+      "Skill one": 1234567,
+      "Skill two": 2345678,
+      "Skill three": 3456789
+    },
+    "milestoneAchieved": ["Skill name"], // The skill(s) that hit a milestone
+    "interval": 5000000 // The configured XP interval
+  },
+  "type": "XP_MILESTONE"
+}
+```
+
 ### Loot
 
 JSON for Loot Notifications:
@@ -205,7 +229,8 @@ JSON for Loot Notifications:
         "id": 1234,
         "quantity": 1,
         "priceEach": 42069,
-        "name": "Some item"
+        "name": "Some item",
+        "rarity": null
       }
     ],
     "source": "Giant rat",
@@ -218,6 +243,8 @@ JSON for Loot Notifications:
 ```
 
 `killCount` is only specified for NPC loot with the base RuneLite Loot Tracker plugin enabled.
+
+`rarity` is currently only populated for NPC drops. This data is (imperfectly) scraped from the wiki, so it may not be 100% accurate. Also, we do not report a rarity if the NPC always drops the item on every kill.
 
 The items are valued at GE prices (when possible) if the user has not disabled the `Use actively traded price` base RuneLite setting. Otherwise, the store price of the item is used.
 
@@ -682,12 +709,18 @@ JSON for Matching Chat Message Notifications:
   "content": "%USERNAME% received a chat message: `You've been playing for a while, consider taking a break from your screen.`",
   "extra": {
     "type": "GAMEMESSAGE",
-    "message": "You've been playing for a while, consider taking a break from your screen."
+    "message": "You've been playing for a while, consider taking a break from your screen.",
+    "source": null
   }
 }
 ```
 
 Note: The possible values for `extra.type` are documented in RuneLite's [javadocs](https://static.runelite.net/api/runelite-api/net/runelite/api/ChatMessageType.html).
+
+When `extra.type` corresponds to a player-sent message (e.g., `PUBLICCHAT`, `PRIVATECHAT`, `FRIENDSCHAT`, `CLAN_CHAT`, `CLAN_GUEST_CHAT`),
+the `extra.source` value is set to the player's name that sent the message.
+
+When `extra.type` is `UNKNOWN`, the `extra.source` value is set to the originating runelite event (e.g., `CommandExecuted`, `NotificationFired`).
 
 ### Metadata
 
@@ -800,3 +833,12 @@ JSON for Login Notifications:
 
 `extra.pets` requires the base Chat Commands plugin to be enabled.  
 `collectionLog` data can be missing if the user does not have the Character Summary tab selected (since the client otherwise is not sent that data).
+
+JSON for Logout Notifications:
+
+```json5
+{
+  "type": "LOGOUT",
+  "content": "%USERNAME% logged out"
+}
+```

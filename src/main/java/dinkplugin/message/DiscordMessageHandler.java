@@ -9,6 +9,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.DiscordProfile;
 import dinkplugin.util.Utils;
+import dinkplugin.util.WorldUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -95,6 +96,25 @@ public class DiscordMessageHandler {
                     updatedChain = chain.withWriteTimeout(Math.max(config.imageWriteTimeout(), 0), TimeUnit.SECONDS);
                 }
                 return updatedChain.proceed(request);
+            })
+            .addInterceptor(chain -> {
+                Request request = chain.request();
+                Response response = chain.proceed(request);
+                String method = request.method();
+                // http status code 307 can be useful for custom webhook handlers to redirect requests as seen in https://github.com/pajlads/DinkPlugin/issues/482
+                // however, runelite uses okhttp 3.14.9, which does not follow RFC 7231 for code 307 (or RFC 7238 for code 308).
+                // while this was fixed in okhttp 4.6.0 (released on 2020-04-28), we need this interceptor to patch this issue for now
+                if (!method.equals("GET") && !method.equals("HEAD")) {
+                    int code = response.code();
+                    if (code == 307 || code == 308) {
+                        String redirectUrl = response.header("Location");
+                        if (redirectUrl != null) {
+                            Request updatedRequest = request.newBuilder().url(redirectUrl).build();
+                            return chain.proceed(updatedRequest);
+                        }
+                    }
+                }
+                return response;
             })
             .build();
     }
@@ -221,6 +241,16 @@ public class DiscordMessageHandler {
         }
 
         NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
+
+        if (config.includeLocation()) {
+            if (mBody.getWorld() == null) {
+                builder.world(client.getWorld());
+            }
+
+            if (mBody.getRegionId() == null) {
+                builder.regionId(WorldUtils.getLocation(client).getRegionID());
+            }
+        }
 
         if (config.sendDiscordUser()) {
             builder.discordUser(DiscordProfile.of(discordService.getCurrentUser()));
@@ -353,7 +383,7 @@ public class DiscordMessageHandler {
             ? body.getThumbnailUrl()
             : type.getThumbnail();
 
-        List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
+        List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds().subList(0, Math.min(body.getEmbeds().size(), Embed.MAX_EMBEDS - 1)) : Collections.emptyList());
         embeds.add(0,
             Embed.builder()
                 .author(author)

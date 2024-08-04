@@ -133,7 +133,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
                 return false;
 
             // check whether the completion has already been observed
-            if (getSavedOffer(slot).filter(saved -> saved.equals(offer)).isPresent())
+            if (getSavedOffer(slot).filter(saved -> saved.equalsOffer(offer)).isPresent())
                 return false;
         }
 
@@ -170,7 +170,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
                 if (spacing < 0)
                     return false; // negative => no in-progress notifications allowed
 
-                if (getSavedOffer(slot).filter(saved -> saved.equals(offer)).isPresent())
+                if (getSavedOffer(slot).filter(saved -> saved.equalsOffer(offer)).isPresent())
                     return false; // ignore since quantity already observed (relevant when trade limit is binding)
 
                 // convert minutes to seconds, but treat 0 minutes as 2 seconds to workaround duplicate RL events

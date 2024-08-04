@@ -23,7 +23,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 
 - [Death](#death): Send a webhook message upon dying (with special configuration for PK deaths)
 - [Collection](#collection): Send a webhook message upon adding an item to your collection log
-- [Level](#level): Send a webhook message upon leveling up a skill (with support for virtual levels)
+- [Level](#level): Send a webhook message upon leveling up a skill (with support for virtual levels and XP milestones)
 - [Loot](#loot): Send a webhook message upon receiving valuable loot (with item rarity for monster drops)
 - [Slayer](#slayer): Send a webhook message upon completing a slayer task (with a customizable point threshold)
 - [Quests](#quests): Send a webhook message upon completing a quest
@@ -161,6 +161,8 @@ Note: `%COMPLETED%` may not be populated if the [Character Summary](https://olds
 `%SKILL%` will be replaced with the skill name and level that was achieved
 
 `%TOTAL_LEVEL%` will be replaced with the updated total level across all skills.
+
+`%TOTAL_XP%` will be replaced with the updated total experience across all skills.
 
 ### Loot:
 

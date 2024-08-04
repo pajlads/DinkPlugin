@@ -20,6 +20,7 @@ import net.runelite.api.ItemComposition;
 import net.runelite.api.Player;
 import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigDescriptor;
@@ -92,7 +93,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
     protected ConfigManager configManager = Mockito.mock(ConfigManager.class);
 
     @Bind
-    protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(gson, client, clientThread, plugin, config, configManager));
+    protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(gson, client, clientThread, plugin, config, configManager, httpClient));
 
     @Bind
     protected DiscordMessageHandler messageHandler = Mockito.spy(new DiscordMessageHandler(gson, client, drawManager, httpClient, config, executor, clientThread, discordService));
@@ -108,6 +109,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(client.getLocalPlayer()).thenReturn(localPlayer);
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
         when(localPlayer.getName()).thenReturn(PLAYER_NAME);
+        when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(2500, 2500, 0));
 
         doAnswer(invocation -> {
             Consumer<Image> callback = invocation.getArgument(0);

@@ -22,6 +22,7 @@ public class Embed {
     public static final int MAX_IMAGE_SIZE = 8_000_000; // 8MB
     public static final int MAX_DESCRIPTION_LENGTH = 4096;
     public static final int MAX_FOOTER_LENGTH = 2048;
+    public static final int MAX_EMBEDS = 10;
 
     /**
      * Filled in with the title of {@link NotificationBody}.
