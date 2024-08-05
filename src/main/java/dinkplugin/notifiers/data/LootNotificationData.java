@@ -25,9 +25,12 @@ public class LootNotificationData extends NotificationData {
     @Nullable
     Double rarestProbability;
 
+    @Nullable
+    Collection<String> party;
+
     @Override
     public List<Field> getFields() {
-        List<Field> fields = new ArrayList<>(3);
+        List<Field> fields = new ArrayList<>(4);
         if (killCount != null) {
             fields.add(
                 new Field(
@@ -44,6 +47,9 @@ public class LootNotificationData extends NotificationData {
         );
         if (rarestProbability != null) {
             fields.add(new Field("Item Rarity", Field.formatProbability(rarestProbability)));
+        }
+        if (party != null && !party.isEmpty()) {
+            fields.add(new Field("Party Size", Field.formatBlock("", String.valueOf(party.size()))));
         }
         return fields;
     }
