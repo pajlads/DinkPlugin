@@ -17,6 +17,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.util.QuantityFormatter;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -36,7 +37,7 @@ import static net.runelite.api.Experience.MAX_REAL_LEVEL;
 @Singleton
 public class LevelNotifier extends BaseNotifier {
     public static final int LEVEL_FOR_MAX_XP = Experience.MAX_VIRT_LEVEL + 1; // 127
-    private static final int INIT_GAME_TICKS = 16; // ~10s
+    static final @VisibleForTesting int INIT_GAME_TICKS = 16; // ~10s
     private static final int SKILL_COUNT = Skill.values().length;
     private static final String COMBAT_NAME = "Combat";
     private static final Set<String> COMBAT_COMPONENTS;
