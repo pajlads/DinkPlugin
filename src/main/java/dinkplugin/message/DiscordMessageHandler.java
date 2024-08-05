@@ -9,6 +9,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.NotificationData;
 import dinkplugin.util.DiscordProfile;
 import dinkplugin.util.Utils;
+import dinkplugin.util.WorldUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -241,6 +242,16 @@ public class DiscordMessageHandler {
 
         NotificationBody.NotificationBodyBuilder<?> builder = mBody.toBuilder();
 
+        if (config.includeLocation()) {
+            if (mBody.getWorld() == null) {
+                builder.world(client.getWorld());
+            }
+
+            if (mBody.getRegionId() == null) {
+                builder.regionId(WorldUtils.getLocation(client).getRegionID());
+            }
+        }
+
         if (config.sendDiscordUser()) {
             builder.discordUser(DiscordProfile.of(discordService.getCurrentUser()));
         }
@@ -372,7 +383,7 @@ public class DiscordMessageHandler {
             ? body.getThumbnailUrl()
             : type.getThumbnail();
 
-        List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds() : Collections.emptyList());
+        List<Embed> embeds = new ArrayList<>(body.getEmbeds() != null ? body.getEmbeds().subList(0, Math.min(body.getEmbeds().size(), Embed.MAX_EMBEDS - 1)) : Collections.emptyList());
         embeds.add(0,
             Embed.builder()
                 .author(author)

@@ -6,6 +6,9 @@ repositories {
     mavenLocal()
     maven {
         url = uri("https://repo.runelite.net")
+        content {
+            includeGroupByRegex("net\\.runelite.*")
+        }
     }
     mavenCentral()
 }
@@ -40,7 +43,7 @@ dependencies {
 }
 
 group = "dinkplugin"
-version = "1.10.1"
+version = "1.10.4"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"

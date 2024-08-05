@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import com.google.common.math.DoubleMath;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -9,6 +8,7 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.LootNotificationData;
+import dinkplugin.notifiers.data.RareItemStack;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
@@ -35,11 +35,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
@@ -137,7 +133,7 @@ public class LootNotifier extends BaseNotifier {
                 return;
             }
 
-            String source = killCountService.isCorruptedGauntlet(lootReceived) ? KillCountService.CG_NAME : lootReceived.getName();
+            String source = killCountService.getStandardizedSource(lootReceived);
             this.handleNotify(lootReceived.getItems(), source, lootReceived.getType());
         } else if (lootReceived.getType() == LootRecordType.NPC && "The Whisperer".equalsIgnoreCase(lootReceived.getName())) {
             // Special case: upstream fires LootReceived for the whisperer, but not NpcLootReceived
@@ -158,40 +154,59 @@ public class LootNotifier extends BaseNotifier {
         long totalStackValue = 0;
         boolean sendMessage = false;
         SerializedItemStack max = null;
-        Collection<Integer> deniedIds = new HashSet<>(reduced.size());
+        RareItemStack rarest = null;
 
+        final double rarityThreshold = config.lootRarityThreshold() > 0 ? 1.0 / config.lootRarityThreshold() : Double.NaN;
         for (ItemStack item : reduced) {
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
             long totalPrice = stack.getTotalPrice();
-            boolean worthy = totalPrice >= minValue || matches(itemNameAllowlist, stack.getName());
-            if (!matches(itemNameDenylist, stack.getName())) {
-                if (worthy) {
-                    sendMessage = true;
-                    lootMessage.component(ItemUtils.templateStack(stack, true));
-                    if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
-                }
-                if (max == null || totalPrice > max.getTotalPrice()) {
-                    max = stack;
+
+            OptionalDouble rarity;
+            if (type == LootRecordType.NPC) {
+                rarity = rarityService.getRarity(dropper, item.getId(), item.getQuantity());
+            } else {
+                rarity = OptionalDouble.empty();
+            }
+
+            boolean shouldSend;
+            if (config.lootRarityValueIntersection() && rarity.isPresent()) {
+                shouldSend = totalPrice >= minValue && MathUtils.lessThanOrEqual(rarity.orElse(1), rarityThreshold);
+            } else {
+                shouldSend = totalPrice >= minValue || MathUtils.lessThanOrEqual(rarity.orElse(1), rarityThreshold);
+            }
+
+            shouldSend |= matches(itemNameAllowlist, stack.getName());
+
+            boolean denied = matches(itemNameDenylist, stack.getName());
+            if (denied) {
+                shouldSend = false;
+            }
+
+            if (shouldSend) {
+                sendMessage = true;
+                lootMessage.component(ItemUtils.templateStack(stack, true));
+                if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
+            }
+
+            if (max == null || totalPrice > max.getTotalPrice()) {
+                max = stack;
+            }
+
+            if (rarity.isPresent()) {
+                RareItemStack rareStack = RareItemStack.of(stack, rarity.getAsDouble());
+                serializedItems.add(rareStack);
+                if (!denied && (rarest == null || rareStack.getRarity() < rarest.getRarity())) {
+                    rarest = rareStack;
                 }
             } else {
-                deniedIds.add(item.getId());
+                serializedItems.add(stack);
             }
-            serializedItems.add(stack);
             totalStackValue += totalPrice;
         }
 
-        Map.Entry<SerializedItemStack, Double> rarest = getRarestDropRate(items, dropper, type, deniedIds);
-
         Evaluable lootMsg;
         if (!sendMessage) {
-            if (sufficientlyRare(rarest)) {
-                // allow notifications for rare drops, even if below configured min loot value
-                sendMessage = true;
-                lootMsg = Replacements.ofMultiple(" ",
-                    Replacements.ofText("Various items including:"),
-                    ItemUtils.templateStack(rarest.getKey(), false)
-                );
-            } else if (totalStackValue >= minValue && max != null && "Loot Chest".equalsIgnoreCase(dropper)) {
+            if (totalStackValue >= minValue && max != null && "Loot Chest".equalsIgnoreCase(dropper)) {
                 // Special case: PK loot keys should trigger notification if total value exceeds configured minimum even
                 // if no single item itself would exceed the min value config - github.com/pajlads/DinkPlugin/issues/403
                 sendMessage = true;
@@ -213,8 +228,8 @@ public class LootNotifier extends BaseNotifier {
                     overrideUrl = config.pkWebhook();
                 }
             }
-            SerializedItemStack keyItem = rarest != null ? rarest.getKey() : max;
-            Double rarity = rarest != null ? rarest.getValue() : null;
+            SerializedItemStack keyItem = rarest != null ? rarest : max;
+            Double rarity = rarest != null ? rarest.getRarity() : null;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Collection<String> party = type == LootRecordType.EVENT ? getParty(dropper) : null;
             Evaluable source = type == LootRecordType.PLAYER
@@ -238,34 +253,6 @@ public class LootNotifier extends BaseNotifier {
                     .build()
             );
         }
-    }
-
-    @Nullable
-    private Map.Entry<SerializedItemStack, Double> getRarestDropRate(Collection<ItemStack> items, String dropper, LootRecordType type, Collection<Integer> deniedIds) {
-        if (type != LootRecordType.NPC) return null;
-        return items.stream()
-            .filter(item -> !deniedIds.contains(item.getId()))
-            .map(item -> {
-                OptionalDouble rarity = rarityService.getRarity(dropper, item.getId(), item.getQuantity());
-                if (rarity.isEmpty()) return null;
-                return Map.entry(item, rarity.getAsDouble());
-            })
-            .filter(Objects::nonNull)
-            .min(Comparator.comparingDouble(Map.Entry::getValue))
-            .map(pair -> {
-                ItemStack item = pair.getKey();
-                SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
-                return Map.entry(stack, pair.getValue());
-            })
-            .orElse(null);
-    }
-
-    private boolean sufficientlyRare(@Nullable Map.Entry<SerializedItemStack, Double> rarest) {
-        if (rarest == null) return false;
-        int configRareDenominator = config.lootRarityThreshold();
-        if (configRareDenominator <= 0) return false;
-        double rarityThreshold = 1.0 / configRareDenominator;
-        return DoubleMath.fuzzyCompare(rarest.getValue(), rarityThreshold, MathUtils.EPSILON) <= 0;
     }
 
     @Nullable

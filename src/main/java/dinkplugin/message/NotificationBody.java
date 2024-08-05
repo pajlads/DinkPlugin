@@ -40,6 +40,10 @@ public class NotificationBody<T extends NotificationData> {
     String groupIronClanName;
     boolean seasonalWorld;
     @Nullable
+    Integer world;
+    @Nullable
+    Integer regionId;
+    @Nullable
     T extra;
     @NotNull
     @EqualsAndHashCode.Include

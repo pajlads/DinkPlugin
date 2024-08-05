@@ -3,7 +3,6 @@ package dinkplugin.notifiers.data;
 import dinkplugin.message.Field;
 import dinkplugin.util.Drop;
 import dinkplugin.util.ItemUtils;
-import lombok.EqualsAndHashCode;
 import lombok.Value;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
@@ -12,11 +11,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Value
-@EqualsAndHashCode(callSuper = false)
 public class LootNotificationData extends NotificationData {
-    List<SerializedItemStack> items;
+    Collection<SerializedItemStack> items;
     String source;
     LootRecordType category;
 
@@ -53,5 +52,20 @@ public class LootNotificationData extends NotificationData {
             fields.add(new Field("Party Size", Field.formatBlock("", String.valueOf(party.size()))));
         }
         return fields;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LootNotificationData)) return false;
+        LootNotificationData that = (LootNotificationData) o;
+        return category == that.category && Objects.equals(source, that.source)
+            && Objects.equals(killCount, that.killCount) && Objects.equals(rarestProbability, that.rarestProbability)
+            && items.containsAll(that.items) && that.items.containsAll(items); // for ease of testing
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(items, source, category, killCount, rarestProbability);
     }
 }

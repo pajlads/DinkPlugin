@@ -1,7 +1,25 @@
 ## Unreleased
 
-- Bugfix: Fire death notifications for Doom modifier in Fortis Colosseum. (#474)
 - Dev: Add raid party members to loot notification metadata. (#478)
+
+## 1.10.4
+
+- Bugfix: Fire death and loot notifications when 10 or more item icons were embedded. (#509)
+
+## 1.10.3
+
+- Minor: Add advanced setting to keep config synchronized with a remote URL. (#488)
+- Minor: Allow filtering of loot notifications if both rarity and value thresholds are not met. (#499)
+
+## 1.10.2
+
+- Minor: Allow RuneLite notifier messages to trigger the Dink chat notifier. (#493)
+- Minor: Include player region and world for non-Discord custom webhook handlers via metadata for all notifiers. (#490)
+- Minor: Allow client commands to trigger the chat notifier. (#489)
+- Minor: Send logout notifications to the Custom Metadata Handler in advanced settings. (#492)
+- Bugfix: Distinguish raid modes for loot notifications such as Entry Mode or Expert Mode. (#483)
+- Bugfix: Fire death notifications for Doom modifier in Fortis Colosseum. (#474)
+- Dev: Include the rarity of each item within loot notification metadata for NPC drops. (#465, #494)
 - Dev: Allow custom webhook handlers to use HTTP status code 307 and 308 to redirect requests. (#484)
 - Dev: Add message source to chat notification metadata. (#476)
 
