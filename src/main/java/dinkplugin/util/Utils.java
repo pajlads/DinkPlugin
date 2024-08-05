@@ -210,7 +210,7 @@ public class Utils {
         Widget[] children = widget.getChildren();
         if (children == null) return Collections.emptyList();
 
-        List<String> names = new ArrayList<>(children.length);
+        List<String> names = new ArrayList<>(children.length / 4);
         for (Widget child : children) {
             String text = child.getText();
             if (text.startsWith("<col=ffffff>")) {
