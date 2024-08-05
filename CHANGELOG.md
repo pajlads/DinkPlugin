@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Add raid party members to loot notification metadata. (#478)
+
 ## 1.10.4
 
 - Bugfix: Fire death and loot notifications when 10 or more item icons were embedded. (#509)

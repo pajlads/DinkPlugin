@@ -28,6 +28,8 @@ import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -229,6 +231,7 @@ public class LootNotifier extends BaseNotifier {
             SerializedItemStack keyItem = rarest != null ? rarest : max;
             Double rarity = rarest != null ? rarest.getRarity() : null;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
+            Collection<String> party = type == LootRecordType.EVENT ? getParty(dropper) : null;
             Evaluable source = type == LootRecordType.PLAYER
                 ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))
                 : Replacements.ofWiki(dropper);
@@ -244,11 +247,25 @@ public class LootNotifier extends BaseNotifier {
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
-                    .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity))
+                    .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity, party))
                     .type(NotificationType.LOOT)
                     .thumbnailUrl(ItemUtils.getItemImageUrl(keyItem.getId()))
                     .build()
             );
+        }
+    }
+
+    @Nullable
+    private Collection<String> getParty(@NotNull String source) {
+        switch (source) {
+            case "Chambers of Xeric":
+                return Utils.getXericChambersParty(client);
+            case "Tombs of Amascut":
+                return Utils.getAmascutTombsParty(client);
+            case "Theatre of Blood":
+                return Utils.getBloodTheatreParty(client);
+            default:
+                return null;
         }
     }
 
