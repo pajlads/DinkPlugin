@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.runelite.api.Experience.MAX_REAL_LEVEL;
@@ -47,8 +46,7 @@ public class LevelNotifier extends BaseNotifier {
     private final Map<String, Integer> currentLevels = new HashMap<>();
     private final Map<Skill, Integer> currentXp = new EnumMap<>(Skill.class);
     private final AtomicInteger ticksWaited = new AtomicInteger();
-    private final AtomicInteger initTicks = new AtomicInteger();
-    private final AtomicBoolean shouldInit = new AtomicBoolean();
+    private int initTicks = 0;
 
     @Inject
     private ClientThread clientThread;
@@ -69,16 +67,15 @@ public class LevelNotifier extends BaseNotifier {
             currentXp.put(skill, xp);
         }
         currentLevels.put(COMBAT_NAME, calculateCombatLevel());
-        initTicks.set(0);
+        this.initTicks = 0;
         log.debug("Initialized current skill levels: {}", currentLevels);
     }
 
     public void reset() {
-        shouldInit.set(false);
-        initTicks.set(0);
         levelledSkills.clear();
         ticksWaited.set(0);
         clientThread.invoke(() -> {
+            this.initTicks = 0;
             xpReached.clear();
             currentXp.clear();
             currentLevels.clear();
@@ -86,13 +83,13 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void onTick() {
-        if (shouldInit.getAndSet(false)) {
+        if (this.initTicks > INIT_GAME_TICKS) {
             initLevels();
             return;
         }
 
         if (currentLevels.size() < SKILL_COUNT) {
-            shouldInit.compareAndSet(false, initTicks.incrementAndGet() > INIT_GAME_TICKS);
+            this.initTicks++;
             return;
         }
 
@@ -136,7 +133,7 @@ public class LevelNotifier extends BaseNotifier {
         Integer previousLevel = currentLevels.put(skillName, virtualLevel);
 
         if (previousLevel == null) {
-            shouldInit.set(true);
+            this.initTicks = INIT_GAME_TICKS; // force init on next tick
             return;
         }
 
