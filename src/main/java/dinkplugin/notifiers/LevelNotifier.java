@@ -17,6 +17,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.util.QuantityFormatter;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -29,8 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.runelite.api.Experience.MAX_REAL_LEVEL;
 
@@ -38,16 +37,16 @@ import static net.runelite.api.Experience.MAX_REAL_LEVEL;
 @Singleton
 public class LevelNotifier extends BaseNotifier {
     public static final int LEVEL_FOR_MAX_XP = Experience.MAX_VIRT_LEVEL + 1; // 127
-    private static final int INIT_GAME_TICKS = 25; // 15s
+    static final @VisibleForTesting int INIT_GAME_TICKS = 16; // ~10s
+    private static final int SKILL_COUNT = Skill.values().length;
     private static final String COMBAT_NAME = "Combat";
     private static final Set<String> COMBAT_COMPONENTS;
-    private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(Skill.values().length + 1);
+    private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(SKILL_COUNT + 1);
     private final Set<Skill> xpReached = EnumSet.noneOf(Skill.class);
     private final Map<String, Integer> currentLevels = new HashMap<>();
     private final Map<Skill, Integer> currentXp = new EnumMap<>(Skill.class);
-    private final AtomicInteger ticksWaited = new AtomicInteger();
-    private final AtomicInteger initTicks = new AtomicInteger();
-    private final AtomicBoolean shouldInit = new AtomicBoolean();
+    private int ticksWaited = 0;
+    private int initTicks = 0;
 
     @Inject
     private ClientThread clientThread;
@@ -68,16 +67,15 @@ public class LevelNotifier extends BaseNotifier {
             currentXp.put(skill, xp);
         }
         currentLevels.put(COMBAT_NAME, calculateCombatLevel());
-        initTicks.set(0);
+        this.initTicks = 0;
         log.debug("Initialized current skill levels: {}", currentLevels);
     }
 
     public void reset() {
-        shouldInit.set(false);
-        initTicks.set(0);
         levelledSkills.clear();
-        ticksWaited.set(0);
         clientThread.invoke(() -> {
+            this.initTicks = 0;
+            this.ticksWaited = 0;
             xpReached.clear();
             currentXp.clear();
             currentLevels.clear();
@@ -85,13 +83,13 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void onTick() {
-        if (shouldInit.getAndSet(false)) {
+        if (this.initTicks > INIT_GAME_TICKS) {
             initLevels();
             return;
         }
 
-        if (currentLevels.isEmpty()) {
-            shouldInit.compareAndSet(false, initTicks.incrementAndGet() > INIT_GAME_TICKS);
+        if (currentLevels.size() < SKILL_COUNT) {
+            this.initTicks++;
             return;
         }
 
@@ -99,10 +97,9 @@ public class LevelNotifier extends BaseNotifier {
             return;
         }
 
-        int ticks = ticksWaited.incrementAndGet();
         // We wait a couple extra ticks so we can ensure that we process all the levels of the previous tick
-        if (ticks > 2) {
-            ticksWaited.set(0);
+        if (++this.ticksWaited > 2) {
+            this.ticksWaited = 0;
             // ensure notifier was not disabled during ticks waited
             if (isEnabled()) {
                 attemptNotify();
@@ -123,11 +120,10 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     private void handleLevelUp(Skill skill, int level, int xp) {
-        if (!isEnabled()) return;
+        if (xp <= 0 || level <= 1 || !isEnabled()) return;
 
         Integer previousXp = currentXp.put(skill, xp);
         if (previousXp == null) {
-            shouldInit.set(true);
             return;
         }
 
@@ -136,7 +132,7 @@ public class LevelNotifier extends BaseNotifier {
         Integer previousLevel = currentLevels.put(skillName, virtualLevel);
 
         if (previousLevel == null) {
-            shouldInit.set(true);
+            this.initTicks = INIT_GAME_TICKS; // force init on next tick
             return;
         }
 
@@ -157,7 +153,7 @@ public class LevelNotifier extends BaseNotifier {
             if (remainder == 0 || xp - remainder > previousXp || xp >= Experience.MAX_SKILL_XP) {
                 log.debug("Observed XP milestone for {} to {}", skill, xp);
                 xpReached.add(skill);
-                ticksWaited.set(0);
+                this.ticksWaited = 0;
             }
         }
 
@@ -169,7 +165,7 @@ public class LevelNotifier extends BaseNotifier {
         }
 
         // Check for combat level increase
-        if (COMBAT_COMPONENTS.contains(skillName)) {
+        if (COMBAT_COMPONENTS.contains(skillName) && currentLevels.size() >= SKILL_COUNT) {
             int combatLevel = calculateCombatLevel();
             Integer previousCombatLevel = currentLevels.put(COMBAT_NAME, combatLevel);
             checkLevelUp(enabled && config.levelNotifyCombat(), COMBAT_NAME, previousCombatLevel, combatLevel);
@@ -196,7 +192,7 @@ public class LevelNotifier extends BaseNotifier {
             log.debug("Observed level up for {} to {}", skill, currentLevel);
 
             // allow more accumulation of level ups into single notification
-            ticksWaited.set(0);
+            this.ticksWaited = 0;
         }
     }
 
