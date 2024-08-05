@@ -45,6 +45,8 @@ public class KillCountService {
 
     private static final String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
     private static final String RL_LOOT_PLUGIN_NAME = LootTrackerPlugin.class.getSimpleName().toLowerCase();
+    private static final String RIFT_PREFIX = "Amount of rifts you have closed: ";
+    private static final String HERBIBOAR_PREFIX = "Your herbiboar harvest count is: ";
 
     @Inject
     private ConfigManager configManager;
@@ -125,6 +127,20 @@ public class KillCountService {
             String tier = Utils.ucFirst(clue.getKey());
             int count = clue.getValue() - 1; // decremented since onLoot will increment
             killCounts.put("Clue Scroll (" + tier + ")", count);
+            return;
+        }
+
+        // guardians of the rift count (for pet tracking)
+        if (message.startsWith(RIFT_PREFIX)) {
+            int riftCount = Integer.parseInt(message.substring(RIFT_PREFIX.length(), message.length() - 1));
+            killCounts.put("Guardians of the Rift", riftCount);
+            return;
+        }
+
+        // herbiboar count (for pet tracking)
+        if (message.startsWith(HERBIBOAR_PREFIX)) {
+            int harvestCount = Integer.parseInt(message.substring(HERBIBOAR_PREFIX.length(), message.length() - 1));
+            killCounts.put("Herbiboar", harvestCount);
             return;
         }
 
@@ -225,6 +241,12 @@ public class KillCountService {
             }
         }
 
+        SerializedLoot lootRecord = getLootTrackerRecord(type, sourceName);
+        return lootRecord != null ? lootRecord.getKills() : null;
+    }
+
+    @Nullable
+    public SerializedLoot getLootTrackerRecord(@NotNull LootRecordType type, @NotNull String sourceName) {
         if (ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
             // assume stored kc is useless if loot tracker plugin is disabled
             return null;
@@ -235,19 +257,20 @@ public class KillCountService {
         );
         if (json == null) {
             // no kc stored implies first kill
-            return 0;
+            return new SerializedLoot();
         }
         try {
-            int kc = gson.fromJson(json, SerializedLoot.class).getKills();
+            SerializedLoot lootRecord = gson.fromJson(json, SerializedLoot.class);
 
             // loot tracker doesn't count kill if no loot - https://github.com/runelite/runelite/issues/5077
             OptionalDouble nothingProbability = rarityService.getRarity(sourceName, -1, 0);
             if (nothingProbability.isPresent() && nothingProbability.getAsDouble() < 1.0) {
                 // estimate the actual kc (including kills with no loot)
-                kc = (int) Math.round(kc / (1 - nothingProbability.getAsDouble()));
+                int kc = (int) Math.round(lootRecord.getKills() / (1 - nothingProbability.getAsDouble()));
+                return lootRecord.withKills(kc);
+            } else {
+                return lootRecord;
             }
-
-            return kc;
         } catch (JsonSyntaxException e) {
             // should not occur unless loot tracker changes stored loot POJO structure
             log.warn("Failed to read kills from loot tracker config", e);

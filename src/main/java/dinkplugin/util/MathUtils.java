@@ -11,6 +11,14 @@ public class MathUtils {
     public static final double EPSILON = 0.00001;
     private static final int[] FACTORIALS;
 
+    public int sum(int[] array) {
+        int x = 0;
+        for (int i : array) {
+            x += i;
+        }
+        return x;
+    }
+
     public boolean lessThanOrEqual(double a, double b) {
         return a < b || DoubleMath.fuzzyEquals(a, b, EPSILON);
     }

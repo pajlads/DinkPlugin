@@ -1,6 +1,5 @@
 package dinkplugin.notifiers;
 
-import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
@@ -8,24 +7,37 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.PetNotificationData;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
+import dinkplugin.util.KillCountService;
+import dinkplugin.util.MathUtils;
+import dinkplugin.util.SerializedLoot;
 import dinkplugin.util.Utils;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import lombok.Value;
+import net.runelite.api.Client;
+import net.runelite.api.Experience;
+import net.runelite.api.ItemID;
+import net.runelite.api.Skill;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
+import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntToDoubleFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static dinkplugin.notifiers.CollectionNotifier.COLLECTION_LOG_REGEX;
+import static java.util.Map.entry;
 
 @Singleton
 public class PetNotifier extends BaseNotifier {
@@ -45,7 +57,7 @@ public class PetNotifier extends BaseNotifier {
     static final Pattern CLAN_REGEX = Pattern.compile("\\b(?<user>[\\w\\s]+) (?:has a funny feeling like .+ followed|feels something weird sneaking into .+ backpack): (?<pet>.+) at (?<milestone>.+)");
 
     private static final Pattern UNTRADEABLE_REGEX = Pattern.compile("Untradeable drop: (.+)");
-    private static final Set<String> PET_NAMES;
+    private static final Map<String, Source> PET_NAMES_TO_SOURCE;
     private static final String PRIMED_NAME = "";
 
     /**
@@ -67,6 +79,9 @@ public class PetNotifier extends BaseNotifier {
 
     @Inject
     private ItemSearcher itemSearcher;
+
+    @Inject
+    private KillCountService killCountService;
 
     @Setter(AccessLevel.PRIVATE)
     private volatile String petName = null;
@@ -100,7 +115,7 @@ public class PetNotifier extends BaseNotifier {
                 }
             } else if (PRIMED_NAME.equals(petName) || !collection) {
                 parseItemFromGameMessage(chatMessage)
-                    .filter(item -> item.getItemName().startsWith("Pet ") || PET_NAMES.contains(Utils.ucFirst(item.getItemName())))
+                    .filter(item -> item.getItemName().startsWith("Pet ") || PET_NAMES_TO_SOURCE.containsKey(Utils.ucFirst(item.getItemName())))
                     .ifPresent(parseResult -> {
                         setPetName(parseResult.getItemName());
                         if (parseResult.isCollectionLog()) {
@@ -178,14 +193,20 @@ public class PetNotifier extends BaseNotifier {
             .replacement("%GAME_MESSAGE%", Replacements.ofText(gameMessage))
             .build();
 
-        String thumbnail = Optional.ofNullable(petName)
+        String pet = petName != null ? Utils.ucFirst(petName) : null;
+        String thumbnail = Optional.ofNullable(pet)
             .filter(s -> !s.isEmpty())
-            .map(Utils::ucFirst)
             .map(itemSearcher::findItemId)
             .map(ItemUtils::getItemImageUrl)
             .orElse(null);
 
-        PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null), milestone, duplicate, previouslyOwned);
+        Source source = petName != null ? PET_NAMES_TO_SOURCE.get(pet) : null;
+        Double rarity = source != null ? source.getProbability(client, killCountService) : null;
+        Integer actions = rarity != null ? source.estimateActions(client, killCountService) : null;
+        Double luck = actions != null && (previouslyOwned == null || !previouslyOwned)
+            ? source.calculateLuck(client, killCountService, rarity, actions) : null;
+
+        PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null), milestone, duplicate, previouslyOwned, rarity, actions, luck);
 
         createMessage(config.petSendImage(), NotificationBody.builder()
             .extra(extra)
@@ -215,57 +236,324 @@ public class PetNotifier extends BaseNotifier {
         boolean collectionLog;
     }
 
+    private static abstract class Source {
+        abstract Double getProbability(Client client, KillCountService kcService);
+
+        abstract Integer estimateActions(Client client, KillCountService kcService);
+
+        Double calculateLuck(Client client, KillCountService kcService, double probability, int killCount) {
+            return MathUtils.cumulativeGeometric(probability, killCount);
+        }
+    }
+
+    private static abstract class MultiSource extends Source {
+        abstract double[] getRates(Client client);
+
+        abstract int[] getActions(Client client, KillCountService kcService);
+
+        @Override
+        Integer estimateActions(Client client, KillCountService kcService) {
+            int sum = MathUtils.sum(getActions(client, kcService));
+            return sum > 0 ? sum : null;
+        }
+
+        @Override
+        Double getProbability(Client client, KillCountService kcService) {
+            final int[] actions = getActions(client, kcService);
+            final int totalActions = MathUtils.sum(actions);
+            if (totalActions <= 0) return null;
+
+            final double[] rates = getRates(client);
+            double weighted = 0;
+            for (int i = 0, n = actions.length; i < n; i++) {
+                weighted += rates[i] * actions[i] / totalActions;
+            }
+            return weighted;
+        }
+
+        @Override
+        Double calculateLuck(Client client, KillCountService kcService, double probability, int killCount) {
+            final int[] actions = getActions(client, kcService);
+            final double[] rates = getRates(client);
+            double p = 1;
+            for (int i = 0, n = actions.length; i < n; i++) {
+                p *= Math.pow(1 - rates[i], actions[i]); // similar to geometric distribution survival function
+            }
+            return 1 - p;
+        }
+    }
+
+    @Value
+    @EqualsAndHashCode(callSuper = true)
+    private static class SkillSource extends MultiSource {
+        Skill skill;
+        int baseChance;
+        int actionXp;
+
+        @Override
+        double[] getRates(Client client) {
+            final int n = Experience.MAX_REAL_LEVEL;
+            double[] rates = new double[n];
+            for (int level = 1; level <= n; level++) {
+                rates[level - 1] = 1.0 / (baseChance - 25 * level);
+            }
+            return rates;
+        }
+
+        @Override
+        int[] getActions(Client client, KillCountService kcService) {
+            final int currentLevel = client.getRealSkillLevel(skill);
+            final int currentXp = client.getSkillExperience(skill);
+            final int[] actions = new int[currentLevel];
+            int prevXp = 0;
+            for (int lvl = 1; lvl <= currentLevel; lvl++) {
+                int xp = Math.min(Experience.getXpForLevel(lvl + 1), currentXp);
+                int deltaXp = xp - prevXp;
+                prevXp = xp;
+                actions[lvl - 1] = Math.round(1f * deltaXp / actionXp);
+            }
+            return actions;
+        }
+
+        @Override
+        Integer estimateActions(Client client, KillCountService kcService) {
+            return client.getSkillExperience(skill) / actionXp;
+        }
+    }
+
+    @Value
+    @EqualsAndHashCode(callSuper = true)
+    private static class KcSource extends Source {
+        String name;
+        double probability;
+
+        @Override
+        Double getProbability(Client client, KillCountService kcService) {
+            return this.probability;
+        }
+
+        @Override
+        Integer estimateActions(Client client, KillCountService kcService) {
+            Integer kc = kcService.getKillCount(LootRecordType.UNKNOWN, name);
+            return kc != null && kc > 0 ? kc : null;
+        }
+    }
+
+    @Value
+    @EqualsAndHashCode(callSuper = false)
+    private static class MultiKcSource extends MultiSource {
+        String[] names;
+        double[] rates;
+
+        public MultiKcSource(String source1, double prob1, String source2, double prob2) {
+            this.names = new String[] { source1, source2 };
+            this.rates = new double[] { prob1, prob2 };
+        }
+
+        @Override
+        int[] getActions(Client client, KillCountService kcService) {
+            final int n = names.length;
+            int[] actions = new int[n];
+            for (int i = 0; i < n; i++) {
+                Integer kc = kcService.getKillCount(LootRecordType.UNKNOWN, names[i]);
+                if (kc == null) continue;
+                actions[i] = kc;
+            }
+            return actions;
+        }
+
+        @Override
+        double[] getRates(Client client) {
+            return this.rates;
+        }
+    }
+
     static {
-        // Note: We don't explicitly list out names that have the "Pet " prefix
-        // since they are matched by filter(item -> item.startsWith("Pet ")) above
-        PET_NAMES = ImmutableSet.of(
-            "Abyssal orphan",
-            "Abyssal protector",
-            "Baby chinchompa",
-            "Baby mole",
-            "Baron",
-            "Butch",
-            "Beaver",
-            "Bloodhound",
-            "Callisto cub",
-            "Chompy chick",
-            "Giant squirrel",
-            "Hellcat",
-            "Hellpuppy",
-            "Herbi",
-            "Heron",
-            "Ikkle hydra",
-            "Jal-nib-rek",
-            "Kalphite princess",
-            "Lil' creator",
-            "Lil' zik",
-            "Lil'viathan",
-            "Little nightmare",
-            "Muphin",
-            "Nexling",
-            "Noon",
-            "Olmlet",
-            "Phoenix",
-            "Prince black dragon",
-            "Quetzin",
-            "Rift guardian",
-            "Rock golem",
-            "Rocky",
-            "Scorpia's offspring",
-            "Scurry",
-            "Skotos",
-            "Smolcano",
-            "Smol heredit",
-            "Sraracha",
-            "Tangleroot",
-            "Tiny tempor",
-            "Tumeken's guardian",
-            "Tzrek-jad",
-            "Venenatis spiderling",
-            "Vet'ion jr.",
-            "Vorki",
-            "Wisp",
-            "Youngllef"
+        PET_NAMES_TO_SOURCE = Map.<String, Source>ofEntries(
+            entry("Abyssal orphan", new KcSource("Abyssal Sire", 1.0 / 2_560)),
+            entry("Abyssal protector", new Source() {
+                @Override
+                Double getProbability(Client client, KillCountService kcService) {
+                    return 1.0 / 4_000;
+                }
+
+                @Override
+                Integer estimateActions(Client client, KillCountService kcService) {
+                    Integer kc = kcService.getKillCount(LootRecordType.EVENT, "Guardians of the Rift");
+                    return kc != null && kc > 0 ? kc * 3 : null;
+                }
+            }),
+            entry("Baby chinchompa", new SkillSource(Skill.HUNTER, 82_758, 315)), // black chinchompas
+            entry("Baby mole", new KcSource("Giant Mole", 1.0 / 3_000)),
+            entry("Baron", new KcSource("Duke Sucellus", 1.0 / 2_500)),
+            entry("Butch", new KcSource("Vardorvis", 1.0 / 3_000)),
+            entry("Beaver", new SkillSource(Skill.WOODCUTTING, 264_336, 85)), // teaks
+            entry("Bloodhound", new KcSource("Clue Scroll (master)", 1.0 / 1_000)),
+            entry("Callisto cub", new MultiKcSource("Callisto", 1.0 / 1_500, "Artio", 1.0 / 2_800)),
+            entry("Chompy chick", new KcSource("Chompy bird", 1.0 / 500)),
+            entry("Giant squirrel", new MultiSource() {
+                private final Map<String, Integer> courses = Map.ofEntries(
+                    entry("Gnome Stronghold Agility", 35_609),
+                    entry("Shayzien Agility Course", 31_804),
+                    entry("Shayzien Advanced Agility Course", 29_738),
+                    entry("Agility Pyramid", 9_901),
+                    entry("Penguin Agility", 9_779),
+                    entry("Barbarian Outpost", 44_376),
+                    entry("Agility Arena", 26_404),
+                    entry("Ape Atoll Agility", 37_720),
+                    entry("Wilderness Agility", 34_666),
+                    entry("Werewolf Agility", 32_597),
+                    entry("Dorgesh-Kaan Agility Course", 10_561),
+                    entry("Prifddinas Agility Course", 25_146),
+                    entry("Draynor Village Rooftop", 33_005),
+                    entry("Al Kharid Rooftop", 26_648),
+                    entry("Varrock Rooftop", 24_410),
+                    entry("Canifis Rooftop", 36_842),
+                    entry("Falador Rooftop", 26_806),
+                    entry("Seers' Village Rooftop", 35_205),
+                    entry("Pollnivneach Rooftop", 33_422),
+                    entry("Rellekka Rooftop", 31_063),
+                    entry("Ardougne Rooftop", 34_440),
+                    entry("Hallowed Sepulchre Floor 1", 35_000),
+                    entry("Hallowed Sepulchre Floor 2", 16_000),
+                    entry("Hallowed Sepulchre Floor 3", 8_000),
+                    entry("Hallowed Sepulchre Floor 4", 4_000),
+                    entry("Hallowed Sepulchre Floor 5", 2_000)
+                );
+
+                @Override
+                public int[] getActions(Client client, KillCountService kcService) {
+                    return courses.keySet()
+                        .stream()
+                        .mapToInt(course -> {
+                            Integer count = kcService.getKillCount(LootRecordType.UNKNOWN, course);
+                            return count != null && count > 0 ? count + 1 : 0;
+                        })
+                        .toArray();
+                }
+
+                @Override
+                public double[] getRates(Client client) {
+                    int level = client.getRealSkillLevel(Skill.AGILITY);
+                    IntToDoubleFunction calc = base -> 1.0 / (base - level * 25); // see SkillSource
+                    return courses.entrySet()
+                        .stream()
+                        .mapToDouble(entry -> {
+                            if (entry.getKey().startsWith("Hallowed"))
+                                return 1.0 / entry.getValue();
+                            return calc.applyAsDouble(entry.getValue());
+                        })
+                        .toArray();
+                }
+            }),
+            entry("Hellpuppy", new KcSource("Cerberus", 1.0 / 3_000)),
+            entry("Herbi", new KcSource("Herbiboar", 1.0 / 6_500)),
+            entry("Heron", new SkillSource(Skill.FISHING, 257_770, 100)), // swordfish
+            entry("Ikkle hydra", new KcSource("Alchemical Hydra", 1.0 / 3_000)),
+            entry("Jal-nib-rek", new KcSource("TzKal-Zuk", 1.0 / 100)),
+            entry("Kalphite princess", new KcSource("Kalphite Queen", 1.0 / 3_000)),
+            entry("Lil' creator", new KcSource("Spoils of war", 1.0 / 400)),
+            entry("Lil' zik", new KcSource(" Theatre of Blood", 1.0 / 650)), // assume normal mode
+            entry("Lil'viathan", new KcSource("The Leviathan", 1.0 / 2_500)),
+            entry("Little nightmare", new KcSource("Nightmare", 1.0 / 3_200)), // assume team size 4
+            entry("Muphin", new KcSource("Phantom Muspah", 1.0 / 2_500)),
+            entry("Nexling", new KcSource("Nex", 1.0 / 500)),
+            entry("Noon", new KcSource("Grotesque Guardians", 1.0 / 3_000)),
+            entry("Olmlet", new Source() {
+                @Override
+                Double getProbability(Client client, KillCountService kcService) {
+                    // https://oldschool.runescape.wiki/w/Ancient_chest#Unique_drop_table
+                    int totalPoints = client.getVarbitValue(Varbits.TOTAL_POINTS);
+                    if (totalPoints <= 0) {
+                        totalPoints = 26_025;
+                    }
+                    return 0.01 * (totalPoints / 8_676) / 53;
+                }
+
+                @Override
+                Integer estimateActions(Client client, KillCountService kcService) {
+                    return Stream.of("", " Challenge Mode")
+                        .map(suffix -> "Chambers of Xeric" + suffix)
+                        .map(event -> kcService.getKillCount(LootRecordType.EVENT, event))
+                        .filter(Objects::nonNull)
+                        .reduce(Integer::sum)
+                        .orElse(null);
+                }
+            }),
+            entry("Pet chaos elemental", new MultiKcSource("Chaos Elemental", 1.0 / 300, "Chaos Fanatic", 1.0 / 1_000)),
+            entry("Pet dagannoth prime", new KcSource("Dagannoth Prime", 1.0 / 5_000)),
+            entry("Pet dagannoth rex", new KcSource("Dagannoth Rex", 1.0 / 5_000)),
+            entry("Pet dagannoth supreme", new KcSource("Dagannoth Supreme", 1.0 / 5_000)),
+            entry("Pet dark core", new KcSource("Corporeal Beast", 1.0 / 5_000)),
+            entry("Pet general graardor", new KcSource("General Graardor", 1.0 / 5_000)),
+            entry("Pet k'ril tsutsaroth", new KcSource("K'ril Tsutsaroth", 1.0 / 5_000)),
+            entry("Pet kraken", new KcSource("Kraken", 1.0 / 5_000)),
+            entry("Pet penance queen", new Source() {
+                @Override
+                Double getProbability(Client client, KillCountService kcService) {
+                    return 1.0 / 1_000;
+                }
+
+                @Override
+                Integer estimateActions(Client client, KillCountService kcService) {
+                    return client.getVarbitValue(Varbits.BA_GC);
+                }
+            }),
+            entry("Pet smoke devil", new KcSource("Thermonuclear smoke devil", 1.0 / 3_000)),
+            entry("Pet snakeling", new KcSource("Zulrah", 1.0 / 4_000)),
+            entry("Pet zilyana", new KcSource("Commander Zilyana", 1.0 / 5_000)),
+            entry("Phoenix", new KcSource("Wintertodt", 1.0 / 5_000)),
+            entry("Prince black dragon", new KcSource("King Black Dragon", 1.0 / 3_000)),
+            entry("Quetzin", new MultiKcSource("Hunters' loot sack (expert)", 1.0 / 1_000, "Hunters' loot sack (master)", 1.0 / 1_000)),
+            entry("Rift guardian", new SkillSource(Skill.RUNECRAFT, 1_795_758, 10)), // lava runes
+            entry("Rock golem", new SkillSource(Skill.MINING, 211_886, 65)), // gemstones
+            entry("Rocky", new SkillSource(Skill.THIEVING, 36_490, 42)), // stalls
+            entry("Scorpia's offspring", new KcSource("Scorpia", 1 / 2015.75)),
+            entry("Scurry", new KcSource("Scurrius", 1.0 / 3_000)),
+            entry("Skotos", new KcSource("Skotizo", 1.0 / 65)),
+            entry("Smolcano", new KcSource("Zalcano", 1.0 / 2_250)),
+            entry("Smol heredit", new Source() {
+                @Override
+                Double getProbability(Client client, KillCountService kcService) {
+                    return 1.0 / 200;
+                }
+
+                @Override
+                Integer estimateActions(Client client, KillCountService kcService) {
+                    SerializedLoot lootRecord = kcService.getLootTrackerRecord(LootRecordType.EVENT, "Fortis Colosseum");
+                    return lootRecord != null ? lootRecord.getQuantity(ItemID.DIZANAS_QUIVER_UNCHARGED) : null;
+                }
+            }),
+            entry("Sraracha", new KcSource("Sarachnis", 1.0 / 3_000)),
+            entry("Tangleroot", new SkillSource(Skill.FARMING, 7_500, 119)), // mushrooms
+            entry("Tiny tempor", new KcSource("Reward pool (Tempoross)", 1.0 / 8_000)),
+            entry("Tumeken's guardian", new Source() {
+                @Override
+                Double getProbability(Client client, KillCountService kcService) {
+                    // https://oldschool.runescape.wiki/w/Chest_(Tombs_of_Amascut)#Tertiary_rewards
+                    int rewardPoints = client.getVarbitValue(Varbits.TOTAL_POINTS);
+                    int raidLevels = Math.min(client.getVarbitValue(Varbits.TOA_RAID_LEVEL), 550);
+                    int x = Math.min(raidLevels, 400);
+                    int y = Math.max(raidLevels - 400, 0);
+                    return 0.01 * rewardPoints / (350_000 - 700 * (x + y / 3)); // assume latest is representative
+                }
+
+                @Override
+                Integer estimateActions(Client client, KillCountService kcService) {
+                    return Stream.of("", ": Entry Mode", ": Expert Mode")
+                        .map(suffix -> "Tombs of Amascut" + suffix)
+                        .map(event -> kcService.getKillCount(LootRecordType.EVENT, event))
+                        .filter(Objects::nonNull)
+                        .reduce(Integer::sum)
+                        .orElse(null);
+                }
+            }),
+            entry("Tzrek-jad", new KcSource("TzTok-Jad", 1.0 / 200)),
+            entry("Venenatis spiderling", new MultiKcSource("Venenatis", 1.0 / 1_500, "Spindel", 1.0 / 2_800)),
+            entry("Vet'ion jr.", new MultiKcSource("Vet'ion", 1.0 / 1_500, "Calvar'ion", 1.0 / 2_800)),
+            entry("Vorki", new KcSource("Vorkath", 1.0 / 3_000)),
+            entry("Wisp", new KcSource("The Whisperer", 1.0 / 2_000)),
+            entry("Youngllef", new MultiKcSource("Gauntlet", 1.0 / 2_000, "Corrupted Gauntlet", 1.0 / 800))
         );
     }
 }
