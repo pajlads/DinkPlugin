@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.runelite.api.Experience.MAX_REAL_LEVEL;
 
@@ -45,7 +44,7 @@ public class LevelNotifier extends BaseNotifier {
     private final Set<Skill> xpReached = EnumSet.noneOf(Skill.class);
     private final Map<String, Integer> currentLevels = new HashMap<>();
     private final Map<Skill, Integer> currentXp = new EnumMap<>(Skill.class);
-    private final AtomicInteger ticksWaited = new AtomicInteger();
+    private int ticksWaited = 0;
     private int initTicks = 0;
 
     @Inject
@@ -73,9 +72,9 @@ public class LevelNotifier extends BaseNotifier {
 
     public void reset() {
         levelledSkills.clear();
-        ticksWaited.set(0);
         clientThread.invoke(() -> {
             this.initTicks = 0;
+            this.ticksWaited = 0;
             xpReached.clear();
             currentXp.clear();
             currentLevels.clear();
@@ -97,10 +96,9 @@ public class LevelNotifier extends BaseNotifier {
             return;
         }
 
-        int ticks = ticksWaited.incrementAndGet();
         // We wait a couple extra ticks so we can ensure that we process all the levels of the previous tick
-        if (ticks > 2) {
-            ticksWaited.set(0);
+        if (++this.ticksWaited > 2) {
+            this.ticksWaited = 0;
             // ensure notifier was not disabled during ticks waited
             if (isEnabled()) {
                 attemptNotify();
@@ -154,7 +152,7 @@ public class LevelNotifier extends BaseNotifier {
             if (remainder == 0 || xp - remainder > previousXp || xp >= Experience.MAX_SKILL_XP) {
                 log.debug("Observed XP milestone for {} to {}", skill, xp);
                 xpReached.add(skill);
-                ticksWaited.set(0);
+                this.ticksWaited = 0;
             }
         }
 
@@ -193,7 +191,7 @@ public class LevelNotifier extends BaseNotifier {
             log.debug("Observed level up for {} to {}", skill, currentLevel);
 
             // allow more accumulation of level ups into single notification
-            ticksWaited.set(0);
+            this.ticksWaited = 0;
         }
     }
 
