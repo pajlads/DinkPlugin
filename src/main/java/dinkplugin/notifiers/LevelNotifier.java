@@ -38,10 +38,11 @@ import static net.runelite.api.Experience.MAX_REAL_LEVEL;
 @Singleton
 public class LevelNotifier extends BaseNotifier {
     public static final int LEVEL_FOR_MAX_XP = Experience.MAX_VIRT_LEVEL + 1; // 127
-    private static final int INIT_GAME_TICKS = 25; // 15s
+    private static final int INIT_GAME_TICKS = 16; // ~10s
+    private static final int SKILL_COUNT = Skill.values().length;
     private static final String COMBAT_NAME = "Combat";
     private static final Set<String> COMBAT_COMPONENTS;
-    private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(Skill.values().length + 1);
+    private final BlockingQueue<String> levelledSkills = new ArrayBlockingQueue<>(SKILL_COUNT + 1);
     private final Set<Skill> xpReached = EnumSet.noneOf(Skill.class);
     private final Map<String, Integer> currentLevels = new HashMap<>();
     private final Map<Skill, Integer> currentXp = new EnumMap<>(Skill.class);
@@ -90,7 +91,7 @@ public class LevelNotifier extends BaseNotifier {
             return;
         }
 
-        if (currentLevels.isEmpty()) {
+        if (currentLevels.size() < SKILL_COUNT) {
             shouldInit.compareAndSet(false, initTicks.incrementAndGet() > INIT_GAME_TICKS);
             return;
         }
@@ -123,11 +124,10 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     private void handleLevelUp(Skill skill, int level, int xp) {
-        if (!isEnabled()) return;
+        if (xp <= 0 || level <= 1 || !isEnabled()) return;
 
         Integer previousXp = currentXp.put(skill, xp);
         if (previousXp == null) {
-            shouldInit.set(true);
             return;
         }
 
@@ -169,7 +169,7 @@ public class LevelNotifier extends BaseNotifier {
         }
 
         // Check for combat level increase
-        if (COMBAT_COMPONENTS.contains(skillName)) {
+        if (COMBAT_COMPONENTS.contains(skillName) && currentLevels.size() >= SKILL_COUNT) {
             int combatLevel = calculateCombatLevel();
             Integer previousCombatLevel = currentLevels.put(COMBAT_NAME, combatLevel);
             checkLevelUp(enabled && config.levelNotifyCombat(), COMBAT_NAME, previousCombatLevel, combatLevel);
