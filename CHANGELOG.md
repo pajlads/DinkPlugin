@@ -2,6 +2,7 @@
 
 - Minor: Include rarity and luck for pet notifications. (#433)
 - Bugfix: Avoid level notification upon login. (#514)
+- Bugfix: Avoid outdated notification data if disabling and enabling notifiers over time. (#515)
 - Dev: Add raid party members to loot notification metadata. (#478)
 
 ## 1.10.4
