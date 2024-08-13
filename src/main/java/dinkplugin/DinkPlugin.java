@@ -57,6 +57,7 @@ import net.runelite.client.util.ColorUtil;
 
 import javax.inject.Inject;
 import java.awt.Color;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -97,6 +98,19 @@ public class DinkPlugin extends Plugin {
     private @Inject ChatNotifier chatNotifier;
 
     private final AtomicReference<GameState> gameState = new AtomicReference<>();
+
+    private Map<String, Runnable> configDisabledTasks;
+
+    @Inject
+    protected void init() {
+        // clear out state that could be stale if notifier is enabled again
+        this.configDisabledTasks = Map.of(
+            "collectionLogEnabled", collectionNotifier::reset,
+            "diaryEnabled", diaryNotifier::reset,
+            "levelEnabled", levelNotifier::reset,
+            "speedrunEnabled", speedrunNotifier::reset
+        );
+    }
 
     @Override
     protected void startUp() {
@@ -156,6 +170,11 @@ public class DinkPlugin extends Plugin {
         lootNotifier.onConfigChanged(event.getKey(), event.getNewValue());
         deathNotifier.onConfigChanged(event.getKey(), event.getNewValue());
         chatNotifier.onConfig(event.getKey(), event.getNewValue());
+
+        if ("false".equals(event.getNewValue())) {
+            Runnable task = configDisabledTasks.get(event.getKey());
+            if (task != null) task.run();
+        }
     }
 
     @Subscribe
