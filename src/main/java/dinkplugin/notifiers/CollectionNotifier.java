@@ -46,7 +46,7 @@ public class CollectionNotifier extends BaseNotifier {
      */
     public static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
 
-    static final @VisibleForTesting int TOTAL_ENTRIES = 1_520; // fallback if TOTAL_VARP is not populated
+    static final @VisibleForTesting int TOTAL_ENTRIES = 1_524; // fallback if TOTAL_VARP is not populated
 
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
