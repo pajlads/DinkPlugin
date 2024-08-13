@@ -68,7 +68,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         plugin.onStatChanged(new StatChanged(Skill.HUNTER, 300, 4, 4));
         plugin.onStatChanged(new StatChanged(Skill.SLAYER, 9_800_000, 96, 96));
         plugin.onStatChanged(new StatChanged(Skill.FARMING, Experience.MAX_SKILL_XP, 99, 99));
-        notifier.onTick();
+        IntStream.rangeClosed(0, LevelNotifier.INIT_GAME_TICKS + 1).forEach(i -> notifier.onTick());
     }
 
     @Test
