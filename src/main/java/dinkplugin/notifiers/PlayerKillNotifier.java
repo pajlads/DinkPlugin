@@ -161,8 +161,8 @@ public class PlayerKillNotifier extends BaseNotifier {
             int index = slot.getIndex();
             if (index >= n) continue;
             int id = equipmentIds[index];
-            if (id >= 512) {
-                SerializedItemStack item = ItemUtils.stackFromItem(itemManager, id - 512, 1);
+            if (id >= PlayerComposition.ITEM_OFFSET) {
+                SerializedItemStack item = ItemUtils.stackFromItem(itemManager, id - PlayerComposition.ITEM_OFFSET, 1);
                 map.put(slot, item);
             }
         }
