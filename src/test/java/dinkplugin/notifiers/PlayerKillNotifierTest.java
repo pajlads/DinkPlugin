@@ -266,7 +266,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         PlayerComposition comp = mock(PlayerComposition.class);
         when(target.getPlayerComposition()).thenReturn(comp);
         int[] equipment = new int[KitType.values().length];
-        EQUIPMENT.forEach((kit, item) -> equipment[kit.getIndex()] = item.getId() + 512);
+        EQUIPMENT.forEach((kit, item) -> equipment[kit.getIndex()] = item.getId() + PlayerComposition.ITEM_OFFSET);
         when(comp.getEquipmentIds()).thenReturn(equipment);
         return target;
     }
