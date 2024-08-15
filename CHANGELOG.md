@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.6
+
 - Bugfix: Identify victim equipment for pk notifications correctly after Jagex change. (#519)
 
 ## 1.10.5
