@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Identify victim equipment for pk notifications correctly after Jagex change. (#519)
+
 ## 1.10.5
 
 - Minor: Include rarity and luck for pet notifications. (#433)
