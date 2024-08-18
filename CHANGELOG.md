@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Perform http notifications from okhttp's thread pool to aid users with transient network issues. (#523)
+
 ## 1.10.6
 
 - Bugfix: Identify victim equipment for pk notifications correctly after Jagex change. (#519)
