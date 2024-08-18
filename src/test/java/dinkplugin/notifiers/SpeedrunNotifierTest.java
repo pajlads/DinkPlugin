@@ -84,7 +84,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event());
 
         // check notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -110,7 +110,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event());
 
         // check notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -174,7 +174,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event());
 
         // check notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

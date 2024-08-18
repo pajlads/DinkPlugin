@@ -63,7 +63,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage("Congratulations, you've completed a hard combat task: Whack-a-Mole.");
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -95,7 +95,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage("Congratulations, you've completed a grandmaster combat task: No Pressure (6 points).");
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -122,7 +122,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage("Congratulations, you've completed a grandmaster combat task: No Pressure (6 points).");
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

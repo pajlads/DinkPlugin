@@ -151,12 +151,12 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         Offer offer = new Offer(10, ItemID.RUBY, 50, RUBY_PRICE, 10_000, GrandExchangeOfferState.BUYING);
         notifier.onOfferChange(0, offer);
 
-        // verify notification
-        verifyNotification(0, offer, "bought", "Ruby", RUBY_PRICE, null);
-
         // fire second event without spacing
         Offer offer2 = new Offer(20, ItemID.RUBY, 50, RUBY_PRICE, 10_000, GrandExchangeOfferState.BUYING);
         notifier.onOfferChange(0, offer2);
+
+        // verify first notification
+        verifyNotification(0, offer, "bought", "Ruby", RUBY_PRICE, null);
 
         // ensure no notification for second event
         verifyNoMoreInteractions(messageHandler);
@@ -213,7 +213,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
 
     private void verifyNotification(int slot, Offer offer, String type, String itemName, long marketPrice, Long tax) {
         SerializedItemStack item = new SerializedItemStack(offer.getItemId(), offer.getQuantitySold(), offer.getSpent() / offer.getQuantitySold(), itemName);
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

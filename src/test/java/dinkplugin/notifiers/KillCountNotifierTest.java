@@ -75,7 +75,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             .type(NotificationType.KILL_COUNT)
             .build();
 
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             body
@@ -96,7 +96,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
@@ -158,7 +158,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             .type(NotificationType.KILL_COUNT)
             .build();
 
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             body
@@ -187,7 +187,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             .type(NotificationType.KILL_COUNT)
             .build();
 
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             body
@@ -216,7 +216,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             .type(NotificationType.KILL_COUNT)
             .build();
 
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             body
@@ -237,7 +237,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
@@ -269,7 +269,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             .type(NotificationType.KILL_COUNT)
             .build();
 
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             body
@@ -290,7 +290,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
@@ -315,7 +315,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
@@ -340,7 +340,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
@@ -364,7 +364,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
@@ -388,7 +388,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
@@ -412,7 +412,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
@@ -435,7 +435,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
@@ -466,7 +466,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // check notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
