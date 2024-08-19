@@ -96,7 +96,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onNpcLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -131,7 +131,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // verify notification message
         String value = QuantityFormatter.quantityToStackSize(LARRAN_PRICE);
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -204,7 +204,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onPlayerLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -233,7 +233,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onPlayerLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -282,7 +282,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -337,7 +337,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -375,7 +375,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -418,7 +418,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onPlayerLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -449,7 +449,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onPlayerLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             overrideUrl,
             false,
             NotificationBody.builder()
@@ -479,7 +479,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onPlayerLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -511,7 +511,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -579,7 +579,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -617,7 +617,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -669,7 +669,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(new LootReceived(source, -1, LootRecordType.EVENT, items, 1));
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -701,7 +701,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(new LootReceived(source, -1, LootRecordType.EVENT, items, 1));
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -732,7 +732,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(new LootReceived("Tombs of Amascut", -1, LootRecordType.EVENT, items, 1));
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -763,7 +763,7 @@ class LootNotifierTest extends MockedNotifierTest {
         plugin.onLootReceived(new LootReceived("Tombs of Amascut", -1, LootRecordType.EVENT, items, 1));
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -799,7 +799,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // verify notification message
         String value = QuantityFormatter.quantityToStackSize(LARRAN_PRICE);
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

@@ -24,6 +24,8 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.discord.DiscordService;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.ImageUtil;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -151,7 +153,7 @@ public class DiscordMessageHandler {
     }
 
     private void sendToMultiple(Collection<HttpUrl> urls, NotificationBody<?> body, @Nullable RequestBody image) {
-        urls.forEach(url -> sendMessage(url, injectThreadName(url, body, false), image, 0));
+        urls.forEach(url -> executor.execute(() -> sendMessage(url, injectThreadName(url, body, false), image, 0)));
     }
 
     private void sendMessage(HttpUrl url, NotificationBody<?> mBody, @Nullable RequestBody image, int attempt) {
@@ -179,15 +181,25 @@ public class DiscordMessageHandler {
             }
         };
 
-        executor.execute(() -> {
-            Request request = new Request.Builder()
-                .url(url)
-                .post(createBody(mBody, image))
-                .build();
+        Request request = new Request.Builder()
+            .url(url)
+            .post(createBody(mBody, image))
+            .build();
 
-            try (Response response = httpClient.newCall(request).execute()) {
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                retry.accept(mBody, e);
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                 if (response.isSuccessful()) {
                     log.trace("Successfully sent webhook message to {} after {} attempts", url, attempt + 1);
+
+                    if (response.body() != null) {
+                        response.close();
+                    }
                 } else {
                     String body = response.body() != null ? response.body().string() : null;
 
@@ -214,8 +226,6 @@ public class DiscordMessageHandler {
                     // retry with no change to NotificationBody
                     retry.accept(mBody, new RuntimeException(String.format("Received unsuccessful http response: %d - %s - %s", response.code(), response.message(), body)));
                 }
-            } catch (Exception e) {
-                retry.accept(mBody, e);
             }
         });
     }

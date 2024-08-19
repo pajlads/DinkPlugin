@@ -75,7 +75,7 @@ class ClueNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

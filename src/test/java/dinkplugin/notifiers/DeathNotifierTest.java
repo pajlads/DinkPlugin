@@ -98,7 +98,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // verify notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -143,7 +143,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             Embed.ofImage("https://static.runelite.net/cache/item/icon/" + ItemID.OPAL + ".png"),
             Embed.ofImage("https://static.runelite.net/cache/item/icon/" + ItemID.COAL + ".png")
         );
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -169,7 +169,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // verify notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -196,7 +196,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // verify notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -220,7 +220,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // verify non-PK notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -263,7 +263,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         plugin.onActorDeath(new ActorDeath(localPlayer));
 
         // verify notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -309,7 +309,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         List<SerializedItemStack> lost = Collections.singletonList(
             ItemUtils.stackFromItem(itemManager, items[1])
         );
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -349,7 +349,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             .map(i -> ItemUtils.stackFromItem(itemManager, i))
             .sorted(Comparator.comparingLong(SerializedItemStack::getTotalPrice).reversed())
             .collect(Collectors.toList());
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -390,7 +390,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         List<SerializedItemStack> lost = Collections.singletonList(
             ItemUtils.stackFromItem(itemManager, items[1])
         );
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -427,7 +427,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             .map(i -> ItemUtils.stackFromItem(itemManager, i))
             .sorted(Comparator.comparingLong(SerializedItemStack::getTotalPrice).reversed())
             .collect(Collectors.toList());
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -465,7 +465,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             .map(i -> ItemUtils.stackFromItem(itemManager, i))
             .sorted(Comparator.comparingLong(SerializedItemStack::getTotalPrice).reversed())
             .collect(Collectors.toList());
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -513,7 +513,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         List<SerializedItemStack> lost = Collections.singletonList(
             ItemUtils.stackFromItem(itemManager, items[1])
         );
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -577,7 +577,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             .map(i -> ItemUtils.stackFromItem(itemManager, i))
             .sorted(Comparator.comparingLong(SerializedItemStack::getTotalPrice).reversed())
             .collect(Collectors.toList());
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -617,7 +617,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             .map(i -> ItemUtils.stackFromItem(itemManager, i))
             .sorted(Comparator.comparingLong(SerializedItemStack::getTotalPrice).reversed())
             .collect(Collectors.toList());
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

@@ -74,7 +74,7 @@ public class TradeNotifierTest extends MockedNotifierTest {
         List<SerializedItemStack> discarded = List.of(
             new SerializedItemStack(ItemID.OPAL, 2, OPAL_PRICE, "Opal")
         );
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

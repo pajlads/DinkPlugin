@@ -60,7 +60,7 @@ public class GambleNotifierTest extends MockedNotifierTest {
     void testNotifyInterval() {
         notifier.onMesBoxNotification("Granite helm! High level gamble count: 20.");
 
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
@@ -75,7 +75,7 @@ public class GambleNotifierTest extends MockedNotifierTest {
     void testTertiaryLoot() {
         notifier.onMesBoxNotification("Granite helm! Clue scroll (elite)! High level gamble count: 10.");
 
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
@@ -99,7 +99,7 @@ public class GambleNotifierTest extends MockedNotifierTest {
     void testRareLoot() {
         notifier.onMesBoxNotification("Dragon chainbody! High level gamble count: 11.");
 
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()

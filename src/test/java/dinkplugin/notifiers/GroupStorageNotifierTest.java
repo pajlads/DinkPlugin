@@ -369,7 +369,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             PLAYER_NAME, deposited, PLAYER_NAME, withdrawn
         );
 
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

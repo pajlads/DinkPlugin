@@ -67,7 +67,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -88,7 +88,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -123,7 +123,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -150,7 +150,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -176,7 +176,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -202,7 +202,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -225,7 +225,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -264,7 +264,7 @@ class PetNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -302,7 +302,7 @@ class PetNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -327,7 +327,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled at override url
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             "https://example.com",
             false,
             NotificationBody.builder()
@@ -372,7 +372,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -408,7 +408,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -431,7 +431,7 @@ class PetNotifierTest extends MockedNotifierTest {
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

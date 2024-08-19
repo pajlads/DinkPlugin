@@ -68,7 +68,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         // verify notification
         String area = "Kandarin";
         int tasksUntilNextArea = 300 - tasksCompleted;
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -101,7 +101,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         // verify notification
         String area = "Karamja";
         int tasksUntilNextArea = 60 - tasksCompleted;
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -133,7 +133,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         // verify notification
         String relic = "Production Prodigy";
         int pointsUntilNextTier = LeagueRelicTier.TWO.getPoints() - totalPoints;
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -168,7 +168,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         int tasksUntilNextArea = 140 - tasksCompleted;
         int pointsUntilNextRelic = LeagueRelicTier.THREE.getPoints() - totalPoints;
         int pointsUntilNextTrophy = 2_500 - totalPoints;
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -204,7 +204,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         int pointsUntilNextRelic = LeagueRelicTier.FIVE.getPoints() - totalPoints;
         int pointsUntilNextTrophy = 5_000 - totalPoints;
         String trophy = "Bronze";
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -242,7 +242,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         int pointsUntilNextRelic = LeagueRelicTier.SIX.getPoints() - totalPoints;
         int pointsUntilNextTrophy = 10_000 - totalPoints;
         String trophy = "Iron";
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

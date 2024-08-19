@@ -88,7 +88,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // verify notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -116,7 +116,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // verify notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -143,7 +143,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         notifier.onTick();
 
         // verify notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

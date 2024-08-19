@@ -51,7 +51,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
         notifier.onMessage(ChatMessageType.GAMEMESSAGE, null, message);
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -74,7 +74,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
         notifier.onCommand(new CommandExecuted(message.substring(2), new String[0]));
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -97,7 +97,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
         notifier.onNotification(new NotificationFired(Notification.ON, message, TrayIcon.MessageType.INFO));
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

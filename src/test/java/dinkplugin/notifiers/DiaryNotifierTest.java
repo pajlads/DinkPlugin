@@ -80,7 +80,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 1));
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -106,7 +106,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 2));
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -131,7 +131,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         notifier.onMessageBox("Congratulations! You have completed all of the hard tasks in the Karamja area. Speak to Pirate Jackie the Fruit to claim your reward.");
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -180,7 +180,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         notifier.onMessageBox("Congratulations! You have completed all of the hard tasks in the Western Province area. Speak to the Elder Gnome child at the Gnome Stronghold to claim your reward.");
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -206,7 +206,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         plugin.onVarbitChanged(event(id, 2));
 
         // verify notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

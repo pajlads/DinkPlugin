@@ -10,10 +10,12 @@ import dinkplugin.domain.AccountType;
 import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.message.DiscordMessageHandler;
+import dinkplugin.message.NotificationBody;
 import dinkplugin.message.templating.Template;
 import dinkplugin.util.BlockingClientThread;
 import dinkplugin.util.BlockingExecutor;
 import dinkplugin.util.TestImageUtil;
+import lombok.SneakyThrows;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemComposition;
@@ -30,6 +32,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.http.api.RuneLiteAPI;
+import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -145,6 +148,18 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(client.getItemDefinition(id)).thenReturn(item);
         when(itemManager.getItemComposition(id)).thenReturn(item);
         when(itemManager.canonicalize(id)).thenReturn(id);
+    }
+
+    @SneakyThrows
+    protected void verifyCreateMessage(String url, boolean image, NotificationBody<?> body) {
+        Mockito.verify(messageHandler).createMessage(url, image, body);
+
+        // wait for http calls to complete
+        Dispatcher dispatcher = httpClient.dispatcher();
+        while (dispatcher.queuedCallsCount() > 0 || dispatcher.runningCallsCount() > 0) {
+            // noinspection BusyWait - comply with discord's undocumented 30/60s ratelimit
+            Thread.sleep(2000L);
+        }
     }
 
     protected static Template buildTemplate(String text) {

@@ -105,7 +105,7 @@ class MetaNotifierTest extends MockedNotifierTest {
             new LoginNotificationData.SlayerData(2484, 300),
             null
         );
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             url,
             false,
             NotificationBody.builder()
@@ -143,7 +143,7 @@ class MetaNotifierTest extends MockedNotifierTest {
             new LoginNotificationData.SlayerData(2484, 300),
             null
         );
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             url,
             false,
             NotificationBody.builder()
@@ -194,7 +194,7 @@ class MetaNotifierTest extends MockedNotifierTest {
         // fire event
         notifier.onGameState(GameState.LOGGED_IN, GameState.LOGIN_SCREEN);
         // verify notifier
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             url,
             false,
             NotificationBody.builder()

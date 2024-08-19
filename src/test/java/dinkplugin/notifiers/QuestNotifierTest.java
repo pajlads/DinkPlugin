@@ -60,7 +60,7 @@ class QuestNotifierTest extends MockedNotifierTest {
         plugin.onWidgetLoaded(event(InterfaceID.QUEST_COMPLETED));
 
         // verify notification
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

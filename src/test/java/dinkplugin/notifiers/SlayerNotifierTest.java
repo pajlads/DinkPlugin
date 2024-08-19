@@ -41,7 +41,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You've completed 100 tasks and received 10 points, giving you a total of 200; return to a Slayer master.");
 
         // check notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -61,7 +61,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You've completed 1,000 tasks and received 1,000 points, giving you a total of 2,584, return to a Slayer master.");
 
         // check notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -80,7 +80,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You've completed 150 tasks and received 10 points, giving you a total of 200; return to a Slayer master.");
 
         // check notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -99,7 +99,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You've completed 881 tasks and received 20 points, giving you a total of 689; return to a Slayer master.");
 
         // check notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -118,7 +118,7 @@ class SlayerNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("You've completed 242 tasks and received 15 points, giving you a total of 3,254; return to a Slayer master.");
 
         // check notification message
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

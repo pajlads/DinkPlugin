@@ -85,7 +85,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -113,7 +113,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -140,7 +140,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -167,7 +167,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -198,7 +198,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -231,7 +231,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -265,7 +265,7 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // verify handled
         LevelNotificationData.CombatLevel combatLevel = new LevelNotificationData.CombatLevel(initialCombatLevel + 1, true);
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -297,7 +297,7 @@ class LevelNotifierTest extends MockedNotifierTest {
 
         // verify handled
         LevelNotificationData.CombatLevel combatLevel = new LevelNotificationData.CombatLevel(initialCombatLevel + 1, true);
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -334,7 +334,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -370,7 +370,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -406,7 +406,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -445,7 +445,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -519,7 +519,7 @@ class LevelNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 4).forEach(i -> notifier.onTick());
 
         // ensure a notification occurred
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()

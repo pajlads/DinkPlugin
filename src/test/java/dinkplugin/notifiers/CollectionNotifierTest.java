@@ -94,7 +94,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("New item added to your collection log: " + item);
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -134,7 +134,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         notifier.onScript(ScriptID.NOTIFICATION_DELAY);
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -169,7 +169,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("New item added to your collection log: " + item);
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
@@ -217,7 +217,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         notifier.onChatMessage("New item added to your collection log: " + item2);
 
         // verify handled
-        verify(messageHandler).createMessage(
+        verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
