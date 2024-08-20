@@ -19,6 +19,7 @@ import net.runelite.api.events.WidgetLoaded;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.DrawManager;
+import net.runelite.client.util.ImageCapture;
 import net.runelite.client.util.QuantityFormatter;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -30,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -49,6 +51,12 @@ public class TradeNotifier extends BaseNotifier {
 
     @Inject
     private DrawManager drawManager;
+
+    @Inject
+    private ImageCapture imageCapture;
+
+    @Inject
+    private ScheduledExecutorService executor;
 
     @Inject
     private ItemManager itemManager;
@@ -118,7 +126,7 @@ public class TradeNotifier extends BaseNotifier {
 
     public void onWidgetLoad(WidgetLoaded event) {
         if (event.getGroupId() == TRADE_CONFIRMATION_GROUP) {
-            Utils.captureScreenshot(client, clientThread, drawManager, config, image::set);
+            Utils.captureScreenshot(client, clientThread, drawManager, imageCapture, executor, config, image::set);
         }
     }
 

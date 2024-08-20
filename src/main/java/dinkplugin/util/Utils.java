@@ -18,6 +18,7 @@ import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.ColorUtil;
+import net.runelite.client.util.ImageCapture;
 import net.runelite.client.util.Text;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -53,6 +54,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -289,11 +291,15 @@ public class Utils {
         return byteArrayOutputStream.toByteArray();
     }
 
-    public void captureScreenshot(Client client, ClientThread clientThread, DrawManager drawManager, DinkPluginConfig config, Consumer<Image> image) {
+    public void captureScreenshot(Client client, ClientThread clientThread, DrawManager drawManager, ImageCapture imageCapture, ExecutorService executor, DinkPluginConfig config, Consumer<Image> consumer) {
         boolean chatHidden = hideWidget(config.screenshotHideChat(), client, ComponentID.CHATBOX_FRAME);
         boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, PRIVATE_CHAT_WIDGET);
         drawManager.requestNextFrameListener(frame -> {
-            image.accept(frame);
+            if (config.includeClientFrame()) {
+                executor.execute(() -> consumer.accept(imageCapture.addClientFrame(frame)));
+            } else {
+                consumer.accept(frame);
+            }
 
             unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
             unhideWidget(whispersHidden, client, clientThread, PRIVATE_CHAT_WIDGET);

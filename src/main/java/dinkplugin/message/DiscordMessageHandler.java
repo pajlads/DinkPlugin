@@ -19,6 +19,7 @@ import net.runelite.api.clan.ClanID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.discord.DiscordService;
 import net.runelite.client.ui.DrawManager;
+import net.runelite.client.util.ImageCapture;
 import net.runelite.client.util.ImageUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -71,10 +72,11 @@ public class DiscordMessageHandler {
     private final ScheduledExecutorService executor;
     private final ClientThread clientThread;
     private final DiscordService discordService;
+    private final ImageCapture imageCapture;
 
     @Inject
     @VisibleForTesting
-    public DiscordMessageHandler(Gson gson, Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor, ClientThread clientThread, DiscordService discordService) {
+    public DiscordMessageHandler(Gson gson, Client client, DrawManager drawManager, OkHttpClient httpClient, DinkPluginConfig config, ScheduledExecutorService executor, ClientThread clientThread, DiscordService discordService, ImageCapture imageCapture) {
         this.gson = gson;
         this.client = client;
         this.drawManager = drawManager;
@@ -82,6 +84,7 @@ public class DiscordMessageHandler {
         this.executor = executor;
         this.clientThread = clientThread;
         this.discordService = discordService;
+        this.imageCapture = imageCapture;
         this.httpClient = httpClient.newBuilder()
             .addInterceptor(chain -> {
                 Request request = chain.request().newBuilder()
@@ -323,7 +326,7 @@ public class DiscordMessageHandler {
         if (screenshotOverride != null) {
             future.complete(screenshotOverride);
         } else {
-            Utils.captureScreenshot(client, clientThread, drawManager, config, future::complete);
+            Utils.captureScreenshot(client, clientThread, drawManager, imageCapture, executor, config, future::complete);
         }
         return future.thenApplyAsync(ImageUtil::bufferedImageFromImage, executor)
             .thenApply(input -> Utils.rescale(input, scalePercent))

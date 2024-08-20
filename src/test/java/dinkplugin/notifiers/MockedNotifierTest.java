@@ -31,6 +31,7 @@ import net.runelite.client.discord.DiscordService;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
 import net.runelite.client.ui.DrawManager;
+import net.runelite.client.util.ImageCapture;
 import net.runelite.http.api.RuneLiteAPI;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
@@ -69,6 +70,9 @@ abstract class MockedNotifierTest extends MockedTestBase {
     protected DrawManager drawManager = Mockito.mock(DrawManager.class);
 
     @Bind
+    protected ImageCapture imageCapture = Mockito.mock(ImageCapture.class);
+
+    @Bind
     protected Gson gson = RuneLiteAPI.GSON;
 
     @Bind
@@ -99,7 +103,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
     protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(gson, client, clientThread, plugin, config, configManager, httpClient));
 
     @Bind
-    protected DiscordMessageHandler messageHandler = Mockito.spy(new DiscordMessageHandler(gson, client, drawManager, httpClient, config, executor, clientThread, discordService));
+    protected DiscordMessageHandler messageHandler = Mockito.spy(new DiscordMessageHandler(gson, client, drawManager, httpClient, config, executor, clientThread, discordService, imageCapture));
 
     @Override
     protected void setUp() {

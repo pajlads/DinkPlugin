@@ -429,6 +429,17 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "includeClientFrame",
+        name = "Include Client Frame",
+        description = "Whether to include the client frame within screenshots.",
+        position = 1018,
+        section = advancedSection
+    )
+    default boolean includeClientFrame() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
