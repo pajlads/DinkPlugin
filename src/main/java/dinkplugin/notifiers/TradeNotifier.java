@@ -16,7 +16,6 @@ import net.runelite.api.annotations.Interface;
 import net.runelite.api.annotations.VarCStr;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.ComponentID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.DrawManager;
@@ -32,8 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static dinkplugin.message.DiscordMessageHandler.PRIVATE_CHAT_WIDGET;
 
 @Slf4j
 @Singleton
@@ -121,13 +118,7 @@ public class TradeNotifier extends BaseNotifier {
 
     public void onWidgetLoad(WidgetLoaded event) {
         if (event.getGroupId() == TRADE_CONFIRMATION_GROUP) {
-            boolean chatHidden = Utils.hideWidget(config.screenshotHideChat(), client, ComponentID.CHATBOX_FRAME);
-            boolean whispersHidden = Utils.hideWidget(config.screenshotHideChat(), client, PRIVATE_CHAT_WIDGET);
-            drawManager.requestNextFrameListener(frame -> {
-                image.set(frame);
-                Utils.unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
-                Utils.unhideWidget(whispersHidden, client, clientThread, PRIVATE_CHAT_WIDGET);
-            });
+            Utils.captureScreenshot(client, clientThread, drawManager, config, image::set);
         }
     }
 

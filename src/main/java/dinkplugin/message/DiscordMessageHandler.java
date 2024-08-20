@@ -14,12 +14,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
-import net.runelite.api.annotations.Component;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
-import net.runelite.api.widgets.ComponentID;
-import net.runelite.api.widgets.InterfaceID;
-import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.discord.DiscordService;
 import net.runelite.client.ui.DrawManager;
@@ -66,7 +62,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class DiscordMessageHandler {
-    public static final @Component int PRIVATE_CHAT_WIDGET = WidgetUtil.packComponentId(InterfaceID.PRIVATE_CHAT, 0);
 
     private final Gson gson;
     private final Client client;
@@ -134,11 +129,7 @@ public class DiscordMessageHandler {
         NotificationBody<?> mBody = enrichBody(inputBody, sendImage);
         if (sendImage) {
             // optionally hide chat for privacy in screenshot
-            boolean alreadyCaptured = mBody.getScreenshotOverride() != null;
-            boolean chatHidden = Utils.hideWidget(!alreadyCaptured && config.screenshotHideChat(), client, ComponentID.CHATBOX_FRAME);
-            boolean whispersHidden = Utils.hideWidget(!alreadyCaptured && config.screenshotHideChat(), client, PRIVATE_CHAT_WIDGET);
-
-            captureScreenshot(config.screenshotScale() / 100.0, chatHidden, whispersHidden, mBody.getScreenshotOverride())
+            captureScreenshot(config.screenshotScale() / 100.0, mBody.getScreenshotOverride())
                 .thenApply(image ->
                     RequestBody.create(MediaType.parse("image/" + image.getKey()), image.getValue())
                 )
@@ -322,28 +313,19 @@ public class DiscordMessageHandler {
      * while abiding by {@link Embed#MAX_IMAGE_SIZE}.
      *
      * @param scalePercent {@link DinkPluginConfig#screenshotScale()} divided by 100.0
-     * @param chatHidden Whether the chat widget should be unhidden
-     * @param whispersHidden Whether the whispers widget should be unhidden
      * @param screenshotOverride an optional image to use instead of grabbing a frame from {@link DrawManager}
      * @return future of the image byte array by the image format name
      * @apiNote scalePercent should be in (0, 1]
      * @implNote the image format is either "png" (lossless) or "jpeg" (lossy), both of which can be used in MIME type
      */
-    private CompletableFuture<Map.Entry<String, byte[]>> captureScreenshot(double scalePercent, boolean chatHidden, boolean whispersHidden, @Nullable Image screenshotOverride) {
+    private CompletableFuture<Map.Entry<String, byte[]>> captureScreenshot(double scalePercent, @Nullable Image screenshotOverride) {
         CompletableFuture<Image> future = new CompletableFuture<>();
         if (screenshotOverride != null) {
-            executor.execute(() -> future.complete(screenshotOverride));
+            future.complete(screenshotOverride);
         } else {
-            drawManager.requestNextFrameListener(img -> {
-                // unhide any widgets we hid (scheduled for client thread)
-                Utils.unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
-                Utils.unhideWidget(whispersHidden, client, clientThread, PRIVATE_CHAT_WIDGET);
-
-                // resolve future on separate thread
-                executor.execute(() -> future.complete(img));
-            });
+            Utils.captureScreenshot(client, clientThread, drawManager, config, future::complete);
         }
-        return future.thenApply(ImageUtil::bufferedImageFromImage)
+        return future.thenApplyAsync(ImageUtil::bufferedImageFromImage, executor)
             .thenApply(input -> Utils.rescale(input, scalePercent))
             .thenApply(image -> {
                 try {
