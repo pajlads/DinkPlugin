@@ -11,10 +11,14 @@ import net.runelite.api.Client;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Component;
 import net.runelite.api.annotations.VarCStr;
+import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.ColorUtil;
+import net.runelite.client.util.ImageCapture;
 import net.runelite.client.util.Text;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -29,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -49,6 +54,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -67,6 +74,8 @@ public class Utils {
     @SuppressWarnings("MagicConstant")
     private final @VarCStr int TOA_MEMBER_NAME = 1099, TOB_MEMBER_NAME = 330;
     private final int TOA_PARTY_MAX_SIZE = 8, TOB_PARTY_MAX_SIZE = 5;
+
+    private final @Component int PRIVATE_CHAT_WIDGET = WidgetUtil.packComponentId(InterfaceID.PRIVATE_CHAT, 0);
 
     /**
      * Custom padding for applying SHA-256 to a long.
@@ -280,6 +289,21 @@ public class Utils {
         if (!foundWriter)
             throw new IllegalArgumentException(String.format("Specified format '%s' was not in supported formats: %s", format, Arrays.toString(ImageIO.getWriterFormatNames())));
         return byteArrayOutputStream.toByteArray();
+    }
+
+    public void captureScreenshot(Client client, ClientThread clientThread, DrawManager drawManager, ImageCapture imageCapture, ExecutorService executor, DinkPluginConfig config, Consumer<Image> consumer) {
+        boolean chatHidden = hideWidget(config.screenshotHideChat(), client, ComponentID.CHATBOX_FRAME);
+        boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, PRIVATE_CHAT_WIDGET);
+        drawManager.requestNextFrameListener(frame -> {
+            if (config.includeClientFrame()) {
+                executor.execute(() -> consumer.accept(imageCapture.addClientFrame(frame)));
+            } else {
+                consumer.accept(frame);
+            }
+
+            unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
+            unhideWidget(whispersHidden, client, clientThread, PRIVATE_CHAT_WIDGET);
+        });
     }
 
     public boolean hasImage(@NotNull MultipartBody body) {
