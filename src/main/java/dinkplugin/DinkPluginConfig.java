@@ -431,7 +431,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "includeClientFrame",
         name = "Include Client Frame",
-        description = "Whether to include the client frame within screenshots.",
+        description = "Whether to include the client frame in screenshots.",
         position = 1018,
         section = advancedSection
     )
