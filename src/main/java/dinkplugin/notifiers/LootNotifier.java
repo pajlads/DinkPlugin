@@ -180,16 +180,14 @@ public class LootNotifier extends BaseNotifier {
             boolean denied = matches(itemNameDenylist, stack.getName());
             if (denied) {
                 shouldSend = false;
+            } else if (max == null || totalPrice > max.getTotalPrice()) {
+                max = stack;
             }
 
             if (shouldSend) {
                 sendMessage = true;
                 lootMessage.component(ItemUtils.templateStack(stack, true));
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
-            }
-
-            if (max == null || totalPrice > max.getTotalPrice()) {
-                max = stack;
             }
 
             if (rarity.isPresent()) {
