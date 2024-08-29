@@ -325,7 +325,7 @@ public class PetNotifier extends BaseNotifier {
     @EqualsAndHashCode(callSuper = true)
     private static class KcSource extends Source {
         String name;
-        double probability;
+        Double probability;
 
         @Override
         Double getProbability(Client client, KillCountService kcService) {
@@ -458,6 +458,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Little nightmare", new KcSource("Nightmare", 1.0 / 3_200)), // assume team size 4
             entry("Muphin", new KcSource("Phantom Muspah", 1.0 / 2_500)),
             entry("Nexling", new KcSource("Nex", 1.0 / 500)),
+            entry("Nid", new KcSource("Araxxor", null)), // unknown drop rate
             entry("Noon", new KcSource("Grotesque Guardians", 1.0 / 3_000)),
             entry("Olmlet", new Source() {
                 @Override
