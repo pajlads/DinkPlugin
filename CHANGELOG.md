@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.7
+
 - Minor: Include Nid pet name in pet notifications. (#528)
 - Minor: Add setting to include client frame in screenshots. (#525)
 - Bugfix: Fire loot notifications for Araxxor. (#531)
