@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.OptionalDouble;
+import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -47,6 +48,12 @@ public class KillCountService {
     private static final String RL_LOOT_PLUGIN_NAME = LootTrackerPlugin.class.getSimpleName().toLowerCase();
     private static final String RIFT_PREFIX = "Amount of rifts you have closed: ";
     private static final String HERBIBOAR_PREFIX = "Your herbiboar harvest count is: ";
+
+    public static final Set<Integer> SPECIAL_LOOT_NPC_IDS = Set.of(
+        NpcID.THE_WHISPERER, NpcID.THE_WHISPERER_12205, NpcID.THE_WHISPERER_12206, NpcID.THE_WHISPERER_12207,
+        NpcID.ARAXXOR, NpcID.ARAXXOR_13669
+    );
+    public static final Set<String> SPECIAL_LOOT_NPC_NAMES = Set.of("The Whisperer", "Araxxor");
 
     @Inject
     private ConfigManager configManager;
@@ -77,9 +84,8 @@ public class KillCountService {
     public void onNpcKill(NpcLootReceived event) {
         NPC npc = event.getNpc();
         int id = npc.getId();
-        if (id == NpcID.THE_WHISPERER || id == NpcID.THE_WHISPERER_12205 || id == NpcID.THE_WHISPERER_12206 || id == NpcID.THE_WHISPERER_12207) {
-            // Upstream does not fire NpcLootReceived for the whisperer, since they do not hold a reference to the NPC.
-            // So, we use LootReceived instead (and return here just in case they change their implementation).
+        if (SPECIAL_LOOT_NPC_IDS.contains(id)) {
+            // LootReceived is fired for certain NPCs rather than NpcLootReceived, but return here just in case upstream changes their implementation.
             return;
         }
 
@@ -104,8 +110,8 @@ public class KillCountService {
         boolean increment;
         switch (event.getType()) {
             case NPC:
-                // Special case: upstream fires LootReceived for the whisperer, but not NpcLootReceived
-                increment = "The Whisperer".equalsIgnoreCase(event.getName());
+                // Special case: upstream fires LootReceived for certain NPCs, but not NpcLootReceived
+                increment = SPECIAL_LOOT_NPC_NAMES.contains(event.getName());
                 break;
             case PLAYER:
                 increment = false; // handled by PlayerLootReceived
