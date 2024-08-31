@@ -178,16 +178,14 @@ public class LootNotifier extends BaseNotifier {
             boolean denied = matches(itemNameDenylist, stack.getName());
             if (denied) {
                 shouldSend = false;
+            } else if (max == null || totalPrice > max.getTotalPrice()) {
+                max = stack;
             }
 
             if (shouldSend) {
                 sendMessage = true;
                 lootMessage.component(ItemUtils.templateStack(stack, true));
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
-            }
-
-            if (max == null || totalPrice > max.getTotalPrice()) {
-                max = stack;
             }
 
             if (rarity.isPresent()) {
@@ -226,7 +224,6 @@ public class LootNotifier extends BaseNotifier {
                     overrideUrl = config.pkWebhook();
                 }
             }
-            SerializedItemStack keyItem = rarest != null ? rarest : max;
             Double rarity = rarest != null ? rarest.getRarity() : null;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
             Collection<String> party = type == LootRecordType.EVENT ? getParty(dropper) : null;
@@ -247,7 +244,7 @@ public class LootNotifier extends BaseNotifier {
                     .embeds(embeds)
                     .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity, party))
                     .type(NotificationType.LOOT)
-                    .thumbnailUrl(ItemUtils.getItemImageUrl(keyItem.getId()))
+                    .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
                     .build()
             );
         }
