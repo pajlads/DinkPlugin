@@ -2,6 +2,7 @@
 
 - Minor: Include Nid pet name in pet notifications. (#528)
 - Minor: Add setting to include client frame in screenshots. (#525)
+- Bugfix: Respect denylist when finding max value item for loot notification thumbnails. (#526)
 - Dev: Perform http notifications from okhttp's thread pool to aid users with transient network issues. (#523)
 
 ## 1.10.6
