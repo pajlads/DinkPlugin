@@ -106,7 +106,7 @@ public class LootNotifier extends BaseNotifier {
 
         NPC npc = event.getNpc();
         int id = npc.getId();
-        if (id == NpcID.THE_WHISPERER || id == NpcID.THE_WHISPERER_12205 || id == NpcID.THE_WHISPERER_12206 || id == NpcID.THE_WHISPERER_12207) {
+        if (id == NpcID.THE_WHISPERER || id == NpcID.THE_WHISPERER_12205 || id == NpcID.THE_WHISPERER_12206 || id == NpcID.THE_WHISPERER_12207 || id == NpcID.ARAXXOR || id == NpcID.ARAXXOR_13669) {
             // Upstream does not fire NpcLootReceived for the whisperer, since they do not hold a reference to the NPC.
             // So, we use LootReceived instead (and return here just in case they change their implementation).
             return;
@@ -135,8 +135,8 @@ public class LootNotifier extends BaseNotifier {
 
             String source = killCountService.getStandardizedSource(lootReceived);
             this.handleNotify(lootReceived.getItems(), source, lootReceived.getType());
-        } else if (lootReceived.getType() == LootRecordType.NPC && "The Whisperer".equalsIgnoreCase(lootReceived.getName())) {
-            // Special case: upstream fires LootReceived for the whisperer, but not NpcLootReceived
+        } else if (lootReceived.getType() == LootRecordType.NPC && ("The Whisperer".equalsIgnoreCase(lootReceived.getName()) || "Araxxor".equals(lootReceived.getName()))) {
+            // Special case: upstream fires LootReceived for the whisperer/araxxor, but not NpcLootReceived
             this.handleNotify(lootReceived.getItems(), lootReceived.getName(), lootReceived.getType());
         }
     }

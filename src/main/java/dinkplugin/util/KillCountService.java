@@ -77,8 +77,8 @@ public class KillCountService {
     public void onNpcKill(NpcLootReceived event) {
         NPC npc = event.getNpc();
         int id = npc.getId();
-        if (id == NpcID.THE_WHISPERER || id == NpcID.THE_WHISPERER_12205 || id == NpcID.THE_WHISPERER_12206 || id == NpcID.THE_WHISPERER_12207) {
-            // Upstream does not fire NpcLootReceived for the whisperer, since they do not hold a reference to the NPC.
+        if (id == NpcID.THE_WHISPERER || id == NpcID.THE_WHISPERER_12205 || id == NpcID.THE_WHISPERER_12206 || id == NpcID.THE_WHISPERER_12207 || id == NpcID.ARAXXOR || id == NpcID.ARAXXOR_13669) {
+            // Upstream does not fire NpcLootReceived for the whisperer/araxxor, since they do not hold a reference to the NPC.
             // So, we use LootReceived instead (and return here just in case they change their implementation).
             return;
         }
@@ -104,8 +104,8 @@ public class KillCountService {
         boolean increment;
         switch (event.getType()) {
             case NPC:
-                // Special case: upstream fires LootReceived for the whisperer, but not NpcLootReceived
-                increment = "The Whisperer".equalsIgnoreCase(event.getName());
+                // Special case: upstream fires LootReceived for the whisperer/araxxor, but not NpcLootReceived
+                increment = "The Whisperer".equalsIgnoreCase(event.getName()) || "Araxxor".equals(event.getName());
                 break;
             case PLAYER:
                 increment = false; // handled by PlayerLootReceived
