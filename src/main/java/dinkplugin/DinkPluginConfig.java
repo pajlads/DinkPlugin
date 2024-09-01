@@ -9,6 +9,7 @@ import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.notifiers.ChatNotifier;
+import dinkplugin.util.Utils;
 import net.runelite.api.Experience;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -17,6 +18,7 @@ import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
 import net.runelite.client.config.Units;
 
+import java.awt.Color;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -437,6 +439,17 @@ public interface DinkPluginConfig extends Config {
     )
     default boolean includeClientFrame() {
         return false;
+    }
+
+    @ConfigItem(
+        keyName = "embedColor",
+        name = "Embed Color",
+        description = "The highlight color for rich embeds.",
+        position = 1019,
+        section = advancedSection
+    )
+    default Color embedColor() {
+        return Utils.PINK;
     }
 
     @ConfigItem(
