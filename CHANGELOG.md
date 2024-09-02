@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Allow customization of rich embed highlight color. (#534)
+
 ## 1.10.7
 
 - Minor: Include Nid pet name in pet notifications. (#528)
