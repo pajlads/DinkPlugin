@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add rarity of Nid for pet notiications. (#536)
+
 ## 1.10.7
 
 - Minor: Include Nid pet name in pet notifications. (#528)
