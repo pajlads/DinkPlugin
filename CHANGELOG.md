@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Allow customization of rich embed highlight color. (#534)
+- Minor: Add rarity of Nid for pet notiications. (#536)
 
 ## 1.10.7
 
