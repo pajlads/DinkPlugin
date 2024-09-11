@@ -240,7 +240,7 @@ public class KillCountNotifier extends BaseNotifier {
     private static Optional<Pair<String, Integer>> result(String boss, String count) {
         // safely transform (String, String) => (String, Int)
         try {
-            return Optional.ofNullable(boss).map(k -> Pair.of(boss, Integer.parseInt(count)));
+            return Optional.ofNullable(boss).map(k -> Pair.of(boss, Integer.parseInt(count.replace(",", ""))));
         } catch (NumberFormatException e) {
             log.debug("Failed to parse kill count [{}] for boss [{}]", count, boss);
             return Optional.empty();
