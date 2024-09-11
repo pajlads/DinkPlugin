@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Minor: Don't include boss images when rich embed is disabled. (#541)
+- Minor: Don't include boss/icon images when rich embed is disabled. (#541)
 
 ## 1.10.8
 
