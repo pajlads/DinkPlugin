@@ -138,14 +138,14 @@ public class KillCountService {
 
         // guardians of the rift count (for pet tracking)
         if (message.startsWith(RIFT_PREFIX)) {
-            int riftCount = Integer.parseInt(message.substring(RIFT_PREFIX.length(), message.length() - 1));
+            int riftCount = Integer.parseInt(message.substring(RIFT_PREFIX.length(), message.length() - 1).replace(",", ""));
             killCounts.put("Guardians of the Rift", riftCount);
             return;
         }
 
         // herbiboar count (for pet tracking)
         if (message.startsWith(HERBIBOAR_PREFIX)) {
-            int harvestCount = Integer.parseInt(message.substring(HERBIBOAR_PREFIX.length(), message.length() - 1));
+            int harvestCount = Integer.parseInt(message.substring(HERBIBOAR_PREFIX.length(), message.length() - 1).replace(",", ""));
             killCounts.put("Herbiboar", harvestCount);
             return;
         }
