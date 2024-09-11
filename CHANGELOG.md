@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Add rarity of Nid for pet notiications. (#536)
+- Bugfix: Report KC for killcount notifications over 999 correctly after Jagex change. (#539)
 
 ## 1.10.7
 
