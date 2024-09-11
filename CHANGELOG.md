@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Don't include boss/icon images when rich embed is disabled. (#541)
+
 ## 1.10.8
 
 - Minor: Add rarity of Nid for pet notiications. (#536)
