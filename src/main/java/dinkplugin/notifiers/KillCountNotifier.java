@@ -154,7 +154,7 @@ public class KillCountNotifier extends BaseNotifier {
 
         // Add embed if not screenshotting
         boolean screenshot = config.killCountSendImage();
-        if (!screenshot) {
+        if (!screenshot && config.discordRichEmbeds()) {
             if (ba) {
                 body.embeds(Collections.singletonList(Embed.ofImage(ItemUtils.getNpcImageUrl(NpcID.PENANCE_QUEEN))));
             } else {
