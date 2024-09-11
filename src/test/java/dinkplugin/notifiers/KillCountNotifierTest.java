@@ -578,6 +578,61 @@ class KillCountNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
+    @Test
+    void testPrimaryWithComma() {
+        // more config
+        when(config.killCountInterval()).thenReturn(1);
+
+        // fire event
+        String gameMessage = "Your King Black Dragon kill count is: 1,337.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
+            .text(buildTemplate("King Black Dragon", 1337))
+            .extra(new BossNotificationData("King Black Dragon", 1337, gameMessage, null, null))
+            .playerName(PLAYER_NAME)
+            .type(NotificationType.KILL_COUNT)
+            .build();
+
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            body
+        );
+
+        assertDoesNotThrow(() -> RuneLiteAPI.GSON.toJson(body));
+    }
+
+    @Test
+    void testSecondaryWithComma() {
+        // more config
+        when(config.killCountInterval()).thenReturn(1);
+
+        // fire events
+        notifier.onGameMessage("Subdued in 6:13. Personal best: 5:57");
+        String gameMessage = "Your Tempoross kill count is: 1,337.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
+            .text(buildTemplate("Tempoross", 1337))
+            .extra(new BossNotificationData("Tempoross", 1337, gameMessage, Duration.ofMinutes(6).plusSeconds(13), false))
+            .playerName(PLAYER_NAME)
+            .type(NotificationType.KILL_COUNT)
+            .build();
+
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            body
+        );
+
+        assertDoesNotThrow(() -> RuneLiteAPI.GSON.toJson(body));
+    }
+
     private static Template buildTemplate(String boss, int count) {
         return Template.builder()
             .template(PLAYER_NAME + " has defeated {{boss}} with a completion count of " + count)
