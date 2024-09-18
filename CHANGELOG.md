@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Use embed thumbnail that corresponds to clue scroll difficulty. (#546)
+
 ## 1.10.9
 
 - Minor: Don't include boss/icon images when rich embed is disabled. (#541)
