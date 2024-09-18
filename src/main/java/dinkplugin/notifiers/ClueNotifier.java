@@ -122,12 +122,14 @@ public class ClueNotifier extends BaseNotifier {
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalPrice.get())))
                 .replacement("%LOOT%", lootMessage.build())
                 .build();
+            String icon = String.format("https://oldschool.runescape.wiki/images/Clue_scroll_(%s).png", clueType.toLowerCase());
             createMessage(screenshot,
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .extra(new ClueNotificationData(clueType, clueCount, itemStacks))
                     .type(NotificationType.CLUE)
                     .embeds(embeds)
+                    .thumbnailUrl(icon)
                     .build()
             );
         }
