@@ -237,7 +237,8 @@ JSON for Loot Notifications:
     "party": ["%USERNAME%", "another RSN", "yet another RSN"],
     "category": "EVENT",
     "killCount": 60,
-    "rarestProbability": 0.001
+    "rarestProbability": 0.001,
+    "npcId": null
   },
   "type": "LOOT"
 }
@@ -252,6 +253,8 @@ The possible values for `extra.category` correspond to the [`LootRecordType`](ht
 The items are valued at GE prices (when possible) if the user has not disabled the `Use actively traded price` base RuneLite setting. Otherwise, the store price of the item is used.
 
 The `extra.party` field is only populated for raids loot (i.e., COX, TOA, TOB).
+
+The `extra.npcId` field is populated only if the `category` is NPC or PICKPOCKET.
 
 ### Slayer
 
