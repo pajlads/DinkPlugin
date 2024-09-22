@@ -25,6 +25,7 @@ import net.runelite.api.NPCComposition;
 import net.runelite.api.ParamID;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
+import net.runelite.api.SkullIcon;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
@@ -319,11 +320,8 @@ public class DeathNotifier extends BaseNotifier {
         if (Utils.getAccountType(client) == AccountType.ULTIMATE_IRONMAN)
             return 0;
 
-        int keepCount;
-        if (client.getLocalPlayer().getSkullIcon() == null)
-            keepCount = 3;
-        else
-            keepCount = 0;
+        var skull = client.getLocalPlayer().getSkullIcon();
+        int keepCount = skull == SkullIcon.NONE ? 3 : 0;
         if (client.isPrayerActive(Prayer.PROTECT_ITEM))
             keepCount++;
         return keepCount;

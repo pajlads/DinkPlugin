@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Update death notifier for new skull icon API. (#552)
+
 ## 1.10.9
 
 - Minor: Don't include boss/icon images when rich embed is disabled. (#541)
