@@ -118,7 +118,7 @@ public class DeathNotifier extends BaseNotifier {
 
     @Override
     public boolean isEnabled() {
-        return config.notifyDeath() && super.isEnabled();
+        return config.notifyDeath();
     }
 
     @Override
