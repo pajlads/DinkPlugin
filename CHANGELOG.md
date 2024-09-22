@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include NPC ID in loot notification metadata. (#550)
+
 ## 1.10.9
 
 - Minor: Don't include boss/icon images when rich embed is disabled. (#541)
