@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.10
+
 - Dev: Update death notifier for new skull icon API. (#552)
 
 ## 1.10.9
