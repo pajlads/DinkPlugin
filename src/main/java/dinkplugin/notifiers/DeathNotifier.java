@@ -15,7 +15,6 @@ import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Region;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
-import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Item;
@@ -27,9 +26,12 @@ import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.SkullIcon;
 import net.runelite.api.Varbits;
+import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ScriptPreFired;
+import net.runelite.api.events.VarbitChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
 import org.apache.commons.lang3.ArrayUtils;
@@ -42,6 +44,8 @@ import org.jetbrains.annotations.VisibleForTesting;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.ref.WeakReference;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,6 +71,9 @@ public class DeathNotifier extends BaseNotifier {
     private static final String TOB_DEATH_MSG = "Your party has failed";
 
     private static final String FORTIS_DOOM_MSG = "You have been doomed!";
+
+    private static final @Varbit int KARAMJA_RESURRECTION_USED = 4557;
+    private static final @Varbit int WESTERN_RESURRECTION_USED = 4565;
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,tob_hud_portal%5D.cs2">CS2 Reference</a>
@@ -104,6 +111,11 @@ public class DeathNotifier extends BaseNotifier {
     @Inject
     private NPCManager npcManager;
 
+    @Inject
+    private ClientThread clientThread;
+
+    private Instant resurrectedAt;
+
     /**
      * Tracks the last {@link Actor} our local player interacted with,
      * for the purposes of attributing deaths to particular {@link Player}'s.
@@ -127,16 +139,26 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     public void init() {
-        setIgnoredRegions(config.deathIgnoredRegions());
+        clientThread.invoke(() -> setIgnoredRegions(config.deathIgnoredRegions()));
     }
 
     public void reset() {
-        setIgnoredRegions(null);
+        clientThread.invoke(() -> {
+            setIgnoredRegions(null);
+            this.resurrectedAt = null;
+        });
     }
 
     public void onConfigChanged(String key, String value) {
         if ("deathIgnoredRegions".equals(key)) {
-            setIgnoredRegions(value);
+            clientThread.invoke(() -> setIgnoredRegions(value));
+        }
+    }
+
+    public void onVarbit(VarbitChanged event) {
+        if (event.getValue() != 1) return;
+        if (event.getVarbitId() == KARAMJA_RESURRECTION_USED || event.getVarbitId() == WESTERN_RESURRECTION_USED) {
+            this.resurrectedAt = Instant.now();
         }
     }
 
@@ -191,7 +213,7 @@ public class DeathNotifier extends BaseNotifier {
         if (ignoredRegions.contains(regionId))
             return;
 
-        Danger danger = dangerOverride != null ? dangerOverride : WorldUtils.getDangerLevel(client, regionId, config.deathSafeExceptions());
+        Danger danger = dangerOverride != null ? dangerOverride : WorldUtils.getDangerLevel(client, regionId, config.deathSafeExceptions(), recentlyResurrected());
         if (danger == Danger.SAFE && config.deathIgnoreSafe())
             return;
 
@@ -299,7 +321,6 @@ public class DeathNotifier extends BaseNotifier {
         return isEnabled();
     }
 
-    @Synchronized
     private void setIgnoredRegions(@Nullable String configValue) {
         ignoredRegions.clear();
         ConfigUtil.readDelimited(configValue).forEach(str -> {
@@ -311,6 +332,10 @@ public class DeathNotifier extends BaseNotifier {
             }
         });
         log.debug("Updated ignored regions to: {}", ignoredRegions);
+    }
+
+    private boolean recentlyResurrected() {
+        return resurrectedAt != null && Duration.between(resurrectedAt, Instant.now()).compareTo(Duration.ofSeconds(5L)) < 0;
     }
 
     /**

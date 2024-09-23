@@ -328,6 +328,7 @@ public class DinkPlugin extends Plugin {
     public void onVarbitChanged(VarbitChanged event) {
         settingsManager.onVarbitChanged(event);
         collectionNotifier.onVarPlayer(event);
+        deathNotifier.onVarbit(event);
         diaryNotifier.onVarbitChanged(event);
     }
 

@@ -44,9 +44,6 @@ public class WorldUtils {
     public final int FORTIS_REGION = 7216;
     private final int ZULRAH_REGION = 9007;
 
-    private final @Varbit int KARAMJA_RESURRECTION_USED = 4557;
-    private final @Varbit int WESTERN_RESURRECTION_USED = 4565;
-
     /**
      * @see <a href="https://oldschool.runescape.wiki/w/RuneScape:Varbit/6104">Wiki</a>
      */
@@ -148,7 +145,7 @@ public class WorldUtils {
     }
 
     public boolean isSafeArea(Client client) {
-        return getDangerLevel(client, getLocation(client).getRegionID(), Collections.emptySet()) == Danger.SAFE;
+        return getDangerLevel(client, getLocation(client).getRegionID(), Collections.emptySet(), false) == Danger.SAFE;
     }
 
     public boolean isSoulWars(int regionId) {
@@ -175,7 +172,7 @@ public class WorldUtils {
         return regionId == ZULRAH_REGION;
     }
 
-    public Danger getDangerLevel(Client client, int regionId, Set<ExceptionalDeath> exceptions) {
+    public Danger getDangerLevel(Client client, int regionId, Set<ExceptionalDeath> exceptions, boolean recentlyResurrected) {
         if (isGauntlet(regionId)) {
             // Players can't take items in or out of (Corrupted) Gauntlet, so these deaths are effectively safe
             // However: any Gauntlet death is still dangerous for hardcore (group) ironmen
@@ -215,14 +212,14 @@ public class WorldUtils {
             if (exceptions.contains(ExceptionalDeath.FIGHT_CAVE)) {
                 return Danger.EXCEPTIONAL;
             }
-            if (exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) && client.getVarbitValue(Varbits.DIARY_KARAMJA_ELITE) > 0 && client.getVarbitValue(KARAMJA_RESURRECTION_USED) == 0) {
+            if (recentlyResurrected && exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) && client.getVarbitValue(Varbits.DIARY_KARAMJA_ELITE) > 0) {
                 // Karamja Elite diary completion allows 1 free daily resurrection: https://github.com/pajlads/DinkPlugin/issues/548
                 return Danger.EXCEPTIONAL;
             }
             return Danger.SAFE;
         }
 
-        if (isZulrah(regionId) && exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) && Utils.getAccountType(client) != AccountType.HARDCORE_GROUP_IRONMAN && client.getVarbitValue(Varbits.DIARY_WESTERN_ELITE) > 0 && client.getVarbitValue(WESTERN_RESURRECTION_USED) == 0) {
+        if (isZulrah(regionId) && recentlyResurrected && exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) && client.getVarbitValue(Varbits.DIARY_WESTERN_ELITE) > 0) {
             // Western Provinces Elite diary completion allows 1 free daily resurrection: https://github.com/pajlads/DinkPlugin/issues/548
             return Danger.EXCEPTIONAL;
         }
