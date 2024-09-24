@@ -72,8 +72,8 @@ public class DeathNotifier extends BaseNotifier {
 
     private static final String FORTIS_DOOM_MSG = "You have been doomed!";
 
-    private static final @Varbit int KARAMJA_RESURRECTION_USED = 4557;
-    private static final @Varbit int WESTERN_RESURRECTION_USED = 4565;
+    public static final @Varbit int KARAMJA_RESURRECTION_USED = 4557;
+    public static final @Varbit int WESTERN_RESURRECTION_USED = 4565;
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,tob_hud_portal%5D.cs2">CS2 Reference</a>
@@ -159,6 +159,7 @@ public class DeathNotifier extends BaseNotifier {
         if (event.getValue() != 1) return;
         if (event.getVarbitId() == KARAMJA_RESURRECTION_USED || event.getVarbitId() == WESTERN_RESURRECTION_USED) {
             this.resurrectedAt = Instant.now();
+            log.debug("Varbit resurrection observed");
         }
     }
 
@@ -174,6 +175,12 @@ public class DeathNotifier extends BaseNotifier {
 
     public void onGameMessage(String message) {
         var player = client.getLocalPlayer();
+        if (message.endsWith(" elite diary empowers you to continue. Carry on the fight!")) {
+            this.resurrectedAt = Instant.now();
+            log.debug("Chat resurrection observed");
+            return;
+        }
+
         if (message.equals(FORTIS_DOOM_MSG) && player.getHealthRatio() > 0 && WorldUtils.getLocation(client, player).getRegionID() == WorldUtils.FORTIS_REGION && isEnabled()) {
             // https://github.com/pajlads/DinkPlugin/issues/472
             // Doom modifier can kill the player without health reaching zero, so ActorDeath isn't fired
