@@ -26,7 +26,6 @@ import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.SkullIcon;
 import net.runelite.api.Varbits;
-import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ScriptPreFired;
@@ -68,9 +67,6 @@ public class DeathNotifier extends BaseNotifier {
     private static final String TOB_DEATH_MSG = "Your party has failed";
 
     private static final String FORTIS_DOOM_MSG = "You have been doomed!";
-
-    public static final @Varbit int KARAMJA_RESURRECTION_USED = 4557;
-    public static final @Varbit int WESTERN_RESURRECTION_USED = 4565;
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,tob_hud_portal%5D.cs2">CS2 Reference</a>
