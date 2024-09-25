@@ -30,7 +30,6 @@ import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ScriptPreFired;
-import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
@@ -44,8 +43,6 @@ import org.jetbrains.annotations.VisibleForTesting;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.ref.WeakReference;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -114,8 +111,6 @@ public class DeathNotifier extends BaseNotifier {
     @Inject
     private ClientThread clientThread;
 
-    private Instant resurrectedAt;
-
     /**
      * Tracks the last {@link Actor} our local player interacted with,
      * for the purposes of attributing deaths to particular {@link Player}'s.
@@ -143,23 +138,12 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     public void reset() {
-        clientThread.invoke(() -> {
-            setIgnoredRegions(null);
-            this.resurrectedAt = null;
-        });
+        clientThread.invoke(() -> setIgnoredRegions(null));
     }
 
     public void onConfigChanged(String key, String value) {
         if ("deathIgnoredRegions".equals(key)) {
             clientThread.invoke(() -> setIgnoredRegions(value));
-        }
-    }
-
-    public void onVarbit(VarbitChanged event) {
-        if (event.getValue() != 1) return;
-        if (event.getVarbitId() == KARAMJA_RESURRECTION_USED || event.getVarbitId() == WESTERN_RESURRECTION_USED) {
-            this.resurrectedAt = Instant.now();
-            log.debug("Varbit resurrection observed");
         }
     }
 
@@ -175,12 +159,6 @@ public class DeathNotifier extends BaseNotifier {
 
     public void onGameMessage(String message) {
         var player = client.getLocalPlayer();
-        if (message.endsWith(" elite diary empowers you to continue. Carry on the fight!")) {
-            this.resurrectedAt = Instant.now();
-            log.debug("Chat resurrection observed");
-            return;
-        }
-
         if (message.equals(FORTIS_DOOM_MSG) && player.getHealthRatio() > 0 && WorldUtils.getLocation(client, player).getRegionID() == WorldUtils.FORTIS_REGION && isEnabled()) {
             // https://github.com/pajlads/DinkPlugin/issues/472
             // Doom modifier can kill the player without health reaching zero, so ActorDeath isn't fired
@@ -220,7 +198,7 @@ public class DeathNotifier extends BaseNotifier {
         if (ignoredRegions.contains(regionId))
             return;
 
-        Danger danger = dangerOverride != null ? dangerOverride : WorldUtils.getDangerLevel(client, regionId, config.deathSafeExceptions(), recentlyResurrected());
+        Danger danger = dangerOverride != null ? dangerOverride : WorldUtils.getDangerLevel(client, regionId, config.deathSafeExceptions());
         if (danger == Danger.SAFE && config.deathIgnoreSafe())
             return;
 
@@ -339,10 +317,6 @@ public class DeathNotifier extends BaseNotifier {
             }
         });
         log.debug("Updated ignored regions to: {}", ignoredRegions);
-    }
-
-    private boolean recentlyResurrected() {
-        return resurrectedAt != null && Duration.between(resurrectedAt, Instant.now()).compareTo(Duration.ofSeconds(5L)) < 0;
     }
 
     /**

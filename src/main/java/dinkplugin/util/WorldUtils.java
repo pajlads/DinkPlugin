@@ -146,7 +146,7 @@ public class WorldUtils {
     }
 
     public boolean isSafeArea(Client client) {
-        return getDangerLevel(client, getLocation(client).getRegionID(), Collections.emptySet(), false) == Danger.SAFE;
+        return getDangerLevel(client, getLocation(client).getRegionID(), Collections.emptySet()) == Danger.SAFE;
     }
 
     public boolean isSoulWars(int regionId) {
@@ -173,7 +173,7 @@ public class WorldUtils {
         return regionId == ZULRAH_REGION;
     }
 
-    public Danger getDangerLevel(Client client, int regionId, Set<ExceptionalDeath> exceptions, boolean recentlyResurrected) {
+    public Danger getDangerLevel(Client client, int regionId, Set<ExceptionalDeath> exceptions) {
         if (isGauntlet(regionId)) {
             // Players can't take items in or out of (Corrupted) Gauntlet, so these deaths are effectively safe
             // However: any Gauntlet death is still dangerous for hardcore (group) ironmen
@@ -213,14 +213,14 @@ public class WorldUtils {
             if (exceptions.contains(ExceptionalDeath.FIGHT_CAVE)) {
                 return Danger.EXCEPTIONAL;
             }
-            if ((recentlyResurrected || client.getVarbitValue(DeathNotifier.KARAMJA_RESURRECTION_USED) == 0) && exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) && client.getVarbitValue(Varbits.DIARY_KARAMJA_ELITE) > 0) {
+            if (client.getVarbitValue(DeathNotifier.KARAMJA_RESURRECTION_USED) == 0 && exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) && client.getVarbitValue(Varbits.DIARY_KARAMJA_ELITE) > 0) {
                 // Karamja Elite diary completion allows 1 free daily resurrection: https://github.com/pajlads/DinkPlugin/issues/548
                 return Danger.EXCEPTIONAL;
             }
             return Danger.SAFE;
         }
 
-        if (isZulrah(regionId) && (recentlyResurrected || client.getVarbitValue(DeathNotifier.WESTERN_RESURRECTION_USED) == 0) && client.getVarbitValue(Varbits.DIARY_WESTERN_ELITE) > 0) {
+        if (isZulrah(regionId) && client.getVarbitValue(DeathNotifier.WESTERN_RESURRECTION_USED) == 0 && client.getVarbitValue(Varbits.DIARY_WESTERN_ELITE) > 0) {
             // Western Provinces Elite diary completion allows 1 free daily resurrection: https://github.com/pajlads/DinkPlugin/issues/548
             return exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) ? Danger.EXCEPTIONAL : Danger.SAFE;
         }
