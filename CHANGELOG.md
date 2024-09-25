@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Treat elite diary resurrections as safe deaths. (#555)
+
 ## 1.10.10
 
 - Dev: Update death notifier for new skull icon API. (#552)
