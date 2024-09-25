@@ -6,7 +6,6 @@ import dinkplugin.domain.Danger;
 import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.notifiers.DeathNotifier;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
@@ -22,7 +21,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-@Slf4j
 @UtilityClass
 public class WorldUtils {
 
@@ -217,16 +215,14 @@ public class WorldUtils {
             }
             if ((recentlyResurrected || client.getVarbitValue(DeathNotifier.KARAMJA_RESURRECTION_USED) == 0) && exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) && client.getVarbitValue(Varbits.DIARY_KARAMJA_ELITE) > 0) {
                 // Karamja Elite diary completion allows 1 free daily resurrection: https://github.com/pajlads/DinkPlugin/issues/548
-                log.debug("exceptional fight caves death!");
                 return Danger.EXCEPTIONAL;
             }
             return Danger.SAFE;
         }
 
-        if (isZulrah(regionId) && (recentlyResurrected || client.getVarbitValue(DeathNotifier.WESTERN_RESURRECTION_USED) == 0) && exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) && client.getVarbitValue(Varbits.DIARY_WESTERN_ELITE) > 0) {
+        if (isZulrah(regionId) && (recentlyResurrected || client.getVarbitValue(DeathNotifier.WESTERN_RESURRECTION_USED) == 0) && client.getVarbitValue(Varbits.DIARY_WESTERN_ELITE) > 0) {
             // Western Provinces Elite diary completion allows 1 free daily resurrection: https://github.com/pajlads/DinkPlugin/issues/548
-            log.debug("exceptional zulrah death!");
-            return Danger.EXCEPTIONAL;
+            return exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) ? Danger.EXCEPTIONAL : Danger.SAFE;
         }
 
         if (isBarbarianAssault(regionId) || isNightmareZone(regionId)  || isMageTrainingArena(regionId)
