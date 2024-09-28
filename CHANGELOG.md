@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.11
+
 - Minor: Use embed thumbnail that corresponds to clue scroll difficulty. (#546)
 - Minor: Include NPC ID in loot notification metadata. (#550)
 - Minor: Allow customization of rich embed highlight color. (#534)
