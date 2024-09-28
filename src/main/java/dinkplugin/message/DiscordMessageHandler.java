@@ -382,7 +382,7 @@ public class DiscordMessageHandler {
         embeds.add(0,
             Embed.builder()
                 .author(author)
-                .color(Utils.PINK)
+                .color(config.embedColor())
                 .title(body.isSeasonalWorld() ? "[Seasonal] " + type.getTitle() : type.getTitle())
                 .description(Utils.truncate(body.getText().evaluate(config.discordRichEmbeds()), Embed.MAX_DESCRIPTION_LENGTH))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)

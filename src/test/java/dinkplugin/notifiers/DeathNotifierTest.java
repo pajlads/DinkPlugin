@@ -22,6 +22,7 @@ import net.runelite.api.NpcID;
 import net.runelite.api.ParamID;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
+import net.runelite.api.SkullIcon;
 import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -80,6 +81,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         WorldPoint location = new WorldPoint(0, 0, 0);
         when(localPlayer.getWorldLocation()).thenReturn(location);
         when(localPlayer.getLocalLocation()).thenReturn(new LocalPoint(0, 0));
+        when(localPlayer.getSkullIcon()).thenReturn(SkullIcon.NONE);
 
         // init item mocks
         mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
