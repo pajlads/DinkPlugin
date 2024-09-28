@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Allow customization of rich embed highlight color. (#534)
+- Minor: Include Moxi pet name in pet notifications. (#557)
 - Bugfix: Treat elite diary resurrections as safe deaths. (#555)
 
 ## 1.10.10
