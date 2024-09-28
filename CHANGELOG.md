@@ -1,7 +1,20 @@
 ## Unreleased
 
 - Minor: Allow customization of rich embed highlight color. (#534)
+- Minor: Include Moxi pet name in pet notifications. (#557)
+
+## 1.10.10
+
+- Dev: Update death notifier for new skull icon API. (#552)
+
+## 1.10.9
+
+- Minor: Don't include boss/icon images when rich embed is disabled. (#541)
+
+## 1.10.8
+
 - Minor: Add rarity of Nid for pet notiications. (#536)
+- Bugfix: Report KC for killcount notifications over 999 correctly after Jagex change. (#539)
 
 ## 1.10.7
 

@@ -95,10 +95,10 @@ public class GrandExchangeNotifier extends BaseNotifier {
         Long tax = type == OfferType.SELL ? calculateTax(item.getPriceEach(), item.getQuantity(), item.getId()) : null;
 
         List<Embed> embeds;
-        if (config.grandExchangeSendImage()) {
+        if (config.grandExchangeSendImage() || !config.discordRichEmbeds()) {
             embeds = Collections.emptyList();
         } else {
-            embeds = ItemUtils.buildEmbeds(new int[]{offer.getItemId()});
+            embeds = ItemUtils.buildEmbeds(new int[] { offer.getItemId() });
         }
 
         String playerName = Utils.getPlayerName(client);

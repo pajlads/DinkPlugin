@@ -44,8 +44,8 @@ public class KillCountNotifier extends BaseNotifier {
     public static final int KILL_COUNT_SPAM_FILTER = 4930;
     public static final String SPAM_WARNING = "Kill Count Notifier requires disabling the in-game setting: Filter out boss kill-count with spam-filter";
 
-    private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion)\\s?count is: (?<value>\\d+)\\b", Pattern.CASE_INSENSITIVE);
-    private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>\\d+)\\b");
+    private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion)\\s?count is: (?<value>[\\d,]+)\\b", Pattern.CASE_INSENSITIVE);
+    private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>[\\d,]+)\\b");
     private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(.\\d+)?)\\.?", Pattern.CASE_INSENSITIVE);
 
     private static final String BA_BOSS_NAME = "Penance Queen";
@@ -154,7 +154,7 @@ public class KillCountNotifier extends BaseNotifier {
 
         // Add embed if not screenshotting
         boolean screenshot = config.killCountSendImage();
-        if (!screenshot) {
+        if (!screenshot && config.discordRichEmbeds()) {
             if (ba) {
                 body.embeds(Collections.singletonList(Embed.ofImage(ItemUtils.getNpcImageUrl(NpcID.PENANCE_QUEEN))));
             } else {
@@ -240,7 +240,7 @@ public class KillCountNotifier extends BaseNotifier {
     private static Optional<Pair<String, Integer>> result(String boss, String count) {
         // safely transform (String, String) => (String, Int)
         try {
-            return Optional.ofNullable(boss).map(k -> Pair.of(boss, Integer.parseInt(count)));
+            return Optional.ofNullable(boss).map(k -> Pair.of(boss, Integer.parseInt(count.replace(",", ""))));
         } catch (NumberFormatException e) {
             log.debug("Failed to parse kill count [{}] for boss [{}]", count, boss);
             return Optional.empty();
