@@ -28,6 +28,9 @@ public class LootNotificationData extends NotificationData {
     @Nullable
     Collection<String> party;
 
+    @Nullable
+    Integer npcId;
+
     @Override
     public List<Field> getFields() {
         List<Field> fields = new ArrayList<>(4);

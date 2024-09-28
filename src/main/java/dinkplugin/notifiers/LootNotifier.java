@@ -110,7 +110,7 @@ public class LootNotifier extends BaseNotifier {
             return;
         }
 
-        this.handleNotify(event.getItems(), npc.getName(), LootRecordType.NPC);
+        this.handleNotify(event.getItems(), npc.getName(), LootRecordType.NPC, id);
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
@@ -118,7 +118,7 @@ public class LootNotifier extends BaseNotifier {
             return;
 
         if (config.includePlayerLoot() && isEnabled())
-            this.handleNotify(event.getItems(), event.getPlayer().getName(), LootRecordType.PLAYER);
+            this.handleNotify(event.getItems(), event.getPlayer().getName(), LootRecordType.PLAYER, null);
     }
 
     public void onLootReceived(LootReceived lootReceived) {
@@ -132,14 +132,14 @@ public class LootNotifier extends BaseNotifier {
             }
 
             String source = killCountService.getStandardizedSource(lootReceived);
-            this.handleNotify(lootReceived.getItems(), source, lootReceived.getType());
+            this.handleNotify(lootReceived.getItems(), source, lootReceived.getType(), null);
         } else if (lootReceived.getType() == LootRecordType.NPC && KillCountService.SPECIAL_LOOT_NPC_NAMES.contains(lootReceived.getName())) {
             // Special case: upstream fires LootReceived for certain NPCs, but not NpcLootReceived
-            this.handleNotify(lootReceived.getItems(), lootReceived.getName(), lootReceived.getType());
+            this.handleNotify(lootReceived.getItems(), lootReceived.getName(), lootReceived.getType(), null);
         }
     }
 
-    private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type) {
+    private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type, Integer npcId) {
         final Integer kc = killCountService.getKillCount(type, dropper);
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
@@ -218,6 +218,14 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
+                if (npcId == null && (type == LootRecordType.NPC || type == LootRecordType.PICKPOCKET)) {
+                npcId = client.getTopLevelWorldView().npcs().stream()
+                    .filter(npc -> dropper.equals(npc.getName()))
+                    .findAny()
+                    .map(NPC::getId)
+                    .orElse(null);
+            }
+
             String overrideUrl = getWebhookUrl();
             if (config.lootRedirectPlayerKill() && !config.pkWebhook().isBlank()) {
                 if (type == LootRecordType.PLAYER || (type == LootRecordType.EVENT && "Loot Chest".equals(dropper))) {
@@ -242,7 +250,7 @@ public class LootNotifier extends BaseNotifier {
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
-                    .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity, party))
+                    .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity, party, npcId))
                     .type(NotificationType.LOOT)
                     .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
                     .build()

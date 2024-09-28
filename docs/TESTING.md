@@ -8,7 +8,9 @@ See our [build script](../build.gradle.kts) and [current gradle version](../grad
 
 To compile (and test) the plugin, simply run `gradlew build`
 
-At a minimum, Java 8 is required for compilation, but Java 11+ is recommended (if you wish to enable developer mode).
+At a minimum, JDK 11+ is required for compilation, but you should avoid running the game beyond Java 21 (for example, Java 22 is known to cause swing-related crashes).
+
+If you haven't installed a [JDK](https://whichjdk.com/), we typically recommend using [Eclipse Temurin](https://adoptium.net/temurin/releases/).
 
 ## Shadow Jar task
 
