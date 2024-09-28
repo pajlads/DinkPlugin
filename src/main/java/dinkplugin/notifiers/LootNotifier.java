@@ -220,15 +220,9 @@ public class LootNotifier extends BaseNotifier {
 
         if (sendMessage) {
                 if (npcId == null && (type == LootRecordType.NPC || type == LootRecordType.PICKPOCKET)) {
-                var player = client.getLocalPlayer();
-                var location = WorldUtils.getLocation(client, player);
-                var comparator = Comparator.<NPC, Boolean>comparing(npc -> npc.getInteracting() == player)
-                    .thenComparing(npc -> npc.isDead() == (type == LootRecordType.NPC))
-                    .thenComparingInt(npc -> -location.distanceTo2D(WorldUtils.getLocation(client, npc)))
-                    .thenComparingInt(NPC::getCombatLevel);
                 npcId = client.getTopLevelWorldView().npcs().stream()
                     .filter(npc -> dropper.equals(npc.getName()))
-                    .max(comparator)
+                    .findAny()
                     .map(NPC::getId)
                     .orElse(null);
             }
