@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ExceptionalDeath {
     COX("Chambers of Xeric"),
+    DIARY_RESURRECTION("Diary Resurrection"),
     FIGHT_CAVE("Fight Caves"),
     INFERNO("Inferno"),
     JAD_CHALLENGES("Jad challenges"),

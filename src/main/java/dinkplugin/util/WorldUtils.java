@@ -7,6 +7,7 @@ import dinkplugin.domain.ExceptionalDeath;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
+import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.annotations.Varp;
@@ -35,12 +36,16 @@ public class WorldUtils {
     private final Set<Integer> SOUL_REGIONS = ImmutableSet.of(8493, 8748, 8749, 9005);
     private final Set<Integer> TOA_REGIONS = ImmutableSet.of(14160, 14162, 14164, 14674, 14676, 15184, 15186, 15188, 15696, 15698, 15700);
     private final Set<Integer> TOB_REGIONS = ImmutableSet.of(12611, 12612, 12613, 12867, 12869, 13122, 13123, 13125, 13379);
+    private final Set<Integer> ZULRAH_REGIONS = Set.of(9007, 9008);
     private final int INFERNO_REGION = 9043;
     private final int CREATURE_GRAVEYARD_REGION = 13462;
     private final int NMZ_REGION = 9033;
     private final int TZHAAR_CAVE = 9551;
     public final @VisibleForTesting int TZHAAR_PIT = 9552;
     public final int FORTIS_REGION = 7216;
+
+    private final @Varbit int KARAMJA_RESURRECTION_USED = 4557;
+    private final @Varbit int WESTERN_RESURRECTION_USED = 4565;
 
     /**
      * @see <a href="https://oldschool.runescape.wiki/w/RuneScape:Varbit/6104">Wiki</a>
@@ -166,6 +171,10 @@ public class WorldUtils {
         return regionId == TZHAAR_PIT;
     }
 
+    public boolean isZulrah(int regionId) {
+        return ZULRAH_REGIONS.contains(regionId);
+    }
+
     public Danger getDangerLevel(Client client, int regionId, Set<ExceptionalDeath> exceptions) {
         if (isGauntlet(regionId)) {
             // Players can't take items in or out of (Corrupted) Gauntlet, so these deaths are effectively safe
@@ -200,7 +209,22 @@ public class WorldUtils {
         }
 
         if (isTzHaarFightCave(regionId)) {
-            return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.FIGHT_CAVE);
+            if (Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN) {
+                return Danger.DANGEROUS;
+            }
+            if (exceptions.contains(ExceptionalDeath.FIGHT_CAVE)) {
+                return Danger.EXCEPTIONAL;
+            }
+            if (client.getVarbitValue(KARAMJA_RESURRECTION_USED) == 0 && exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) && client.getVarbitValue(Varbits.DIARY_KARAMJA_ELITE) > 0) {
+                // Karamja Elite diary completion allows 1 free daily resurrection: https://github.com/pajlads/DinkPlugin/issues/548
+                return Danger.EXCEPTIONAL;
+            }
+            return Danger.SAFE;
+        }
+
+        if (isZulrah(regionId) && client.getVarbitValue(WESTERN_RESURRECTION_USED) == 0 && client.getVarbitValue(Varbits.DIARY_WESTERN_ELITE) > 0) {
+            // Western Provinces Elite diary completion allows 1 free daily resurrection: https://github.com/pajlads/DinkPlugin/issues/548
+            return exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) ? Danger.EXCEPTIONAL : Danger.SAFE;
         }
 
         if (isBarbarianAssault(regionId) || isNightmareZone(regionId)  || isMageTrainingArena(regionId)
