@@ -15,7 +15,6 @@ import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Region;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
-import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Item;
@@ -25,10 +24,12 @@ import net.runelite.api.NPCComposition;
 import net.runelite.api.ParamID;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
+import net.runelite.api.SkullIcon;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ScriptPreFired;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
 import org.apache.commons.lang3.ArrayUtils;
@@ -103,6 +104,9 @@ public class DeathNotifier extends BaseNotifier {
     @Inject
     private NPCManager npcManager;
 
+    @Inject
+    private ClientThread clientThread;
+
     /**
      * Tracks the last {@link Actor} our local player interacted with,
      * for the purposes of attributing deaths to particular {@link Player}'s.
@@ -126,16 +130,16 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     public void init() {
-        setIgnoredRegions(config.deathIgnoredRegions());
+        clientThread.invoke(() -> setIgnoredRegions(config.deathIgnoredRegions()));
     }
 
     public void reset() {
-        setIgnoredRegions(null);
+        clientThread.invoke(() -> setIgnoredRegions(null));
     }
 
     public void onConfigChanged(String key, String value) {
         if ("deathIgnoredRegions".equals(key)) {
-            setIgnoredRegions(value);
+            clientThread.invoke(() -> setIgnoredRegions(value));
         }
     }
 
@@ -298,7 +302,6 @@ public class DeathNotifier extends BaseNotifier {
         return isEnabled();
     }
 
-    @Synchronized
     private void setIgnoredRegions(@Nullable String configValue) {
         ignoredRegions.clear();
         ConfigUtil.readDelimited(configValue).forEach(str -> {
@@ -319,11 +322,8 @@ public class DeathNotifier extends BaseNotifier {
         if (Utils.getAccountType(client) == AccountType.ULTIMATE_IRONMAN)
             return 0;
 
-        int keepCount;
-        if (client.getLocalPlayer().getSkullIcon() == null)
-            keepCount = 3;
-        else
-            keepCount = 0;
+        var skull = client.getLocalPlayer().getSkullIcon();
+        int keepCount = skull == SkullIcon.NONE ? 3 : 0;
         if (client.isPrayerActive(Prayer.PROTECT_ITEM))
             keepCount++;
         return keepCount;

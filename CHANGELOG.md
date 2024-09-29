@@ -1,5 +1,17 @@
 ## Unreleased
 
+## 1.10.11
+
+- Minor: Use embed thumbnail that corresponds to clue scroll difficulty. (#546)
+- Minor: Include NPC ID in loot notification metadata. (#550)
+- Minor: Allow customization of rich embed highlight color. (#534)
+- Minor: Include Moxi pet name in pet notifications. (#557)
+- Bugfix: Treat elite diary resurrections as safe deaths. (#555)
+
+## 1.10.10
+
+- Dev: Update death notifier for new skull icon API. (#552)
+
 ## 1.10.9
 
 - Minor: Don't include boss/icon images when rich embed is disabled. (#541)

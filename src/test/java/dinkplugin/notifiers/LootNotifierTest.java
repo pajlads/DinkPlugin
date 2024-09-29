@@ -10,10 +10,12 @@ import dinkplugin.notifiers.data.RareItemStack;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
+import net.runelite.api.IndexedObjectSet;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Player;
+import net.runelite.api.WorldView;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
@@ -26,10 +28,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -80,12 +84,22 @@ class LootNotifierTest extends MockedNotifierTest {
         mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private void mockWorldNpcs(NPC... npcs) {
+        WorldView worldView = Mockito.mock(WorldView.class);
+        when(client.getTopLevelWorldView()).thenReturn(worldView);
+        IndexedObjectSet ios = new IndexedObjectSet<>(npcs, IntStream.range(0, npcs.length).toArray(), npcs.length);
+        when(worldView.npcs()).thenReturn(ios);
+    }
+
     @Test
     void testNotifyNpc() {
         // prepare mocks
         NPC npc = mock(NPC.class);
         String name = "Rasmus";
         when(npc.getName()).thenReturn(name);
+        when(npc.getId()).thenReturn(9999);
+        mockWorldNpcs(npc);
         int kc = 69;
         when(configManager.getConfiguration(eq(LootTrackerConfig.GROUP), any(), eq("drops_NPC_" + name)))
             .thenReturn("{\"type\":\"NPC\",\"name\":\"Rasmus\",\"kills\":" + kc +
@@ -107,7 +121,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), name, LootRecordType.NPC, kc + 1, null, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), name, LootRecordType.NPC, kc + 1, null, null, 9999))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -123,6 +137,8 @@ class LootNotifierTest extends MockedNotifierTest {
         NPC npc = mock(NPC.class);
         String name = "Ice spider";
         when(npc.getName()).thenReturn(name);
+        when(npc.getId()).thenReturn(NpcID.ICE_SPIDER);
+        mockWorldNpcs(npc);
 
         // fire event
         double rarity = 1.0 / 208;
@@ -142,7 +158,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new RareItemStack(ItemID.LARRANS_KEY, 1, LARRAN_PRICE, "Larran's key", rarity)), name, LootRecordType.NPC, 1, rarity, null))
+                .extra(new LootNotificationData(List.of(new RareItemStack(ItemID.LARRANS_KEY, 1, LARRAN_PRICE, "Larran's key", rarity)), name, LootRecordType.NPC, 1, rarity, null, NpcID.ICE_SPIDER))
                 .type(NotificationType.LOOT)
                 .thumbnailUrl(ItemUtils.getItemImageUrl(ItemID.LARRANS_KEY))
                 .build()
@@ -215,7 +231,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofLink(LOOTED_NAME, config.playerLookupService().getPlayerUrl(LOOTED_NAME)))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1, null, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -244,7 +260,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofLink(LOOTED_NAME, config.playerLookupService().getPlayerUrl(LOOTED_NAME)))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1, null, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -276,6 +292,10 @@ class LootNotifierTest extends MockedNotifierTest {
     @DisplayName("Ensure LootReceived event for The Whisperer fires a notification - https://github.com/pajlads/DinkPlugin/pull/286")
     void testNotifyWhisperer() {
         String name = "The Whisperer";
+        NPC npc = Mockito.mock(NPC.class);
+        when(npc.getName()).thenReturn(name);
+        when(npc.getId()).thenReturn(NpcID.THE_WHISPERER);
+        mockWorldNpcs(npc);
 
         // fire event
         LootReceived event = new LootReceived(name, 99, LootRecordType.NPC, Collections.singletonList(new ItemStack(ItemID.RUBY, 1)), 1);
@@ -293,7 +313,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), name, LootRecordType.NPC, 1, null, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), name, LootRecordType.NPC, 1, null, null, NpcID.THE_WHISPERER))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -332,6 +352,11 @@ class LootNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyPickpocket() {
+        NPC npc = Mockito.mock(NPC.class);
+        when(npc.getName()).thenReturn(LOOTED_NAME);
+        when(npc.getId()).thenReturn(9999);
+        mockWorldNpcs(npc);
+
         // fire event
         LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1)), 1);
         plugin.onLootReceived(event);
@@ -348,7 +373,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(LOOTED_NAME))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), LOOTED_NAME, LootRecordType.PICKPOCKET, 1, null, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), LOOTED_NAME, LootRecordType.PICKPOCKET, 1, null, null, 9999))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -386,7 +411,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(source))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT, 42, null, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT, 42, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -429,7 +454,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofLink(LOOTED_NAME, config.playerLookupService().getPlayerUrl(LOOTED_NAME)))
                         .build()
                 )
-                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1, null, null))
+                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -460,7 +485,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofLink(LOOTED_NAME, config.playerLookupService().getPlayerUrl(LOOTED_NAME)))
                         .build()
                 )
-                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1, null, null))
+                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -490,7 +515,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofLink(LOOTED_NAME, config.playerLookupService().getPlayerUrl(LOOTED_NAME)))
                         .build()
                 )
-                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1, null, null))
+                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.PLAYER, 1, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -522,7 +547,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(source))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal"), new SerializedItemStack(ItemID.TUNA, 2, TUNA_PRICE, "Tuna")), source, LootRecordType.EVENT, 1, null, null))
+                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal"), new SerializedItemStack(ItemID.TUNA, 2, TUNA_PRICE, "Tuna")), source, LootRecordType.EVENT, 1, null, null, null))
                 .type(NotificationType.LOOT)
                 .thumbnailUrl(ItemUtils.getItemImageUrl(ItemID.TUNA))
                 .build()
@@ -591,7 +616,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(LOOTED_NAME))
                         .build()
                 )
-                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.EVENT, 1, null, null))
+                .extra(new LootNotificationData(Arrays.asList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"), new SerializedItemStack(ItemID.OPAL, 1, OPAL_PRICE, "Opal"), new SerializedItemStack(ItemID.TUNA, 1, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.EVENT, 1, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -628,7 +653,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(LOOTED_NAME))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 5, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.EVENT, 1, null, null))
+                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.TUNA, 5, TUNA_PRICE, "Tuna")), LOOTED_NAME, LootRecordType.EVENT, 1, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -680,7 +705,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(source))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT, kc, null, null))
+                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT, kc, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -712,7 +737,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(realSource))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby")), realSource, LootRecordType.EVENT, kc, null, null))
+                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby")), realSource, LootRecordType.EVENT, kc, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -743,7 +768,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(source))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT, kc, null, null))
+                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT, kc, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -774,7 +799,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(source))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT, kc, null, null))
+                .extra(new LootNotificationData(List.of(new SerializedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby")), source, LootRecordType.EVENT, kc, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -791,6 +816,8 @@ class LootNotifierTest extends MockedNotifierTest {
         NPC npc = mock(NPC.class);
         String name = "Ice spider";
         when(npc.getName()).thenReturn(name);
+        when(npc.getId()).thenReturn(NpcID.ICE_SPIDER);
+        mockWorldNpcs(npc);
 
         // fire event
         double rarity = 1.0 / 208;
@@ -810,7 +837,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new RareItemStack(ItemID.LARRANS_KEY, 1, LARRAN_PRICE, "Larran's key", rarity)), name, LootRecordType.NPC, 1, rarity, null))
+                .extra(new LootNotificationData(List.of(new RareItemStack(ItemID.LARRANS_KEY, 1, LARRAN_PRICE, "Larran's key", rarity)), name, LootRecordType.NPC, 1, rarity, null, NpcID.ICE_SPIDER))
                 .type(NotificationType.LOOT)
                 .thumbnailUrl(ItemUtils.getItemImageUrl(ItemID.LARRANS_KEY))
                 .build()

@@ -15,6 +15,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.util.BlockingClientThread;
 import dinkplugin.util.BlockingExecutor;
 import dinkplugin.util.TestImageUtil;
+import dinkplugin.util.Utils;
 import lombok.SneakyThrows;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -141,6 +142,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.playerLookupService()).thenReturn(PlayerLookupService.OSRS_HISCORE);
         when(config.threadNameTemplate()).thenReturn("[%TYPE%] %MESSAGE%");
         when(config.nameFilterMode()).thenReturn(FilterMode.DENY);
+        when(config.embedColor()).thenReturn(Utils.PINK);
     }
 
     protected void mockItem(int id, int price, String name) {
