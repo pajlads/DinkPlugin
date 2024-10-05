@@ -2,32 +2,35 @@ package dinkplugin.util;
 
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.FilterMode;
+import lombok.Value;
+import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
 @UtilityClass
 public class MigrationUtil {
 
-    public Map.Entry<String, Map<String, String>> getAdamMappings(DinkPluginConfig config) {
+    public Metadata getAdamMappings(DinkPluginConfig config) {
         // https://github.com/Adam-/runelite-plugins/blob/discord-loot-logger/src/main/java/info/sigterm/plugins/discordlootlogger/DiscordLootLoggerConfig.java
         Map<String, String> mappings = Map.of(
             "webhook", config.lootWebhook().isBlank() ? "discordWebhook" : "lootWebhook",
             "sendScreenshot", "lootSendImage",
             "lootvalue", "minLootValue"
         );
-        return Map.entry("discordlootlogger", mappings);
+        return new Metadata("discordlootlogger", mappings, "DiscordLootLoggerPlugin", DinkPluginConfig::notifyLoot, "lootEnabled");
     }
 
-    public Map.Entry<String, Map<String, String>> getBoredskaMappings(DinkPluginConfig config) {
+    public Metadata getBoredskaMappings(DinkPluginConfig config) {
         // https://github.com/Boredska/gim-bank-discord/blob/master/src/main/java/gim/bank/discord/GimBankDiscordConfig.java
         Map<String, String> mappings = Map.of("webhook",
             config.groupStorageWebhook().isBlank() && config.notifyGroupStorage() ? "discordWebhook" : "groupStorageWebhook"
         );
-        return Map.entry("gimbankdiscord", mappings);
+        return new Metadata("gimbankdiscord", mappings, "GimBankDiscordPlugin", DinkPluginConfig::notifyGroupStorage, "groupStorageEnabled");
     }
 
-    public Map.Entry<String, Map<String, String>> getBossHusoMappings(DinkPluginConfig config) {
+    public Metadata getBossHusoMappings(DinkPluginConfig config) {
         // https://github.com/BossHuso/discord-rare-drop-notificater/blob/master/src/main/java/com/masterkenth/DiscordRareDropNotificaterConfig.java
         Map<String, String> mappings = Map.of(
             "webhookurl", config.lootWebhook().isBlank() ? "discordWebhook" : "lootWebhook",
@@ -40,10 +43,10 @@ public class MigrationUtil {
             "sendEmbeddedMessage", "discordRichEmbeds",
             "whiteListedRSNs", config.nameFilterMode() == FilterMode.ALLOW ? "ignoredNames" : ""
         );
-        return Map.entry("discordraredropnotificater", mappings);
+        return new Metadata("discordraredropnotificater", mappings, "DiscordRareDropNotificaterPlugin", DinkPluginConfig::notifyLoot, "lootEnabled");
     }
 
-    public Map.Entry<String, Map<String, String>> getJakeMappings() {
+    public Metadata getJakeMappings() {
         // https://github.com/MidgetJake/UniversalDiscordNotifier/blob/master/src/main/java/universalDiscord/UniversalDiscordConfig.java
         Map<String, String> mappings = Map.ofEntries(
             Map.entry("discordWebhook", "discordWebhook"),
@@ -78,20 +81,20 @@ public class MigrationUtil {
             Map.entry("clueMinValue", "clueMinValue"),
             Map.entry("clueNotifMessage", "clueNotifMessage")
         );
-        return Map.entry("universalDiscord", mappings);
+        return new Metadata("universalDiscord", mappings, "UniversalDiscordPlugin", null, null);
     }
 
-    public Map.Entry<String, Map<String, String>> getPaulMappings(DinkPluginConfig config) {
+    public Metadata getPaulMappings(DinkPluginConfig config) {
         // https://github.com/PJGJ210/Discord-Collection-Logger/blob/master/src/main/java/discordcollectionlogger/DiscordCollectionLoggerConfig.java
         Map<String, String> mappings = Map.of(
             "webhook", config.collectionWebhook().isBlank() ? "discordWebhook" : "collectionWebhook",
             "sendScreenshot", "collectionSendImage",
             "includepets", config.notifyPet() ? "" : "petEnabled"
         );
-        return Map.entry("discordcollectionlogger", mappings);
+        return new Metadata("discordcollectionlogger", mappings, "DiscordCollectionLoggerPlugin", DinkPluginConfig::notifyCollectionLog, "collectionLogEnabled");
     }
 
-    public Map.Entry<String, Map<String, String>> getRinzMappings(DinkPluginConfig config) {
+    public Metadata getRinzMappings(DinkPluginConfig config) {
         // https://github.com/RinZJ/better-discord-loot-logger/blob/master/src/main/java/com/betterdiscordlootlogger/BetterDiscordLootLoggerConfig.java
         Map<String, String> mappings = Map.of(
             "webhook", config.lootWebhook().isBlank() ? "discordWebhook" : "lootWebhook",
@@ -100,16 +103,25 @@ public class MigrationUtil {
             "valuableDropThreshold", "minLootValue",
             "collectionLogItem", config.notifyCollectionLog() ? "" : "collectionLogEnabled"
         );
-        return Map.entry("betterdiscordlootlogger", mappings);
+        return new Metadata("betterdiscordlootlogger", mappings, "BetterDiscordLootLoggerPlugin", DinkPluginConfig::notifyLoot, "lootEnabled");
     }
 
-    public Map.Entry<String, Map<String, String>> getShamerMappings(DinkPluginConfig config) {
+    public Metadata getShamerMappings(DinkPluginConfig config) {
         // https://github.com/jack0lantern/raidshamer/blob/main/src/main/java/ejedev/raidshamer/RaidShamerConfig.java
         Map<String, String> mappings = Map.of(
             "webhookLink", config.deathWebhook().isBlank() ? "discordWebhook" : "deathWebhook",
             "captureOwnDeaths", config.notifyDeath() ? "" : "deathEnabled"
         );
-        return Map.entry("raidshamer", mappings);
+        return new Metadata("raidshamer", mappings, "RaidShamerPlugin", DinkPluginConfig::notifyDeath, "deathEnabled");
     }
 
+    @Value
+    @Accessors(fluent = true)
+    public static class Metadata {
+        String configGroup;
+        Map<String, String> mappings;
+        String pluginClassName;
+        Predicate<DinkPluginConfig> notifierEnabled;
+        String notifierEnabledKey;
+    }
 }

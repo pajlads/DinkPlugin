@@ -195,6 +195,8 @@ public class SettingsManager {
             migrateConfig(MigrationUtil.getPaulMappings(config));
             migrateConfig(MigrationUtil.getShamerMappings(config));
             migrateConfig(MigrationUtil.getJakeMappings());
+            plugin.addChatWarning("Finished migrating configs from other plugins. " +
+                "Please verify the latest Dink settings and disable your other webhook plugins");
         }
     }
 
@@ -375,8 +377,11 @@ public class SettingsManager {
         handleImport(valuesByKey, true);
     }
 
-    private void migrateConfig(Map.Entry<String, Map<String, String>> metadata) {
-        migrateConfig(metadata.getKey(), metadata.getValue());
+    private void migrateConfig(MigrationUtil.Metadata data) {
+        migrateConfig(data.configGroup(), data.mappings());
+        if (data.notifierEnabledKey() != null && !isPluginDisabled(configManager, data.pluginClassName().toLowerCase()) && !data.notifierEnabled().test(config)) {
+            configManager.setConfiguration(CONFIG_GROUP, data.notifierEnabledKey(), true);
+        }
     }
 
     private void importDynamicConfig(String url) {
