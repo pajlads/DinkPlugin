@@ -9,6 +9,7 @@ import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.PetNotifier;
+import dinkplugin.util.MigrationUtil;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.RequiredArgsConstructor;
@@ -186,6 +187,8 @@ public class SettingsManager {
         } else if ("DinkRegion".equalsIgnoreCase(cmd)) {
             int regionId = WorldUtils.getLocation(client).getRegionID();
             plugin.addChatSuccess(String.format("Your current region ID is: %d", regionId));
+        } else if ("DinkMigrate".equalsIgnoreCase(cmd)) {
+            migrateConfig(MigrationUtil.getBossHusoMappings(config));
         }
     }
 
@@ -350,6 +353,24 @@ public class SettingsManager {
             .map(String::toLowerCase)
             .forEach(filteredNames::add);
         log.debug("Updated RSN Filter List to: {}", filteredNames);
+    }
+
+    private void migrateConfig(String sourceGroup, Map<String, String> keyMappings) {
+        Map<String, Object> valuesByKey = new HashMap<>(keyMappings.size() * 4 / 3);
+        keyMappings.forEach((sourceKey, dinkKey) -> {
+            Type valueType = configValueTypes.get(dinkKey);
+            if (valueType == null) return;
+
+            Object sourceValue = configManager.getConfiguration(sourceGroup, sourceKey, valueType);
+            if (sourceValue != null) {
+                valuesByKey.put(dinkKey, sourceValue);
+            }
+        });
+        handleImport(valuesByKey, true);
+    }
+
+    private void migrateConfig(Map.Entry<String, Map<String, String>> metadata) {
+        migrateConfig(metadata.getKey(), metadata.getValue());
     }
 
     private void importDynamicConfig(String url) {
