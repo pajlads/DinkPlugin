@@ -35,4 +35,14 @@ public class MigrationUtil {
         return Map.entry("discordraredropnotificater", mappings);
     }
 
+    public Map.Entry<String, Map<String, String>> getPaulMappings(DinkPluginConfig config) {
+        // https://github.com/PJGJ210/Discord-Collection-Logger/blob/master/src/main/java/discordcollectionlogger/DiscordCollectionLoggerConfig.java
+        Map<String, String> mappings = Map.of(
+            "webhook", config.collectionWebhook().isBlank() ? "discordWebhook" : "collectionWebhook",
+            "sendScreenshot", "collectionSendImage",
+            "includepets", config.notifyPet() ? "" : "petEnabled"
+        );
+        return Map.entry("discordcollectionlogger", mappings);
+    }
+
 }

@@ -190,6 +190,7 @@ public class SettingsManager {
         } else if ("DinkMigrate".equalsIgnoreCase(cmd)) {
             migrateConfig(MigrationUtil.getAdamMappings(config));
             migrateConfig(MigrationUtil.getBossHusoMappings(config));
+            migrateConfig(MigrationUtil.getPaulMappings(config));
         }
     }
 
