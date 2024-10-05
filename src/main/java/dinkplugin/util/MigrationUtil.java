@@ -84,6 +84,14 @@ public class MigrationUtil {
         return new Metadata("universalDiscord", mappings, "UniversalDiscordPlugin", null, null);
     }
 
+    public Metadata getJamesMappings(DinkPluginConfig config) {
+        // https://github.com/jamesdrudolph/Discord-Death-Notifications/blob/master/src/main/java/moe/cuteanimegirls/discorddeathnotifications/DeathNotificationsConfig.java
+        Map<String, String> mappings = Map.of(
+            "webhook", config.deathWebhook().isBlank() ? "discordWebhook" : "deathWebhook"
+        );
+        return new Metadata("discorddeathnotifications", mappings, "DeathNotificationsPlugin", DinkPluginConfig::notifyDeath, "deathEnabled");
+    }
+
     public Metadata getPaulMappings(DinkPluginConfig config) {
         // https://github.com/PJGJ210/Discord-Collection-Logger/blob/master/src/main/java/discordcollectionlogger/DiscordCollectionLoggerConfig.java
         Map<String, String> mappings = Map.of(
