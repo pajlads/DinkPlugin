@@ -123,6 +123,17 @@ public class MigrationUtil {
         return new Metadata("raidshamer", mappings, "RaidShamerPlugin", DinkPluginConfig::notifyDeath, "deathEnabled");
     }
 
+    public Metadata getTakamokMappings(DinkPluginConfig config) {
+        // https://github.com/ATremonte/Discord-Level-Notifications/blob/master/src/main/java/com/discordlevelnotifications/LevelNotificationsConfig.java
+        Map<String, String> mappings = Map.of(
+            "webhook", config.levelWebhook().isBlank() ? "discordWebhook" : "levelWebhook",
+            "sendScreenshot", "levelSendImage",
+            "minimumLevel", "levelMinValue",
+            "levelInterval", "levelInterval"
+        );
+        return new Metadata("discordlevelnotifications", mappings, "LevelNotificationsPlugin", DinkPluginConfig::notifyLevel, "levelEnabled");
+    }
+
     @Value
     @Accessors(fluent = true)
     public static class Metadata {

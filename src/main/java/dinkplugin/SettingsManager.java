@@ -195,6 +195,7 @@ public class SettingsManager {
             migrateConfig(MigrationUtil.getJamesMappings(config));
             migrateConfig(MigrationUtil.getPaulMappings(config));
             migrateConfig(MigrationUtil.getShamerMappings(config));
+            migrateConfig(MigrationUtil.getTakamokMappings(config));
             migrateConfig(MigrationUtil.getJakeMappings());
             plugin.addChatWarning("Finished migrating configs from other plugins. " +
                 "Please verify the latest Dink settings and disable your other webhook plugins");
