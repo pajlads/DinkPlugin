@@ -189,6 +189,7 @@ public class SettingsManager {
             plugin.addChatSuccess(String.format("Your current region ID is: %d", regionId));
         } else if ("DinkMigrate".equalsIgnoreCase(cmd)) {
             migrateConfig(MigrationUtil.getAdamMappings(config));
+            migrateConfig(MigrationUtil.getBoredskaMappings(config));
             migrateConfig(MigrationUtil.getRinzMappings(config));
             migrateConfig(MigrationUtil.getBossHusoMappings(config));
             migrateConfig(MigrationUtil.getPaulMappings(config));

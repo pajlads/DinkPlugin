@@ -19,6 +19,14 @@ public class MigrationUtil {
         return Map.entry("discordlootlogger", mappings);
     }
 
+    public Map.Entry<String, Map<String, String>> getBoredskaMappings(DinkPluginConfig config) {
+        // https://github.com/Boredska/gim-bank-discord/blob/master/src/main/java/gim/bank/discord/GimBankDiscordConfig.java
+        Map<String, String> mappings = Map.of("webhook",
+            config.groupStorageWebhook().isBlank() && config.notifyGroupStorage() ? "discordWebhook" : "groupStorageWebhook"
+        );
+        return Map.entry("gimbankdiscord", mappings);
+    }
+
     public Map.Entry<String, Map<String, String>> getBossHusoMappings(DinkPluginConfig config) {
         // https://github.com/BossHuso/discord-rare-drop-notificater/blob/master/src/main/java/com/masterkenth/DiscordRareDropNotificaterConfig.java
         Map<String, String> mappings = Map.of(
