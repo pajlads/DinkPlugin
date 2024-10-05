@@ -188,15 +188,15 @@ public class SettingsManager {
             int regionId = WorldUtils.getLocation(client).getRegionID();
             plugin.addChatSuccess(String.format("Your current region ID is: %d", regionId));
         } else if ("DinkMigrate".equalsIgnoreCase(cmd)) {
-            migrateConfig(MigrationUtil.getAdamMappings(config));
-            migrateConfig(MigrationUtil.getBoredskaMappings(config));
-            migrateConfig(MigrationUtil.getRinzMappings(config));
+//            migrateConfig(MigrationUtil.getAdamMappings(config));
+//            migrateConfig(MigrationUtil.getBoredskaMappings(config));
+//            migrateConfig(MigrationUtil.getRinzMappings(config));
             migrateConfig(MigrationUtil.getBossHusoMappings(config));
-            migrateConfig(MigrationUtil.getJamesMappings(config));
-            migrateConfig(MigrationUtil.getPaulMappings(config));
-            migrateConfig(MigrationUtil.getShamerMappings(config));
-            migrateConfig(MigrationUtil.getTakamokMappings(config));
-            migrateConfig(MigrationUtil.getJakeMappings());
+//            migrateConfig(MigrationUtil.getJamesMappings(config));
+//            migrateConfig(MigrationUtil.getPaulMappings(config));
+//            migrateConfig(MigrationUtil.getShamerMappings(config));
+//            migrateConfig(MigrationUtil.getTakamokMappings(config));
+//            migrateConfig(MigrationUtil.getJakeMappings());
             plugin.addChatWarning("Finished migrating configs from other plugins. " +
                 "Please verify the latest Dink settings and disable your other webhook plugins");
         }
