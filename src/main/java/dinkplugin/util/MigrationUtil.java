@@ -57,4 +57,13 @@ public class MigrationUtil {
         return Map.entry("betterdiscordlootlogger", mappings);
     }
 
+    public Map.Entry<String, Map<String, String>> getShamerMappings(DinkPluginConfig config) {
+        // https://github.com/jack0lantern/raidshamer/blob/main/src/main/java/ejedev/raidshamer/RaidShamerConfig.java
+        Map<String, String> mappings = Map.of(
+            "webhookLink", config.deathWebhook().isBlank() ? "discordWebhook" : "deathWebhook",
+            "captureOwnDeaths", config.notifyDeath() ? "" : "deathEnabled"
+        );
+        return Map.entry("raidshamer", mappings);
+    }
+
 }

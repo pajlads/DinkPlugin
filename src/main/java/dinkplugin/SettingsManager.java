@@ -192,6 +192,7 @@ public class SettingsManager {
             migrateConfig(MigrationUtil.getRinzMappings(config));
             migrateConfig(MigrationUtil.getBossHusoMappings(config));
             migrateConfig(MigrationUtil.getPaulMappings(config));
+            migrateConfig(MigrationUtil.getShamerMappings(config));
         }
     }
 
