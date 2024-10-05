@@ -45,4 +45,16 @@ public class MigrationUtil {
         return Map.entry("discordcollectionlogger", mappings);
     }
 
+    public Map.Entry<String, Map<String, String>> getRinzMappings(DinkPluginConfig config) {
+        // https://github.com/RinZJ/better-discord-loot-logger/blob/master/src/main/java/com/betterdiscordlootlogger/BetterDiscordLootLoggerConfig.java
+        Map<String, String> mappings = Map.of(
+            "webhook", config.lootWebhook().isBlank() ? "discordWebhook" : "lootWebhook",
+            "sendScreenshot", "lootSendImage",
+            "pets", config.notifyPet() ? "" : "petEnabled",
+            "valuableDropThreshold", "minLootValue",
+            "collectionLogItem", config.notifyCollectionLog() ? "" : "collectionLogEnabled"
+        );
+        return Map.entry("betterdiscordlootlogger", mappings);
+    }
+
 }
