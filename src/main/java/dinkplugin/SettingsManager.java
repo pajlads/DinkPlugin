@@ -374,22 +374,20 @@ public class SettingsManager {
         log.debug("Updated RSN Filter List to: {}", filteredNames);
     }
 
-    private void migrateConfig(String sourceGroup, Map<String, String> keyMappings) {
-        Map<String, Object> valuesByKey = new HashMap<>(keyMappings.size() * 4 / 3);
-        keyMappings.forEach((sourceKey, dinkKey) -> {
+    private void migrateConfig(MigrationUtil.Metadata data) {
+        Map<String, Object> valuesByKey = new HashMap<>(data.mappings().size() * 4 / 3);
+        data.mappings().forEach((sourceKey, dinkKey) -> {
             Type valueType = configValueTypes.get(dinkKey);
             if (valueType == null) return;
 
-            Object sourceValue = configManager.getConfiguration(sourceGroup, sourceKey, valueType);
+            var sourceValue = configManager.getConfiguration(data.configGroup(), sourceKey, valueType);
             if (sourceValue != null) {
-                valuesByKey.put(dinkKey, sourceValue);
+                var transformedValue = data.transform(sourceKey, sourceValue);
+                valuesByKey.put(dinkKey, transformedValue);
             }
         });
         handleImport(valuesByKey, true);
-    }
 
-    private void migrateConfig(MigrationUtil.Metadata data) {
-        migrateConfig(data.configGroup(), data.mappings());
         if (data.notifierEnabledKey() != null && !isPluginDisabled(configManager, data.pluginClassName().toLowerCase()) && !data.notifierEnabled().test(config)) {
             configManager.setConfiguration(CONFIG_GROUP, data.notifierEnabledKey(), true);
         }
