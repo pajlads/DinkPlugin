@@ -182,7 +182,7 @@ public class MigrationUtil {
             .put("DiscordCollectionLogger", MigrationUtil::getPaulMappings)
 //            .put("DiscordDeathNotifications", MigrationUtil::getJamesMappings)
 //            .put("DiscordLevelNotifications", MigrationUtil::getTakamokMappings)
-//            .put("DiscordLootLogger", MigrationUtil::getAdamMappings)
+            .put("DiscordLootLogger", MigrationUtil::getAdamMappings)
             .put("DiscordRareDropNotifier", MigrationUtil::getBossHusoMappings)
 //            .put("GIMBankDiscord", MigrationUtil::getBoredskaMappings)
 //            .put("RaidShamer", MigrationUtil::getShamerMappings)
