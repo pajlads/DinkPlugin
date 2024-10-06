@@ -1,5 +1,6 @@
 package dinkplugin.util;
 
+import com.google.common.collect.ImmutableMap;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.FilterMode;
 import lombok.Value;
@@ -7,12 +8,15 @@ import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 @UtilityClass
 public class MigrationUtil {
 
-    public Metadata getAdamMappings(DinkPluginConfig config) {
+    public static final Map<String, Function<DinkPluginConfig, Metadata>> PLUGIN_METADATA;
+
+    private Metadata getAdamMappings(DinkPluginConfig config) {
         // https://github.com/Adam-/runelite-plugins/blob/discord-loot-logger/src/main/java/info/sigterm/plugins/discordlootlogger/DiscordLootLoggerConfig.java
         Map<String, String> mappings = Map.of(
             "webhook", config.lootWebhook().isBlank() ? "discordWebhook" : "lootWebhook",
@@ -22,7 +26,7 @@ public class MigrationUtil {
         return new Metadata("discordlootlogger", mappings, "DiscordLootLoggerPlugin", DinkPluginConfig::notifyLoot, "lootEnabled");
     }
 
-    public Metadata getBoredskaMappings(DinkPluginConfig config) {
+    private Metadata getBoredskaMappings(DinkPluginConfig config) {
         // https://github.com/Boredska/gim-bank-discord/blob/master/src/main/java/gim/bank/discord/GimBankDiscordConfig.java
         Map<String, String> mappings = Map.of("webhook",
             config.groupStorageWebhook().isBlank() && config.notifyGroupStorage() ? "discordWebhook" : "groupStorageWebhook"
@@ -30,7 +34,7 @@ public class MigrationUtil {
         return new Metadata("gimbankdiscord", mappings, "GimBankDiscordPlugin", DinkPluginConfig::notifyGroupStorage, "groupStorageEnabled");
     }
 
-    public Metadata getBossHusoMappings(DinkPluginConfig config) {
+    private Metadata getBossHusoMappings(DinkPluginConfig config) {
         // https://github.com/BossHuso/discord-rare-drop-notificater/blob/master/src/main/java/com/masterkenth/DiscordRareDropNotificaterConfig.java
         Map<String, String> mappings = Map.of(
             "webhookurl", config.lootWebhook().isBlank() ? "discordWebhook" : "lootWebhook",
@@ -46,7 +50,7 @@ public class MigrationUtil {
         return new Metadata("discordraredropnotificater", mappings, "DiscordRareDropNotificaterPlugin", DinkPluginConfig::notifyLoot, "lootEnabled");
     }
 
-    public Metadata getJakeMappings() {
+    private Metadata getJakeMappings(DinkPluginConfig config) {
         // https://github.com/MidgetJake/UniversalDiscordNotifier/blob/master/src/main/java/universalDiscord/UniversalDiscordConfig.java
         Map<String, String> mappings = Map.ofEntries(
             Map.entry("discordWebhook", "discordWebhook"),
@@ -84,7 +88,7 @@ public class MigrationUtil {
         return new Metadata("universalDiscord", mappings, "UniversalDiscordPlugin", null, null);
     }
 
-    public Metadata getJamesMappings(DinkPluginConfig config) {
+    private Metadata getJamesMappings(DinkPluginConfig config) {
         // https://github.com/jamesdrudolph/Discord-Death-Notifications/blob/master/src/main/java/moe/cuteanimegirls/discorddeathnotifications/DeathNotificationsConfig.java
         Map<String, String> mappings = Map.of(
             "webhook", config.deathWebhook().isBlank() ? "discordWebhook" : "deathWebhook"
@@ -92,7 +96,7 @@ public class MigrationUtil {
         return new Metadata("discorddeathnotifications", mappings, "DeathNotificationsPlugin", DinkPluginConfig::notifyDeath, "deathEnabled");
     }
 
-    public Metadata getPaulMappings(DinkPluginConfig config) {
+    private Metadata getPaulMappings(DinkPluginConfig config) {
         // https://github.com/PJGJ210/Discord-Collection-Logger/blob/master/src/main/java/discordcollectionlogger/DiscordCollectionLoggerConfig.java
         Map<String, String> mappings = Map.of(
             "webhook", config.collectionWebhook().isBlank() ? "discordWebhook" : "collectionWebhook",
@@ -102,7 +106,7 @@ public class MigrationUtil {
         return new Metadata("discordcollectionlogger", mappings, "DiscordCollectionLoggerPlugin", DinkPluginConfig::notifyCollectionLog, "collectionLogEnabled");
     }
 
-    public Metadata getRinzMappings(DinkPluginConfig config) {
+    private Metadata getRinzMappings(DinkPluginConfig config) {
         // https://github.com/RinZJ/better-discord-loot-logger/blob/master/src/main/java/com/betterdiscordlootlogger/BetterDiscordLootLoggerConfig.java
         Map<String, String> mappings = Map.of(
             "webhook", config.lootWebhook().isBlank() ? "discordWebhook" : "lootWebhook",
@@ -114,7 +118,7 @@ public class MigrationUtil {
         return new Metadata("betterdiscordlootlogger", mappings, "BetterDiscordLootLoggerPlugin", DinkPluginConfig::notifyLoot, "lootEnabled");
     }
 
-    public Metadata getShamerMappings(DinkPluginConfig config) {
+    private Metadata getShamerMappings(DinkPluginConfig config) {
         // https://github.com/jack0lantern/raidshamer/blob/main/src/main/java/ejedev/raidshamer/RaidShamerConfig.java
         Map<String, String> mappings = Map.of(
             "webhookLink", config.deathWebhook().isBlank() ? "discordWebhook" : "deathWebhook",
@@ -123,7 +127,7 @@ public class MigrationUtil {
         return new Metadata("raidshamer", mappings, "RaidShamerPlugin", DinkPluginConfig::notifyDeath, "deathEnabled");
     }
 
-    public Metadata getTakamokMappings(DinkPluginConfig config) {
+    private Metadata getTakamokMappings(DinkPluginConfig config) {
         // https://github.com/ATremonte/Discord-Level-Notifications/blob/master/src/main/java/com/discordlevelnotifications/LevelNotificationsConfig.java
         Map<String, String> mappings = Map.of(
             "webhook", config.levelWebhook().isBlank() ? "discordWebhook" : "levelWebhook",
@@ -142,5 +146,19 @@ public class MigrationUtil {
         String pluginClassName;
         Predicate<DinkPluginConfig> notifierEnabled;
         String notifierEnabledKey;
+    }
+
+    static {
+        PLUGIN_METADATA = ImmutableMap.<String, Function<DinkPluginConfig, Metadata>>builder()
+//            .put("BetterDiscordLootLogger", MigrationUtil::getRinzMappings)
+//            .put("DiscordCollectionLogger", MigrationUtil::getPaulMappings)
+//            .put("DiscordDeathNotifications", MigrationUtil::getJamesMappings)
+//            .put("DiscordLevelNotifications", MigrationUtil::getTakamokMappings)
+//            .put("DiscordLootLogger", MigrationUtil::getAdamMappings)
+            .put("DiscordRareDropNotifier", MigrationUtil::getBossHusoMappings)
+//            .put("GIMBankDiscord", MigrationUtil::getBoredskaMappings)
+//            .put("RaidShamer", MigrationUtil::getShamerMappings)
+//            .put("UniversalDiscordNotifications", MigrationUtil::getJakeMappings)
+            .build();
     }
 }

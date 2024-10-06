@@ -145,11 +145,10 @@ public class SettingsManager {
 
     void onCommand(CommandExecuted event) {
         String cmd = event.getCommand();
+        String[] args = event.getArguments();
         if ("DinkImport".equalsIgnoreCase(cmd)) {
             importConfig();
         } else if ("DinkExport".equalsIgnoreCase(cmd)) {
-            String[] args = event.getArguments();
-
             Predicate<String> includeKey;
             if (args == null || args.length == 0) {
                 includeKey = k -> !webhookConfigKeys.contains(k);
@@ -188,17 +187,27 @@ public class SettingsManager {
             int regionId = WorldUtils.getLocation(client).getRegionID();
             plugin.addChatSuccess(String.format("Your current region ID is: %d", regionId));
         } else if ("DinkMigrate".equalsIgnoreCase(cmd)) {
-//            migrateConfig(MigrationUtil.getAdamMappings(config));
-//            migrateConfig(MigrationUtil.getBoredskaMappings(config));
-//            migrateConfig(MigrationUtil.getRinzMappings(config));
-            migrateConfig(MigrationUtil.getBossHusoMappings(config));
-//            migrateConfig(MigrationUtil.getJamesMappings(config));
-//            migrateConfig(MigrationUtil.getPaulMappings(config));
-//            migrateConfig(MigrationUtil.getShamerMappings(config));
-//            migrateConfig(MigrationUtil.getTakamokMappings(config));
-//            migrateConfig(MigrationUtil.getJakeMappings());
-            plugin.addChatWarning("Finished migrating configs from other plugins. " +
-                "Please verify the latest Dink settings and disable your other webhook plugins");
+            if (args == null || args.length == 0) {
+                plugin.addChatSuccess("Please specify which plugin's settings to migrate or 'all'. " +
+                    "Supported plugins include: " + String.join(", ", MigrationUtil.PLUGIN_METADATA.keySet()));
+            } else if (args.length > 1) {
+                plugin.addChatWarning("Please only specify one plugin at a time to migrate");
+            } else {
+                String key = args[0];
+                if ("all".equalsIgnoreCase(key)) {
+                    MigrationUtil.PLUGIN_METADATA.values()
+                        .forEach(func -> migrateConfig(func.apply(config)));
+                } else {
+                    var metadata = MigrationUtil.PLUGIN_METADATA.getOrDefault(key, c -> null).apply(config);
+                    if (metadata == null) {
+                        plugin.addChatWarning("Failed to recognize plugin name to be migrated");
+                        return;
+                    }
+                    migrateConfig(metadata);
+                }
+                plugin.addChatWarning("Finished migrating configs from other plugins. " +
+                    "Please verify the latest Dink settings and disable your other webhook plugins");
+            }
         }
     }
 
