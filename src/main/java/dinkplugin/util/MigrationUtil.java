@@ -3,6 +3,7 @@ package dinkplugin.util;
 import com.google.common.collect.ImmutableMap;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.FilterMode;
+import dinkplugin.domain.PlayerLookupService;
 import lombok.Value;
 import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
@@ -94,7 +95,19 @@ public class MigrationUtil {
             Map.entry("clueMinValue", "clueMinValue"),
             Map.entry("clueNotifMessage", "clueNotifMessage")
         );
-        return new Metadata("universalDiscord", mappings, "UniversalDiscordPlugin", null, null, null);
+        Map<String, Function<Object, Object>> transformers = Map.of(
+            "playerUrl", v -> {
+                switch (v.toString()) {
+                    case "TEMPLEOSRS":
+                        return PlayerLookupService.TEMPLE_OSRS.name();
+                    case "WISEOLDMAN":
+                        return PlayerLookupService.WISE_OLD_MAN.name();
+                    default:
+                        return v;
+                }
+            }
+        );
+        return new Metadata("universalDiscord", mappings, "UniversalDiscordPlugin", null, null, transformers);
     }
 
     private Metadata getJamesMappings(DinkPluginConfig config) {
