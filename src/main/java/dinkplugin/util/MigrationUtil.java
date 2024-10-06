@@ -43,7 +43,7 @@ public class MigrationUtil {
             "andinsteadofor", "lootRarityValueIntersection",
             "sendscreenshot", "lootSendImage",
             "ignoredkeywords", "lootItemDenylist",
-            "whiteListedItems", "whiteListedItems",
+            "whiteListedItems", "lootItemAllowlist",
             "sendEmbeddedMessage", "discordRichEmbeds",
             "whiteListedRSNs", config.nameFilterMode() == FilterMode.ALLOW ? "ignoredNames" : ""
         );
