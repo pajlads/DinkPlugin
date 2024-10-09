@@ -71,7 +71,7 @@ public class MigrationUtil {
             "whiteListedItems", itemListTransformer,
             "ignoredkeywords", itemListTransformer
         );
-        return new Metadata("discordraredropnotificater", mappings, "DiscordRareDropNotificaterPlugin", DinkPluginConfig::notifyLoot, "lootEnabled", transformers, Set.of("rare", "huso", "bosshuso"));
+        return new Metadata("discordraredropnotificater", mappings, "DiscordRareDropNotificaterPlugin", DinkPluginConfig::notifyLoot, "lootEnabled", transformers, Set.of("discordraredropnotifier", "rare", "huso", "bosshuso"));
     }
 
     private Metadata getJakeMappings(DinkPluginConfig config) {
@@ -121,7 +121,7 @@ public class MigrationUtil {
                 }
             }
         );
-        return new Metadata("universalDiscord", mappings, "UniversalDiscordPlugin", null, null, transformers, Set.of("universal", "jake", "midgetjake"));
+        return new Metadata("universalDiscord", mappings, "UniversalDiscordPlugin", null, null, transformers, Set.of("universaldiscordnotifications", "universal", "jake", "midgetjake"));
     }
 
     private Metadata getJamesMappings(DinkPluginConfig config) {
