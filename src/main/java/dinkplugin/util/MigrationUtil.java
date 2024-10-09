@@ -8,7 +8,9 @@ import lombok.Value;
 import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -18,6 +20,18 @@ public class MigrationUtil {
 
     public static final Map<String, Function<DinkPluginConfig, Metadata>> PLUGIN_METADATA;
 
+    public Metadata findMetadata(String key, DinkPluginConfig config) {
+        var fast = PLUGIN_METADATA.get(key);
+        if (fast != null) return fast.apply(config);
+
+        for (var func : PLUGIN_METADATA.values()) {
+            var meta = func.apply(config);
+            if (meta.matchesName(key))
+                return meta;
+        }
+        return null;
+    }
+
     private Metadata getAdamMappings(DinkPluginConfig config) {
         // https://github.com/Adam-/runelite-plugins/blob/discord-loot-logger/src/main/java/info/sigterm/plugins/discordlootlogger/DiscordLootLoggerConfig.java
         Map<String, String> mappings = Map.of(
@@ -25,7 +39,7 @@ public class MigrationUtil {
             "sendScreenshot", "lootSendImage",
             "lootvalue", "minLootValue"
         );
-        return new Metadata("discordlootlogger", mappings, "DiscordLootLoggerPlugin", DinkPluginConfig::notifyLoot, "lootEnabled", null);
+        return new Metadata("discordlootlogger", mappings, "DiscordLootLoggerPlugin", DinkPluginConfig::notifyLoot, "lootEnabled", null, Set.of("lootlogger", "adam"));
     }
 
     private Metadata getBoredskaMappings(DinkPluginConfig config) {
@@ -33,7 +47,7 @@ public class MigrationUtil {
         Map<String, String> mappings = Map.of("webhook",
             config.groupStorageWebhook().isBlank() && config.notifyGroupStorage() ? "discordWebhook" : "groupStorageWebhook"
         );
-        return new Metadata("gimbankdiscord", mappings, "GimBankDiscordPlugin", DinkPluginConfig::notifyGroupStorage, "groupStorageEnabled", null);
+        return new Metadata("gimbankdiscord", mappings, "GimBankDiscordPlugin", DinkPluginConfig::notifyGroupStorage, "groupStorageEnabled", null, Set.of("gim", "bank", "gimbank", "boredska"));
     }
 
     private Metadata getBossHusoMappings(DinkPluginConfig config) {
@@ -57,7 +71,7 @@ public class MigrationUtil {
             "whiteListedItems", itemListTransformer,
             "ignoredkeywords", itemListTransformer
         );
-        return new Metadata("discordraredropnotificater", mappings, "DiscordRareDropNotificaterPlugin", DinkPluginConfig::notifyLoot, "lootEnabled", transformers);
+        return new Metadata("discordraredropnotificater", mappings, "DiscordRareDropNotificaterPlugin", DinkPluginConfig::notifyLoot, "lootEnabled", transformers, Set.of("rare", "huso", "bosshuso"));
     }
 
     private Metadata getJakeMappings(DinkPluginConfig config) {
@@ -107,7 +121,7 @@ public class MigrationUtil {
                 }
             }
         );
-        return new Metadata("universalDiscord", mappings, "UniversalDiscordPlugin", null, null, transformers);
+        return new Metadata("universalDiscord", mappings, "UniversalDiscordPlugin", null, null, transformers, Set.of("universal", "jake", "midgetjake"));
     }
 
     private Metadata getJamesMappings(DinkPluginConfig config) {
@@ -115,7 +129,7 @@ public class MigrationUtil {
         Map<String, String> mappings = Map.of(
             "webhook", config.deathWebhook().isBlank() ? "discordWebhook" : "deathWebhook"
         );
-        return new Metadata("discorddeathnotifications", mappings, "DeathNotificationsPlugin", DinkPluginConfig::notifyDeath, "deathEnabled", null);
+        return new Metadata("discorddeathnotifications", mappings, "DeathNotificationsPlugin", DinkPluginConfig::notifyDeath, "deathEnabled", null, Set.of("death", "james", "elguy"));
     }
 
     private Metadata getPaulMappings(DinkPluginConfig config) {
@@ -125,7 +139,7 @@ public class MigrationUtil {
             "sendScreenshot", "collectionSendImage",
             "includepets", config.notifyPet() ? "" : "petEnabled"
         );
-        return new Metadata("discordcollectionlogger", mappings, "DiscordCollectionLoggerPlugin", DinkPluginConfig::notifyCollectionLog, "collectionLogEnabled", null);
+        return new Metadata("discordcollectionlogger", mappings, "DiscordCollectionLoggerPlugin", DinkPluginConfig::notifyCollectionLog, "collectionLogEnabled", null, Set.of("collection", "paul"));
     }
 
     private Metadata getRinzMappings(DinkPluginConfig config) {
@@ -137,7 +151,7 @@ public class MigrationUtil {
             "valuableDropThreshold", "minLootValue",
             "collectionLogItem", config.notifyCollectionLog() ? "" : "collectionLogEnabled"
         );
-        return new Metadata("betterdiscordlootlogger", mappings, "BetterDiscordLootLoggerPlugin", DinkPluginConfig::notifyLoot, "lootEnabled", null);
+        return new Metadata("betterdiscordlootlogger", mappings, "BetterDiscordLootLoggerPlugin", DinkPluginConfig::notifyLoot, "lootEnabled", null, Set.of("betterloot", "rinz"));
     }
 
     private Metadata getShamerMappings(DinkPluginConfig config) {
@@ -146,7 +160,7 @@ public class MigrationUtil {
             "webhookLink", config.deathWebhook().isBlank() ? "discordWebhook" : "deathWebhook",
             "captureOwnDeaths", config.notifyDeath() ? "" : "deathEnabled"
         );
-        return new Metadata("raidshamer", mappings, "RaidShamerPlugin", DinkPluginConfig::notifyDeath, "deathEnabled", null);
+        return new Metadata("raidshamer", mappings, "RaidShamerPlugin", DinkPluginConfig::notifyDeath, "deathEnabled", null, Set.of("deathshamer", "botanophobia"));
     }
 
     private Metadata getTakamokMappings(DinkPluginConfig config) {
@@ -157,7 +171,7 @@ public class MigrationUtil {
             "minimumLevel", "levelMinValue",
             "levelInterval", "levelInterval"
         );
-        return new Metadata("discordlevelnotifications", mappings, "LevelNotificationsPlugin", DinkPluginConfig::notifyLevel, "levelEnabled", null);
+        return new Metadata("discordlevelnotifications", mappings, "LevelNotificationsPlugin", DinkPluginConfig::notifyLevel, "levelEnabled", null, Set.of("level", "takamok"));
     }
 
     @Value
@@ -169,6 +183,11 @@ public class MigrationUtil {
         Predicate<DinkPluginConfig> notifierEnabled;
         String notifierEnabledKey;
         Map<String, Function<Object, Object>> configValueTransformers;
+        Collection<String> aliases;
+
+        public boolean matchesName(String key) {
+            return pluginClassName.equalsIgnoreCase(key) || configGroup.equals(key) || aliases.contains(key.toLowerCase());
+        }
 
         public Object transform(String configKey, Object configValue) {
             if (configValueTransformers == null) return configValue;

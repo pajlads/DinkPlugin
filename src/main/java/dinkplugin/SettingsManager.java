@@ -188,7 +188,7 @@ public class SettingsManager {
             plugin.addChatSuccess(String.format("Your current region ID is: %d", regionId));
         } else if ("DinkMigrate".equalsIgnoreCase(cmd)) {
             if (args == null || args.length == 0) {
-                plugin.addChatSuccess("Please specify which plugin's settings to migrate or 'all'. " +
+                plugin.addChatWarning("Please specify which plugin's settings to migrate or 'all'. " +
                     "Supported plugins include: " + String.join(", ", MigrationUtil.PLUGIN_METADATA.keySet()));
             } else if (args.length > 1) {
                 plugin.addChatWarning("Please only specify one plugin at a time to migrate");
@@ -198,14 +198,14 @@ public class SettingsManager {
                     MigrationUtil.PLUGIN_METADATA.values()
                         .forEach(func -> migrateConfig(func.apply(config)));
                 } else {
-                    var metadata = MigrationUtil.PLUGIN_METADATA.getOrDefault(key, c -> null).apply(config);
+                    var metadata = MigrationUtil.findMetadata(key, config);
                     if (metadata == null) {
                         plugin.addChatWarning("Failed to recognize plugin name to be migrated");
                         return;
                     }
                     migrateConfig(metadata);
                 }
-                plugin.addChatWarning("Finished migrating configs from other plugins. " +
+                plugin.addChatSuccess("Finished migrating configs from other plugins. " +
                     "Please verify the latest Dink settings and disable your other webhook plugins");
             }
         }
