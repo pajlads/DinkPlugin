@@ -167,8 +167,8 @@ public class LootNotifier extends BaseNotifier {
             }
 
             boolean shouldSend;
-            if (config.lootRarityValueIntersection() && rarity.isPresent()) {
-                shouldSend = totalPrice >= minValue && MathUtils.lessThanOrEqual(rarity.orElse(1), rarityThreshold);
+            if (config.lootRarityValueIntersection()) {
+                shouldSend = totalPrice >= minValue && (rarity.isEmpty() || MathUtils.lessThanOrEqual(rarity.getAsDouble(), rarityThreshold));
             } else {
                 shouldSend = totalPrice >= minValue || MathUtils.lessThanOrEqual(rarity.orElse(1), rarityThreshold);
             }

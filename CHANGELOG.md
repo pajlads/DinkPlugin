@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Enforce value threshold for always-dropped loot when rarity threshold is 1 and require both value and rarity is true. (#560)
+
 ## 1.10.11
 
 - Minor: Use embed thumbnail that corresponds to clue scroll difficulty. (#546)
