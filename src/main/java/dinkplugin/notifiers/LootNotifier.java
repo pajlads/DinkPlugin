@@ -173,13 +173,14 @@ public class LootNotifier extends BaseNotifier {
                 shouldSend = totalPrice >= minValue || MathUtils.lessThanOrEqual(rarity.orElse(1), rarityThreshold);
             }
 
-            shouldSend |= matches(itemNameAllowlist, stack.getName());
-
             boolean denied = matches(itemNameDenylist, stack.getName());
             if (denied) {
                 shouldSend = false;
-            } else if (max == null || totalPrice > max.getTotalPrice()) {
-                max = stack;
+            } else {
+                shouldSend |= matches(itemNameAllowlist, stack.getName());
+                if (max == null || totalPrice > max.getTotalPrice()) {
+                    max = stack;
+                }
             }
 
             if (shouldSend) {
@@ -218,7 +219,7 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
-                if (npcId == null && (type == LootRecordType.NPC || type == LootRecordType.PICKPOCKET)) {
+            if (npcId == null && (type == LootRecordType.NPC || type == LootRecordType.PICKPOCKET)) {
                 npcId = client.getTopLevelWorldView().npcs().stream()
                     .filter(npc -> dropper.equals(npc.getName()))
                     .findAny()
