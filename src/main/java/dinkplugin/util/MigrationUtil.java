@@ -127,9 +127,13 @@ public class MigrationUtil {
     private Metadata getJamesMappings(DinkPluginConfig config) {
         // https://github.com/jamesdrudolph/Discord-Death-Notifications/blob/master/src/main/java/moe/cuteanimegirls/discorddeathnotifications/DeathNotificationsConfig.java
         Map<String, String> mappings = Map.of(
-            "webhook", config.deathWebhook().isBlank() ? "discordWebhook" : "deathWebhook"
+            "webhook", config.deathWebhook().isBlank() ? "discordWebhook" : "deathWebhook",
+            "deathMessage", "deathNotifMessage"
         );
-        return new Metadata("discorddeathnotifications", mappings, "DeathNotificationsPlugin", DinkPluginConfig::notifyDeath, "deathEnabled", null, Set.of("death", "james", "elguy"));
+        Map<String, Function<Object, Object>> transformers = Map.of(
+            "deathMessage", msg -> "%USERNAME% " + msg
+        );
+        return new Metadata("discorddeathnotifications", mappings, "DeathNotificationsPlugin", DinkPluginConfig::notifyDeath, "deathEnabled", transformers, Set.of("death", "james", "elguy"));
     }
 
     private Metadata getPaulMappings(DinkPluginConfig config) {
