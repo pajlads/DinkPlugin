@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Bugfix: Enforce value threshold for always-dropped loot when rarity threshold is 1 and require both value and rarity is true. (#560)
+- Dev: Optimize regex performance for looted items on the item denylist. (#565)
 
 ## 1.10.11
 
