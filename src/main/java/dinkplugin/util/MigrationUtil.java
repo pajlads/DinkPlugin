@@ -201,15 +201,15 @@ public class MigrationUtil {
 
     static {
         PLUGIN_METADATA = ImmutableMap.<String, Function<DinkPluginConfig, Metadata>>builder()
-//            .put("BetterDiscordLootLogger", MigrationUtil::getRinzMappings)
+            .put("BetterDiscordLootLogger", MigrationUtil::getRinzMappings)
             .put("DiscordCollectionLogger", MigrationUtil::getPaulMappings)
-//            .put("DiscordDeathNotifications", MigrationUtil::getJamesMappings)
-//            .put("DiscordLevelNotifications", MigrationUtil::getTakamokMappings)
+            .put("DiscordDeathNotifications", MigrationUtil::getJamesMappings)
+            .put("DiscordLevelNotifications", MigrationUtil::getTakamokMappings)
             .put("DiscordLootLogger", MigrationUtil::getAdamMappings)
             .put("DiscordRareDropNotifier", MigrationUtil::getBossHusoMappings)
-//            .put("GIMBankDiscord", MigrationUtil::getBoredskaMappings)
-//            .put("RaidShamer", MigrationUtil::getShamerMappings)
-//            .put("UniversalDiscordNotifications", MigrationUtil::getJakeMappings)
+            .put("GIMBankDiscord", MigrationUtil::getBoredskaMappings)
+            .put("RaidShamer", MigrationUtil::getShamerMappings)
+            .put("UniversalDiscordNotifications", MigrationUtil::getJakeMappings)
             .build();
     }
 }
