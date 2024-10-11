@@ -110,6 +110,63 @@ Note: There is no undo button for this command, so consider making a backup of y
 Warning: If you import override URLs for a notifier (that previously did not have any overrides), this will result in the plugin no longer sending messages from that notifier to your old primary URLs.
 As such, you can manually add your primary URLs to the newly populated override URL boxes so that notifications are still sent to the old primary URLs.
 
+### Migrate configuration from other webhook plugins via `::DinkMigrate`
+
+When switching to Dink from other Discord webhook plugins, you can utilize the `::DinkMigrate` command to automatically import your configuration from the other plugins into Dink on a best-effort basis.
+Like `::DinkImport`, most settings are replaced outright while others are merged (e.g., webhook URLs, filtered RSNs, and filtered item names).
+
+This migration can be imperfect so we recommend verifying the updated Dink configuration post-migration.
+Also, if you already have used Dink, we recommend saving the output of `::DinkExport all` before migrating just in case you want to revert any changes.
+
+When executing the `::DinkMigrate` command, you must specify which plugin to import or `all` to migrate all supported plugins.
+In particular, Dink supports migrating the following plugins: `BetterDiscordLootLogger`, `DiscordCollectionLogger`, `DiscordDeathNotifications`, `DiscordLevelNotifications`, `DiscordLootLogger`, `DiscordRareDropNotifier`, `GIMBankDiscord`, `RaidShamer`, and `UniversalDiscordNotifications`.
+
+After migration, you should disable the migrated webhook plugins to avoid sending multiple notifications upon event triggers.
+
+#### Examples
+
+- Migrate config from BossHuso's Discord Rare Drop Notificater  
+  `::dinkmigrate DiscordRareDropNotifier` or `::DinkMigrate rare` or `::DinkMigrate huso`
+- Migrate config from all supported webhook plugins  
+  `::dinkmigrate all`
+
+#### Limitations
+
+##### Better Discord Loot Logger
+
+- `Screenshot Keybind` is not migrated; Dink does not react to any keybinds
+- `Include raid loot (Experimental)` is not migrated; utilize Dink's value, rarity, or item allowlist settings instead
+
+##### Discord Collection Logger
+
+- `Include Username` is not migrated; you should modify the notification template manually
+- `Include Collection Image` is not migrated; Dink only provides a screenshot upon receiving a collection log item
+- `Include Pets` can enable the pet notifier in Dink, but if the collection webhook URL override is used, you should manually edit the pet webhook URL override
+
+##### Discord Death Notifications
+
+- `includeName` is not migrated; you should manually edit the death notification template
+
+##### Discord Loot Logger
+
+- `Loot NPCs` intentionally does not disable Dink's `Include PK Loot` or `Include Clue Loot` within the loot notifier
+- `Include Low Value Items` is ignored in favor of the `Loot Value` setting
+- `Include Stack Value` is not migrated; Dink already includes this information in the message body
+- `Include Username` is not migrated; you should modify the notification template manually
+
+##### Discord Rare Drop Notifier
+
+- `Always send uniques (events)` is not migrated; utilize Dink's value, rarity, or item allowlist settings instead
+- `Whitelisted RSNs` is only migrated if Dink's `RSN Filter Mode` was already set to `Allow`
+- `sendRarityAndValue` is not migrated; Dink already includes this information as embed fields
+- This plugin prioritizes the item allowlist over the item denylist. Dink, however, prioritizes the denylist
+
+##### Raid Shamer (aka Death Shamer)
+
+- `captureFriendDeathsOnly` is not migrated; Dink only notifies upon local player deaths
+- `activeInCoX`, `activeInToB`, `activeInToA`, and `activeOutsideOfRaids` are not migrated; you should manually configure `Ignore Safe Deaths` and `Safe Exceptions` within Dink's death notifier
+- `webhookEnabled` is not migrated; Dink only submits the image to a URL (and does not save to a local file)
+
 ### Get your Dink Hash via `::dinkhash`
 
 Dink notification metadata includes a player hash that custom webhook servers can utilize to uniquely identify players (persistent across name changes).
