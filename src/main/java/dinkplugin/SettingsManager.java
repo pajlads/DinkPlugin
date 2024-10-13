@@ -375,20 +375,8 @@ public class SettingsManager {
     }
 
     private void migrateConfig(MigrationUtil.Metadata data) {
-        Map<String, Object> valuesByKey = new HashMap<>(data.mappings().size() * 4 / 3);
-        data.mappings().forEach((sourceKey, dinkKey) -> {
-            Type valueType = configValueTypes.get(dinkKey);
-            if (valueType == null) return;
-
-            var sourceValue = configManager.getConfiguration(data.configGroup(), sourceKey, valueType);
-            if (sourceValue != null) {
-                var transformedValue = data.transform(sourceKey, sourceValue);
-                valuesByKey.put(dinkKey, transformedValue);
-            }
-        });
-        handleImport(valuesByKey, true);
-
-        if (data.notifierEnabledKey() != null && !isPluginDisabled(configManager, data.pluginClassName().toLowerCase()) && !data.notifierEnabled().test(config)) {
+        handleImport(data.readConfig(configManager, configValueTypes), true);
+        if (data.shouldEnableNotifier(configManager)) {
             configManager.setConfiguration(CONFIG_GROUP, data.notifierEnabledKey(), true);
         }
     }
