@@ -157,7 +157,7 @@ After migration, you should disable the migrated webhook plugins to avoid sendin
 ##### Discord Rare Drop Notifier
 
 - `Always send uniques (events)` is not migrated; utilize Dink's value, rarity, or item allowlist settings instead
-- `Whitelisted RSNs` is only migrated if Dink's `RSN Filter Mode` was already set to `Allow`
+- `Whitelisted RSNs` is not migrated if Dink's `RSN Filter Mode` was already set to `Deny` (and `Filtered RSNs` was not empty)
 - `sendRarityAndValue` is not migrated; Dink already includes this information as embed fields
 - This plugin prioritizes the item allowlist over the item denylist. Dink, however, prioritizes the denylist
 

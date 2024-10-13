@@ -81,9 +81,19 @@ public class MigrationUtil {
             .mapping("ignoredkeywords", "lootItemDenylist")
             .mapping("whiteListedItems", "lootItemAllowlist")
             .mapping("sendEmbeddedMessage", "discordRichEmbeds")
-            .mapping("whiteListedRSNs", config.nameFilterMode() == FilterMode.ALLOW ? "ignoredNames" : "")
+            .mapping("whiteListedRSNs", "ignoredNames")
             .configValueTransformer("whiteListedItems", itemListTransformer)
             .configValueTransformer("ignoredkeywords", itemListTransformer)
+            .configValueTransformer("whiteListedRSNs", names -> {
+                if (!names.toString().isBlank() && config.nameFilterMode() == FilterMode.DENY) {
+                    if (config.filteredNames().isBlank()) {
+                        config.setNameFilterMode(FilterMode.ALLOW);
+                    } else {
+                        return "";
+                    }
+                }
+                return names;
+            })
             .build();
     }
 
