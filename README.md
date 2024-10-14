@@ -121,7 +121,7 @@ Also, if you already have used Dink, we recommend saving the output of `::DinkEx
 When executing the `::DinkMigrate` command, you must specify which plugin to import or `all` to migrate all supported plugins.
 In particular, Dink supports migrating the following plugins: `BetterDiscordLootLogger`, `DiscordCollectionLogger`, `DiscordDeathNotifications`, `DiscordLevelNotifications`, `DiscordLootLogger`, `DiscordRareDropNotifier`, `GIMBankDiscord`, `RaidShamer`, and `UniversalDiscordNotifications`.
 
-After migration, you should disable the migrated webhook plugins to avoid sending multiple notifications upon event triggers.
+After migration, you should disable the migrated webhook plugins to avoid sending multiple notifications upon event triggers. Also, if the Dink config panel was already open, please close and reopen it to view the latest changes.
 
 #### Examples
 
