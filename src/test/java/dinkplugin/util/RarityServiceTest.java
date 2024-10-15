@@ -10,9 +10,7 @@ import net.runelite.http.api.RuneLiteAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 
 import java.util.OptionalDouble;
 
@@ -30,13 +28,11 @@ class RarityServiceTest extends MockedTestBase {
     @Bind
     private final Gson gson = RuneLiteAPI.GSON;
 
-    @Mock
     @Bind
-    private ItemManager itemManager;
+    private final ItemManager itemManager = Mockito.mock(ItemManager.class);
 
-    @Spy
     @Bind
-    private RarityService service;
+    private final RarityService service = Mockito.spy(new RarityService(gson, itemManager));
 
     @Override
     @BeforeEach
