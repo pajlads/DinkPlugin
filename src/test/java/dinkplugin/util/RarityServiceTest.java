@@ -1,12 +1,8 @@
 package dinkplugin.util;
 
-import com.google.gson.Gson;
 import com.google.inject.testing.fieldbinder.Bind;
-import dinkplugin.MockedTestBase;
-import net.runelite.api.ItemComposition;
+import lombok.Getter;
 import net.runelite.api.ItemID;
-import net.runelite.client.game.ItemManager;
-import net.runelite.http.api.RuneLiteAPI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,38 +10,18 @@ import org.mockito.Mockito;
 
 import java.util.OptionalDouble;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class RarityServiceTest extends MockedTestBase {
-
-    private static final double DELTA = MathUtils.EPSILON;
+class RarityServiceTest extends AbstractRarityServiceTest {
 
     @Bind
-    private final Gson gson = RuneLiteAPI.GSON;
-
-    @Bind
-    private final ItemManager itemManager = Mockito.mock(ItemManager.class);
-
-    @Bind
+    @Getter
     private final RarityService service = Mockito.spy(new RarityService(gson, itemManager));
 
     @Override
     @BeforeEach
     protected void setUp() {
         super.setUp();
-
-        // default item mock
-        Mockito.doAnswer(invocation -> {
-            ItemComposition comp = mock(ItemComposition.class);
-            when(comp.getMembersName()).thenReturn("?");
-            when(comp.getNote()).thenReturn(-1);
-            return comp;
-        }).when(itemManager).getItemComposition(anyInt());
 
         // actual item mocks
         mockItem(ItemID.DRAGON_SPEAR, "Dragon spear");
@@ -265,22 +241,4 @@ class RarityServiceTest extends MockedTestBase {
         test("Tribesman", ItemID.SUPERANTIPOISON3, 1, 1.0 / 138);
     }
 
-    private void test(String npcName, int itemId, int quantity, double expectedProbability) {
-        OptionalDouble rarity = service.getRarity(npcName, itemId, quantity);
-        assertTrue(rarity.isPresent());
-        assertEquals(expectedProbability, rarity.getAsDouble(), DELTA);
-    }
-
-    private void mockItem(int id, String name, boolean noted) {
-        ItemComposition item = mock(ItemComposition.class);
-        when(item.getName()).thenReturn(name);
-        when(item.getMembersName()).thenReturn(name);
-        when(item.getNote()).thenReturn(noted ? 799 : -1);
-        when(item.getLinkedNoteId()).thenReturn(noted ? id - 1 : id + 1);
-        when(itemManager.getItemComposition(id)).thenReturn(item);
-    }
-
-    private void mockItem(int id, String name) {
-        this.mockItem(id, name, false);
-    }
 }
