@@ -248,7 +248,7 @@ The possible values for `extra.category` correspond to the [`LootRecordType`](ht
 
 `killCount` is only specified for NPC/EVENT loot with the base RuneLite Loot Tracker plugin enabled.
 
-`rarity` is currently only populated for NPC drops. This data is (imperfectly) scraped from the wiki, so it may not be 100% accurate. Also, we do not report a rarity if the NPC always drops the item on every kill.
+`rarity` is currently only populated for NPC drops (and some pickpocket events). This data is (imperfectly) scraped from the wiki, so it may not be 100% accurate. Also, we do not report a rarity if the NPC always drops the item on every kill.
 
 The items are valued at GE prices (when possible) if the user has not disabled the `Use actively traded price` base RuneLite setting. Otherwise, the store price of the item is used.
 
