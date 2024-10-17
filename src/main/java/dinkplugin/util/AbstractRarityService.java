@@ -41,10 +41,11 @@ public abstract class AbstractRarityService {
         }
 
         raw.forEach((sourceName, rawDrops) -> {
-            List<RareDrop> drops = rawDrops.stream()
+            ArrayList<RareDrop> drops = rawDrops.stream()
                 .map(RawDrop::transform)
                 .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(ArrayList::new));
+            drops.trimToSize();
             dropsBySourceName.put(sourceName, drops);
         });
     }
