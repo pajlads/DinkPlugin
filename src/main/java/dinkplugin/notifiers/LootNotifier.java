@@ -14,6 +14,7 @@ import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.MathUtils;
+import dinkplugin.util.ThievingService;
 import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
@@ -52,6 +53,9 @@ public class LootNotifier extends BaseNotifier {
 
     @Inject
     private RarityService rarityService;
+
+    @Inject
+    private ThievingService thievingService;
 
     private final Collection<Pattern> itemNameAllowlist = new CopyOnWriteArrayList<>();
     private final Collection<Pattern> itemNameDenylist = new CopyOnWriteArrayList<>();
@@ -162,6 +166,8 @@ public class LootNotifier extends BaseNotifier {
             OptionalDouble rarity;
             if (type == LootRecordType.NPC) {
                 rarity = rarityService.getRarity(dropper, item.getId(), item.getQuantity());
+            } else if (type == LootRecordType.PICKPOCKET) {
+                rarity = thievingService.getRarity(dropper, item.getId(), item.getQuantity());
             } else {
                 rarity = OptionalDouble.empty();
             }
