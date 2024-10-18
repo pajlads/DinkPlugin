@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 class ThievingServiceTest extends AbstractRarityServiceTest {
 
     @Bind
@@ -41,17 +43,23 @@ class ThievingServiceTest extends AbstractRarityServiceTest {
     void testFarmer() {
         test("Master Farmer", ItemID.SNAPE_GRASS_SEED, 1, 1.0 / 260);
         test("Master Farmer", ItemID.SNAPDRAGON_SEED, 1, 1.0 / 2083);
+
+        assertFalse(service.getRarity("Farmer", ItemID.SNAPDRAGON_SEED, 1).isPresent());
     }
 
     @Test
     void testHam() {
         test("H.A.M. Member", ItemID.HAM_CLOAK, 1, 1.0 / 100);
         test("H.A.M. Member", ItemID.HAM_BOOTS, 1, 1.0 / 100);
+
+        assertFalse(service.getRarity("Thief", ItemID.HAM_BOOTS, 1).isPresent());
     }
 
     @Test
     void testCitizen() {
         test("Wealthy citizen", ItemID.CLUE_SCROLL_EASY, 1, 1.0 / 85);
+
+        assertFalse(service.getRarity("Wealthy citizen", ItemID.CLUE_SCROLL_HARD, 1).isPresent());
     }
 
     @Test
