@@ -89,8 +89,9 @@ public abstract class AbstractRarityService {
 
         Collection<RareDrop> transform() {
             int rounds = rolls != null ? rolls : 1;
-            int min = quantMin != null ? quantMin : quantity;
-            int max = quantMax != null ? quantMax : quantity;
+            int q = quantity != null ? quantity : 1;
+            int min = quantMin != null ? quantMin : q;
+            int max = quantMax != null ? quantMax : q;
             double prob = 1 / denominator;
 
             if (rounds == 1) {

@@ -81,6 +81,7 @@ class RarityCalculator {
         private List<Drop> drops;
 
         Collection<Transformed> getTransformed() {
+            if (name.startsWith("Bloodthirst")) return Collections.emptyList(); // leagues NPCs not in the game now
             if (drops == null || drops.isEmpty()) return Collections.emptyList();
             SortedSet<Transformed> set = new TreeSet<>(COMPARATOR);
             boolean hasAlways = drops.stream().anyMatch(d -> "Always".equals(d.getRarity()));
@@ -116,7 +117,8 @@ class RarityCalculator {
             Integer q, min, max;
             String[] quantParts = StringUtils.split(cleanQuantity, "–;");
             if (quantParts.length == 1) {
-                q = Integer.parseInt(cleanQuantity.trim());
+                int parsed = Integer.parseInt(cleanQuantity.trim());
+                q = parsed != 1 ? parsed : null;
                 min = max = null;
             } else {
                 q = null;

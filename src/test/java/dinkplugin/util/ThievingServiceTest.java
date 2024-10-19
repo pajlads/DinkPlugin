@@ -95,6 +95,8 @@ class ThievingServiceTest extends AbstractRarityServiceTest {
     @Test
     void testHur() {
         test("TzHaar-Hur", ItemID.UNCUT_DIAMOND, 1, 1.0 / 195);
+
+        assertFalse(service.getRarity("TzHaar-Hur", ItemID.UNCUT_DIAMOND, 2).isPresent());
     }
 
 }
