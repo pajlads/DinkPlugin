@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.12
+
 - Minor: Add rarity information on select pickpocketing drops. (#571)
 - Bugfix: Enforce value threshold for always-dropped loot when rarity threshold is 1 and require both value and rarity is true. (#560)
 - Dev: Optimize regex performance for looted items on the item denylist. (#565)
