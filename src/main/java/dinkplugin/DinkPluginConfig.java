@@ -312,6 +312,13 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "nameFilterMode",
+        name = "",
+        description = ""
+    )
+    void setNameFilterMode(FilterMode filterMode);
+
+    @ConfigItem(
         keyName = "playerLookupService",
         name = "Player Lookup Service",
         description = "The service used to lookup a players account, to make their name clickable in Discord embeds",

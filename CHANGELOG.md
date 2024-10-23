@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add `::DinkMigrate` command to import configuration from other Discord webhook plugins. (#564)
+
 ## 1.10.12
 
 - Minor: Add rarity information on select pickpocketing drops. (#571)
