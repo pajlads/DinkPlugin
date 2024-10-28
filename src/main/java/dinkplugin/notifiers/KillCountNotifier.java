@@ -1,9 +1,7 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.message.Embed;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
-import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.util.Utils;
@@ -11,8 +9,6 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.WidgetLoaded;
@@ -25,9 +21,6 @@ import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Singleton;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -144,34 +137,13 @@ public class KillCountNotifier extends BaseNotifier {
             .replacement("%TIME%", Replacements.ofText(time))
             .build();
 
-        // Prepare body
-        NotificationBody.NotificationBodyBuilder<BossNotificationData> body =
-            NotificationBody.<BossNotificationData>builder()
-                .text(content)
-                .extra(data)
-                .playerName(player)
-                .type(NotificationType.KILL_COUNT);
-
-        // Add embed if not screenshotting
-        boolean screenshot = config.killCountSendImage();
-        if (!screenshot && config.discordRichEmbeds()) {
-            if (ba) {
-                body.embeds(Collections.singletonList(Embed.ofImage(ItemUtils.getNpcImageUrl(NpcID.PENANCE_QUEEN))));
-            } else {
-                Arrays.stream(client.getCachedNPCs())
-                    .filter(Objects::nonNull)
-                    .filter(npc -> data.getBoss().equalsIgnoreCase(npc.getName()))
-                    .findAny()
-                    .map(NPC::getId)
-                    .map(ItemUtils::getNpcImageUrl)
-                    .map(Embed::ofImage)
-                    .map(Collections::singletonList)
-                    .ifPresent(body::embeds);
-            }
-        }
-
         // Call webhook
-        createMessage(screenshot, body.build());
+        createMessage(config.killCountSendImage(), NotificationBody.builder()
+            .text(content)
+            .extra(data)
+            .playerName(player)
+            .type(NotificationType.KILL_COUNT)
+            .build());
     }
 
     private boolean checkKillInterval(int killCount, @Nullable Boolean pb) {

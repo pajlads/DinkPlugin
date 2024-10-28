@@ -1,16 +1,13 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
-import dinkplugin.message.Embed;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
-import dinkplugin.util.ItemUtils;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.ComponentID;
@@ -22,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -479,7 +475,6 @@ class KillCountNotifierTest extends MockedNotifierTest {
                 .extra(new BossNotificationData(boss, count, "The Queen is dead!", null, null))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
-                .embeds(Collections.singletonList(Embed.ofImage(ItemUtils.getNpcImageUrl(NpcID.PENANCE_QUEEN))))
                 .build()
         );
     }
