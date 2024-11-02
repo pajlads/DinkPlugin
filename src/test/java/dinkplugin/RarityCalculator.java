@@ -108,7 +108,7 @@ class RarityCalculator {
             }
             if ("Tooth half of key (moon key)".equalsIgnoreCase(name)) {
                 // Workaround for https://discord.com/channels/790429747364626452/954397870889529385/1294355009798017044
-                this.itemId = 30105;
+                this.itemId = ItemID.TOOTH_HALF_OF_KEY_30105;
             }
             if (itemId == null || rarity == null || quantity == null) return null;
             if (rarity.equals("Always") || rarity.equals("Varies") || rarity.equals("Random") || rarity.equals("Once") || rarity.equals("Unknown")) return null;
