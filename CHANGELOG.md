@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Remove boss image embed from kill count notifications with screenshots disabled. (#578)
+
 ## 1.10.12
 
 - Minor: Add rarity information on select pickpocketing drops. (#571)
