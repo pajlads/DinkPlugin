@@ -100,6 +100,7 @@ public class CombatTaskNotifier extends BaseNotifier {
             boolean crossedThreshold = prevThreshold > 0 && totalPoints - taskPoints < prevThreshold;
             CombatAchievementTier completedTier = crossedThreshold ? prev.getValue() : null;
             String completedTierName = completedTier != null ? completedTier.getDisplayName() : "N/A";
+            String currentTierName = crossedThreshold ? null : (prev != null ? String.valueOf(prev.getValue()) : null);
 
             String player = Utils.getPlayerName(client);
             Template message = Template.builder()
@@ -117,7 +118,7 @@ public class CombatTaskNotifier extends BaseNotifier {
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
                 .text(message)
                 .playerName(player)
-                .extra(new CombatAchievementData(tier, task, taskPoints, totalPoints, tierProgress, tierTotalPoints, completedTier))
+                .extra(new CombatAchievementData(tier, task, taskPoints, totalPoints, tierProgress, tierTotalPoints, GRANDMASTER_TOTAL_POINTS_ID, currentTierName, completedTier))
                 .build());
         });
     }

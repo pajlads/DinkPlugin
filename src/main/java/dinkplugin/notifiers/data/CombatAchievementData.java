@@ -62,6 +62,17 @@ public class CombatAchievementData extends NotificationData {
     Integer tierTotalPoints;
 
     /**
+     * The total points achievable
+     */
+    int totalPossiblePoints;
+
+    /**
+     * The current tier the player holds
+     */
+    @Nullable
+    String currentTierName;
+
+    /**
      * The tier whose rewards were just unlocked,
      * <i>if</i> the player just completed the tier.
      */
