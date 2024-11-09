@@ -71,7 +71,6 @@ public class Utils {
 
     private final char ELLIPSIS = '\u2026'; // '…'
 
-    @SuppressWarnings("MagicConstant")
     private final @VarCStr int TOA_MEMBER_NAME = 1099, TOB_MEMBER_NAME = 330;
     private final int TOA_PARTY_MAX_SIZE = 8, TOB_PARTY_MAX_SIZE = 5;
 
@@ -259,7 +258,6 @@ public class Utils {
     private List<String> getVarcStrings(@NotNull Client client, @VarCStr final int initialVarcId, final int maxSize) {
         List<String> strings = new ArrayList<>(maxSize);
         for (int i = 0; i < maxSize; i++) {
-            // noinspection MagicConstant
             String name = client.getVarcStrValue(initialVarcId + i);
             if (name == null || name.isEmpty()) continue;
             strings.add(name.replace('\u00A0', ' '));
