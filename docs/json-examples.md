@@ -351,7 +351,7 @@ JSON for Combat Achievement Notifications:
     "tierProgress": 517,
     "tierTotalPoints": 645,
     "totalPossiblePoints": 14814,
-    "currentTier": "MASTER",
+    "currentTier": "MASTER"
   },
   "type": "COMBAT_ACHIEVEMENT"
 }
