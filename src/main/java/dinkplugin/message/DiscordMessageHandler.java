@@ -114,6 +114,14 @@ public class DiscordMessageHandler {
                         }
                     }
                 }
+
+                // Avoid okhttp's built-in immediate retry mechanism (we have our own exponential backoff implemented)
+                if (response.code() == 503) {
+                    return response.newBuilder()
+                        .removeHeader("Retry-After")
+                        .build();
+                }
+
                 return response;
             })
             .build();
