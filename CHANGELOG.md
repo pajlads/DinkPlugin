@@ -1,7 +1,7 @@
 ## Unreleased
 
 - Minor: Remove boss image embed from kill count notifications with screenshots disabled. (#578)
-- Dev: Add player's current CA tier and total possible CA points. (#586)
+- Dev: Add current tier and total possible points to combat task metadata. (#586)
 
 ## 1.10.12
 
