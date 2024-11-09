@@ -73,7 +73,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
                         .replacement("{{task}}", Replacements.ofWiki("Whack-a-Mole"))
                         .build()
                 )
-                .extra(new CombatAchievementData(CombatAchievementTier.HARD, "Whack-a-Mole", 3, 200, 85, 189, null))
+                .extra(new CombatAchievementData(CombatAchievementTier.HARD, "Whack-a-Mole", 3, 200, 85, 189, 2005,  "Medium", null))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
                 .build()
@@ -100,7 +100,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildUnlockTemplate("Master", "No Pressure"))
-                .extra(new CombatAchievementData(CombatAchievementTier.GRANDMASTER, "No Pressure", 6, 1466, 1466 - 1465, 2005 - 1465, CombatAchievementTier.MASTER))
+                .extra(new CombatAchievementData(CombatAchievementTier.GRANDMASTER, "No Pressure", 6, 1466, 1466 - 1465, 2005 - 1465, 2005, null, CombatAchievementTier.MASTER))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
                 .build()
@@ -127,7 +127,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildUnlockTemplate("Grandmaster", "No Pressure"))
-                .extra(new CombatAchievementData(CombatAchievementTier.GRANDMASTER, "No Pressure", 6, 2005, null, null, CombatAchievementTier.GRANDMASTER))
+                .extra(new CombatAchievementData(CombatAchievementTier.GRANDMASTER, "No Pressure", 6, 2005, null, null, 2005, null, CombatAchievementTier.GRANDMASTER))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
                 .build()
