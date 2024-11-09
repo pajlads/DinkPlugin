@@ -84,6 +84,7 @@ public class CombatTaskNotifier extends BaseNotifier {
         clientThread.invokeAtTickEnd(() -> {
             int taskPoints = tier.getPoints();
             int totalPoints = client.getVarbitValue(TOTAL_POINTS_ID);
+            int totalPossiblePoints = client.getVarbitValue(GRANDMASTER_TOTAL_POINTS_ID);
 
             Integer nextUnlockPointsThreshold = cumulativeUnlockPoints.ceilingKey(totalPoints + 1);
             Map.Entry<Integer, CombatAchievementTier> prev = cumulativeUnlockPoints.floorEntry(totalPoints);
@@ -118,7 +119,7 @@ public class CombatTaskNotifier extends BaseNotifier {
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
                 .text(message)
                 .playerName(player)
-                .extra(new CombatAchievementData(tier, task, taskPoints, totalPoints, tierProgress, tierTotalPoints, GRANDMASTER_TOTAL_POINTS_ID, currentTierName, completedTier))
+                .extra(new CombatAchievementData(tier, task, taskPoints, totalPoints, tierProgress, tierTotalPoints, totalPossiblePoints, currentTierName, completedTier))
                 .build());
         });
     }
