@@ -9,6 +9,7 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Client;
 import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.WidgetLoaded;
@@ -72,7 +73,7 @@ public class KillCountNotifier extends BaseNotifier {
 
     public void onGameMessage(String message) {
         if (isEnabled())
-            parse(message).ifPresent(this::updateData);
+            parse(client, message).ifPresent(this::updateData);
     }
 
     public void onFriendsChatNotification(String message) {
@@ -91,7 +92,7 @@ public class KillCountNotifier extends BaseNotifier {
             // https://oldschool.runescape.wiki/w/Barbarian_Assault/Rewards#Earning_Honour_points
             if (widget != null && widget.getText().contains("80 ") && widget.getText().contains("5 ")) {
                 int gambleCount = client.getVarbitValue(Varbits.BA_GC);
-                this.data.set(new BossNotificationData(BA_BOSS_NAME, gambleCount, "The Queen is dead!", null, null));
+                this.data.set(new BossNotificationData(BA_BOSS_NAME, gambleCount, "The Queen is dead!", null, null, null));
             }
         }
     }
@@ -170,18 +171,19 @@ public class KillCountNotifier extends BaseNotifier {
                     defaultIfNull(updated.getCount(), old.getCount()),
                     defaultIfNull(updated.getGameMessage(), old.getGameMessage()),
                     defaultIfNull(updated.getTime(), old.getTime()),
-                    defaultIfNull(updated.isPersonalBest(), old.isPersonalBest())
+                    defaultIfNull(updated.isPersonalBest(), old.isPersonalBest()),
+                    defaultIfNull(updated.getParty(), old.getParty())
                 );
             }
         });
     }
 
-    private static Optional<BossNotificationData> parse(String message) {
+    private static Optional<BossNotificationData> parse(Client client, String message) {
         if (message.startsWith("Preparation")) return Optional.empty();
         Optional<Pair<String, Integer>> boss = parseBoss(message);
         if (boss.isPresent())
-            return boss.map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null));
-        return parseTime(message).map(t -> new BossNotificationData(null, null, null, t.getLeft(), t.getRight()));
+            return boss.map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null, Utils.getBossParty(client, pair.getLeft())));
+        return parseTime(message).map(t -> new BossNotificationData(null, null, null, t.getLeft(), t.getRight(), null));
     }
 
     private static Optional<Pair<Duration, Boolean>> parseTime(String message) {

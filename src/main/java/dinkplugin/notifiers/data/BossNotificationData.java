@@ -5,8 +5,10 @@ import dinkplugin.util.DurationAdapter;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.experimental.Accessors;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
+import java.util.Collection;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -18,4 +20,6 @@ public class BossNotificationData extends NotificationData {
     Duration time;
     @Accessors(fluent = true)
     Boolean isPersonalBest;
+    @Nullable
+    Collection<String> party;
 }

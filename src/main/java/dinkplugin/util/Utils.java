@@ -212,7 +212,26 @@ public class Utils {
         }
     }
 
-    public Collection<String> getXericChambersParty(@NotNull Client client) {
+    @Nullable
+    public Collection<String> getBossParty(@NotNull Client client, @NotNull String source) {
+        switch (source) {
+            case "Chambers of Xeric":
+            case "Chambers of Xeric Challenge Mode":
+                return Utils.getXericChambersParty(client);
+            case "Tombs of Amascut":
+            case "Tombs of Amascut: Entry Mode":
+            case "Tombs of Amascut: Expert Mode":
+                return Utils.getAmascutTombsParty(client);
+            case "Theatre of Blood":
+            case "Theatre of Blood: Entry Mode":
+            case "Theatre of Blood: Hard Mode":
+                return Utils.getBloodTheatreParty(client);
+            default:
+                return null;
+        }
+    }
+
+    private Collection<String> getXericChambersParty(@NotNull Client client) {
         Widget widget = client.getWidget(InterfaceID.RAIDING_PARTY, 10);
         if (widget == null) return Collections.emptyList();
 
@@ -229,11 +248,11 @@ public class Utils {
         return names;
     }
 
-    public Collection<String> getAmascutTombsParty(@NotNull Client client) {
+    private Collection<String> getAmascutTombsParty(@NotNull Client client) {
         return getVarcStrings(client, TOA_MEMBER_NAME, TOA_PARTY_MAX_SIZE);
     }
 
-    public Collection<String> getBloodTheatreParty(@NotNull Client client) {
+    private Collection<String> getBloodTheatreParty(@NotNull Client client) {
         return getVarcStrings(client, TOB_MEMBER_NAME, TOB_PARTY_MAX_SIZE);
     }
 
