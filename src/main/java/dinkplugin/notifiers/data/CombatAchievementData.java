@@ -70,7 +70,7 @@ public class CombatAchievementData extends NotificationData {
      * The current tier the player holds
      */
     @Nullable
-    String currentTierName;
+    CombatAchievementTier currentTier;
 
     /**
      * The tier whose rewards were just unlocked,

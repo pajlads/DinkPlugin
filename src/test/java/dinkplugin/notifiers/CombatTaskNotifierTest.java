@@ -73,7 +73,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
                         .replacement("{{task}}", Replacements.ofWiki("Whack-a-Mole"))
                         .build()
                 )
-                .extra(new CombatAchievementData(CombatAchievementTier.HARD, "Whack-a-Mole", 3, 200, 85, 189, 2005,  "Medium", null))
+                .extra(new CombatAchievementData(CombatAchievementTier.HARD, "Whack-a-Mole", 3, 200, 85, 189, 2005,  CombatAchievementTier.MEDIUM, null))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
                 .build()

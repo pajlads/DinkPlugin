@@ -50,7 +50,7 @@ JSON sent with every notification but only in certain circumstances:
     "avatarHash": "abc123def345abc123def345abc123de"
   },
   "world": 518,
-  "regionId": 12850,
+  "regionId": 12850
 }
 ```
 
@@ -351,7 +351,7 @@ JSON for Combat Achievement Notifications:
     "tierProgress": 517,
     "tierTotalPoints": 645,
     "totalPossiblePoints": 14814,
-    "currentTierName": "Medium",
+    "currentTier": "MASTER",
   },
   "type": "COMBAT_ACHIEVEMENT"
 }
