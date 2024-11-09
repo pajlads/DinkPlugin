@@ -86,7 +86,8 @@ public class CombatTaskNotifier extends BaseNotifier {
             int totalPoints = client.getVarbitValue(TOTAL_POINTS_ID);
             int totalPossiblePoints = client.getVarbitValue(GRANDMASTER_TOTAL_POINTS_ID);
 
-            Integer nextUnlockPointsThreshold = cumulativeUnlockPoints.ceilingKey(totalPoints + 1);
+            var nextThreshold = cumulativeUnlockPoints.ceilingEntry(totalPoints + 1);
+            Integer nextUnlockPointsThreshold = nextThreshold != null ? nextThreshold.getKey() : null;
             Map.Entry<Integer, CombatAchievementTier> prev = cumulativeUnlockPoints.floorEntry(totalPoints);
             int prevThreshold = prev != null ? prev.getKey() : 0;
 
@@ -102,6 +103,7 @@ public class CombatTaskNotifier extends BaseNotifier {
             CombatAchievementTier completedTier = crossedThreshold ? prev.getValue() : null;
             String completedTierName = completedTier != null ? completedTier.getDisplayName() : "N/A";
             CombatAchievementTier currentTier = crossedThreshold || prev == null ? null : prev.getValue();
+            CombatAchievementTier nextTier = nextThreshold != null ? nextThreshold.getValue() : null;
 
             String player = Utils.getPlayerName(client);
             Template message = Template.builder()
@@ -119,7 +121,7 @@ public class CombatTaskNotifier extends BaseNotifier {
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
                 .text(message)
                 .playerName(player)
-                .extra(new CombatAchievementData(tier, task, taskPoints, totalPoints, tierProgress, tierTotalPoints, totalPossiblePoints, currentTier, completedTier))
+                .extra(new CombatAchievementData(tier, task, taskPoints, totalPoints, tierProgress, tierTotalPoints, totalPossiblePoints, currentTier, nextTier, completedTier))
                 .build());
         });
     }

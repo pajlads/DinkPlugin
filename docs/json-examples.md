@@ -351,7 +351,8 @@ JSON for Combat Achievement Notifications:
     "tierProgress": 517,
     "tierTotalPoints": 645,
     "totalPossiblePoints": 14814,
-    "currentTier": "MASTER"
+    "currentTier": "MASTER",
+    "nextTier": "GRANDMASTER"
   },
   "type": "COMBAT_ACHIEVEMENT"
 }
@@ -370,6 +371,7 @@ JSON for Combat Achievement Tier Completion Notifications:
     "tierProgress": 0,
     "tierTotalPoints": 540,
     "totalPossiblePoints": 14814,
+    "nextTier": "GRANDMASTER",
     "justCompletedTier": "MASTER"
   },
   "type": "COMBAT_ACHIEVEMENT"

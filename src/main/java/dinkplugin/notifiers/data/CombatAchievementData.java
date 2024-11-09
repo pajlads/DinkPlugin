@@ -73,6 +73,12 @@ public class CombatAchievementData extends NotificationData {
     CombatAchievementTier currentTier;
 
     /**
+     * The next tier to be unlocked
+     */
+    @Nullable
+    CombatAchievementTier nextTier;
+
+    /**
      * The tier whose rewards were just unlocked,
      * <i>if</i> the player just completed the tier.
      */
