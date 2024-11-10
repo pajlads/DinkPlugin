@@ -87,14 +87,13 @@ public class CombatTaskNotifier extends BaseNotifier {
             int totalPossiblePoints = client.getVarbitValue(GRANDMASTER_TOTAL_POINTS_ID);
 
             var nextThreshold = cumulativeUnlockPoints.ceilingEntry(totalPoints + 1);
-            Integer nextUnlockPointsThreshold = nextThreshold != null ? nextThreshold.getKey() : null;
             Map.Entry<Integer, CombatAchievementTier> prev = cumulativeUnlockPoints.floorEntry(totalPoints);
             int prevThreshold = prev != null ? prev.getKey() : 0;
 
             Integer tierProgress, tierTotalPoints;
-            if (nextUnlockPointsThreshold != null) {
+            if (nextThreshold != null) {
                 tierProgress = totalPoints - prevThreshold;
-                tierTotalPoints = nextUnlockPointsThreshold - prevThreshold;
+                tierTotalPoints = nextThreshold.getKey() - prevThreshold;
             } else {
                 tierProgress = tierTotalPoints = null;
             }
