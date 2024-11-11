@@ -43,14 +43,15 @@ JSON sent with every notification but only in certain circumstances:
 ```json5
 {
   "clanName": "Dink QA",
-  "groupIronClanName":"Dink QA",
-  "discordUser":{
-    "id":"012345678910111213",
-    "name":"Gamer",
-    "avatarHash":"abc123def345abc123def345abc123de"
+  "groupIronClanName": "Dink QA",
+  "discordUser": {
+    "id": "012345678910111213",
+    "name": "Gamer",
+    "avatarHash": "abc123def345abc123def345abc123de"
   },
   "world": 518,
-  "regionId": 12850,
+  "regionId": 12850
+}
 ```
 
 `clanName` is only sent when the player is in a clan and has the advanced setting `Send Clan Name` enabled.  
@@ -348,7 +349,10 @@ JSON for Combat Achievement Notifications:
     "taskPoints": 6,
     "totalPoints": 1337,
     "tierProgress": 517,
-    "tierTotalPoints": 645
+    "tierTotalPoints": 645,
+    "totalPossiblePoints": 14814,
+    "currentTier": "MASTER",
+    "nextTier": "GRANDMASTER"
   },
   "type": "COMBAT_ACHIEVEMENT"
 }
@@ -366,6 +370,8 @@ JSON for Combat Achievement Tier Completion Notifications:
     "totalPoints": 1465,
     "tierProgress": 0,
     "tierTotalPoints": 540,
+    "totalPossiblePoints": 14814,
+    "nextTier": "GRANDMASTER",
     "justCompletedTier": "MASTER"
   },
   "type": "COMBAT_ACHIEVEMENT"
