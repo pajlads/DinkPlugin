@@ -29,6 +29,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
@@ -71,7 +72,8 @@ public class Utils {
 
     private final char ELLIPSIS = '\u2026'; // '…'
 
-    private final @VarCStr int TOA_MEMBER_NAME = 1099, TOB_MEMBER_NAME = 330;
+    @VisibleForTesting
+    public final @VarCStr int TOA_MEMBER_NAME = 1099, TOB_MEMBER_NAME = 330;
     private final int TOA_PARTY_MAX_SIZE = 8, TOB_PARTY_MAX_SIZE = 5;
 
     private final @Component int PRIVATE_CHAT_WIDGET = WidgetUtil.packComponentId(InterfaceID.PRIVATE_CHAT, 0);

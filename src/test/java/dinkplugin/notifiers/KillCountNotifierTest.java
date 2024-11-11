@@ -7,6 +7,7 @@ import dinkplugin.util.TimeUtils;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
+import dinkplugin.util.Utils;
 import net.runelite.api.NPC;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.WidgetLoaded;
@@ -20,6 +21,7 @@ import org.mockito.InjectMocks;
 
 import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -378,6 +380,12 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // more config
         when(config.killCountInterval()).thenReturn(99);
 
+        // mock party
+        List<String> party = List.of(PLAYER_NAME, "Rasmus", "Romy");
+        for (int i = 0; i < party.size(); i++) {
+            when(client.getVarcStrValue(Utils.TOA_MEMBER_NAME + i)).thenReturn(party.get(i));
+        }
+
         // fire events
         notifier.onGameMessage("Tombs of Amascut: Expert Mode total completion time: 25:00 (new personal best)");
         String gameMessage = "Your completed Tombs of Amascut: Expert Mode count is: 8.";
@@ -390,7 +398,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildPbTemplate("Tombs of Amascut: Expert Mode", "25:00.00", 8))
-                .extra(new BossNotificationData("Tombs of Amascut: Expert Mode", 8, gameMessage, Duration.ofMinutes(25), true, Collections.emptyList()))
+                .extra(new BossNotificationData("Tombs of Amascut: Expert Mode", 8, gameMessage, Duration.ofMinutes(25), true, party))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
