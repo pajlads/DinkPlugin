@@ -327,6 +327,57 @@ class KillCountNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyTobPb() {
+        // more config
+        when(config.killCountNotifyInitial()).thenReturn(false);
+        when(config.killCountInterval()).thenReturn(99);
+
+        // fire events
+        notifier.onGameMessage("Wave 'The Final Challenge' (Normal Mode) complete!\nDuration: 7:42.60\nTheatre of Blood completion time: 21:33.60 (new personal best)");
+        notifier.onGameMessage("Theatre of Blood total completion time: 25:28.80 (new personal best)");
+        String gameMessage = "Your completed Theatre of Blood count is: 1.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .text(buildPbTemplate("Theatre of Blood", "21:33.60", 1))
+                .extra(new BossNotificationData("Theatre of Blood", 1, gameMessage, Duration.ofMinutes(21).plusSeconds(33).plusMillis(600), true, Collections.emptyList()))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyTobInterval() {
+        // more config
+        when(config.killCountInterval()).thenReturn(5);
+
+        // fire events
+        notifier.onGameMessage("Wave 'The Final Challenge' (Normal Mode) complete!\nDuration: 6:37.80\nTheatre of Blood completion time: 19:26.40. Personal best: 19:24.00");
+        notifier.onGameMessage("Theatre of Blood total completion time: 26:34.20 (new personal best)");
+        String gameMessage = "Your completed Theatre of Blood count is: 5.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .text(buildTemplate("Theatre of Blood", 5))
+                .extra(new BossNotificationData("Theatre of Blood", 5, gameMessage, Duration.ofMinutes(19).plusSeconds(26).plusMillis(400), false, Collections.emptyList()))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyGauntletPb() {
         // more config
         when(config.killCountInterval()).thenReturn(99);
