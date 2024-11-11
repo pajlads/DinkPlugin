@@ -84,15 +84,16 @@ public class CombatTaskNotifier extends BaseNotifier {
         clientThread.invokeAtTickEnd(() -> {
             int taskPoints = tier.getPoints();
             int totalPoints = client.getVarbitValue(TOTAL_POINTS_ID);
+            int totalPossiblePoints = client.getVarbitValue(GRANDMASTER_TOTAL_POINTS_ID);
 
-            Integer nextUnlockPointsThreshold = cumulativeUnlockPoints.ceilingKey(totalPoints + 1);
+            var nextThreshold = cumulativeUnlockPoints.ceilingEntry(totalPoints + 1);
             Map.Entry<Integer, CombatAchievementTier> prev = cumulativeUnlockPoints.floorEntry(totalPoints);
             int prevThreshold = prev != null ? prev.getKey() : 0;
 
             Integer tierProgress, tierTotalPoints;
-            if (nextUnlockPointsThreshold != null) {
+            if (nextThreshold != null) {
                 tierProgress = totalPoints - prevThreshold;
-                tierTotalPoints = nextUnlockPointsThreshold - prevThreshold;
+                tierTotalPoints = nextThreshold.getKey() - prevThreshold;
             } else {
                 tierProgress = tierTotalPoints = null;
             }
@@ -100,6 +101,8 @@ public class CombatTaskNotifier extends BaseNotifier {
             boolean crossedThreshold = prevThreshold > 0 && totalPoints - taskPoints < prevThreshold;
             CombatAchievementTier completedTier = crossedThreshold ? prev.getValue() : null;
             String completedTierName = completedTier != null ? completedTier.getDisplayName() : "N/A";
+            CombatAchievementTier currentTier = crossedThreshold || prev == null ? null : prev.getValue();
+            CombatAchievementTier nextTier = nextThreshold != null ? nextThreshold.getValue() : null;
 
             String player = Utils.getPlayerName(client);
             Template message = Template.builder()
@@ -117,7 +120,7 @@ public class CombatTaskNotifier extends BaseNotifier {
                 .type(NotificationType.COMBAT_ACHIEVEMENT)
                 .text(message)
                 .playerName(player)
-                .extra(new CombatAchievementData(tier, task, taskPoints, totalPoints, tierProgress, tierTotalPoints, completedTier))
+                .extra(new CombatAchievementData(tier, task, taskPoints, totalPoints, tierProgress, tierTotalPoints, totalPossiblePoints, currentTier, nextTier, completedTier))
                 .build());
         });
     }
