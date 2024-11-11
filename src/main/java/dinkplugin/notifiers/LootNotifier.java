@@ -28,8 +28,6 @@ import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -241,7 +239,7 @@ public class LootNotifier extends BaseNotifier {
             }
             Double rarity = rarest != null ? rarest.getRarity() : null;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
-            Collection<String> party = type == LootRecordType.EVENT ? getParty(dropper) : null;
+            Collection<String> party = type == LootRecordType.EVENT ? Utils.getBossParty(client, dropper) : null;
             Evaluable source = type == LootRecordType.PLAYER
                 ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))
                 : Replacements.ofWiki(dropper);
@@ -262,20 +260,6 @@ public class LootNotifier extends BaseNotifier {
                     .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
                     .build()
             );
-        }
-    }
-
-    @Nullable
-    private Collection<String> getParty(@NotNull String source) {
-        switch (source) {
-            case "Chambers of Xeric":
-                return Utils.getXericChambersParty(client);
-            case "Tombs of Amascut":
-                return Utils.getAmascutTombsParty(client);
-            case "Theatre of Blood":
-                return Utils.getBloodTheatreParty(client);
-            default:
-                return null;
         }
     }
 

@@ -29,6 +29,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
@@ -71,8 +72,8 @@ public class Utils {
 
     private final char ELLIPSIS = '\u2026'; // '…'
 
-    @SuppressWarnings("MagicConstant")
-    private final @VarCStr int TOA_MEMBER_NAME = 1099, TOB_MEMBER_NAME = 330;
+    @VisibleForTesting
+    public final @VarCStr int TOA_MEMBER_NAME = 1099, TOB_MEMBER_NAME = 330;
     private final int TOA_PARTY_MAX_SIZE = 8, TOB_PARTY_MAX_SIZE = 5;
 
     private final @Component int PRIVATE_CHAT_WIDGET = WidgetUtil.packComponentId(InterfaceID.PRIVATE_CHAT, 0);
@@ -212,7 +213,26 @@ public class Utils {
         }
     }
 
-    public Collection<String> getXericChambersParty(@NotNull Client client) {
+    @Nullable
+    public Collection<String> getBossParty(@NotNull Client client, @NotNull String source) {
+        switch (source) {
+            case "Chambers of Xeric":
+            case "Chambers of Xeric Challenge Mode":
+                return Utils.getXericChambersParty(client);
+            case "Tombs of Amascut":
+            case "Tombs of Amascut: Entry Mode":
+            case "Tombs of Amascut: Expert Mode":
+                return Utils.getAmascutTombsParty(client);
+            case "Theatre of Blood":
+            case "Theatre of Blood: Entry Mode":
+            case "Theatre of Blood: Hard Mode":
+                return Utils.getBloodTheatreParty(client);
+            default:
+                return null;
+        }
+    }
+
+    private Collection<String> getXericChambersParty(@NotNull Client client) {
         Widget widget = client.getWidget(InterfaceID.RAIDING_PARTY, 10);
         if (widget == null) return Collections.emptyList();
 
@@ -229,18 +249,17 @@ public class Utils {
         return names;
     }
 
-    public Collection<String> getAmascutTombsParty(@NotNull Client client) {
+    private Collection<String> getAmascutTombsParty(@NotNull Client client) {
         return getVarcStrings(client, TOA_MEMBER_NAME, TOA_PARTY_MAX_SIZE);
     }
 
-    public Collection<String> getBloodTheatreParty(@NotNull Client client) {
+    private Collection<String> getBloodTheatreParty(@NotNull Client client) {
         return getVarcStrings(client, TOB_MEMBER_NAME, TOB_PARTY_MAX_SIZE);
     }
 
     private List<String> getVarcStrings(@NotNull Client client, @VarCStr final int initialVarcId, final int maxSize) {
         List<String> strings = new ArrayList<>(maxSize);
         for (int i = 0; i < maxSize; i++) {
-            // noinspection MagicConstant
             String name = client.getVarcStrValue(initialVarcId + i);
             if (name == null || name.isEmpty()) continue;
             strings.add(name.replace('\u00A0', ' '));

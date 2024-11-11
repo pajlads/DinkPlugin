@@ -326,15 +326,18 @@ JSON for Kill Count Notifications:
 {
   "content": "%USERNAME% has defeated %BOSS% with a completion count of %COUNT%",
   "extra": {
-    "boss": "King Black Dragon",
+    "boss": "Chambers of Xeric",
     "count": 69,
-    "gameMessage": "Your King Black Dragon kill count is: 69."
+    "gameMessage": "Your completed Chambers of Xeric count is: 69.",
+    "party": ["%USERNAME%", "another RSN", "yet another RSN"]
   },
   "type": "KILL_COUNT"
 }
 ```
 
 Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble count, rather than kill count.
+
+Also, `extra.party` is only populated for certain bosses (see [Loot](#loot) for more details).
 
 ### Combat Achievements
 
