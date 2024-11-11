@@ -2,6 +2,7 @@
 
 - Minor: Add `::DinkMigrate` command to import configuration from other Discord webhook plugins. (#564)
 - Minor: Remove boss image embed from kill count notifications with screenshots disabled. (#578)
+- Dev: Add current tier, total possible points, and next tier to combat task metadata. (#586)
 
 ## 1.10.12
 
