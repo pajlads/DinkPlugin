@@ -9,6 +9,7 @@ import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.PetNotifier;
+import dinkplugin.util.MigrationUtil;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.RequiredArgsConstructor;
@@ -144,11 +145,10 @@ public class SettingsManager {
 
     void onCommand(CommandExecuted event) {
         String cmd = event.getCommand();
+        String[] args = event.getArguments();
         if ("DinkImport".equalsIgnoreCase(cmd)) {
             importConfig();
         } else if ("DinkExport".equalsIgnoreCase(cmd)) {
-            String[] args = event.getArguments();
-
             Predicate<String> includeKey;
             if (args == null || args.length == 0) {
                 includeKey = k -> !webhookConfigKeys.contains(k);
@@ -186,6 +186,28 @@ public class SettingsManager {
         } else if ("DinkRegion".equalsIgnoreCase(cmd)) {
             int regionId = WorldUtils.getLocation(client).getRegionID();
             plugin.addChatSuccess(String.format("Your current region ID is: %d", regionId));
+        } else if ("DinkMigrate".equalsIgnoreCase(cmd)) {
+            if (args == null || args.length == 0) {
+                plugin.addChatWarning("Please specify which plugin's settings to migrate or 'all'. " +
+                    "Supported plugins include: " + String.join(", ", MigrationUtil.PLUGIN_METADATA.keySet()));
+            } else if (args.length > 1) {
+                plugin.addChatWarning("Please only specify one plugin at a time to migrate");
+            } else {
+                String key = args[0];
+                if ("all".equalsIgnoreCase(key)) {
+                    MigrationUtil.PLUGIN_METADATA.values()
+                        .forEach(func -> migrateConfig(func.apply(config)));
+                } else {
+                    var metadata = MigrationUtil.findMetadata(key, config);
+                    if (metadata == null) {
+                        plugin.addChatWarning("Failed to recognize plugin name to be migrated");
+                        return;
+                    }
+                    migrateConfig(metadata);
+                }
+                plugin.addChatSuccess("Finished migrating configs from other plugins. " +
+                    "Please verify the latest Dink settings and disable your other webhook plugins");
+            }
         }
     }
 
@@ -350,6 +372,13 @@ public class SettingsManager {
             .map(String::toLowerCase)
             .forEach(filteredNames::add);
         log.debug("Updated RSN Filter List to: {}", filteredNames);
+    }
+
+    private void migrateConfig(MigrationUtil.Metadata data) {
+        handleImport(data.readConfig(configManager, configValueTypes), true);
+        if (data.shouldEnableNotifier(configManager)) {
+            configManager.setConfiguration(CONFIG_GROUP, data.notifierEnabledKey(), true);
+        }
     }
 
     private void importDynamicConfig(String url) {
