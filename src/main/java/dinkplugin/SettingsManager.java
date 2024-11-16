@@ -136,6 +136,7 @@ public class SettingsManager {
                 ).add(key);
             }
         });
+        hiddenConfigKeys.add("importPolicy"); // not hidden, but shouldn't be overwritten
         webhookConfigKeys = ImmutableSet.<String>builder()
             .add("discordWebhook") // DinkPluginConfig#primaryWebhook
             .addAll(keysBySection.getOrDefault(DinkPluginConfig.webhookSection.toLowerCase().replace(" ", ""), Collections.emptySet()))
@@ -506,6 +507,11 @@ public class SettingsManager {
 
             if (rawValue == null) {
                 log.debug("Encountered null value for config key: {}", key);
+                return;
+            }
+
+            if (hiddenConfigKeys.contains(key)) {
+                log.debug("Skipping importing hidden config item: {} = {}", key, rawValue);
                 return;
             }
 
