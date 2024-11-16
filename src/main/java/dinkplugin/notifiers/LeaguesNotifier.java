@@ -269,10 +269,15 @@ public class LeaguesNotifier extends BaseNotifier {
         TROPHY_BY_POINTS = Collections.unmodifiableNavigableMap(thresholds);
 
         TIER_BY_RELIC = Map.ofEntries(
-            Map.entry("Endless Harvest", LeagueRelicTier.ONE),
-            Map.entry("Production Prodigy", LeagueRelicTier.ONE),
-            Map.entry("Trickster", LeagueRelicTier.ONE),
-            Map.entry("Fairy's Flight", LeagueRelicTier.TWO),
+            Map.entry("Animal Wrangler", LeagueRelicTier.ONE),
+            Map.entry("Lumberjack", LeagueRelicTier.ONE),
+            Map.entry("Power Miner", LeagueRelicTier.ONE),
+            // tier unknown
+            //Map.entry("Bank Heist", LeagueRelicTier.UNKNOWN),
+            //Map.entry("Clue Compass", LeagueRelicTier.UNKNOWN),
+            //Map.entry("Fairy's Flight", LeagueRelicTier.UNKNOWN),
+            //Map.entry("Grimoire", LeagueRelicTier.UNKNOWN),
+            // leagues 4 relics that could have the same name
             Map.entry("Globetrotter", LeagueRelicTier.TWO),
             Map.entry("Banker's Note", LeagueRelicTier.THREE),
             Map.entry("Fire Sale", LeagueRelicTier.THREE),
