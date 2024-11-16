@@ -3,6 +3,7 @@ package dinkplugin;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import dinkplugin.domain.ConfigImportPolicy;
 import dinkplugin.domain.FilterMode;
 import dinkplugin.notifiers.ChatNotifier;
 import dinkplugin.notifiers.CollectionNotifier;
@@ -493,6 +494,7 @@ public class SettingsManager {
     private void handleImport(Map<String, Object> map, boolean quiet) {
         if (map == null) return;
 
+        Set<ConfigImportPolicy> policies = config.importPolicy();
         AtomicInteger numUpdated = new AtomicInteger();
         Collection<String> mergedConfigs = new TreeSet<>();
         map.forEach((key, rawValue) -> {
@@ -516,7 +518,7 @@ public class SettingsManager {
             Object prevValue = configManager.getConfiguration(CONFIG_GROUP, key, valueType);
             Object newValue;
 
-            if (webhookConfigKeys.contains(key) || "ignoredNames".equals(key) || "lootItemAllowlist".equals(key) || "lootItemDenylist".equals(key)) {
+            if (shouldMerge(policies, key)) {
                 // special case: multi-line configs that should be merged (rather than replaced)
                 assert prevValue == null || prevValue instanceof String;
                 Collection<String> lines = readDelimited((String) prevValue).collect(Collectors.toCollection(LinkedHashSet::new));
@@ -570,6 +572,16 @@ public class SettingsManager {
         if (!mergedConfigs.isEmpty()) {
             plugin.addChatSuccess("The following settings were merged (rather than being overwritten): " + String.join(", ", mergedConfigs));
         }
+    }
+
+    private boolean shouldMerge(Set<ConfigImportPolicy> policies, String configKey) {
+        if ("lootItemAllowlist".equals(configKey) || "lootItemDenylist".equals(configKey)) {
+            return !policies.contains(ConfigImportPolicy.OVERWRITE_ITEM_LISTS);
+        }
+        if (webhookConfigKeys.contains(configKey)) {
+            return !policies.contains(ConfigImportPolicy.OVERWRITE_WEBHOOKS);
+        }
+        return "ignoredNames".equals(configKey);
     }
 
     static {
