@@ -167,7 +167,7 @@ public class KillCountNotifier extends BaseNotifier {
                 // where the order of the messages differs depending on the boss.
                 // Here, we update data without setting any not-null values back to null.
                 String boss = defaultIfNull(updated.getBoss(), old.getBoss());
-                boolean tob = boss.startsWith("Theatre of Blood"); // prefer challenge time message that comes first: https://github.com/pajlads/DinkPlugin/issues/585
+                boolean tob = boss != null && boss.startsWith("Theatre of Blood"); // prefer challenge time message that comes first: https://github.com/pajlads/DinkPlugin/issues/585
                 return new BossNotificationData(
                     boss,
                     defaultIfNull(updated.getCount(), old.getCount()),
