@@ -288,12 +288,15 @@ public class LeaguesNotifier extends BaseNotifier {
 
             try {
                 initTrophies(leaguesStruct);
+                log.debug("Trophies: {}", TROPHY_BY_POINTS);
             } catch (Exception e) {
                 log.warn("Failed to initialize trophies", e);
             }
 
             try {
                 initRelics(leaguesStruct);
+                log.debug("Relics: {}", TIER_BY_RELIC);
+                log.debug("Tiers: {}", TIER_BY_POINTS);
             } catch (Exception e) {
                 log.warn("Failed to initialize relics", e);
             }
