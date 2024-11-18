@@ -277,9 +277,9 @@ public class LeaguesNotifier extends BaseNotifier {
             //Map.entry("Clue Compass", LeagueRelicTier.UNKNOWN),
             //Map.entry("Fairy's Flight", LeagueRelicTier.UNKNOWN),
             //Map.entry("Grimoire", LeagueRelicTier.UNKNOWN),
+            //Map.entry("Banker's Note", LeagueRelicTier.UNKNOWN),
+            //Map.entry("Total Recall", LeagueRelicTier.UNKNOWN),
             // leagues 4 relics that could have the same name
-            Map.entry("Globetrotter", LeagueRelicTier.TWO),
-            Map.entry("Banker's Note", LeagueRelicTier.THREE),
             Map.entry("Fire Sale", LeagueRelicTier.THREE),
             Map.entry("Archer's Embrace", LeagueRelicTier.FOUR),
             Map.entry("Brawler's Resolve", LeagueRelicTier.FOUR),
