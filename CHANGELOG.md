@@ -1,5 +1,19 @@
 ## Unreleased
 
+## 1.10.13
+
+- Minor: Report challenge time for TOB KC notifications, rather than total completion time. (#591)
+- Minor: Add raid party members to kill count notification metadata. (#587)
+- Minor: Add `::DinkMigrate` command to import configuration from other Discord webhook plugins. (#564)
+- Minor: Remove boss image embed from kill count notifications with screenshots disabled. (#578)
+- Dev: Add current tier, total possible points, and next tier to combat task metadata. (#586)
+
+## 1.10.12
+
+- Minor: Add rarity information on select pickpocketing drops. (#571)
+- Bugfix: Enforce value threshold for always-dropped loot when rarity threshold is 1 and require both value and rarity is true. (#560)
+- Dev: Optimize regex performance for looted items on the item denylist. (#565)
+
 ## 1.10.11
 
 - Minor: Use embed thumbnail that corresponds to clue scroll difficulty. (#546)

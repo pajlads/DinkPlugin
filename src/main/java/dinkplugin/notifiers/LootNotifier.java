@@ -14,6 +14,7 @@ import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.MathUtils;
+import dinkplugin.util.ThievingService;
 import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
@@ -27,8 +28,6 @@ import net.runelite.client.plugins.loottracker.LootReceived;
 import net.runelite.client.util.QuantityFormatter;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -52,6 +51,9 @@ public class LootNotifier extends BaseNotifier {
 
     @Inject
     private RarityService rarityService;
+
+    @Inject
+    private ThievingService thievingService;
 
     private final Collection<Pattern> itemNameAllowlist = new CopyOnWriteArrayList<>();
     private final Collection<Pattern> itemNameDenylist = new CopyOnWriteArrayList<>();
@@ -162,24 +164,27 @@ public class LootNotifier extends BaseNotifier {
             OptionalDouble rarity;
             if (type == LootRecordType.NPC) {
                 rarity = rarityService.getRarity(dropper, item.getId(), item.getQuantity());
+            } else if (type == LootRecordType.PICKPOCKET) {
+                rarity = thievingService.getRarity(dropper, item.getId(), item.getQuantity());
             } else {
                 rarity = OptionalDouble.empty();
             }
 
             boolean shouldSend;
-            if (config.lootRarityValueIntersection() && rarity.isPresent()) {
-                shouldSend = totalPrice >= minValue && MathUtils.lessThanOrEqual(rarity.orElse(1), rarityThreshold);
+            if (config.lootRarityValueIntersection()) {
+                shouldSend = totalPrice >= minValue && (rarity.isEmpty() || MathUtils.lessThanOrEqual(rarity.getAsDouble(), rarityThreshold));
             } else {
                 shouldSend = totalPrice >= minValue || MathUtils.lessThanOrEqual(rarity.orElse(1), rarityThreshold);
             }
 
-            shouldSend |= matches(itemNameAllowlist, stack.getName());
-
             boolean denied = matches(itemNameDenylist, stack.getName());
             if (denied) {
                 shouldSend = false;
-            } else if (max == null || totalPrice > max.getTotalPrice()) {
-                max = stack;
+            } else {
+                shouldSend |= matches(itemNameAllowlist, stack.getName());
+                if (max == null || totalPrice > max.getTotalPrice()) {
+                    max = stack;
+                }
             }
 
             if (shouldSend) {
@@ -218,7 +223,7 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
-                if (npcId == null && (type == LootRecordType.NPC || type == LootRecordType.PICKPOCKET)) {
+            if (npcId == null && (type == LootRecordType.NPC || type == LootRecordType.PICKPOCKET)) {
                 npcId = client.getTopLevelWorldView().npcs().stream()
                     .filter(npc -> dropper.equals(npc.getName()))
                     .findAny()
@@ -234,7 +239,7 @@ public class LootNotifier extends BaseNotifier {
             }
             Double rarity = rarest != null ? rarest.getRarity() : null;
             boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
-            Collection<String> party = type == LootRecordType.EVENT ? getParty(dropper) : null;
+            Collection<String> party = type == LootRecordType.EVENT ? Utils.getBossParty(client, dropper) : null;
             Evaluable source = type == LootRecordType.PLAYER
                 ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))
                 : Replacements.ofWiki(dropper);
@@ -255,20 +260,6 @@ public class LootNotifier extends BaseNotifier {
                     .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
                     .build()
             );
-        }
-    }
-
-    @Nullable
-    private Collection<String> getParty(@NotNull String source) {
-        switch (source) {
-            case "Chambers of Xeric":
-                return Utils.getXericChambersParty(client);
-            case "Tombs of Amascut":
-                return Utils.getAmascutTombsParty(client);
-            case "Theatre of Blood":
-                return Utils.getBloodTheatreParty(client);
-            default:
-                return null;
         }
     }
 

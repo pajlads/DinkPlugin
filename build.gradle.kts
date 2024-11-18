@@ -43,7 +43,7 @@ dependencies {
 }
 
 group = "dinkplugin"
-version = "1.10.11"
+version = "1.10.13"
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
@@ -72,7 +72,7 @@ tasks.withType<AbstractArchiveTask>().configureEach {
 tasks.register(name = "shadowJar", type = Jar::class) {
     dependsOn(configurations.testRuntimeClasspath)
     manifest {
-        attributes(mapOf("Main-Class" to "dinkplugin.DinkTest"))
+        attributes(mapOf("Main-Class" to "dinkplugin.DinkTest", "Multi-Release" to true))
     }
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

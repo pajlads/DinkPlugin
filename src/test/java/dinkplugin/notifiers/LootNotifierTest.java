@@ -45,6 +45,7 @@ import static org.mockito.Mockito.when;
 
 class LootNotifierTest extends MockedNotifierTest {
 
+    private static final int SHARD_PRICE = 10_000_000;
     private static final int LARRAN_PRICE = 150_000;
     private static final int RUBY_PRICE = 900;
     private static final int OPAL_PRICE = 600;
@@ -78,6 +79,7 @@ class LootNotifierTest extends MockedNotifierTest {
         when(localPlayer.getWorldLocation()).thenReturn(location);
 
         // init item mocks
+        mockItem(ItemID.BLOOD_SHARD, SHARD_PRICE, "Blood shard");
         mockItem(ItemID.LARRANS_KEY, LARRAN_PRICE, "Larran's key");
         mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
         mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
@@ -352,28 +354,31 @@ class LootNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyPickpocket() {
+        String name = "Remus Kaninus";
         NPC npc = Mockito.mock(NPC.class);
-        when(npc.getName()).thenReturn(LOOTED_NAME);
-        when(npc.getId()).thenReturn(9999);
+        when(npc.getName()).thenReturn(name);
+        when(npc.getId()).thenReturn(NpcID.REMUS_KANINUS);
         mockWorldNpcs(npc);
 
         // fire event
-        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1)), 1);
+        LootReceived event = new LootReceived(name, -1, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.BLOOD_SHARD, 1)), 1);
         plugin.onLootReceived(event);
 
         // verify notification message
+        double rarity = 1.0 / 5000;
+        String price = QuantityFormatter.quantityToStackSize(SHARD_PRICE);
         verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .text(
                     Template.builder()
-                        .template(String.format("%s has looted: 1 x {{ruby}} (%d) from {{source}} for %d gp", PLAYER_NAME, RUBY_PRICE, RUBY_PRICE))
-                        .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
-                        .replacement("{{source}}", Replacements.ofWiki(LOOTED_NAME))
+                        .template(String.format("%s has looted: 1 x {{shard}} (%s) from {{source}} for %s gp", PLAYER_NAME, price, price))
+                        .replacement("{{shard}}", Replacements.ofWiki("Blood shard"))
+                        .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby")), LOOTED_NAME, LootRecordType.PICKPOCKET, 1, null, null, 9999))
+                .extra(new LootNotificationData(Collections.singletonList(new RareItemStack(ItemID.BLOOD_SHARD, 1, SHARD_PRICE, "Blood shard", rarity)), name, LootRecordType.PICKPOCKET, 1, rarity, null, NpcID.REMUS_KANINUS))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -878,6 +883,26 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // fire event
         NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1)));
+        plugin.onNpcLootReceived(event);
+
+        // verify notification message doesn't fire
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreRarityValueIntersectionRarityAbsent() {
+        // update config mocks
+        when(config.minLootValue()).thenReturn(LARRAN_PRICE + 1);
+        when(config.lootRarityThreshold()).thenReturn(1);
+        when(config.lootRarityValueIntersection()).thenReturn(true);
+
+        // prepare mocks
+        NPC npc = mock(NPC.class);
+        String name = "Ice spider";
+        when(npc.getName()).thenReturn(name);
+
+        // fire event
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.TUNA, 1)));
         plugin.onNpcLootReceived(event);
 
         // verify notification message doesn't fire

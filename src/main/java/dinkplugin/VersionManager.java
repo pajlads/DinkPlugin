@@ -128,5 +128,8 @@ public class VersionManager {
         register("1.9.0", "Notifications now report monster drop rarity");
         register("1.10.0", "Chat messages that match custom patterns can trigger notifications");
         register("1.10.1", "Level notifier now triggers at XP milestones with 5M as the default interval");
+        register("1.10.2", "Chat notifier can read commands and RL notifications");
+        register("1.10.5", "Pet notifications now report rarity and luck");
+        register("1.10.12", "Rarity is now reported for notable pickpocket loot");
     }
 }

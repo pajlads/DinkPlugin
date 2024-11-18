@@ -43,14 +43,15 @@ JSON sent with every notification but only in certain circumstances:
 ```json5
 {
   "clanName": "Dink QA",
-  "groupIronClanName":"Dink QA",
-  "discordUser":{
-    "id":"012345678910111213",
-    "name":"Gamer",
-    "avatarHash":"abc123def345abc123def345abc123de"
+  "groupIronClanName": "Dink QA",
+  "discordUser": {
+    "id": "012345678910111213",
+    "name": "Gamer",
+    "avatarHash": "abc123def345abc123def345abc123de"
   },
   "world": 518,
-  "regionId": 12850,
+  "regionId": 12850
+}
 ```
 
 `clanName` is only sent when the player is in a clan and has the advanced setting `Send Clan Name` enabled.  
@@ -248,7 +249,7 @@ The possible values for `extra.category` correspond to the [`LootRecordType`](ht
 
 `killCount` is only specified for NPC/EVENT loot with the base RuneLite Loot Tracker plugin enabled.
 
-`rarity` is currently only populated for NPC drops. This data is (imperfectly) scraped from the wiki, so it may not be 100% accurate. Also, we do not report a rarity if the NPC always drops the item on every kill.
+`rarity` is currently only populated for NPC drops (and some pickpocket events). This data is (imperfectly) scraped from the wiki, so it may not be 100% accurate. Also, we do not report a rarity if the NPC always drops the item on every kill.
 
 The items are valued at GE prices (when possible) if the user has not disabled the `Use actively traded price` base RuneLite setting. Otherwise, the store price of the item is used.
 
@@ -325,15 +326,18 @@ JSON for Kill Count Notifications:
 {
   "content": "%USERNAME% has defeated %BOSS% with a completion count of %COUNT%",
   "extra": {
-    "boss": "King Black Dragon",
+    "boss": "Chambers of Xeric",
     "count": 69,
-    "gameMessage": "Your King Black Dragon kill count is: 69."
+    "gameMessage": "Your completed Chambers of Xeric count is: 69.",
+    "party": ["%USERNAME%", "another RSN", "yet another RSN"]
   },
   "type": "KILL_COUNT"
 }
 ```
 
 Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble count, rather than kill count.
+
+Also, `extra.party` is only populated for certain bosses (see [Loot](#loot) for more details).
 
 ### Combat Achievements
 
@@ -348,7 +352,10 @@ JSON for Combat Achievement Notifications:
     "taskPoints": 6,
     "totalPoints": 1337,
     "tierProgress": 517,
-    "tierTotalPoints": 645
+    "tierTotalPoints": 645,
+    "totalPossiblePoints": 14814,
+    "currentTier": "MASTER",
+    "nextTier": "GRANDMASTER"
   },
   "type": "COMBAT_ACHIEVEMENT"
 }
@@ -366,6 +373,8 @@ JSON for Combat Achievement Tier Completion Notifications:
     "totalPoints": 1465,
     "tierProgress": 0,
     "tierTotalPoints": 540,
+    "totalPossiblePoints": 14814,
+    "nextTier": "GRANDMASTER",
     "justCompletedTier": "MASTER"
   },
   "type": "COMBAT_ACHIEVEMENT"

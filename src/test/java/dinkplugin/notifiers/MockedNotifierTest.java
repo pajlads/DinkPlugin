@@ -161,10 +161,12 @@ abstract class MockedNotifierTest extends MockedTestBase {
         Mockito.verify(messageHandler).createMessage(url, image, body);
 
         // wait for http calls to complete
-        Dispatcher dispatcher = httpClient.dispatcher();
-        while (dispatcher.queuedCallsCount() > 0 || dispatcher.runningCallsCount() > 0) {
-            // noinspection BusyWait - comply with discord's undocumented 30/60s ratelimit
-            Thread.sleep(2000L);
+        if (url != null && !url.isEmpty()) {
+            Dispatcher dispatcher = httpClient.dispatcher();
+            while (dispatcher.queuedCallsCount() > 0 || dispatcher.runningCallsCount() > 0) {
+                // noinspection BusyWait - comply with discord's undocumented 30/60s ratelimit
+                Thread.sleep(2000L);
+            }
         }
     }
 
