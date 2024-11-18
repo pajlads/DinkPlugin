@@ -15,6 +15,7 @@ import net.runelite.api.StructComposition;
 import net.runelite.api.WorldType;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.annotations.Varp;
+import net.runelite.client.callback.ClientThread;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import javax.inject.Inject;
@@ -100,6 +101,9 @@ public class LeaguesNotifier extends BaseNotifier {
      * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League/Areas">Wiki reference</a>
      */
     private static final NavigableMap<Integer, Integer> AREA_BY_TASKS;
+
+    @Inject
+    private ClientThread clientThread;
 
     @Override
     public boolean isEnabled() {
@@ -272,27 +276,28 @@ public class LeaguesNotifier extends BaseNotifier {
         return String.valueOf(i);
     }
 
-    @Inject
-    private void init() {
-        StructComposition leaguesStruct;
-        try {
-            leaguesStruct = client.getStructComposition(client.getEnum(2670).getIntVals()[CURRENT_LEAGUE_VERSION - 1]);
-        } catch (Exception e) {
-            log.warn("Could not find current leagues struct", e);
-            return;
-        }
+    public void init() {
+        clientThread.invokeLater(() -> {
+            StructComposition leaguesStruct;
+            try {
+                leaguesStruct = client.getStructComposition(client.getEnum(2670).getIntVals()[CURRENT_LEAGUE_VERSION - 1]);
+            } catch (Exception e) {
+                log.warn("Could not find current leagues struct", e);
+                return;
+            }
 
-        try {
-            initTrophies(leaguesStruct);
-        } catch (Exception e) {
-            log.warn("Failed to initialize trophies", e);
-        }
+            try {
+                initTrophies(leaguesStruct);
+            } catch (Exception e) {
+                log.warn("Failed to initialize trophies", e);
+            }
 
-        try {
-            initRelics(leaguesStruct);
-        } catch (Exception e) {
-            log.warn("Failed to initialize relics", e);
-        }
+            try {
+                initRelics(leaguesStruct);
+            } catch (Exception e) {
+                log.warn("Failed to initialize relics", e);
+            }
+        });
     }
 
     /**

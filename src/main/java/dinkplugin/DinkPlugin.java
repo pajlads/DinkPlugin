@@ -122,6 +122,7 @@ public class DinkPlugin extends Plugin {
         lootNotifier.init();
         deathNotifier.init();
         chatNotifier.init();
+        leaguesNotifier.init();
     }
 
     @Override
