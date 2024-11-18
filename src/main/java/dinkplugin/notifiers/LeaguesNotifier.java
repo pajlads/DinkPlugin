@@ -374,7 +374,10 @@ public class LeaguesNotifier extends BaseNotifier {
 
             // leagues 5 relics without tier announced
             Map.entry("Golden God", LeagueRelicTier.UNKNOWN),
+
             Map.entry("Grimoire", LeagueRelicTier.UNKNOWN),
+            Map.entry("Overgrown", LeagueRelicTier.UNKNOWN),
+
             Map.entry("Total Recall", LeagueRelicTier.UNKNOWN),
             Map.entry("Banker's Note", LeagueRelicTier.UNKNOWN),
 
@@ -387,7 +390,6 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Infernal Gathering", LeagueRelicTier.FIVE),
             Map.entry("Treasure Seeker", LeagueRelicTier.FIVE),
             Map.entry("Equilibrium", LeagueRelicTier.SIX),
-            Map.entry("Farmer's Fortune", LeagueRelicTier.SIX),
             Map.entry("Ruinous Powers", LeagueRelicTier.SIX),
             Map.entry("Berserker", LeagueRelicTier.SEVEN),
             Map.entry("Soul Stealer", LeagueRelicTier.SEVEN),
