@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Allow overwriting webhooks or item lists on config import, rather than merging. (#595)
+
 ## 1.10.13
 
 - Minor: Report challenge time for TOB KC notifications, rather than total completion time. (#591)
