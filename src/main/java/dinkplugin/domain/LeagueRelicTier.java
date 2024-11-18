@@ -3,13 +3,10 @@ package dinkplugin.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
-import java.util.NavigableMap;
-import java.util.TreeMap;
-
 @Getter
 @RequiredArgsConstructor
 public enum LeagueRelicTier {
+    UNKNOWN(-1),
     ONE(0),
     TWO(500),
     THREE(1_200),
@@ -24,15 +21,6 @@ public enum LeagueRelicTier {
      *
      * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League/Relics">Wiki Reference</a>
      */
-    private final int points;
+    private final int defaultPoints;
 
-    public static final NavigableMap<Integer, LeagueRelicTier> TIER_BY_POINTS;
-
-    static {
-        NavigableMap<Integer, LeagueRelicTier> tiers = new TreeMap<>();
-        for (LeagueRelicTier tier : values()) {
-            tiers.put(tier.getPoints(), tier);
-        }
-        TIER_BY_POINTS = Collections.unmodifiableNavigableMap(tiers);
-    }
 }

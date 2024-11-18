@@ -11,17 +11,25 @@ import dinkplugin.notifiers.data.LeaguesRelicNotificationData;
 import dinkplugin.notifiers.data.LeaguesTaskNotificationData;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.StructComposition;
 import net.runelite.api.WorldType;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.annotations.Varp;
+import net.runelite.client.callback.ClientThread;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import javax.inject.Inject;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class LeaguesNotifier extends BaseNotifier {
@@ -33,19 +41,19 @@ public class LeaguesNotifier extends BaseNotifier {
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cleague_areas_progress_bar%5D.cs2#L177">CS2 Reference</a>
      */
     @VisibleForTesting
-    static final @Varbit int TASKS_COMPLETED_ID = 10046;
+    static final @Varbit int TASKS_COMPLETED_ID = 10046; // TODO: is this still correct for V? (was used in II, III, IV)
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cscript730%5D.cs2#L86">CS2 Reference</a>
      */
     @VisibleForTesting
-    static final @Varp int POINTS_EARNED_ID = 2614;
+    static final @Varp int POINTS_EARNED_ID = 2614; // TODO: is this still correct for V? (was used in III, IV)
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cleague_areas_draw_interface%5D.cs2#L28-L55">CS2 Reference</a>
      */
     @VisibleForTesting
-    static final @Varbit int FIVE_AREAS = 10666, FOUR_AREAS = 10665, THREE_AREAS = 10664, TWO_AREAS = 10663;
+    static final @Varbit int FIVE_AREAS = 10666, FOUR_AREAS = 10665, THREE_AREAS = 10664, TWO_AREAS = 10663; // TODO: are these still correct?
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/[proc%2Cscript2451].cs2#L3-L6">CS2 Reference</a>
@@ -53,7 +61,19 @@ public class LeaguesNotifier extends BaseNotifier {
      * @see <a href="https://abextm.github.io/cache2/#/viewer/struct/4699">Struct Reference</a>
      */
     @VisibleForTesting
-    static final @Varbit int LEAGUES_VERSION = 10032; // 4 for Leagues IV
+    static final @Varbit int LEAGUES_VERSION = 10032; // TODO: ensure this changed to 5 for Leagues V
+
+    /**
+     * Value associated with {@link #LEAGUES_VERSION} for the current league.
+     */
+    @VisibleForTesting
+    static final int CURRENT_LEAGUE_VERSION = 5;
+
+    /**
+     * Short name for the current league.
+     */
+    @VisibleForTesting
+    static final String CURRENT_LEAGUE_NAME = "Raging Echoes";
 
     /**
      * Trophy name by the required points, in a binary search tree.
@@ -62,6 +82,11 @@ public class LeaguesNotifier extends BaseNotifier {
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cscript731%5D.cs2#L3">CS2 Reference</a>
      */
     private static final NavigableMap<Integer, String> TROPHY_BY_POINTS;
+
+    /**
+     * Mapping of the points required to unlock each relic tier.
+     */
+    private static final NavigableMap<Integer, LeagueRelicTier> TIER_BY_POINTS;
 
     /**
      * Mapping of each relic name to the tier (1-8).
@@ -77,10 +102,13 @@ public class LeaguesNotifier extends BaseNotifier {
      */
     private static final NavigableMap<Integer, Integer> AREA_BY_TASKS;
 
+    @Inject
+    private ClientThread clientThread;
+
     @Override
     public boolean isEnabled() {
         return config.notifyLeagues() &&
-            client.getVarbitValue(LEAGUES_VERSION) == 4 &&
+            client.getVarbitValue(LEAGUES_VERSION) == CURRENT_LEAGUE_VERSION &&
             client.getWorldType().contains(WorldType.SEASONAL) &&
             settingsManager.isNamePermitted(client.getLocalPlayer().getName());
     }
@@ -133,7 +161,7 @@ public class LeaguesNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%I_TH%", Replacements.ofText(unlocked.getValue()))
-            .replacement("%AREA%", Replacements.ofWiki(area, "Trailblazer Reloaded League/Areas/" + area))
+            .replacement("%AREA%", Replacements.ofWiki(area, CURRENT_LEAGUE_NAME + " League/Areas/" + area))
             .build();
         createMessage(config.leaguesSendImage(), NotificationBody.builder()
             .type(NotificationType.LEAGUES_AREA)
@@ -146,17 +174,12 @@ public class LeaguesNotifier extends BaseNotifier {
 
     private void notifyRelicUnlock(String relic) {
         int points = client.getVarpValue(POINTS_EARNED_ID);
-        Integer pointsOfNextTier = LeagueRelicTier.TIER_BY_POINTS.ceilingKey(points + 1);
+        Integer pointsOfNextTier = TIER_BY_POINTS.ceilingKey(points + 1);
         Integer pointsUntilNextTier = pointsOfNextTier != null ? pointsOfNextTier - points : null;
 
-        LeagueRelicTier relicTier = TIER_BY_RELIC.get(relic);
-        if (relicTier == null) {
-            // shouldn't happen, but just to be safe
-            log.warn("Unknown relic encountered: {}", relic);
-            relicTier = LeagueRelicTier.TIER_BY_POINTS.floorEntry(Math.max(points, 0)).getValue();
-        }
-        int tier = relicTier.ordinal() + 1;
-        int requiredPoints = relicTier.getPoints();
+        LeagueRelicTier relicTier = TIER_BY_RELIC.getOrDefault(relic, LeagueRelicTier.UNKNOWN);
+        int tier = relicTier.ordinal();
+        int requiredPoints = TIER_BY_POINTS.floorKey(points);
 
         String playerName = Utils.getPlayerName(client);
         Template text = Template.builder()
@@ -196,7 +219,7 @@ public class LeaguesNotifier extends BaseNotifier {
         Integer nextTrophyPoints = TROPHY_BY_POINTS.ceilingKey(totalPoints + 1);
         Integer pointsUntilNextTrophy = nextTrophyPoints != null ? nextTrophyPoints - totalPoints : null;
 
-        Integer nextRelicPoints = LeagueRelicTier.TIER_BY_POINTS.ceilingKey(totalPoints + 1);
+        Integer nextRelicPoints = TIER_BY_POINTS.ceilingKey(totalPoints + 1);
         Integer pointsUntilNextRelic = nextRelicPoints != null ? nextRelicPoints - totalPoints : null;
 
         Template text = Template.builder()
@@ -206,9 +229,9 @@ public class LeaguesNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%TIER%", Replacements.ofText(tier.getDisplayName()))
-            .replacement("%TASK%", Replacements.ofWiki(task, "Trailblazer_Reloaded_League/Tasks"))
+            .replacement("%TASK%", Replacements.ofWiki(task, CURRENT_LEAGUE_NAME + " League/Tasks"))
             .replacement("%TROPHY%", newTrophy
-                ? Replacements.ofWiki(trophy.getValue(), String.format("Trailblazer reloaded %s trophy", trophy.getValue().toLowerCase()))
+                ? Replacements.ofWiki(trophy.getValue(), String.format("%s %s trophy", CURRENT_LEAGUE_NAME, trophy.getValue().toLowerCase()))
                 : Replacements.ofText("?"))
             .build();
         createMessage(config.leaguesSendImage(), NotificationBody.builder()
@@ -253,6 +276,73 @@ public class LeaguesNotifier extends BaseNotifier {
         return String.valueOf(i);
     }
 
+    public void init() {
+        clientThread.invokeLater(() -> {
+            StructComposition leaguesStruct;
+            try {
+                leaguesStruct = client.getStructComposition(client.getEnum(2670).getIntVals()[CURRENT_LEAGUE_VERSION - 1]);
+            } catch (Exception e) {
+                log.warn("Could not find current leagues struct", e);
+                return;
+            }
+
+            try {
+                initTrophies(leaguesStruct);
+                log.debug("Trophies: {}", TROPHY_BY_POINTS);
+            } catch (Exception e) {
+                log.warn("Failed to initialize trophies", e);
+            }
+
+            try {
+                initRelics(leaguesStruct);
+                log.debug("Relics: {}", TIER_BY_RELIC);
+                log.debug("Tiers: {}", TIER_BY_POINTS);
+            } catch (Exception e) {
+                log.warn("Failed to initialize relics", e);
+            }
+        });
+    }
+
+    /**
+     * Overwrites {@code TROPHY_BY_POINTS} with thresholds defined in cache
+     */
+    private void initTrophies(StructComposition leaguesStruct) {
+        int[] thresholds = client.getEnum(leaguesStruct.getIntValue(1857)).getIntVals();
+        int n = thresholds.length;
+        if (n > 0) {
+            var names = List.copyOf(TROPHY_BY_POINTS.values());
+            TROPHY_BY_POINTS.clear();
+            for (int i = 0; i < n; i++) {
+                TROPHY_BY_POINTS.put(thresholds[i], names.get(i));
+            }
+        }
+    }
+
+    /**
+     * Overwrites {@code TIER_BY_RELIC} with data from cache
+     */
+    private void initRelics(StructComposition leaguesStruct) {
+        int[] tierStructs = client.getEnum(leaguesStruct.getIntValue(870)).getIntVals();
+        LeagueRelicTier[] tiers = LeagueRelicTier.values();
+        var pointsMap = new TreeMap<Integer, LeagueRelicTier>();
+        pointsMap.put(-1, LeagueRelicTier.UNKNOWN);
+        for (int tierIndex = 1; tierIndex <= tierStructs.length; tierIndex++) {
+            var tier = tierIndex < tiers.length ? tiers[tierIndex] : LeagueRelicTier.UNKNOWN;
+            var tierStruct = client.getStructComposition(tierStructs[tierIndex - 1]);
+            pointsMap.put(tierStruct.getIntValue(877), tier);
+
+            var relicStructs = client.getEnum(tierStruct.getIntValue(878)).getIntVals();
+            for (int relicStruct : relicStructs) {
+                var name = client.getStructComposition(relicStruct).getStringValue(879);
+                TIER_BY_RELIC.put(name, tier);
+            }
+        }
+        if (pointsMap.size() > 1) {
+            TIER_BY_POINTS.clear();
+            TIER_BY_POINTS.putAll(pointsMap);
+        }
+    }
+
     static {
         AREA_BY_TASKS = Collections.unmodifiableNavigableMap(
             new TreeMap<>(Map.of(0, 0, 60, 1, 140, 2, 300, 3))
@@ -266,15 +356,29 @@ public class LeaguesNotifier extends BaseNotifier {
         thresholds.put(28_000, "Adamant");
         thresholds.put(42_000, "Rune");
         thresholds.put(56_000, "Dragon");
-        TROPHY_BY_POINTS = Collections.unmodifiableNavigableMap(thresholds);
+        TROPHY_BY_POINTS = thresholds;
 
-        TIER_BY_RELIC = Map.ofEntries(
-            Map.entry("Endless Harvest", LeagueRelicTier.ONE),
-            Map.entry("Production Prodigy", LeagueRelicTier.ONE),
-            Map.entry("Trickster", LeagueRelicTier.ONE),
-            Map.entry("Fairy's Flight", LeagueRelicTier.TWO),
-            Map.entry("Globetrotter", LeagueRelicTier.TWO),
-            Map.entry("Banker's Note", LeagueRelicTier.THREE),
+        TIER_BY_POINTS = Arrays.stream(LeagueRelicTier.values())
+            .collect(Collectors.toMap(LeagueRelicTier::getDefaultPoints, Function.identity(), (a, b) -> null, TreeMap::new));
+
+        TIER_BY_RELIC = new HashMap<>(Map.ofEntries(
+            // confirmed tier 1 relics
+            Map.entry("Animal Wrangler", LeagueRelicTier.ONE),
+            Map.entry("Lumberjack", LeagueRelicTier.ONE),
+            Map.entry("Power Miner", LeagueRelicTier.ONE),
+
+            // teleport tier; actual tier is unknown
+            Map.entry("Bank Heist", LeagueRelicTier.UNKNOWN),
+            Map.entry("Clue Compass", LeagueRelicTier.UNKNOWN),
+            Map.entry("Fairy's Flight", LeagueRelicTier.UNKNOWN),
+
+            // leagues 5 relics without tier announced
+            Map.entry("Golden God", LeagueRelicTier.UNKNOWN),
+            Map.entry("Grimoire", LeagueRelicTier.UNKNOWN),
+            Map.entry("Total Recall", LeagueRelicTier.UNKNOWN),
+            Map.entry("Banker's Note", LeagueRelicTier.UNKNOWN),
+
+            // leagues 4 relics that could have the same name
             Map.entry("Fire Sale", LeagueRelicTier.THREE),
             Map.entry("Archer's Embrace", LeagueRelicTier.FOUR),
             Map.entry("Brawler's Resolve", LeagueRelicTier.FOUR),
@@ -291,6 +395,6 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Guardian", LeagueRelicTier.EIGHT),
             Map.entry("Executioner", LeagueRelicTier.EIGHT),
             Map.entry("Undying Retribution", LeagueRelicTier.EIGHT)
-        );
+        ));
     }
 }
