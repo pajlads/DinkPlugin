@@ -1,13 +1,13 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.message.NotificationBody;
+import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
+import dinkplugin.notifiers.data.BossNotificationData;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.util.Utils;
-import dinkplugin.message.NotificationBody;
-import dinkplugin.message.NotificationType;
-import dinkplugin.notifiers.data.BossNotificationData;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
@@ -100,7 +100,7 @@ public class KillCountNotifier extends BaseNotifier {
     public void onTick() {
         BossNotificationData data = this.data.get();
         if (data != null) {
-            if (data.getBoss() != null) {
+            if (data.getBoss() != null && data.getCount() != null) {
                 // ensure notifier was not disabled during bad ticks wait period
                 if (isEnabled()) {
                     // once boss name has arrived, we notify at tick end (even if duration hasn't arrived)
@@ -166,12 +166,14 @@ public class KillCountNotifier extends BaseNotifier {
                 // Boss data and timing are sent in separate messages
                 // where the order of the messages differs depending on the boss.
                 // Here, we update data without setting any not-null values back to null.
+                String boss = defaultIfNull(updated.getBoss(), old.getBoss());
+                boolean tob = boss != null && boss.startsWith("Theatre of Blood"); // prefer challenge time message that comes first: https://github.com/pajlads/DinkPlugin/issues/585
                 return new BossNotificationData(
-                    defaultIfNull(updated.getBoss(), old.getBoss()),
+                    boss,
                     defaultIfNull(updated.getCount(), old.getCount()),
                     defaultIfNull(updated.getGameMessage(), old.getGameMessage()),
-                    defaultIfNull(updated.getTime(), old.getTime()),
-                    defaultIfNull(updated.isPersonalBest(), old.isPersonalBest()),
+                    updated.getTime() == null || (tob && old.getTime() != null) ? old.getTime() : updated.getTime(),
+                    updated.isPersonalBest() == null || (tob && old.isPersonalBest() != null) ? old.isPersonalBest() : updated.isPersonalBest(),
                     defaultIfNull(updated.getParty(), old.getParty())
                 );
             }
@@ -183,7 +185,12 @@ public class KillCountNotifier extends BaseNotifier {
         Optional<Pair<String, Integer>> boss = parseBoss(message);
         if (boss.isPresent())
             return boss.map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null, Utils.getBossParty(client, pair.getLeft())));
-        return parseTime(message).map(t -> new BossNotificationData(null, null, null, t.getLeft(), t.getRight(), null));
+
+        // TOB reports final wave duration before challenge time in the same message; skip to the part we care about
+        int tobIndex = message.startsWith("Wave") ? message.indexOf(KillCountService.TOB) : -1;
+        String msg = tobIndex < 0 ? message : message.substring(tobIndex);
+
+        return parseTime(msg).map(t -> new BossNotificationData(tobIndex < 0 ? null : KillCountService.TOB, null, null, t.getLeft(), t.getRight(), null));
     }
 
     private static Optional<Pair<Duration, Boolean>> parseTime(String message) {
@@ -252,10 +259,10 @@ public class KillCountNotifier extends BaseNotifier {
 
         int modeSeparator = boss.lastIndexOf(':');
         String raid = modeSeparator > 0 ? boss.substring(0, modeSeparator) : boss;
-        if (raid.equalsIgnoreCase("Theatre of Blood")
-            || raid.equalsIgnoreCase("Tombs of Amascut")
-            || raid.equalsIgnoreCase("Chambers of Xeric")
-            || raid.equalsIgnoreCase("Chambers of Xeric Challenge Mode"))
+        if (raid.equalsIgnoreCase(KillCountService.TOB)
+            || raid.equalsIgnoreCase(KillCountService.TOA)
+            || raid.equalsIgnoreCase(KillCountService.COX)
+            || raid.equalsIgnoreCase(KillCountService.COX + " Challenge Mode"))
             return boss;
 
         return null;
