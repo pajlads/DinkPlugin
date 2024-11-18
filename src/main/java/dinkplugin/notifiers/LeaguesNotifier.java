@@ -81,7 +81,7 @@ public class LeaguesNotifier extends BaseNotifier {
     @Override
     public boolean isEnabled() {
         return config.notifyLeagues() &&
-            client.getVarbitValue(LEAGUES_VERSION) == 4 &&
+            client.getVarbitValue(LEAGUES_VERSION) == 5 &&
             client.getWorldType().contains(WorldType.SEASONAL) &&
             settingsManager.isNamePermitted(client.getLocalPlayer().getName());
     }
