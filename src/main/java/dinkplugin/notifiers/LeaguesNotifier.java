@@ -354,9 +354,6 @@ public class LeaguesNotifier extends BaseNotifier {
             .collect(Collectors.toMap(LeagueRelicTier::getDefaultPoints, Function.identity(), (a, b) -> null, TreeMap::new));
 
         TIER_BY_RELIC = new HashMap<>(Map.ofEntries(
-            // old tier 1 relic for temporary testing purposes
-            Map.entry("Production Prodigy", LeagueRelicTier.ONE),
-
             // confirmed tier 1 relics
             Map.entry("Animal Wrangler", LeagueRelicTier.ONE),
             Map.entry("Lumberjack", LeagueRelicTier.ONE),

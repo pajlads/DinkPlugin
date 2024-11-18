@@ -128,10 +128,10 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         when(client.getVarpValue(LeaguesNotifier.POINTS_EARNED_ID)).thenReturn(totalPoints);
 
         // fire event
-        notifier.onGameMessage("Congratulations, you've unlocked a new Relic: Production Prodigy.");
+        notifier.onGameMessage("Congratulations, you've unlocked a new Relic: Animal Wrangler.");
 
         // verify notification
-        String relic = "Production Prodigy";
+        String relic = "Animal Wrangler";
         int pointsUntilNextTier = LeagueRelicTier.TWO.getDefaultPoints() - totalPoints;
         verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
@@ -296,7 +296,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
 
         // fire event
         notifier.onGameMessage("Congratulations, you've completed a hard task: The Frozen Door.");
-        notifier.onGameMessage("Congratulations, you've unlocked a new Relic: Production Prodigy.");
+        notifier.onGameMessage("Congratulations, you've unlocked a new Relic: Animal Wrangler.");
         notifier.onGameMessage("Congratulations, you've unlocked a new area: Kandarin.");
 
         // ensure no notification occurred
@@ -318,7 +318,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
 
         // fire event
         notifier.onGameMessage("Congratulations, you've completed a hard task: The Frozen Door.");
-        notifier.onGameMessage("Congratulations, you've unlocked a new Relic: Production Prodigy.");
+        notifier.onGameMessage("Congratulations, you've unlocked a new Relic: Animal Wrangler.");
         notifier.onGameMessage("Congratulations, you've unlocked a new area: Kandarin.");
 
         // ensure no notification occurred
