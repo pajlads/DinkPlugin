@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 
 import java.util.EnumSet;
 
+import static dinkplugin.notifiers.LeaguesNotifier.CURRENT_LEAGUE_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
@@ -40,7 +41,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         // client mocks
         when(client.getWorldType()).thenReturn(EnumSet.of(WorldType.SEASONAL));
         when(client.getVarbitValue(Varbits.ACCOUNT_TYPE)).thenReturn(AccountType.IRONMAN.ordinal());
-        when(client.getVarbitValue(LeaguesNotifier.LEAGUES_VERSION)).thenReturn(5);
+        when(client.getVarbitValue(LeaguesNotifier.LEAGUES_VERSION)).thenReturn(LeaguesNotifier.CURRENT_LEAGUE_VERSION);
 
         // config mocks
         when(config.notifyLeagues()).thenReturn(true);
@@ -75,7 +76,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
                 .text(
                     Template.builder()
                         .template(String.format("%s selected their second region: {{area}}.", PLAYER_NAME))
-                        .replacement("{{area}}", Replacements.ofWiki(area, "Trailblazer Reloaded League/Areas/" + area))
+                        .replacement("{{area}}", Replacements.ofWiki(area, CURRENT_LEAGUE_NAME + " League/Areas/" + area))
                         .build()
                 )
                 .extra(new LeaguesAreaNotificationData(area, 2, tasksCompleted, tasksUntilNextArea))
@@ -108,7 +109,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
                 .text(
                     Template.builder()
                         .template(String.format("%s selected their zeroth region: {{area}}.", PLAYER_NAME))
-                        .replacement("{{area}}", Replacements.ofWiki(area, "Trailblazer Reloaded League/Areas/" + area))
+                        .replacement("{{area}}", Replacements.ofWiki(area, CURRENT_LEAGUE_NAME + " League/Areas/" + area))
                         .build()
                 )
                 .extra(new LeaguesAreaNotificationData(area, 0, tasksCompleted, tasksUntilNextArea))
@@ -131,7 +132,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
 
         // verify notification
         String relic = "Production Prodigy";
-        int pointsUntilNextTier = LeagueRelicTier.TWO.getPoints() - totalPoints;
+        int pointsUntilNextTier = LeagueRelicTier.TWO.getDefaultPoints() - totalPoints;
         verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
@@ -165,7 +166,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         String taskName = "The Frozen Door";
         LeagueTaskDifficulty difficulty = LeagueTaskDifficulty.HARD;
         int tasksUntilNextArea = 140 - tasksCompleted;
-        int pointsUntilNextRelic = LeagueRelicTier.THREE.getPoints() - totalPoints;
+        int pointsUntilNextRelic = LeagueRelicTier.THREE.getDefaultPoints() - totalPoints;
         int pointsUntilNextTrophy = 2_500 - totalPoints;
         verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
@@ -175,7 +176,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
                 .text(
                     Template.builder()
                         .template(String.format("%s completed a %s task: {{task}}.", PLAYER_NAME, "Hard"))
-                        .replacement("{{task}}", Replacements.ofWiki(taskName, "Trailblazer_Reloaded_League/Tasks"))
+                        .replacement("{{task}}", Replacements.ofWiki(taskName, CURRENT_LEAGUE_NAME + " League/Tasks"))
                         .build()
                 )
                 .extra(new LeaguesTaskNotificationData(taskName, difficulty, difficulty.getPoints(), totalPoints, tasksCompleted, tasksUntilNextArea, pointsUntilNextRelic, pointsUntilNextTrophy, null))
@@ -200,7 +201,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         String taskName = "The Frozen Door";
         LeagueTaskDifficulty difficulty = LeagueTaskDifficulty.HARD;
         int tasksUntilNextArea = 140 - tasksCompleted;
-        int pointsUntilNextRelic = LeagueRelicTier.FIVE.getPoints() - totalPoints;
+        int pointsUntilNextRelic = LeagueRelicTier.FIVE.getDefaultPoints() - totalPoints;
         int pointsUntilNextTrophy = 5_000 - totalPoints;
         String trophy = "Bronze";
         verifyCreateMessage(
@@ -211,8 +212,8 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
                 .text(
                     Template.builder()
                         .template(String.format("%s completed a %s task, {{task}}, unlocking the {{trophy}} trophy!", PLAYER_NAME, "Hard"))
-                        .replacement("{{task}}", Replacements.ofWiki(taskName, "Trailblazer_Reloaded_League/Tasks"))
-                        .replacement("{{trophy}}", Replacements.ofWiki(trophy, "Trailblazer reloaded " + trophy.toLowerCase() + " trophy"))
+                        .replacement("{{task}}", Replacements.ofWiki(taskName, CURRENT_LEAGUE_NAME + " League/Tasks"))
+                        .replacement("{{trophy}}", Replacements.ofWiki(trophy, CURRENT_LEAGUE_NAME + " " + trophy.toLowerCase() + " trophy"))
                         .build()
                 )
                 .extra(new LeaguesTaskNotificationData(taskName, difficulty, difficulty.getPoints(), totalPoints, tasksCompleted, tasksUntilNextArea, pointsUntilNextRelic, pointsUntilNextTrophy, trophy))
@@ -238,7 +239,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         String taskName = "Equip Amy's Saw";
         LeagueTaskDifficulty difficulty = LeagueTaskDifficulty.MEDIUM;
         int tasksUntilNextArea = 300 - tasksCompleted;
-        int pointsUntilNextRelic = LeagueRelicTier.SIX.getPoints() - totalPoints;
+        int pointsUntilNextRelic = LeagueRelicTier.SIX.getDefaultPoints() - totalPoints;
         int pointsUntilNextTrophy = 10_000 - totalPoints;
         String trophy = "Iron";
         verifyCreateMessage(
@@ -249,8 +250,8 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
                 .text(
                     Template.builder()
                         .template(String.format("%s completed a %s task, {{task}}, unlocking the {{trophy}} trophy!", PLAYER_NAME, "Medium"))
-                        .replacement("{{task}}", Replacements.ofWiki(taskName, "Trailblazer_Reloaded_League/Tasks"))
-                        .replacement("{{trophy}}", Replacements.ofWiki(trophy, "Trailblazer reloaded " + trophy.toLowerCase() + " trophy"))
+                        .replacement("{{task}}", Replacements.ofWiki(taskName, CURRENT_LEAGUE_NAME + " League/Tasks"))
+                        .replacement("{{trophy}}", Replacements.ofWiki(trophy, CURRENT_LEAGUE_NAME + " " + trophy.toLowerCase() + " trophy"))
                         .build()
                 )
                 .extra(new LeaguesTaskNotificationData(taskName, difficulty, difficulty.getPoints(), totalPoints, tasksCompleted, tasksUntilNextArea, pointsUntilNextRelic, pointsUntilNextTrophy, trophy))
