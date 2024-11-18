@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Enable the leagues notifier again. (#597)
+
 ## 1.10.13
 
 - Minor: Report challenge time for TOB KC notifications, rather than total completion time. (#591)
