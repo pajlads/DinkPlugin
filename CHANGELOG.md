@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Allow overwriting webhooks or item lists on config import, rather than merging. (#595)
+- Minor: Enable the leagues notifier again. (#597)
 
 ## 1.10.13
 
