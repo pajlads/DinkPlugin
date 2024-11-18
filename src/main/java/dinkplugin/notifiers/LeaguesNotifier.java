@@ -33,19 +33,20 @@ public class LeaguesNotifier extends BaseNotifier {
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cleague_areas_progress_bar%5D.cs2#L177">CS2 Reference</a>
      */
     @VisibleForTesting
-    static final @Varbit int TASKS_COMPLETED_ID = 10046;
+    static final @Varbit int TASKS_COMPLETED_ID = 10046; // TODO: is this still correct?
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cscript730%5D.cs2#L86">CS2 Reference</a>
      */
     @VisibleForTesting
-    static final @Varp int POINTS_EARNED_ID = 2614;
+    static final @Varp int POINTS_EARNED_ID = 2614; // TODO: is this still correct?
+
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cleague_areas_draw_interface%5D.cs2#L28-L55">CS2 Reference</a>
      */
     @VisibleForTesting
-    static final @Varbit int FIVE_AREAS = 10666, FOUR_AREAS = 10665, THREE_AREAS = 10664, TWO_AREAS = 10663;
+    static final @Varbit int FIVE_AREAS = 10666, FOUR_AREAS = 10665, THREE_AREAS = 10664, TWO_AREAS = 10663; // TODO: are these still correct?
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/[proc%2Cscript2451].cs2#L3-L6">CS2 Reference</a>
@@ -53,7 +54,7 @@ public class LeaguesNotifier extends BaseNotifier {
      * @see <a href="https://abextm.github.io/cache2/#/viewer/struct/4699">Struct Reference</a>
      */
     @VisibleForTesting
-    static final @Varbit int LEAGUES_VERSION = 10032; // 4 for Leagues IV
+    static final @Varbit int LEAGUES_VERSION = 10032; // TODO: did this change to 5 for Leagues V
 
     /**
      * Trophy name by the required points, in a binary search tree.
