@@ -40,6 +40,8 @@ import javax.inject.Singleton;
 import javax.swing.SwingUtilities;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -102,6 +104,8 @@ public class SettingsManager {
     private final DinkPluginConfig config;
     private final ConfigManager configManager;
     private final OkHttpClient httpClient;
+
+    private volatile Instant lastDynamicImport = null;
 
     /**
      * Check whether a username complies with the configured RSN filter list.
@@ -303,6 +307,12 @@ public class SettingsManager {
 
             return true;
         });
+
+        // refresh dynamic config if it's been 6+ hours
+        var lastImport = lastDynamicImport;
+        if (lastImport != null && Duration.between(lastImport, Instant.now()).toHours() >= 6) {
+            importDynamicConfig(config.dynamicConfigUrl());
+        }
     }
 
     void onTick() {
@@ -415,6 +425,7 @@ public class SettingsManager {
                 map.remove(DYNAMIC_IMPORT_CONFIG_KEY);
 
                 handleImport(map, true);
+                lastDynamicImport = Instant.now();
             }
 
             @Override
