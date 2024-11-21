@@ -326,9 +326,11 @@ JSON for Kill Count Notifications:
 {
   "content": "%USERNAME% has defeated %BOSS% with a completion count of %COUNT%",
   "extra": {
+    "isPersonalBest": true,
     "boss": "Chambers of Xeric",
     "count": 69,
     "gameMessage": "Your completed Chambers of Xeric count is: 69.",
+    "time": "PT4634S",
     "party": ["%USERNAME%", "another RSN", "yet another RSN"]
   },
   "type": "KILL_COUNT"
