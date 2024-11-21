@@ -40,9 +40,9 @@ public class KillCountService {
 
     public static final String GAUNTLET_NAME = "Gauntlet", GAUNTLET_BOSS = "Crystalline Hunllef";
     public static final String CG_NAME = "Corrupted Gauntlet", CG_BOSS = "Corrupted Hunllef";
-    private static final String TOA = "Tombs of Amascut";
-    private static final String TOB = "Theatre of Blood";
-    private static final String COX = "Chambers of Xeric";
+    public static final String TOA = "Tombs of Amascut";
+    public static final String TOB = "Theatre of Blood";
+    public static final String COX = "Chambers of Xeric";
 
     private static final String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
     private static final String RL_LOOT_PLUGIN_NAME = LootTrackerPlugin.class.getSimpleName().toLowerCase();
