@@ -372,6 +372,11 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Clue Compass", LeagueRelicTier.UNKNOWN),
             Map.entry("Fairy's Flight", LeagueRelicTier.UNKNOWN),
 
+            // utility tier; actual tier is unknown
+            Map.entry("Corner Cutter", LeagueRelicTier.UNKNOWN),
+            Map.entry("Dodgy Deals", LeagueRelicTier.UNKNOWN),
+            Map.entry("Friendly Forager", LeagueRelicTier.UNKNOWN),
+
             // leagues 5 relics without tier announced
             Map.entry("Golden God", LeagueRelicTier.UNKNOWN),
 
