@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Enable the leagues notifier again. (#597)
+- Bugfix: Identify all CoX members from raiding party widget. (#600)
 
 ## 1.10.13
 
