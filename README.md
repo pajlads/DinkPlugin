@@ -65,7 +65,7 @@ Some notifiers require in-game settings to be configured to send chat messages u
 - The player name in Discord rich embeds can be linked to various tracking services (from HiScores to Wise Old Man)
 - Discord rich embed footers can be customized with user-specified text and image url
 - When network issues occur, Dink can make repeated attempts to send the webhook (with exponential backoff)
-- Notifications can be sent to [Discord Forum Channels](https://support.discord.com/hc/en-us/articles/6208479917079-Forum-Channels-FAQ); append `?forum` to the end of the webhook url to create a new thread per message or use `?thread_id=123456` to post to an existing forum thread (be sure to change `123456` with the actual thread ID). For forum channels, you can also include `&applied_tags=123,456` to specify certain tags for the new thread (be sure to change `123`, `456` with the tag IDs you wish to apply)
+- Notifications can be sent to [Discord Forum Channels](https://support.discord.com/hc/en-us/articles/6208479917079-Forum-Channels-FAQ); append `?forum` to the end of the webhook url to create a new thread per message or use `?thread_id=123456` to post to an existing forum thread (be sure to change `123456` with the actual thread ID). For forum channels, you can also include `&applied_tags=123,456` to specify certain tags for the new thread (be sure to change `123`, `456` with the tag IDs you wish to apply). To achieve different tags for different notification types, you should utilize the `Webhook Overrides` section (and can share these settings via [config export](#export-current-configuration-via-dinkexport))
 - Character [metadata](#metadata) can be sent to custom webhook handlers on login for tracking relevant statistics.
 
 ## Chat Commands
