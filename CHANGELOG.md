@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Allow specifying tag IDs to apply for new forum thread messages. (#599)
 - Minor: Enable the leagues notifier again. (#597)
 
 ## 1.10.13
