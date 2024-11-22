@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Updates the Kill Count JSON Example to show isPersonalBest and time. (#601)
 - Minor: Enable the leagues notifier again. (#597)
 - Bugfix: Identify all CoX members from raiding party widget. (#600)
 
