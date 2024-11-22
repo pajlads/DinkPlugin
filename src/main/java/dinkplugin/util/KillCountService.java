@@ -147,7 +147,7 @@ public class KillCountService {
         // herbiboar count (for pet tracking)
         if (message.startsWith(HERBIBOAR_PREFIX)) {
             int harvestCount = Integer.parseInt(message.substring(HERBIBOAR_PREFIX.length(), message.length() - 1).replace(",", ""));
-            killCounts.put("Herbiboar", harvestCount);
+            killCounts.put(HERBIBOAR, harvestCount);
             return;
         }
 

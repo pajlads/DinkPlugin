@@ -129,7 +129,7 @@ class MatchersTest {
 
                 // skilling special case
                 Arguments.of("Your subdued Wintertodt count is: 359", Pair.of("Wintertodt", 359)),
-                Arguments.of("Your herbiboar harvest count is: 2332", Pair.of("Herbiboar", 2332)),
+                Arguments.of("Your herbiboar harvest count is: 2332.", Pair.of("Herbiboar", 2332)),
 
                 // minigame special cases
                 Arguments.of("Your Barrows chest count is: 268", Pair.of("Barrows", 268)),

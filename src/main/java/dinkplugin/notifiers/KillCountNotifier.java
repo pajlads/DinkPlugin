@@ -244,9 +244,10 @@ public class KillCountNotifier extends BaseNotifier {
                 if (KillCountService.CG_NAME.equalsIgnoreCase(boss))
                     return KillCountService.CG_BOSS;
                 return null;
+
             case "harvest":
                 if (KillCountService.HERBIBOAR.equalsIgnoreCase(boss))
-                return KillCountService.HERBIBOAR;
+                    return KillCountService.HERBIBOAR;
 
             case "kill":
                 return boss;
