@@ -337,7 +337,7 @@ JSON for Kill Count Notifications:
 }
 ```
 
-When an associated duration is not found, `extra.time` is reported as zero seconds and `extra.isPersonalBest` is not populated.
+When an associated duration is not found, `extra.time` and `extra.isPersonalBest` are not populated.
 
 Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble count, rather than kill count.
 
