@@ -326,16 +326,18 @@ JSON for Kill Count Notifications:
 {
   "content": "%USERNAME% has defeated %BOSS% with a completion count of %COUNT%",
   "extra": {
-    "isPersonalBest": true,
     "boss": "Chambers of Xeric",
     "count": 69,
     "gameMessage": "Your completed Chambers of Xeric count is: 69.",
-    "time": "PT4634S",
+    "time": "PT46M34S",
+    "isPersonalBest": true,
     "party": ["%USERNAME%", "another RSN", "yet another RSN"]
   },
   "type": "KILL_COUNT"
 }
 ```
+
+When an associated duration is not found, `extra.time` is reported as zero seconds and `extra.isPersonalBest` is not populated.
 
 Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble count, rather than kill count.
 
