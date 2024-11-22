@@ -1,5 +1,12 @@
 ## Unreleased
 
+- Minor: Enable the leagues notifier again. (#597)
+- Bugfix: Identify all CoX members from raiding party widget. (#600)
+- Dev: Clarify json example for kill counter notifier to include `time` and `isPersonalBest`. (#601)
+
+## 1.10.13
+
+- Minor: Report challenge time for TOB KC notifications, rather than total completion time. (#591)
 - Minor: Add raid party members to kill count notification metadata. (#587)
 - Minor: Add `::DinkMigrate` command to import configuration from other Discord webhook plugins. (#564)
 - Minor: Remove boss image embed from kill count notifications with screenshots disabled. (#578)
