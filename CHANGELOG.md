@@ -2,6 +2,7 @@
 
 - Minor: Enable the leagues notifier again. (#597)
 - Bugfix: Identify all CoX members from raiding party widget. (#600)
+- Dev: Clarify json example for kill counter notifier to include `time` and `isPersonalBest`. (#601)
 
 ## 1.10.13
 
