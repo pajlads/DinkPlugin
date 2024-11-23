@@ -377,6 +377,11 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Dodgy Deals", LeagueRelicTier.UNKNOWN),
             Map.entry("Friendly Forager", LeagueRelicTier.UNKNOWN),
 
+            // combat tier; actual tier is unknown
+            Map.entry("Guardian", LeagueRelicTier.UNKNOWN),
+            Map.entry("Last Stand", LeagueRelicTier.UNKNOWN),
+            Map.entry("Specialist", LeagueRelicTier.UNKNOWN),
+
             // leagues 5 relics without tier announced
             Map.entry("Golden God", LeagueRelicTier.UNKNOWN),
 
@@ -399,9 +404,7 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Berserker", LeagueRelicTier.SEVEN),
             Map.entry("Soul Stealer", LeagueRelicTier.SEVEN),
             Map.entry("Weapon Master", LeagueRelicTier.SEVEN),
-            Map.entry("Guardian", LeagueRelicTier.EIGHT),
-            Map.entry("Executioner", LeagueRelicTier.EIGHT),
-            Map.entry("Undying Retribution", LeagueRelicTier.EIGHT)
+            Map.entry("Executioner", LeagueRelicTier.EIGHT)
         ));
     }
 }
