@@ -441,7 +441,7 @@ public interface DinkPluginConfig extends Config {
 
     @ConfigItem(
         keyName = "importPolicy",
-        name = "Config Import Policy",
+        name = "Import Policy",
         description = "Whether certain settings should be overwritten on import, rather than merging.<br/>" +
             "Relevant for both ::DinkImport and 'Dynamic Config URL'",
         position = 1018,
