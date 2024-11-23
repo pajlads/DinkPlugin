@@ -372,6 +372,10 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Clue Compass", LeagueRelicTier.UNKNOWN),
             Map.entry("Fairy's Flight", LeagueRelicTier.UNKNOWN),
 
+            // total recall vs banker's note tier; actual tier is unknown
+            Map.entry("Total Recall", LeagueRelicTier.UNKNOWN),
+            Map.entry("Banker's Note", LeagueRelicTier.UNKNOWN),
+
             // utility tier; actual tier is unknown
             Map.entry("Corner Cutter", LeagueRelicTier.UNKNOWN),
             Map.entry("Dodgy Deals", LeagueRelicTier.UNKNOWN),
@@ -387,9 +391,6 @@ public class LeaguesNotifier extends BaseNotifier {
 
             Map.entry("Grimoire", LeagueRelicTier.UNKNOWN),
             Map.entry("Overgrown", LeagueRelicTier.UNKNOWN),
-
-            Map.entry("Total Recall", LeagueRelicTier.UNKNOWN),
-            Map.entry("Banker's Note", LeagueRelicTier.UNKNOWN),
 
             // leagues 4 relics that could have the same name
             Map.entry("Fire Sale", LeagueRelicTier.THREE),
