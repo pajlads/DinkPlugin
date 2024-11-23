@@ -241,9 +241,9 @@ public class Utils {
 
         List<String> names = new ArrayList<>(children.length / 4);
         for (Widget child : children) {
-            String text = child.getText();
-            if (text.startsWith("<col=ffffff>")) {
-                names.add(sanitize(text));
+            String name = sanitize(child.getName());
+            if (!name.isEmpty()) {
+                names.add(name);
             }
         }
         return names;

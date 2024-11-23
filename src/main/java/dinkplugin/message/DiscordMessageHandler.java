@@ -7,6 +7,7 @@ import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.NotificationData;
+import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.DiscordProfile;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
@@ -295,7 +296,20 @@ public class DiscordMessageHandler {
                 .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
                 .build()
                 .evaluate(false);
-            return mBody.withThreadName(Utils.truncate(StringUtils.normalizeSpace(threadName), NotificationBody.MAX_THREAD_NAME_LENGTH));
+            Long[] appliedTags = ConfigUtil.readDelimited(url.queryParameter("applied_tags"))
+                .map(tag -> {
+                    try {
+                        return Long.parseLong(tag);
+                    } catch (NumberFormatException ignored) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toArray(Long[]::new);
+            return mBody.toBuilder()
+                .threadName(Utils.truncate(StringUtils.normalizeSpace(threadName), NotificationBody.MAX_THREAD_NAME_LENGTH))
+                .appliedTags(appliedTags)
+                .build();
         }
         return mBody;
     }
