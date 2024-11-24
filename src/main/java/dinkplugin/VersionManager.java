@@ -131,6 +131,6 @@ public class VersionManager {
         register("1.10.2", "Chat notifier can read commands and RL notifications");
         register("1.10.5", "Pet notifications now report rarity and luck");
         register("1.10.12", "Rarity is now reported for notable pickpocket loot");
-        register("1.10.14", "Kill count notifier now triggers for Herbiboar");
+        register("1.10.14", "Kill count notifier now triggers for Herbiboar and Leagues notifier has been re-enabled");
     }
 }

@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.14
+
 - Minor: Pull latest dynamic configuration if sufficiently old. (#598)
 - Minor: Allow overwriting webhooks or item lists on config import, rather than merging. (#595)
 - Minor: Allow specifying tag IDs to apply for new forum thread messages. (#599)
