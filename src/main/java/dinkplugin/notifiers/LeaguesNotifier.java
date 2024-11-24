@@ -385,14 +385,14 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Total Recall", LeagueRelicTier.UNKNOWN),
             Map.entry("Banker's Note", LeagueRelicTier.UNKNOWN),
 
+            // grimiore vs overgrown vs ??? tier; probably tier 6
+            Map.entry("Grimoire", LeagueRelicTier.UNKNOWN),
+            Map.entry("Overgrown", LeagueRelicTier.UNKNOWN),
+
             // combat tier; probably tier 7
             Map.entry("Guardian", LeagueRelicTier.UNKNOWN),
             Map.entry("Last Stand", LeagueRelicTier.UNKNOWN),
             Map.entry("Specialist", LeagueRelicTier.UNKNOWN),
-
-            // leagues 5 relics without tier announced
-            Map.entry("Grimoire", LeagueRelicTier.UNKNOWN),
-            Map.entry("Overgrown", LeagueRelicTier.UNKNOWN),
 
             // leagues 4 relics that could have the same name
             Map.entry("Fire Sale", LeagueRelicTier.THREE),
