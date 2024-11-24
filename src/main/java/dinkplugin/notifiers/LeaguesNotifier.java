@@ -377,7 +377,7 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Clue Compass", LeagueRelicTier.THREE),
             Map.entry("Fairy's Flight", LeagueRelicTier.THREE),
 
-            // confirmed tier 4 relics
+            // confirmed tier 4 relics; missing 1 relic
             Map.entry("Golden God", LeagueRelicTier.FOUR),
             Map.entry("Reloaded", LeagueRelicTier.FOUR),
 
