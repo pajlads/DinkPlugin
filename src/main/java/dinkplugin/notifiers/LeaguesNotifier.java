@@ -393,21 +393,6 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Guardian", LeagueRelicTier.UNKNOWN),
             Map.entry("Last Stand", LeagueRelicTier.UNKNOWN),
             Map.entry("Specialist", LeagueRelicTier.UNKNOWN),
-
-            // leagues 4 relics that could have the same name
-            Map.entry("Fire Sale", LeagueRelicTier.THREE),
-            Map.entry("Archer's Embrace", LeagueRelicTier.FOUR),
-            Map.entry("Brawler's Resolve", LeagueRelicTier.FOUR),
-            Map.entry("Superior Sorcerer", LeagueRelicTier.FOUR),
-            Map.entry("Bloodthirsty", LeagueRelicTier.FIVE),
-            Map.entry("Infernal Gathering", LeagueRelicTier.FIVE),
-            Map.entry("Treasure Seeker", LeagueRelicTier.FIVE),
-            Map.entry("Equilibrium", LeagueRelicTier.SIX),
-            Map.entry("Ruinous Powers", LeagueRelicTier.SIX),
-            Map.entry("Berserker", LeagueRelicTier.SEVEN),
-            Map.entry("Soul Stealer", LeagueRelicTier.SEVEN),
-            Map.entry("Weapon Master", LeagueRelicTier.SEVEN),
-            Map.entry("Executioner", LeagueRelicTier.EIGHT)
         ));
     }
 }
