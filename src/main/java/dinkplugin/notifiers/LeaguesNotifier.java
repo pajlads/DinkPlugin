@@ -392,7 +392,7 @@ public class LeaguesNotifier extends BaseNotifier {
             // combat tier; probably tier 7
             Map.entry("Guardian", LeagueRelicTier.UNKNOWN),
             Map.entry("Last Stand", LeagueRelicTier.UNKNOWN),
-            Map.entry("Specialist", LeagueRelicTier.UNKNOWN),
+            Map.entry("Specialist", LeagueRelicTier.UNKNOWN)
         ));
     }
 }
