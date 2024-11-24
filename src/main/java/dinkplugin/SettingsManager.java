@@ -312,7 +312,7 @@ public class SettingsManager {
 
         // refresh dynamic config if it's been 6+ hours
         var lastImport = lastDynamicImport;
-        if (lastImport != null && Duration.between(lastImport, Instant.now()).toHours() >= 6) {
+        if (lastImport != null && Duration.between(lastImport, Instant.now()).toHours() >= 3) {
             importDynamicConfig(config.dynamicConfigUrl());
         }
     }
