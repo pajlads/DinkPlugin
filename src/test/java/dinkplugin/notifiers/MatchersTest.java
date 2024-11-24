@@ -110,8 +110,7 @@ class MatchersTest {
     @ParameterizedTest(name = "Kill count message should not trigger on: {0}")
     @ValueSource(
         strings = {
-            "Forsen: forsen",
-            "Your heriboar harvest count is: 69."
+            "Forsen: forsen"
         }
     )
     void killCountRegexDoesNotMatch(String message) {
@@ -130,6 +129,7 @@ class MatchersTest {
 
                 // skilling special case
                 Arguments.of("Your subdued Wintertodt count is: 359", Pair.of("Wintertodt", 359)),
+                Arguments.of("Your herbiboar harvest count is: 2332.", Pair.of("Herbiboar", 2332)),
 
                 // minigame special cases
                 Arguments.of("Your Barrows chest count is: 268", Pair.of("Barrows", 268)),
@@ -169,7 +169,7 @@ class MatchersTest {
 
     private static class GambleProvider implements ArgumentsProvider {
         @Override
-        public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+        public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                 Arguments.of("Magic seed! High level gamble count: 1.", new GambleNotifier.ParsedData("Magic seed", 1, null, 1)),
                 Arguments.of("Limpwurt root (x 37)! High level gamble count: 65.", new GambleNotifier.ParsedData("Limpwurt root", 37, null, 65)),

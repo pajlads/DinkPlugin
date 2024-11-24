@@ -40,6 +40,7 @@ public class KillCountService {
 
     public static final String GAUNTLET_NAME = "Gauntlet", GAUNTLET_BOSS = "Crystalline Hunllef";
     public static final String CG_NAME = "Corrupted Gauntlet", CG_BOSS = "Corrupted Hunllef";
+    public static final String HERBIBOAR = "Herbiboar";
     public static final String TOA = "Tombs of Amascut";
     public static final String TOB = "Theatre of Blood";
     public static final String COX = "Chambers of Xeric";
@@ -146,7 +147,7 @@ public class KillCountService {
         // herbiboar count (for pet tracking)
         if (message.startsWith(HERBIBOAR_PREFIX)) {
             int harvestCount = Integer.parseInt(message.substring(HERBIBOAR_PREFIX.length(), message.length() - 1).replace(",", ""));
-            killCounts.put("Herbiboar", harvestCount);
+            killCounts.put(HERBIBOAR, harvestCount);
             return;
         }
 
