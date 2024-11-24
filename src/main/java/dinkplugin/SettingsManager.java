@@ -310,7 +310,7 @@ public class SettingsManager {
             return true;
         });
 
-        // refresh dynamic config if it's been 6+ hours
+        // refresh dynamic config if it's been 3+ hours
         var lastImport = lastDynamicImport;
         if (lastImport != null && Duration.between(lastImport, Instant.now()).toHours() >= 3) {
             importDynamicConfig(config.dynamicConfigUrl());
