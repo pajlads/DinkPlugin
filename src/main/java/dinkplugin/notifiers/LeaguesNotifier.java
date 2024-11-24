@@ -367,34 +367,32 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Lumberjack", LeagueRelicTier.ONE),
             Map.entry("Power Miner", LeagueRelicTier.ONE),
 
-            // teleport tier; actual tier is unknown
-            Map.entry("Bank Heist", LeagueRelicTier.UNKNOWN),
-            Map.entry("Clue Compass", LeagueRelicTier.UNKNOWN),
-            Map.entry("Fairy's Flight", LeagueRelicTier.UNKNOWN),
+            // confirmed tier 2 relics
+            Map.entry("Corner Cutter", LeagueRelicTier.TWO),
+            Map.entry("Dodgy Deals", LeagueRelicTier.TWO),
+            Map.entry("Friendly Forager", LeagueRelicTier.TWO),
 
-            // leagues 5 relics without tier announced
-            Map.entry("Golden God", LeagueRelicTier.UNKNOWN),
-            Map.entry("Grimoire", LeagueRelicTier.UNKNOWN),
+            // confirmed tier 3 relics
+            Map.entry("Bank Heist", LeagueRelicTier.THREE),
+            Map.entry("Clue Compass", LeagueRelicTier.THREE),
+            Map.entry("Fairy's Flight", LeagueRelicTier.THREE),
+
+            // confirmed tier 4 relics; missing 1 relic
+            Map.entry("Golden God", LeagueRelicTier.FOUR),
+            Map.entry("Reloaded", LeagueRelicTier.FOUR),
+
+            // total recall vs banker's note tier; probably tier 5
             Map.entry("Total Recall", LeagueRelicTier.UNKNOWN),
             Map.entry("Banker's Note", LeagueRelicTier.UNKNOWN),
 
-            // leagues 4 relics that could have the same name
-            Map.entry("Fire Sale", LeagueRelicTier.THREE),
-            Map.entry("Archer's Embrace", LeagueRelicTier.FOUR),
-            Map.entry("Brawler's Resolve", LeagueRelicTier.FOUR),
-            Map.entry("Superior Sorcerer", LeagueRelicTier.FOUR),
-            Map.entry("Bloodthirsty", LeagueRelicTier.FIVE),
-            Map.entry("Infernal Gathering", LeagueRelicTier.FIVE),
-            Map.entry("Treasure Seeker", LeagueRelicTier.FIVE),
-            Map.entry("Equilibrium", LeagueRelicTier.SIX),
-            Map.entry("Farmer's Fortune", LeagueRelicTier.SIX),
-            Map.entry("Ruinous Powers", LeagueRelicTier.SIX),
-            Map.entry("Berserker", LeagueRelicTier.SEVEN),
-            Map.entry("Soul Stealer", LeagueRelicTier.SEVEN),
-            Map.entry("Weapon Master", LeagueRelicTier.SEVEN),
-            Map.entry("Guardian", LeagueRelicTier.EIGHT),
-            Map.entry("Executioner", LeagueRelicTier.EIGHT),
-            Map.entry("Undying Retribution", LeagueRelicTier.EIGHT)
+            // grimiore vs overgrown vs ??? tier; probably tier 6
+            Map.entry("Grimoire", LeagueRelicTier.UNKNOWN),
+            Map.entry("Overgrown", LeagueRelicTier.UNKNOWN),
+
+            // combat tier; probably tier 7
+            Map.entry("Guardian", LeagueRelicTier.UNKNOWN),
+            Map.entry("Last Stand", LeagueRelicTier.UNKNOWN),
+            Map.entry("Specialist", LeagueRelicTier.UNKNOWN)
         ));
     }
 }
