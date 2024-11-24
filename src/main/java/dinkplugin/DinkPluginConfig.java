@@ -4,6 +4,7 @@ import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.ChatNotificationType;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
+import dinkplugin.domain.ConfigImportPolicy;
 import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.LeagueTaskDifficulty;
@@ -439,10 +440,22 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "importPolicy",
+        name = "Import Policy",
+        description = "Whether certain settings should be overwritten on import, rather than merging.<br/>" +
+            "Relevant for both ::DinkImport and 'Dynamic Config URL'",
+        position = 1018,
+        section = advancedSection
+    )
+    default Set<ConfigImportPolicy> importPolicy() {
+        return EnumSet.noneOf(ConfigImportPolicy.class);
+    }
+
+    @ConfigItem(
         keyName = "includeClientFrame",
         name = "Include Client Frame",
         description = "Whether to include the client frame in screenshots.",
-        position = 1018,
+        position = 1019,
         section = advancedSection
     )
     default boolean includeClientFrame() {
@@ -453,7 +466,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "embedColor",
         name = "Embed Color",
         description = "The highlight color for rich embeds.",
-        position = 1019,
+        position = 1020,
         section = advancedSection
     )
     default Color embedColor() {
