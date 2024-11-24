@@ -92,6 +92,13 @@ public class NotificationBody<T extends NotificationData> {
     String threadName;
 
     /**
+     * The IDs of the set of tags that have been applied to a thread in a GUILD_FORUM or a GUILD_MEDIA channel
+     */
+    @Nullable
+    @SerializedName("applied_tags")
+    Long[] appliedTags;
+
+    /**
      * An optional screenshot to use, instead of capturing one from {@link DiscordMessageHandler}
      */
     @Nullable
