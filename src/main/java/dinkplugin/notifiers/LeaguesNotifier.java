@@ -367,19 +367,23 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Lumberjack", LeagueRelicTier.ONE),
             Map.entry("Power Miner", LeagueRelicTier.ONE),
 
-            // teleport tier; actual tier is unknown
-            Map.entry("Bank Heist", LeagueRelicTier.UNKNOWN),
-            Map.entry("Clue Compass", LeagueRelicTier.UNKNOWN),
-            Map.entry("Fairy's Flight", LeagueRelicTier.UNKNOWN),
+            // confirmed tier 2 relics
+            Map.entry("Corner Cutter", LeagueRelicTier.TWO),
+            Map.entry("Dodgy Deals", LeagueRelicTier.TWO),
+            Map.entry("Friendly Forager", LeagueRelicTier.TWO),
+
+            // confirmed tier 3 relics
+            Map.entry("Bank Heist", LeagueRelicTier.THREE),
+            Map.entry("Clue Compass", LeagueRelicTier.THREE),
+            Map.entry("Fairy's Flight", LeagueRelicTier.THREE),
+
+            // confirmed tier 4 relics
+            Map.entry("Golden God", LeagueRelicTier.FOUR),
+            Map.entry("Reloaded", LeagueRelicTier.FOUR),
 
             // total recall vs banker's note tier; actual tier is unknown
             Map.entry("Total Recall", LeagueRelicTier.UNKNOWN),
             Map.entry("Banker's Note", LeagueRelicTier.UNKNOWN),
-
-            // utility tier; actual tier is unknown
-            Map.entry("Corner Cutter", LeagueRelicTier.UNKNOWN),
-            Map.entry("Dodgy Deals", LeagueRelicTier.UNKNOWN),
-            Map.entry("Friendly Forager", LeagueRelicTier.UNKNOWN),
 
             // combat tier; actual tier is unknown
             Map.entry("Guardian", LeagueRelicTier.UNKNOWN),
@@ -387,8 +391,6 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Specialist", LeagueRelicTier.UNKNOWN),
 
             // leagues 5 relics without tier announced
-            Map.entry("Golden God", LeagueRelicTier.UNKNOWN),
-
             Map.entry("Grimoire", LeagueRelicTier.UNKNOWN),
             Map.entry("Overgrown", LeagueRelicTier.UNKNOWN),
 
