@@ -381,11 +381,11 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Golden God", LeagueRelicTier.FOUR),
             Map.entry("Reloaded", LeagueRelicTier.FOUR),
 
-            // total recall vs banker's note tier; actual tier is unknown
+            // total recall vs banker's note tier; probably tier 5
             Map.entry("Total Recall", LeagueRelicTier.UNKNOWN),
             Map.entry("Banker's Note", LeagueRelicTier.UNKNOWN),
 
-            // combat tier; actual tier is unknown
+            // combat tier; probably tier 7
             Map.entry("Guardian", LeagueRelicTier.UNKNOWN),
             Map.entry("Last Stand", LeagueRelicTier.UNKNOWN),
             Map.entry("Specialist", LeagueRelicTier.UNKNOWN),
