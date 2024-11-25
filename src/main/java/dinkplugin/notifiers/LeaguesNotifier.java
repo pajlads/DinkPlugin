@@ -378,21 +378,27 @@ public class LeaguesNotifier extends BaseNotifier {
             Map.entry("Fairy's Flight", LeagueRelicTier.THREE),
 
             // confirmed tier 4 relics; missing 1 relic
+            Map.entry("Equilibrium", LeagueRelicTier.FOUR),
             Map.entry("Golden God", LeagueRelicTier.FOUR),
             Map.entry("Reloaded", LeagueRelicTier.FOUR),
 
+            Map.entry("Production Master", LeagueRelicTier.FIVE),
+            Map.entry("Slayer Master", LeagueRelicTier.FIVE),
+            Map.entry("Treasure Arbiter", LeagueRelicTier.FIVE),
+
             // total recall vs banker's note tier; probably tier 5
-            Map.entry("Total Recall", LeagueRelicTier.UNKNOWN),
-            Map.entry("Banker's Note", LeagueRelicTier.UNKNOWN),
+            Map.entry("Total Recall", LeagueRelicTier.SIX),
+            Map.entry("Banker's Note", LeagueRelicTier.SIX),
 
             // grimiore vs overgrown vs ??? tier; probably tier 6
-            Map.entry("Grimoire", LeagueRelicTier.UNKNOWN),
-            Map.entry("Overgrown", LeagueRelicTier.UNKNOWN),
+            Map.entry("Grimoire", LeagueRelicTier.SEVEN),
+            Map.entry("Overgrown", LeagueRelicTier.SEVEN),
+            Map.entry("Pocket Kingdom", LeagueRelicTier.SEVEN),
 
             // combat tier; probably tier 7
-            Map.entry("Guardian", LeagueRelicTier.UNKNOWN),
-            Map.entry("Last Stand", LeagueRelicTier.UNKNOWN),
-            Map.entry("Specialist", LeagueRelicTier.UNKNOWN)
+            Map.entry("Guardian", LeagueRelicTier.EIGHT),
+            Map.entry("Last Stand", LeagueRelicTier.EIGHT),
+            Map.entry("Specialist", LeagueRelicTier.EIGHT)
         ));
     }
 }
