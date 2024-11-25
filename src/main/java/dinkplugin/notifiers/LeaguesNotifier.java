@@ -338,7 +338,6 @@ public class LeaguesNotifier extends BaseNotifier {
                 TIER_BY_RELIC.put(name, tier);
             }
             */
-
         }
         if (pointsMap.size() > 1) {
             TIER_BY_POINTS.clear();
