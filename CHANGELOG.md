@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Manually confirm the relic tiers for Leagues 5. (#605)
+
 ## 1.10.14
 
 - Minor: Pull latest dynamic configuration if sufficiently old. (#598)
