@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.15
+
 - Minor: Manually confirm the relic tiers for Leagues 5. (#605)
 
 ## 1.10.14
