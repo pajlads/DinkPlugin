@@ -362,40 +362,26 @@ public class LeaguesNotifier extends BaseNotifier {
             .collect(Collectors.toMap(LeagueRelicTier::getDefaultPoints, Function.identity(), (a, b) -> null, TreeMap::new));
 
         TIER_BY_RELIC = new HashMap<>(Map.ofEntries(
-            // confirmed tier 1 relics
             Map.entry("Animal Wrangler", LeagueRelicTier.ONE),
             Map.entry("Lumberjack", LeagueRelicTier.ONE),
             Map.entry("Power Miner", LeagueRelicTier.ONE),
-
-            // confirmed tier 2 relics
             Map.entry("Corner Cutter", LeagueRelicTier.TWO),
             Map.entry("Dodgy Deals", LeagueRelicTier.TWO),
             Map.entry("Friendly Forager", LeagueRelicTier.TWO),
-
-            // confirmed tier 3 relics
             Map.entry("Bank Heist", LeagueRelicTier.THREE),
             Map.entry("Clue Compass", LeagueRelicTier.THREE),
             Map.entry("Fairy's Flight", LeagueRelicTier.THREE),
-
-            // confirmed tier 4 relics; missing 1 relic
             Map.entry("Equilibrium", LeagueRelicTier.FOUR),
             Map.entry("Golden God", LeagueRelicTier.FOUR),
             Map.entry("Reloaded", LeagueRelicTier.FOUR),
-
             Map.entry("Production Master", LeagueRelicTier.FIVE),
             Map.entry("Slayer Master", LeagueRelicTier.FIVE),
             Map.entry("Treasure Arbiter", LeagueRelicTier.FIVE),
-
-            // total recall vs banker's note tier; probably tier 5
             Map.entry("Total Recall", LeagueRelicTier.SIX),
             Map.entry("Banker's Note", LeagueRelicTier.SIX),
-
-            // grimiore vs overgrown vs ??? tier; probably tier 6
             Map.entry("Grimoire", LeagueRelicTier.SEVEN),
             Map.entry("Overgrown", LeagueRelicTier.SEVEN),
             Map.entry("Pocket Kingdom", LeagueRelicTier.SEVEN),
-
-            // combat tier; probably tier 7
             Map.entry("Guardian", LeagueRelicTier.EIGHT),
             Map.entry("Last Stand", LeagueRelicTier.EIGHT),
             Map.entry("Specialist", LeagueRelicTier.EIGHT)
