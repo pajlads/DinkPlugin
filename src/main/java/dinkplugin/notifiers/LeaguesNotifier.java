@@ -331,11 +331,14 @@ public class LeaguesNotifier extends BaseNotifier {
             var tierStruct = client.getStructComposition(tierStructs[tierIndex - 1]);
             pointsMap.put(tierStruct.getIntValue(877), tier);
 
+            /*
             var relicStructs = client.getEnum(tierStruct.getIntValue(878)).getIntVals();
             for (int relicStruct : relicStructs) {
                 var name = client.getStructComposition(relicStruct).getStringValue(879);
                 TIER_BY_RELIC.put(name, tier);
             }
+            */
+
         }
         if (pointsMap.size() > 1) {
             TIER_BY_POINTS.clear();
