@@ -8,13 +8,13 @@ import lombok.RequiredArgsConstructor;
 public enum LeagueRelicTier {
     UNKNOWN(-1),
     ONE(0),
-    TWO(500),
-    THREE(1_200),
-    FOUR(2_000),
-    FIVE(4_000),
-    SIX(7_500),
-    SEVEN(15_000),
-    EIGHT(24_000);
+    TWO(750),
+    THREE(1_500),
+    FOUR(2_500),
+    FIVE(5_000),
+    SIX(8_000),
+    SEVEN(16_000),
+    EIGHT(25_000);
 
     /**
      * Points required to unlock a relic of a given tier.
