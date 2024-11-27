@@ -347,7 +347,7 @@ public class LeaguesNotifier extends BaseNotifier {
 
     static {
         AREA_BY_TASKS = Collections.unmodifiableNavigableMap(
-            new TreeMap<>(Map.of(0, 0, 60, 1, 140, 2, 300, 3))
+            new TreeMap<>(Map.of(0, 0, 90, 1, 200, 2, 400, 3))
         );
 
         NavigableMap<Integer, String> thresholds = new TreeMap<>();
