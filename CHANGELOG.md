@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Manually confirm the points for each relic tier in Leagues 5. (#607)
+- Bugfix: Report correct tasks until next area for Leagues 5. (#613)
 
 ## 1.10.15
 
