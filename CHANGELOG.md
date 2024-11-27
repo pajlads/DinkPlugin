@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Manually confirm the points for each relic tier in Leagues 5. (#607)
+
 ## 1.10.15
 
 - Minor: Manually confirm the relic tiers for Leagues 5. (#605)
