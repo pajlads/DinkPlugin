@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.16
+
 - Minor: Allow sending all seasonal notifications to the URLs for the leagues notifier. (#611)
 - Minor: Add notification for Combat Mastery unlock in Leagues 5. (#617)
 - Minor: Manually confirm the rank points for each trophy in Leagues 5. (#614)
