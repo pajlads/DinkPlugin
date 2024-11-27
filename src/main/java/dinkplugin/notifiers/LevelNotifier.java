@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
 import net.runelite.api.Skill;
+import net.runelite.api.WorldType;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.StatChanged;
 import net.runelite.client.callback.ClientThread;
@@ -38,6 +39,7 @@ import static net.runelite.api.Experience.MAX_REAL_LEVEL;
 public class LevelNotifier extends BaseNotifier {
     public static final int LEVEL_FOR_MAX_XP = Experience.MAX_VIRT_LEVEL + 1; // 127
     static final @VisibleForTesting int INIT_GAME_TICKS = 16; // ~10s
+    private static final Set<WorldType> SPECIAL_WORLDS = EnumSet.of(WorldType.PVP_ARENA, WorldType.QUEST_SPEEDRUNNING, WorldType.BETA_WORLD, WorldType.NOSAVE_MODE, WorldType.TOURNAMENT_WORLD, WorldType.DEADMAN, WorldType.SEASONAL);
     private static final int SKILL_COUNT = Skill.values().length;
     private static final String COMBAT_NAME = "Combat";
     private static final Set<String> COMBAT_COMPONENTS;
@@ -47,6 +49,7 @@ public class LevelNotifier extends BaseNotifier {
     private final Map<Skill, Integer> currentXp = new EnumMap<>(Skill.class);
     private int ticksWaited = 0;
     private int initTicks = 0;
+    private Set<WorldType> specialWorldType = null;
 
     @Inject
     private ClientThread clientThread;
@@ -68,6 +71,7 @@ public class LevelNotifier extends BaseNotifier {
         }
         currentLevels.put(COMBAT_NAME, calculateCombatLevel());
         this.initTicks = 0;
+        this.specialWorldType = getSpecialWorldTypes();
         log.debug("Initialized current skill levels: {}", currentLevels);
     }
 
@@ -79,6 +83,7 @@ public class LevelNotifier extends BaseNotifier {
             xpReached.clear();
             currentXp.clear();
             currentLevels.clear();
+            this.specialWorldType = null;
         });
     }
 
@@ -114,7 +119,10 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
-        if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN || gameStateChanged.getGameState() == GameState.HOPPING) {
+        if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN) {
+            this.reset();
+        } else if (gameStateChanged.getGameState() == GameState.LOGGED_IN && !getSpecialWorldTypes().equals(this.specialWorldType)) {
+            // world switched where player may have different level profiles; re-initialize
             this.reset();
         }
     }
@@ -368,6 +376,12 @@ public class LevelNotifier extends BaseNotifier {
 
         // log(n) operation to support virtual levels
         return Experience.getLevelForXp(xp);
+    }
+
+    private Set<WorldType> getSpecialWorldTypes() {
+        var world = client.getWorldType().clone();
+        world.retainAll(SPECIAL_WORLDS); // O(1)
+        return world;
     }
 
     private static String getSkillIcon(String skillName) {
