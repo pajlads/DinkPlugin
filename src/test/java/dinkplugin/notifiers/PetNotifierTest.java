@@ -2,6 +2,7 @@ package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.domain.FilterMode;
+import dinkplugin.domain.SeasonalPolicy;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.PetNotificationData;
@@ -364,7 +365,7 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifySeasonal() {
         // update mocks
-        when(config.ignoreSeasonal()).thenReturn(false);
+        when(config.seasonalPolicy()).thenReturn(SeasonalPolicy.ACCEPT);
         when(client.getWorldType()).thenReturn(EnumSet.of(WorldType.SEASONAL));
 
         // send fake message
@@ -386,7 +387,7 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreSeasonal() {
         // update mocks
-        when(config.ignoreSeasonal()).thenReturn(true);
+        when(config.seasonalPolicy()).thenReturn(SeasonalPolicy.ACCEPT);
         when(client.getWorldType()).thenReturn(EnumSet.of(WorldType.SEASONAL));
 
         // send fake message

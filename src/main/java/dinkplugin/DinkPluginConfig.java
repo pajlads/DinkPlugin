@@ -9,6 +9,7 @@ import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
+import dinkplugin.domain.SeasonalPolicy;
 import dinkplugin.notifiers.ChatNotifier;
 import dinkplugin.util.Utils;
 import net.runelite.api.Experience;
@@ -178,14 +179,12 @@ public interface DinkPluginConfig extends Config {
     )
     String chatSection = "Custom Chat Messages";
 
-    
     @ConfigSection(
         name = "Leagues",
         description = "Settings for notifying when you complete league tasks, unlock areas, and redeem relics",
         position = 200,
         closedByDefault = true
     )
-     
     String leaguesSection = "Leagues";
 
     @ConfigSection(
@@ -403,16 +402,23 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "ignoreSeasonalWorlds",
-        name = "Ignore Seasonal Worlds",
+        keyName = "seasonalPolicy",
+        name = "Seasonal Policy",
         description = "Whether to suppress notifications that occur on seasonal worlds like Leagues.<br/>" +
             "Note: the Leagues-specific notifier uses an independent config toggle",
         position = 1015,
         section = advancedSection
     )
-    default boolean ignoreSeasonal() {
-        return false;
+    default SeasonalPolicy seasonalPolicy() {
+        return SeasonalPolicy.ACCEPT;
     }
+
+    @ConfigItem(
+        keyName = "seasonalPolicy",
+        name = "",
+        description = ""
+    )
+    void setSeasonalPolicy(SeasonalPolicy policy);
 
     @ConfigItem(
         keyName = "includeLocation",

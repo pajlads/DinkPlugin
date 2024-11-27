@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dinkplugin.DinkPlugin;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.PlayerLookupService;
+import dinkplugin.domain.SeasonalPolicy;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.NotificationData;
@@ -241,7 +242,7 @@ public class DiscordMessageHandler {
             }
         }
 
-        if (!config.ignoreSeasonal() && !mBody.isSeasonalWorld() && client.getWorldType().contains(WorldType.SEASONAL)) {
+        if (config.seasonalPolicy() != SeasonalPolicy.REJECT && !mBody.isSeasonalWorld() && client.getWorldType().contains(WorldType.SEASONAL)) {
             mBody = mBody.withSeasonalWorld(true);
         }
 
