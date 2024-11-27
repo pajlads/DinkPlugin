@@ -296,7 +296,6 @@ public class LeaguesNotifier extends BaseNotifier {
                 log.warn("Failed to initialize trophies", e);
             }
 
-            /*
             try {
                 initRelics(leaguesStruct);
                 log.debug("Relics: {}", TIER_BY_RELIC);
@@ -304,7 +303,6 @@ public class LeaguesNotifier extends BaseNotifier {
             } catch (Exception e) {
                 log.warn("Failed to initialize relics", e);
             }
-             */
         });
     }
 
@@ -354,13 +352,13 @@ public class LeaguesNotifier extends BaseNotifier {
         );
 
         NavigableMap<Integer, String> thresholds = new TreeMap<>();
-        thresholds.put(2_500, "Bronze");
-        thresholds.put(5_000, "Iron");
+        thresholds.put(2_000, "Bronze");
+        thresholds.put(4_000, "Iron");
         thresholds.put(10_000, "Steel");
-        thresholds.put(18_000, "Mithril");
-        thresholds.put(28_000, "Adamant");
-        thresholds.put(42_000, "Rune");
-        thresholds.put(56_000, "Dragon");
+        thresholds.put(20_000, "Mithril");
+        thresholds.put(30_000, "Adamant");
+        thresholds.put(45_000, "Rune");
+        thresholds.put(60_000, "Dragon");
         TROPHY_BY_POINTS = thresholds;
 
         TIER_BY_POINTS = Arrays.stream(LeagueRelicTier.values())

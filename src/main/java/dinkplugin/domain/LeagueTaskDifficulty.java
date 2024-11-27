@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public enum LeagueTaskDifficulty {
     EASY(10),
-    MEDIUM(40),
+    MEDIUM(30),
     HARD(80),
     ELITE(200),
     MASTER(400);
@@ -21,7 +21,7 @@ public enum LeagueTaskDifficulty {
     /**
      * Points earned from completed a task of the given difficulty.
      *
-     * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League/Tasks">Wiki Reference</a>
+     * @see <a href="https://oldschool.runescape.wiki/w/Raging_Echoes_League/Tasks">Wiki Reference</a>
      */
     private final int points;
     private final String displayName = this.name().charAt(0) + this.name().substring(1).toLowerCase();

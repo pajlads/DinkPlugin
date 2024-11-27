@@ -167,7 +167,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         LeagueTaskDifficulty difficulty = LeagueTaskDifficulty.HARD;
         int tasksUntilNextArea = SECOND_AREA_TASKS - tasksCompleted;
         int pointsUntilNextRelic = LeagueRelicTier.THREE.getDefaultPoints() - totalPoints;
-        int pointsUntilNextTrophy = 2_500 - totalPoints;
+        int pointsUntilNextTrophy = 2_000 - totalPoints;
         verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
             false,
@@ -189,8 +189,8 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
     @Test
     void notifyTaskTrophyBronze() {
         // update client mocks
-        int tasksCompleted = 119;
-        int totalPoints = 100 * 10 + 80 * 19; // 2520 >= 2500
+        int tasksCompleted = 113;
+        int totalPoints = 100 * 10 + 80 * 13; // 2040 >= 2000
         when(client.getVarbitValue(LeaguesNotifier.TASKS_COMPLETED_ID)).thenReturn(tasksCompleted);
         when(client.getVarpValue(LeaguesNotifier.POINTS_EARNED_ID)).thenReturn(totalPoints);
 
@@ -201,8 +201,8 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         String taskName = "The Frozen Door";
         LeagueTaskDifficulty difficulty = LeagueTaskDifficulty.HARD;
         int tasksUntilNextArea = SECOND_AREA_TASKS - tasksCompleted;
-        int pointsUntilNextRelic = LeagueRelicTier.FIVE.getDefaultPoints() - totalPoints;
-        int pointsUntilNextTrophy = 5_000 - totalPoints;
+        int pointsUntilNextRelic = LeagueRelicTier.FOUR.getDefaultPoints() - totalPoints;
+        int pointsUntilNextTrophy = 4_000 - totalPoints;
         String trophy = "Bronze";
         verifyCreateMessage(
             PRIMARY_WEBHOOK_URL,
@@ -227,7 +227,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
     void notifyTaskTrophyIron() {
         // update mocks
         int tasksCompleted = 200;
-        int totalPoints = 100 * 10 + 100 * 40; // 5000 >= 5000
+        int totalPoints = 100 * 10 + 100 * 30; // 4000 >= 4000
         when(client.getVarbitValue(LeaguesNotifier.TASKS_COMPLETED_ID)).thenReturn(tasksCompleted);
         when(client.getVarpValue(LeaguesNotifier.POINTS_EARNED_ID)).thenReturn(totalPoints);
         when(config.leaguesTaskMinTier()).thenReturn(LeagueTaskDifficulty.EASY);
@@ -239,7 +239,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         String taskName = "Equip Amy's Saw";
         LeagueTaskDifficulty difficulty = LeagueTaskDifficulty.MEDIUM;
         int tasksUntilNextArea = THIRD_AREA_TASKS - tasksCompleted;
-        int pointsUntilNextRelic = LeagueRelicTier.SIX.getDefaultPoints() - totalPoints;
+        int pointsUntilNextRelic = LeagueRelicTier.FIVE.getDefaultPoints() - totalPoints;
         int pointsUntilNextTrophy = 10_000 - totalPoints;
         String trophy = "Iron";
         verifyCreateMessage(
