@@ -9,6 +9,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LeaguesAreaNotificationData;
+import dinkplugin.notifiers.data.LeaguesMasteryNotificationData;
 import dinkplugin.notifiers.data.LeaguesRelicNotificationData;
 import dinkplugin.notifiers.data.LeaguesTaskNotificationData;
 import net.runelite.api.Varbits;
@@ -48,7 +49,32 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         when(config.leaguesAreaUnlock()).thenReturn(true);
         when(config.leaguesRelicUnlock()).thenReturn(true);
         when(config.leaguesTaskCompletion()).thenReturn(true);
+        when(config.leaguesMasteryUnlock()).thenReturn(true);
         when(config.leaguesTaskMinTier()).thenReturn(LeagueTaskDifficulty.HARD);
+    }
+
+    @Test
+    void notifyMastery() {
+        // fire event
+        notifier.onGameMessage("Congratulations, you've unlocked a new Melee Combat Mastery: Melee I.");
+
+        // verify notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .type(NotificationType.LEAGUES_MASTERY)
+                .text(
+                    Template.builder()
+                        .template(String.format("%s unlocked a new Combat Mastery: {{mastery}}.", PLAYER_NAME))
+                        .replacement("{{mastery}}", Replacements.ofWiki("Melee I"))
+                        .build()
+                )
+                .extra(new LeaguesMasteryNotificationData("Melee", 1))
+                .playerName(PLAYER_NAME)
+                .seasonalWorld(true)
+                .build()
+        );
     }
 
     @Test
@@ -285,6 +311,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         when(config.leaguesAreaUnlock()).thenReturn(false);
         when(config.leaguesRelicUnlock()).thenReturn(false);
         when(config.leaguesTaskCompletion()).thenReturn(false);
+        when(config.leaguesMasteryUnlock()).thenReturn(false);
 
         // update client mocks
         int tasksCompleted = 101;
@@ -298,6 +325,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage("Congratulations, you've completed a hard task: The Frozen Door.");
         notifier.onGameMessage("Congratulations, you've unlocked a new Relic: Animal Wrangler.");
         notifier.onGameMessage("Congratulations, you've unlocked a new area: Kandarin.");
+        notifier.onGameMessage("Congratulations, you've unlocked a new Melee Combat Mastery: Melee I.");
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -320,6 +348,7 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
         notifier.onGameMessage("Congratulations, you've completed a hard task: The Frozen Door.");
         notifier.onGameMessage("Congratulations, you've unlocked a new Relic: Animal Wrangler.");
         notifier.onGameMessage("Congratulations, you've unlocked a new area: Kandarin.");
+        notifier.onGameMessage("Congratulations, you've unlocked a new Melee Combat Mastery: Melee I.");
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
