@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Manually confirm the rank points for each trophy in Leagues 5. (#614)
 - Minor: Manually confirm the points for each relic tier in Leagues 5. (#607)
 
 ## 1.10.15
