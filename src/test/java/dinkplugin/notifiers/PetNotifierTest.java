@@ -387,7 +387,7 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreSeasonal() {
         // update mocks
-        when(config.seasonalPolicy()).thenReturn(SeasonalPolicy.ACCEPT);
+        when(config.seasonalPolicy()).thenReturn(SeasonalPolicy.REJECT);
         when(client.getWorldType()).thenReturn(EnumSet.of(WorldType.SEASONAL));
 
         // send fake message
