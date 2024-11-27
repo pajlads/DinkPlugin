@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum SeasonalPolicy {
     ACCEPT("Notify normally"),
-    REJECT("Drop notification"),
-    FORWARD_TO_LEAGUES("Use Leagues URL");
+    FORWARD_TO_LEAGUES("Use Leagues URL"),
+    REJECT("Off");
 
     private final String displayName;
 
