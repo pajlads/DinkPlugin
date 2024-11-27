@@ -55,6 +55,9 @@ public class LeaguesNotifier extends BaseNotifier {
     @VisibleForTesting
     static final @Varbit int FIVE_AREAS = 10666, FOUR_AREAS = 10665, THREE_AREAS = 10664, TWO_AREAS = 10663; // TODO: are these still correct?
 
+    @VisibleForTesting
+    static final int FIRST_AREA_TASKS = 90, SECOND_AREA_TASKS = 200, THIRD_AREA_TASKS = 400;
+
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/[proc%2Cscript2451].cs2#L3-L6">CS2 Reference</a>
      * @see <a href="https://abextm.github.io/cache2/#/viewer/enum/2670">Enum Reference</a>
@@ -347,7 +350,7 @@ public class LeaguesNotifier extends BaseNotifier {
 
     static {
         AREA_BY_TASKS = Collections.unmodifiableNavigableMap(
-            new TreeMap<>(Map.of(0, 0, 60, 1, 140, 2, 300, 3))
+            new TreeMap<>(Map.of(0, 0, FIRST_AREA_TASKS, 1, SECOND_AREA_TASKS, 2, THIRD_AREA_TASKS, 3))
         );
 
         NavigableMap<Integer, String> thresholds = new TreeMap<>();
