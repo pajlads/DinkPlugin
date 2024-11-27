@@ -2069,10 +2069,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "leaguesMasteryUnlock",
+        name = "Send Mastery Unlocks",
+        description = "Send notifications upon combat mastery selections",
+        position = 205,
+        section = leaguesSection
+    )
+    default boolean leaguesMasteryUnlock() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "leaguesTaskMinTier",
         name = "Task Min Difficulty",
         description = "The minimum tier of a task for a notification to be sent",
-        position = 205,
+        position = 206,
         section = leaguesSection
     )
     default LeagueTaskDifficulty leaguesTaskMinTier() {
