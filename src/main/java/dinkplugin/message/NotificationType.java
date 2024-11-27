@@ -25,6 +25,7 @@ public enum NotificationType {
     GROUP_STORAGE("Group Shared Storage", "groupStorage.png", WIKI_IMG_BASE_URL + "Coins_10000.png"),
     GRAND_EXCHANGE("Grand Exchange", "grandExchange.png", WIKI_IMG_BASE_URL + "Grand_Exchange_icon.png"),
     LEAGUES_AREA("Area Unlocked", "leaguesArea.png", WIKI_IMG_BASE_URL + "Raging_Echoes_League_-_%3F_Relic.png"),
+    LEAGUES_MASTERY("Mastery Unlocked", "leaguesMastery.png", WIKI_IMG_BASE_URL + "Raging_Echoes_League_combat_masteries_icon.png"),
     LEAGUES_RELIC("Relic Chosen", "leaguesRelic.png", WIKI_IMG_BASE_URL + "Raging_Echoes_League_relic_icon_-_detail.png"),
     LEAGUES_TASK("Task Completed", "leaguesTask.png", WIKI_IMG_BASE_URL + "Raging_Echoes_League_icon.png"),
     LOGIN("Player Login", "login.png", WIKI_IMG_BASE_URL + "Prop_sword.png"),
