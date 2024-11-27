@@ -2,6 +2,7 @@ package dinkplugin.notifiers;
 
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.SettingsManager;
+import dinkplugin.domain.SeasonalPolicy;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.util.WorldUtils;
@@ -29,7 +30,7 @@ public abstract class BaseNotifier {
 
     public boolean isEnabled() {
         Set<WorldType> world = client.getWorldType();
-        if (config.ignoreSeasonal() && world.contains(WorldType.SEASONAL)) {
+        if (config.seasonalPolicy() == SeasonalPolicy.REJECT && world.contains(WorldType.SEASONAL)) {
             return false;
         }
         if (WorldUtils.isIgnoredWorld(world)) {
@@ -46,7 +47,13 @@ public abstract class BaseNotifier {
     }
 
     protected final void createMessage(String overrideUrl, boolean sendImage, NotificationBody<?> body) {
-        String url = StringUtils.isNotBlank(overrideUrl) ? overrideUrl : config.primaryWebhook();
+        String override;
+        if (StringUtils.isNotBlank(config.leaguesWebhook()) && config.seasonalPolicy() == SeasonalPolicy.FORWARD_TO_LEAGUES && client.getWorldType().contains(WorldType.SEASONAL)) {
+            override = config.leaguesWebhook();
+        } else {
+            override = overrideUrl;
+        }
+        String url = StringUtils.isNotBlank(override) ? override : config.primaryWebhook();
         messageHandler.createMessage(url, sendImage, body);
     }
 
