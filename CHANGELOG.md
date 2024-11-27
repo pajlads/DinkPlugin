@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Allow sending all seasonal notifications to the URLs for the leagues notifier. (#611)
 - Minor: Manually confirm the rank points for each trophy in Leagues 5. (#614)
 - Minor: Manually confirm the points for each relic tier in Leagues 5. (#607)
 - Bugfix: Report correct points for medium tasks in Leagues 5. (#614)
