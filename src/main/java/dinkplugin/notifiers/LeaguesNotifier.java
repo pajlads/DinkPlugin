@@ -296,7 +296,6 @@ public class LeaguesNotifier extends BaseNotifier {
                 log.warn("Failed to initialize trophies", e);
             }
 
-            /*
             try {
                 initRelics(leaguesStruct);
                 log.debug("Relics: {}", TIER_BY_RELIC);
@@ -304,7 +303,6 @@ public class LeaguesNotifier extends BaseNotifier {
             } catch (Exception e) {
                 log.warn("Failed to initialize relics", e);
             }
-             */
         });
     }
 
