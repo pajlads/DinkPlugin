@@ -2,6 +2,7 @@
 
 - Minor: Manually confirm the rank points for each trophy in Leagues 5. (#614)
 - Minor: Manually confirm the points for each relic tier in Leagues 5. (#607)
+- Bugfix: Report correct points for medium tasks in Leagues 5. (#614)
 - Bugfix: Report correct tasks until next area for Leagues 5. (#613)
 
 ## 1.10.15
