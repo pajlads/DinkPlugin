@@ -404,7 +404,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "seasonalPolicy",
         name = "Seasonal Policy",
-        description = "Whether to suppress notifications that occur on seasonal worlds like Leagues.<br/>" +
+        description = "Whether to send notifications that occur on seasonal worlds like Leagues.<br/>" +
             "Note: the Leagues-specific notifier uses an independent config toggle",
         position = 1015,
         section = advancedSection
