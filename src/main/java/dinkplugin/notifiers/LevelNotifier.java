@@ -114,7 +114,7 @@ public class LevelNotifier extends BaseNotifier {
     }
 
     public void onGameStateChanged(GameStateChanged gameStateChanged) {
-        if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN) {
+        if (gameStateChanged.getGameState() == GameState.LOGIN_SCREEN || gameStateChanged.getGameState() == GameState.HOPPING) {
             this.reset();
         }
     }
