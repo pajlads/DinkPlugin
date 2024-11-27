@@ -55,6 +55,9 @@ public class LeaguesNotifier extends BaseNotifier {
     @VisibleForTesting
     static final @Varbit int FIVE_AREAS = 10666, FOUR_AREAS = 10665, THREE_AREAS = 10664, TWO_AREAS = 10663; // TODO: are these still correct?
 
+    @VisibleForTesting
+    static final int FIRST_AREA_TASKS = 90, SECOND_AREA_TASKS = 200, THIRD_AREA_TASKS = 400;
+
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/[proc%2Cscript2451].cs2#L3-L6">CS2 Reference</a>
      * @see <a href="https://abextm.github.io/cache2/#/viewer/enum/2670">Enum Reference</a>
@@ -331,13 +334,11 @@ public class LeaguesNotifier extends BaseNotifier {
             var tierStruct = client.getStructComposition(tierStructs[tierIndex - 1]);
             pointsMap.put(tierStruct.getIntValue(877), tier);
 
-            /*
             var relicStructs = client.getEnum(tierStruct.getIntValue(878)).getIntVals();
             for (int relicStruct : relicStructs) {
                 var name = client.getStructComposition(relicStruct).getStringValue(879);
                 TIER_BY_RELIC.put(name, tier);
             }
-            */
         }
         if (pointsMap.size() > 1) {
             TIER_BY_POINTS.clear();
@@ -347,17 +348,17 @@ public class LeaguesNotifier extends BaseNotifier {
 
     static {
         AREA_BY_TASKS = Collections.unmodifiableNavigableMap(
-            new TreeMap<>(Map.of(0, 0, 60, 1, 140, 2, 300, 3))
+            new TreeMap<>(Map.of(0, 0, FIRST_AREA_TASKS, 1, SECOND_AREA_TASKS, 2, THIRD_AREA_TASKS, 3))
         );
 
         NavigableMap<Integer, String> thresholds = new TreeMap<>();
-        thresholds.put(2_500, "Bronze");
-        thresholds.put(5_000, "Iron");
+        thresholds.put(2_000, "Bronze");
+        thresholds.put(4_000, "Iron");
         thresholds.put(10_000, "Steel");
-        thresholds.put(18_000, "Mithril");
-        thresholds.put(28_000, "Adamant");
-        thresholds.put(42_000, "Rune");
-        thresholds.put(56_000, "Dragon");
+        thresholds.put(20_000, "Mithril");
+        thresholds.put(30_000, "Adamant");
+        thresholds.put(45_000, "Rune");
+        thresholds.put(60_000, "Dragon");
         TROPHY_BY_POINTS = thresholds;
 
         TIER_BY_POINTS = Arrays.stream(LeagueRelicTier.values())
