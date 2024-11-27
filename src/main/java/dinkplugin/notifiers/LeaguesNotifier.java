@@ -7,6 +7,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.LeaguesAreaNotificationData;
+import dinkplugin.notifiers.data.LeaguesMasteryNotificationData;
 import dinkplugin.notifiers.data.LeaguesRelicNotificationData;
 import dinkplugin.notifiers.data.LeaguesTaskNotificationData;
 import dinkplugin.util.Utils;
@@ -36,6 +37,7 @@ public class LeaguesNotifier extends BaseNotifier {
     private static final String AREA_UNLOCK_PREFIX = "Congratulations, you've unlocked a new area: ";
     private static final String RELIC_UNLOCK_PREFIX = "Congratulations, you've unlocked a new Relic: ";
     private static final Pattern TASK_REGEX = Pattern.compile("Congratulations, you've completed an? (?<tier>\\w+) task: (?<task>.+)\\.");
+    private static final Pattern MASTERY_REGEX = Pattern.compile("Congratulations, you've unlocked a new .+ Combat Mastery: (?<type>\\w+) (?<tier>\\w+)\\.");
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cleague_areas_progress_bar%5D.cs2#L177">CS2 Reference</a>
@@ -105,6 +107,8 @@ public class LeaguesNotifier extends BaseNotifier {
      */
     private static final NavigableMap<Integer, Integer> AREA_BY_TASKS;
 
+    private static final Map<String, Integer> ROMAN_NUMERALS;
+
     @Inject
     private ClientThread clientThread;
 
@@ -130,20 +134,55 @@ public class LeaguesNotifier extends BaseNotifier {
                 String area = message.substring(AREA_UNLOCK_PREFIX.length(), message.length() - 1);
                 notifyAreaUnlock(area);
             }
-        } else if (message.startsWith(RELIC_UNLOCK_PREFIX)) {
+            return;
+        }
+        if (message.startsWith(RELIC_UNLOCK_PREFIX)) {
             if (config.leaguesRelicUnlock()) {
                 String relic = message.substring(RELIC_UNLOCK_PREFIX.length(), message.length() - 1);
                 notifyRelicUnlock(relic);
             }
-        } else if (config.leaguesTaskCompletion()) {
+            return;
+        }
+        if (config.leaguesTaskCompletion()) {
             Matcher matcher = TASK_REGEX.matcher(message);
             if (matcher.find()) {
                 LeagueTaskDifficulty tier = LeagueTaskDifficulty.TIER_BY_LOWER_NAME.get(matcher.group("tier"));
                 if (tier != null && tier.ordinal() >= config.leaguesTaskMinTier().ordinal()) {
                     notifyTaskCompletion(tier, matcher.group("task"));
                 }
+                return;
             }
         }
+        if (config.leaguesMasteryUnlock()) {
+            var matcher = MASTERY_REGEX.matcher(message);
+            if (matcher.find()) {
+                String type = matcher.group("type");
+                String tier = matcher.group("tier");
+                notifyCombatMastery(type, tier);
+            }
+        }
+    }
+
+    private void notifyCombatMastery(String type, String romanTier) {
+        Integer tier = ROMAN_NUMERALS.get(romanTier);
+        if (tier == null) {
+            log.warn("Could not parse combat mastery tier: {}", romanTier);
+            return;
+        }
+        String playerName = Utils.getPlayerName(client);
+        Template text = Template.builder()
+            .template("%USERNAME% unlocked a new Combat Mastery: %MASTERY%.")
+            .replacementBoundary("%")
+            .replacement("%USERNAME%", Replacements.ofText(playerName))
+            .replacement("%MASTERY%", Replacements.ofWiki(type + " " + romanTier))
+            .build();
+        createMessage(config.leaguesSendImage(), NotificationBody.builder()
+            .type(NotificationType.LEAGUES_MASTERY)
+            .text(text)
+            .extra(new LeaguesMasteryNotificationData(type, tier))
+            .playerName(playerName)
+            .seasonalWorld(true)
+            .build());
     }
 
     private void notifyAreaUnlock(String area) {
@@ -347,6 +386,8 @@ public class LeaguesNotifier extends BaseNotifier {
     }
 
     static {
+        ROMAN_NUMERALS = Map.of("I", 1, "II", 2, "III", 3, "IV", 4, "V", 5, "VI", 6);
+
         AREA_BY_TASKS = Collections.unmodifiableNavigableMap(
             new TreeMap<>(Map.of(0, 0, FIRST_AREA_TASKS, 1, SECOND_AREA_TASKS, 2, THIRD_AREA_TASKS, 3))
         );

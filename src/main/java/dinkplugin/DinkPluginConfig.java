@@ -9,6 +9,7 @@ import dinkplugin.domain.ExceptionalDeath;
 import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
+import dinkplugin.domain.SeasonalPolicy;
 import dinkplugin.notifiers.ChatNotifier;
 import dinkplugin.util.Utils;
 import net.runelite.api.Experience;
@@ -178,14 +179,12 @@ public interface DinkPluginConfig extends Config {
     )
     String chatSection = "Custom Chat Messages";
 
-    
     @ConfigSection(
         name = "Leagues",
         description = "Settings for notifying when you complete league tasks, unlock areas, and redeem relics",
         position = 200,
         closedByDefault = true
     )
-     
     String leaguesSection = "Leagues";
 
     @ConfigSection(
@@ -403,16 +402,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "ignoreSeasonalWorlds",
-        name = "Ignore Seasonal Worlds",
-        description = "Whether to suppress notifications that occur on seasonal worlds like Leagues.<br/>" +
-            "Note: the Leagues-specific notifier uses an independent config toggle",
+        keyName = "seasonalPolicy",
+        name = "Seasonal Policy",
+        description = "Whether to send notifications that occur on seasonal worlds like Leagues.<br/>" +
+            "If 'Use Leagues URL' is enabled but no Leagues Override URL is set, notifications will still be sent to your normal webhook URLs.<br/>" +
+            "Note: the Leagues-specific notifier uses an independent config option to toggle messages",
         position = 1015,
         section = advancedSection
     )
-    default boolean ignoreSeasonal() {
-        return false;
+    default SeasonalPolicy seasonalPolicy() {
+        return SeasonalPolicy.FORWARD_TO_LEAGUES;
     }
+
+    @ConfigItem(
+        keyName = "seasonalPolicy",
+        name = "",
+        description = ""
+    )
+    void setSeasonalPolicy(SeasonalPolicy policy);
 
     @ConfigItem(
         keyName = "includeLocation",
@@ -2062,10 +2069,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "leaguesMasteryUnlock",
+        name = "Send Mastery Unlocks",
+        description = "Send notifications upon combat mastery selections",
+        position = 205,
+        section = leaguesSection
+    )
+    default boolean leaguesMasteryUnlock() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "leaguesTaskMinTier",
         name = "Task Min Difficulty",
         description = "The minimum tier of a task for a notification to be sent",
-        position = 205,
+        position = 206,
         section = leaguesSection
     )
     default LeagueTaskDifficulty leaguesTaskMinTier() {

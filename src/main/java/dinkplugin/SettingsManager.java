@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dinkplugin.domain.ConfigImportPolicy;
 import dinkplugin.domain.FilterMode;
+import dinkplugin.domain.SeasonalPolicy;
 import dinkplugin.notifiers.ChatNotifier;
 import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
@@ -123,6 +124,7 @@ public class SettingsManager {
 
     @VisibleForTesting
     public void init() {
+        migrateSeasonal();
         setFilteredNames(config.filteredNames());
         configManager.getConfigDescriptor(config).getItems().forEach(item -> {
             String key = item.key();
@@ -384,6 +386,14 @@ public class SettingsManager {
             .map(String::toLowerCase)
             .forEach(filteredNames::add);
         log.debug("Updated RSN Filter List to: {}", filteredNames);
+    }
+
+    private void migrateSeasonal() {
+        String key = "ignoreSeasonalWorlds";
+        Boolean ignoreSeasonal = configManager.getConfiguration(CONFIG_GROUP, key, Boolean.TYPE);
+        if (ignoreSeasonal == null) return;
+        config.setSeasonalPolicy(ignoreSeasonal ? SeasonalPolicy.REJECT : SeasonalPolicy.ACCEPT);
+        configManager.unsetConfiguration(CONFIG_GROUP, key);
     }
 
     private void migrateConfig(MigrationUtil.Metadata data) {
