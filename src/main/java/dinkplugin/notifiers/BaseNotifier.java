@@ -48,7 +48,7 @@ public abstract class BaseNotifier {
 
     protected final void createMessage(String overrideUrl, boolean sendImage, NotificationBody<?> body) {
         String override;
-        if (config.seasonalPolicy() == SeasonalPolicy.FORWARD_TO_LEAGUES && client.getWorldType().contains(WorldType.SEASONAL)) {
+        if (StringUtils.isNotBlank(config.leaguesWebhook()) && config.seasonalPolicy() == SeasonalPolicy.FORWARD_TO_LEAGUES && client.getWorldType().contains(WorldType.SEASONAL)) {
             override = config.leaguesWebhook();
         } else {
             override = overrideUrl;

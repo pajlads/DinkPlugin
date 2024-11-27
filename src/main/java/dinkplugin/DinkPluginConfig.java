@@ -405,12 +405,13 @@ public interface DinkPluginConfig extends Config {
         keyName = "seasonalPolicy",
         name = "Seasonal Policy",
         description = "Whether to send notifications that occur on seasonal worlds like Leagues.<br/>" +
-            "Note: the Leagues-specific notifier uses an independent config toggle",
+            "If 'Use Leagues URL' is enabled but no Leagues Override URL is set, notifications will still be sent to your normal webhook URLs.<br/>" +
+            "Note: the Leagues-specific notifier uses an independent config option to toggle messages",
         position = 1015,
         section = advancedSection
     )
     default SeasonalPolicy seasonalPolicy() {
-        return SeasonalPolicy.ACCEPT;
+        return SeasonalPolicy.FORWARD_TO_LEAGUES;
     }
 
     @ConfigItem(
