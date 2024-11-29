@@ -1,5 +1,9 @@
 ## Unreleased
 
+## 1.10.17
+
+- Bugfix: Update KC regex for Jagex's Sol Heredit (Echo) mistake. (#620)
+
 ## 1.10.16
 
 - Minor: Allow sending all seasonal notifications to the URLs for the leagues notifier. (#611)
