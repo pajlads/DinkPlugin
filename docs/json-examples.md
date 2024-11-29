@@ -654,6 +654,21 @@ Note: `index` refers to the order of region unlocks.
 Here, Kandarin was the second region selected.  
 For all players, Karamja is the _zeroth_ region selected (and there is no notification for Misthalin).
 
+JSON for Combat Mastery Unlocked Notification:
+
+```json5
+{
+  "type": "LEAGUES_MASTERY",
+  "content": "%USERNAME% unlocked a new Combat Mastery: %MASTERY%.",
+  "accountType": "IRONMAN",
+  "seasonalWorld": true,
+  "extra": {
+    "masteryType": "Melee",
+    "masteryTier": 1
+  }
+}
+```
+
 JSON for Relic Chosen Notifications:
 
 ```json5
