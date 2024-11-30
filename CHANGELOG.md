@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Avoid level notification when hopping worlds with different profiles like Leagues. (#615)
+
 ## 1.10.17
 
 - Bugfix: Update KC regex for Jagex's Sol Heredit (Echo) mistake. (#620)
