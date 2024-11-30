@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Avoid level notification when hopping worlds with different profiles like Leagues. (#615)
+
 ## 1.10.17
 
 - Bugfix: Update KC regex for Jagex's Sol Heredit (Echo) mistake. (#620)
@@ -10,7 +12,6 @@
 - Minor: Add notification for Combat Mastery unlock in Leagues 5. (#617)
 - Minor: Manually confirm the rank points for each trophy in Leagues 5. (#614)
 - Minor: Manually confirm the points for each relic tier in Leagues 5. (#607)
-- Bugfix: Avoid level notification when hopping worlds with different profiles like Leagues. (#615)
 - Bugfix: Report correct points for medium tasks in Leagues 5. (#614)
 - Bugfix: Report correct tasks until next area for Leagues 5. (#613)
 
