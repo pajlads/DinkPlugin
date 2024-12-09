@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Bugfix: Use latest dynamic config when queried, rather than the cached value from okhttp. (#625)
+
+## 1.10.18
+
 - Bugfix: Avoid level notification when hopping worlds with different profiles like Leagues. (#615)
 
 ## 1.10.17

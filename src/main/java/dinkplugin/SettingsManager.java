@@ -25,6 +25,7 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
+import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
@@ -412,7 +413,7 @@ public class SettingsManager {
             return;
         }
 
-        Request request = new Request.Builder().url(httpUrl).get().build();
+        Request request = new Request.Builder().url(httpUrl).cacheControl(CacheControl.FORCE_NETWORK).build();
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) {
