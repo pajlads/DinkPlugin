@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.domain.LootCriteria;
 import dinkplugin.message.Embed;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -7,6 +8,7 @@ import dinkplugin.message.templating.Evaluable;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.message.templating.impl.JoiningReplacement;
+import dinkplugin.notifiers.data.AnnotatedItemStack;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.RareItemStack;
 import dinkplugin.notifiers.data.SerializedItemStack;
@@ -33,6 +35,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -171,17 +174,28 @@ public class LootNotifier extends BaseNotifier {
             }
 
             boolean shouldSend;
+            var criteria = EnumSet.noneOf(LootCriteria.class);
+            if (totalPrice >= minValue) {
+                criteria.add(LootCriteria.VALUE);
+            }
+            if (MathUtils.lessThanOrEqual(rarity.orElse(1), rarityThreshold)) {
+                criteria.add(LootCriteria.RARITY);
+            }
             if (config.lootRarityValueIntersection()) {
-                shouldSend = totalPrice >= minValue && (rarity.isEmpty() || MathUtils.lessThanOrEqual(rarity.getAsDouble(), rarityThreshold));
+                shouldSend = criteria.contains(LootCriteria.VALUE) && (rarity.isEmpty() || criteria.contains(LootCriteria.RARITY));
             } else {
-                shouldSend = totalPrice >= minValue || MathUtils.lessThanOrEqual(rarity.orElse(1), rarityThreshold);
+                shouldSend = criteria.contains(LootCriteria.VALUE) || criteria.contains(LootCriteria.RARITY);
             }
 
             boolean denied = matches(itemNameDenylist, stack.getName());
             if (denied) {
                 shouldSend = false;
+                criteria.add(LootCriteria.DENYLIST);
             } else {
-                shouldSend |= matches(itemNameAllowlist, stack.getName());
+                if (matches(itemNameAllowlist, stack.getName())) {
+                    shouldSend = true;
+                    criteria.add(LootCriteria.ALLOWLIST);
+                }
                 if (max == null || totalPrice > max.getTotalPrice()) {
                     max = stack;
                 }
@@ -193,14 +207,15 @@ public class LootNotifier extends BaseNotifier {
                 if (icons) embeds.add(Embed.ofImage(ItemUtils.getItemImageUrl(item.getId())));
             }
 
+            var annotated = AnnotatedItemStack.of(stack, criteria);
             if (rarity.isPresent()) {
-                RareItemStack rareStack = RareItemStack.of(stack, rarity.getAsDouble());
+                RareItemStack rareStack = RareItemStack.of(annotated, rarity.getAsDouble());
                 serializedItems.add(rareStack);
                 if (!denied && (rarest == null || rareStack.getRarity() < rarest.getRarity())) {
                     rarest = rareStack;
                 }
             } else {
-                serializedItems.add(stack);
+                serializedItems.add(annotated);
             }
             totalStackValue += totalPrice;
         }
