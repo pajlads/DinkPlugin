@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add `criteria` to loot metadata that indicates why items were included or excluded. (#631)
+
 ## 1.10.19
 
 - Bugfix: Use latest dynamic config when queried, rather than the cached value from okhttp. (#625)
