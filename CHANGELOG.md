@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Allow hiding just split private chat from screenshots. (#630)
+
 ## 1.10.19
 
 - Bugfix: Use latest dynamic config when queried, rather than the cached value from okhttp. (#625)
