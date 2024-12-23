@@ -3,6 +3,7 @@ package dinkplugin;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import dinkplugin.domain.ChatPrivacyMode;
 import dinkplugin.domain.ConfigImportPolicy;
 import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.SeasonalPolicy;
@@ -57,6 +58,8 @@ import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -125,7 +128,9 @@ public class SettingsManager {
 
     @VisibleForTesting
     public void init() {
-        migrateSeasonal();
+        migrateBoolean("ignoreSeasonalWorlds", ignoreSeasonal -> ignoreSeasonal ? SeasonalPolicy.REJECT : SeasonalPolicy.ACCEPT, config::setSeasonalPolicy);
+        migrateBoolean("screenshotHideChat", hide -> hide ? ChatPrivacyMode.HIDE_ALL : ChatPrivacyMode.HIDE_NONE, config::setChatPrivacy);
+
         setFilteredNames(config.filteredNames());
         configManager.getConfigDescriptor(config).getItems().forEach(item -> {
             String key = item.key();
@@ -389,11 +394,10 @@ public class SettingsManager {
         log.debug("Updated RSN Filter List to: {}", filteredNames);
     }
 
-    private void migrateSeasonal() {
-        String key = "ignoreSeasonalWorlds";
-        Boolean ignoreSeasonal = configManager.getConfiguration(CONFIG_GROUP, key, Boolean.TYPE);
-        if (ignoreSeasonal == null) return;
-        config.setSeasonalPolicy(ignoreSeasonal ? SeasonalPolicy.REJECT : SeasonalPolicy.ACCEPT);
+    private <T> void migrateBoolean(String key, Function<Boolean, T> transform, Consumer<T> consumer) {
+        Boolean bool = configManager.getConfiguration(CONFIG_GROUP, key, Boolean.TYPE);
+        if (bool == null) return;
+        consumer.accept(transform.apply(bool));
         configManager.unsetConfiguration(CONFIG_GROUP, key);
     }
 

@@ -2,6 +2,7 @@ package dinkplugin;
 
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.ChatNotificationType;
+import dinkplugin.domain.ChatPrivacyMode;
 import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.domain.ConfigImportPolicy;
@@ -330,16 +331,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "screenshotHideChat",
+        keyName = "chatPrivacy",
         name = "Hide Chat in Images",
         description = "Whether to hide the chat box and private messages when capturing screenshots.<br/>" +
-            "Note: visually you may notice the chat box momentarily flicker as it is hidden for the screenshot.",
+            "Note: visually you may notice the chat box momentarily flicker as it is hidden for the screenshot.<br/>" +
+            "Warning: 'Hide Split PMs' has no effect if 'Split friends private chat' is not enabled in the game settings",
         position = 1010,
         section = advancedSection
     )
-    default boolean screenshotHideChat() {
-        return false;
+    default ChatPrivacyMode chatPrivacy() {
+        return ChatPrivacyMode.HIDE_SPLIT_PM;
     }
+
+    @ConfigItem(
+        keyName = "chatPrivacy",
+        name = "",
+        description = ""
+    )
+    void setChatPrivacy(ChatPrivacyMode mode);
 
     @ConfigItem(
         keyName = "sendDiscordUser",
