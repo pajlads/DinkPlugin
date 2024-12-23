@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Remove deprecated `getCachedNPCs`/`getCachedPlayers` calls. (#632)
+
 ## 1.10.19
 
 - Bugfix: Use latest dynamic config when queried, rather than the cached value from okhttp. (#625)
