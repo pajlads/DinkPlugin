@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Allow hiding just split private chat from screenshots. (#630)
+- Dev: Remove deprecated `getCachedNPCs`/`getCachedPlayers` calls. (#632)
 
 ## 1.10.19
 

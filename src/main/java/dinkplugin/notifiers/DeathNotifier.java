@@ -348,7 +348,7 @@ public class DeathNotifier extends BaseNotifier {
 
         // find another player interacting with us (that is preferably not a friend or clan member)
         if (pvpEnabled) {
-            Optional<Player> pker = Arrays.stream(client.getCachedPlayers())
+            Optional<? extends Player> pker = client.getTopLevelWorldView().players().stream()
                 .filter(interacting)
                 .min(PK_COMPARATOR.apply(localPlayer)); // O(n)
             if (pker.isPresent())
@@ -356,7 +356,7 @@ public class DeathNotifier extends BaseNotifier {
         }
 
         // otherwise search through NPCs interacting with us
-        return Arrays.stream(client.getCachedNPCs())
+        return client.getTopLevelWorldView().npcs().stream()
             .filter(interacting)
             .filter(npc -> NPC_VALID.test(npc.getTransformedComposition()))
             .min(NPC_COMPARATOR.apply(npcManager, localPlayer)) // O(n)

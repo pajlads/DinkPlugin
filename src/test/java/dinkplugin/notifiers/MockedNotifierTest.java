@@ -19,10 +19,13 @@ import dinkplugin.util.Utils;
 import lombok.SneakyThrows;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.IndexedObjectSet;
 import net.runelite.api.ItemComposition;
+import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
+import net.runelite.api.WorldView;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
@@ -44,6 +47,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -66,6 +70,9 @@ abstract class MockedNotifierTest extends MockedTestBase {
 
     @Mock
     protected Player localPlayer;
+
+    @Mock
+    protected WorldView worldView;
 
     @Bind
     protected DrawManager drawManager = Mockito.mock(DrawManager.class);
@@ -114,6 +121,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(client.getWorldType()).thenReturn(EnumSet.noneOf(WorldType.class));
         when(client.getVarbitValue(Varbits.ACCOUNT_TYPE)).thenReturn(AccountType.GROUP_IRONMAN.ordinal());
         when(client.isPrayerActive(any())).thenReturn(false);
+        when(client.getTopLevelWorldView()).thenReturn(worldView);
         when(client.getLocalPlayer()).thenReturn(localPlayer);
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
         when(localPlayer.getName()).thenReturn(PLAYER_NAME);
@@ -154,6 +162,16 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(client.getItemDefinition(id)).thenReturn(item);
         when(itemManager.getItemComposition(id)).thenReturn(item);
         when(itemManager.canonicalize(id)).thenReturn(id);
+    }
+
+    protected void mockNpcs(NPC[] npcs) {
+        Mockito.<IndexedObjectSet<? extends NPC>>when(worldView.npcs())
+            .thenReturn(new IndexedObjectSet<>(npcs, IntStream.range(0, npcs.length).toArray(), npcs.length));
+    }
+
+    protected void mockPlayers(Player[] players) {
+        Mockito.<IndexedObjectSet<? extends Player>>when(worldView.players())
+            .thenReturn(new IndexedObjectSet<>(players, IntStream.range(0, players.length).toArray(), players.length));
     }
 
     @SneakyThrows
