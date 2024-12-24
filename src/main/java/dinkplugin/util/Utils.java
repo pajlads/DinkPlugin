@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.AccountType;
+import dinkplugin.domain.ChatPrivacyMode;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -311,8 +312,9 @@ public class Utils {
     }
 
     public void captureScreenshot(Client client, ClientThread clientThread, DrawManager drawManager, ImageCapture imageCapture, ExecutorService executor, DinkPluginConfig config, Consumer<Image> consumer) {
-        boolean chatHidden = hideWidget(config.screenshotHideChat(), client, ComponentID.CHATBOX_FRAME);
-        boolean whispersHidden = hideWidget(config.screenshotHideChat(), client, PRIVATE_CHAT_WIDGET);
+        ChatPrivacyMode privacyMode = config.chatPrivacy();
+        boolean chatHidden = hideWidget(privacyMode == ChatPrivacyMode.HIDE_ALL, client, ComponentID.CHATBOX_FRAME);
+        boolean whispersHidden = hideWidget(privacyMode != ChatPrivacyMode.HIDE_NONE, client, PRIVATE_CHAT_WIDGET);
         drawManager.requestNextFrameListener(frame -> {
             if (config.includeClientFrame()) {
                 executor.execute(() -> consumer.accept(imageCapture.addClientFrame(frame)));
