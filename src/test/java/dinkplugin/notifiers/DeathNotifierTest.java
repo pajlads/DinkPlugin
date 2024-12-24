@@ -76,8 +76,8 @@ class DeathNotifierTest extends MockedNotifierTest {
 
         // init client mocks
         when(client.getVarbitValue(Varbits.IN_WILDERNESS)).thenReturn(1);
-        when(client.getCachedPlayers()).thenReturn(new Player[0]);
-        when(client.getCachedNPCs()).thenReturn(new NPC[0]);
+        mockNpcs(new NPC[0]);
+        mockPlayers(new Player[0]);
         WorldPoint location = new WorldPoint(0, 0, 0);
         when(localPlayer.getWorldLocation()).thenReturn(location);
         when(localPlayer.getLocalLocation()).thenReturn(new LocalPoint(0, 0));
@@ -165,7 +165,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(other.getName()).thenReturn(pker);
         when(other.getInteracting()).thenReturn(localPlayer);
         Player[] candidates = { mock(Player.class), mock(Player.class), other, mock(Player.class) };
-        when(client.getCachedPlayers()).thenReturn(candidates);
+        mockPlayers(candidates);
 
         // fire event
         plugin.onActorDeath(new ActorDeath(localPlayer));
@@ -215,7 +215,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         Player other = mock(Player.class);
         when(other.getName()).thenReturn("Rasmus");
         when(other.getInteracting()).thenReturn(localPlayer);
-        when(client.getCachedPlayers()).thenReturn(new Player[] { other });
+        mockPlayers(new Player[] { other });
         when(client.getVarbitValue(Varbits.IN_WILDERNESS)).thenReturn(0);
 
         // fire event
@@ -258,7 +258,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(comp.getActions()).thenReturn(new String[] { "Pickpocket", "Attack", "Examine" });
 
         when(npcManager.getHealth(NpcID.GUARD)).thenReturn(22);
-        when(client.getCachedNPCs()).thenReturn(new NPC[] { other });
+        mockNpcs(new NPC[] { other });
         when(config.deathNotifyMessage()).thenReturn("%USERNAME% has died to %NPC%");
 
         // fire event
