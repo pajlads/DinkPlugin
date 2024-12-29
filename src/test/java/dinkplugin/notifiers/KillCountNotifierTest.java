@@ -52,7 +52,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
         // init client mocks
         when(client.getVarbitValue(TimeUtils.ENABLE_PRECISE_TIMING)).thenReturn(1);
-        when(client.getCachedNPCs()).thenReturn(new NPC[0]);
+        mockNpcs(new NPC[0]);
     }
 
     @Test
