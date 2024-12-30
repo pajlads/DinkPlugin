@@ -25,7 +25,8 @@ public class ChatNotificationData extends NotificationData {
     /**
      * Clan title of the player that sent the message.
      * Only populated when {@link #getType()} is {@link ChatMessageType#CLAN_CHAT}
-     * or {@link ChatMessageType#CLAN_GUEST_CHAT} or {@link ChatMessageType#CLAN_GIM_CHAT}.
+     * or {@link ChatMessageType#CLAN_GUEST_CHAT} or {@link ChatMessageType#CLAN_GIM_CHAT}
+     * or sometimes {@link ChatMessageType#CLAN_MESSAGE} (for user joins).
      */
     @Nullable
     ClanTitle clanTitle;

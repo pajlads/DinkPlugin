@@ -87,7 +87,7 @@ public class ChatNotifier extends BaseNotifier {
     }
 
     private void handleNotify(ChatMessageType type, String source, String message) {
-        var clanTitle = getClanTitle(type, source);
+        var clanTitle = getClanTitle(type, source, message);
         String playerName = Utils.getPlayerName(client);
         Template template = Template.builder()
             .template(config.chatNotifyMessage())
@@ -119,6 +119,16 @@ public class ChatNotifier extends BaseNotifier {
                 .map(Utils::regexify)
                 .collect(Collectors.toList())
         );
+    }
+
+    @Nullable
+    private ClanTitle getClanTitle(@NotNull ChatMessageType type, @Nullable String source, @NotNull String message) {
+        if (type == ChatMessageType.CLAN_MESSAGE && message.endsWith(" has joined.")) {
+            String name = message.substring(0, message.length() - " has joined.".length());
+            var title = getClanTitle(ChatMessageType.CLAN_CHAT, name);
+            return title != null ? title : getClanTitle(ChatMessageType.CLAN_GUEST_CHAT, name);
+        }
+        return getClanTitle(type, source);
     }
 
     @Nullable
