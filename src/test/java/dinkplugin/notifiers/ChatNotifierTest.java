@@ -163,7 +163,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
         notifier.onMessage(ChatMessageType.GAMEMESSAGE, null, "You will be logged out in approximately 30 minutes.");
         notifier.onMessage(ChatMessageType.PUBLICCHAT, null, "You will be logged out in approximately 10 minutes.");
         notifier.onMessage(ChatMessageType.TRADE, null, "You will be logged out in approximately 10 minutes.");
-        notifier.onMessage(ChatMessageType.CLAN_MESSAGE, null, "You will be logged out in approximately 10 minutes.");
+        notifier.onMessage(ChatMessageType.PRIVATECHAT, null, "You will be logged out in approximately 10 minutes.");
         notifier.onCommand(new CommandExecuted("You", "will be logged out in approximately 10 minutes.".split(" ")));
         notifier.onCommand(new CommandExecuted("DontTriggerDink", new String[0]));
         notifier.onNotification(new NotificationFired(Notification.ON, "TriggerDink", TrayIcon.MessageType.INFO));
