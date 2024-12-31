@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.20
+
 - Minor: Add clan title to chat notification metadata. (#635)
 - Minor: Add `criteria` to loot metadata that indicates why items were included or excluded. (#631)
 - Minor: Allow hiding just split private chat from screenshots. (#630)
