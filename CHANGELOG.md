@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Add clan title to chat notification metadata. (#635)
+- Minor: Add `criteria` to loot metadata that indicates why items were included or excluded. (#631)
 - Minor: Allow hiding just split private chat from screenshots. (#630)
 - Dev: Remove deprecated `getCachedNPCs`/`getCachedPlayers` calls. (#632)
 

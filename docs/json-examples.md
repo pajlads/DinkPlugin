@@ -231,6 +231,7 @@ JSON for Loot Notifications:
         "quantity": 1,
         "priceEach": 42069,
         "name": "Some item",
+        "criteria": ["VALUE"],
         "rarity": null
       }
     ],
@@ -246,6 +247,8 @@ JSON for Loot Notifications:
 ```
 
 The possible values for `extra.category` correspond to the [`LootRecordType`](https://github.com/runelite/api.runelite.net/blob/master/http-api/src/main/java/net/runelite/http/api/loottracker/LootRecordType.java) enum.
+
+The possible values for `extra.items[].criteria` correspond to our [`LootCriteria`](https://github.com/pajlads/DinkPlugin/blob/master/src/main/java/dinkplugin/domain/LootCriteria.java) enum.
 
 `killCount` is only specified for NPC/EVENT loot with the base RuneLite Loot Tracker plugin enabled.
 
