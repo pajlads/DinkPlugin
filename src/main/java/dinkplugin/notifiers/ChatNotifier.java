@@ -11,8 +11,14 @@ import dinkplugin.util.Utils;
 import lombok.Synchronized;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameState;
+import net.runelite.api.clan.ClanChannel;
+import net.runelite.api.clan.ClanChannelMember;
+import net.runelite.api.clan.ClanID;
+import net.runelite.api.clan.ClanSettings;
+import net.runelite.api.clan.ClanTitle;
 import net.runelite.api.events.CommandExecuted;
 import net.runelite.client.events.NotificationFired;
+import net.runelite.client.util.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +62,7 @@ public class ChatNotifier extends BaseNotifier {
     public void onMessage(@NotNull ChatMessageType messageType, @Nullable String source, @NotNull String message) {
         ChatNotificationType type = ChatNotificationType.MAPPINGS.get(messageType);
         if (type != null && config.chatMessageTypes().contains(type) && isEnabled() && hasMatch(message)) {
-            String cleanSource = source != null ? source.replace('\u00A0', ' ') : null;
+            String cleanSource = source != null ? Text.sanitize(source) : null;
             this.handleNotify(messageType, cleanSource, message);
         }
     }
@@ -81,6 +87,7 @@ public class ChatNotifier extends BaseNotifier {
     }
 
     private void handleNotify(ChatMessageType type, String source, String message) {
+        var clanTitle = getClanTitle(type, source, message);
         String playerName = Utils.getPlayerName(client);
         Template template = Template.builder()
             .template(config.chatNotifyMessage())
@@ -91,7 +98,7 @@ public class ChatNotifier extends BaseNotifier {
         createMessage(config.chatSendImage(), NotificationBody.builder()
             .text(template)
             .type(NotificationType.CHAT)
-            .extra(new ChatNotificationData(type, source, message))
+            .extra(new ChatNotificationData(type, source, clanTitle, message))
             .playerName(playerName)
             .build());
     }
@@ -112,6 +119,43 @@ public class ChatNotifier extends BaseNotifier {
                 .map(Utils::regexify)
                 .collect(Collectors.toList())
         );
+    }
+
+    @Nullable
+    private ClanTitle getClanTitle(@NotNull ChatMessageType type, @Nullable String source, @NotNull String message) {
+        if (type == ChatMessageType.CLAN_MESSAGE && message.endsWith(" has joined.")) {
+            String name = message.substring(0, message.length() - " has joined.".length());
+            var title = getClanTitle(ChatMessageType.CLAN_CHAT, name);
+            return title != null ? title : getClanTitle(ChatMessageType.CLAN_GUEST_CHAT, name);
+        }
+        return getClanTitle(type, source);
+    }
+
+    @Nullable
+    private ClanTitle getClanTitle(@NotNull ChatMessageType type, @Nullable String name) {
+        if (name == null) return null;
+
+        ClanChannel channel;
+        ClanSettings settings;
+        if (type == ChatMessageType.CLAN_CHAT) {
+            channel = client.getClanChannel();
+            settings = client.getClanSettings();
+        } else if (type == ChatMessageType.CLAN_GUEST_CHAT) {
+            channel = client.getGuestClanChannel();
+            settings = client.getGuestClanSettings();
+        } else if (type == ChatMessageType.CLAN_GIM_CHAT) {
+            channel = client.getClanChannel(ClanID.GROUP_IRONMAN);
+            settings = client.getClanSettings(ClanID.GROUP_IRONMAN);
+        } else {
+            channel = null;
+            settings = null;
+        }
+
+        ClanChannelMember member;
+        if (channel == null || settings == null || (member = channel.findMember(name)) == null) {
+            return null;
+        }
+        return settings.titleForRank(member.getRank());
     }
 
     private static String join(CommandExecuted event) {

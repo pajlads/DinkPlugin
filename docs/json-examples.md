@@ -749,7 +749,8 @@ JSON for Matching Chat Message Notifications:
   "extra": {
     "type": "GAMEMESSAGE",
     "message": "You've been playing for a while, consider taking a break from your screen.",
-    "source": null
+    "source": null,
+    "clanTitle": null
   }
 }
 ```
@@ -760,6 +761,8 @@ When `extra.type` corresponds to a player-sent message (e.g., `PUBLICCHAT`, `PRI
 the `extra.source` value is set to the player's name that sent the message.
 
 When `extra.type` is `UNKNOWN`, the `extra.source` value is set to the originating runelite event (e.g., `CommandExecuted`, `NotificationFired`).
+
+When `extra.type` is `CLAN_CHAT` or `CLAN_GUEST_CHAT` or `CLAN_GIM_CHAT` or `CLAN_MESSAGE` (only for user joins), the `extra.clanTitle` object includes the clan rank `id` (integer) and title `name` (string), corresponding to RuneLite's [`ClanTitle` class](https://static.runelite.net/api/runelite-api/net/runelite/api/clan/ClanTitle.html).
 
 ### Metadata
 
