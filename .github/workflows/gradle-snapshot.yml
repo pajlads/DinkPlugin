@@ -17,4 +17,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build using latest runelite snapshot version
-        run: ./gradlew --no-build-cache -Puse.snapshot clean build -x test
+        run: ./gradlew --refresh-dependencies -Puse.snapshot clean build -x test
