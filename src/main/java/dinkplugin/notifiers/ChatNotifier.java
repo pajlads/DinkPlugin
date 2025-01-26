@@ -28,6 +28,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static dinkplugin.domain.ChatNotificationType.*;
+
 @Singleton
 public class ChatNotifier extends BaseNotifier {
     public static final String PATTERNS_CONFIG_KEY = "chatPatterns";
@@ -63,30 +65,30 @@ public class ChatNotifier extends BaseNotifier {
         ChatNotificationType type = ChatNotificationType.MAPPINGS.get(messageType);
         if (type != null && config.chatMessageTypes().contains(type) && isEnabled() && hasMatch(message)) {
             String cleanSource = source != null ? Text.sanitize(source) : null;
-            this.handleNotify(messageType, cleanSource, message);
+            this.handleNotify(type, messageType, cleanSource, message);
         }
     }
 
     public void onCommand(CommandExecuted event) {
-        if (config.chatMessageTypes().contains(ChatNotificationType.COMMAND) && isEnabled()) {
+        if (config.chatMessageTypes().contains(COMMAND) && isEnabled()) {
             String fullMessage = join(event);
             if (hasMatch(fullMessage)) {
-                this.handleNotify(ChatMessageType.UNKNOWN, "CommandExecuted", fullMessage);
+                this.handleNotify(COMMAND, ChatMessageType.UNKNOWN, "CommandExecuted", fullMessage);
             }
         }
     }
 
     public void onNotification(NotificationFired event) {
         var types = config.chatMessageTypes();
-        if (event.getNotification().isGameMessage() && client.getGameState() == GameState.LOGGED_IN && types.contains(ChatNotificationType.GAME)) {
+        if (event.getNotification().isGameMessage() && client.getGameState() == GameState.LOGGED_IN && types.contains(GAME)) {
             return; // avoid duplicate notification (since runelite will also post to chat)
         }
-        if (types.contains(ChatNotificationType.RUNELITE) && isEnabled() && hasMatch(event.getMessage())) {
-            this.handleNotify(ChatMessageType.UNKNOWN, "NotificationFired", event.getMessage());
+        if (types.contains(RUNELITE) && isEnabled() && hasMatch(event.getMessage())) {
+            this.handleNotify(RUNELITE, ChatMessageType.UNKNOWN, "NotificationFired", event.getMessage());
         }
     }
 
-    private void handleNotify(ChatMessageType type, String source, String message) {
+    private void handleNotify(ChatNotificationType dinkType, ChatMessageType type, String source, String message) {
         var clanTitle = getClanTitle(type, source, message);
         String playerName = Utils.getPlayerName(client);
         Template template = Template.builder()
@@ -94,6 +96,7 @@ public class ChatNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%MESSAGE%", Replacements.ofText(message))
+            .replacement("%SENDER%", Replacements.ofText(getSender(dinkType, source)))
             .build();
         createMessage(config.chatSendImage(), NotificationBody.builder()
             .text(template)
@@ -156,6 +159,10 @@ public class ChatNotifier extends BaseNotifier {
             return null;
         }
         return settings.titleForRank(member.getRank());
+    }
+
+    private static String getSender(ChatNotificationType type, String source) {
+        return source == null || source.isEmpty() || type == COMMAND || type == RUNELITE ? "[" + type + "]" : source;
     }
 
     private static String join(CommandExecuted event) {

@@ -2014,7 +2014,8 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %MESSAGE% to insert the chat message",
+            "Use %MESSAGE% to insert the chat message<br/>" +
+            "Use %SENDER% to insert the sender of the message",
         position = 174,
         section = chatSection
     )
