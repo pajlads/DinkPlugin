@@ -162,7 +162,10 @@ public class ChatNotifier extends BaseNotifier {
     }
 
     private static String getSender(ChatNotificationType type, String source) {
-        return source == null || source.isEmpty() || type == COMMAND || type == RUNELITE ? "[" + type + "]" : source;
+		if (source == null || source.isEmpty() || type == COMMAND || type == RUNELITE) {
+			return "[" + type + "]";
+		}
+		return source;
     }
 
     private static String join(CommandExecuted event) {
