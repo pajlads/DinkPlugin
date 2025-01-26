@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add `%SENDER%` template variable for chat notifier. (#644)
+
 ## 1.10.20
 
 - Minor: Add clan title to chat notification metadata. (#635)
