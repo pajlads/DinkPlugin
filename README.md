@@ -344,6 +344,8 @@ You can customize the message patterns to your liking (`*` is a wildcard), and s
 
 `%MESSAGE%` will be replaced with the chat message the matched one of the patterns.
 
+`%SENDER%` will be replaced with the chat message sender (or the message category if no player sender is populated).
+
 ### Metadata:
 
 On login, Dink can submit a character summary containing data that spans multiple notifiers to a custom webhook handler (configurable in the `Advanced` section). This login notification is delayed by at least 5 seconds in order to gather all of the relevant data.

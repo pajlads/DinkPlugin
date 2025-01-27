@@ -43,7 +43,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
         // config mocks
         when(config.notifyChat()).thenReturn(true);
         when(config.chatMessageTypes()).thenReturn(EnumSet.of(ChatNotificationType.GAME, ChatNotificationType.COMMAND, ChatNotificationType.RUNELITE, ChatNotificationType.CLAN));
-        when(config.chatNotifyMessage()).thenReturn("%USERNAME% received a chat message:\n\n```\n%MESSAGE%\n```");
+        when(config.chatNotifyMessage()).thenReturn("%SENDER%: %USERNAME% received a chat message:\n\n```\n%MESSAGE%\n```");
         setPatterns("You will be logged out in approximately 10 minutes.*\n" +
             "You will be logged out in approximately 5 minutes.*\n" +
             "Dragon impling is in the area\n" +
@@ -64,7 +64,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(
                     Template.builder()
-                        .template(PLAYER_NAME + " received a chat message:\n\n```\n" + message + "\n```")
+                        .template("[Game Engine]: " + PLAYER_NAME + " received a chat message:\n\n```\n" + message + "\n```")
                         .build()
                 )
                 .extra(new ChatNotificationData(ChatMessageType.GAMEMESSAGE, null, null, message))
@@ -87,7 +87,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(
                     Template.builder()
-                        .template(PLAYER_NAME + " received a chat message:\n\n```\n" + message + "\n```")
+                        .template("[Client Commands]: " + PLAYER_NAME + " received a chat message:\n\n```\n" + message + "\n```")
                         .build()
                 )
                 .extra(new ChatNotificationData(ChatMessageType.UNKNOWN, "CommandExecuted", null, message))
@@ -110,7 +110,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(
                     Template.builder()
-                        .template(PLAYER_NAME + " received a chat message:\n\n```\n" + message + "\n```")
+                        .template("[RuneLite Notifications]: " + PLAYER_NAME + " received a chat message:\n\n```\n" + message + "\n```")
                         .build()
                 )
                 .extra(new ChatNotificationData(ChatMessageType.UNKNOWN, "NotificationFired", null, message))
@@ -147,10 +147,38 @@ public class ChatNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(
                     Template.builder()
-                        .template(PLAYER_NAME + " received a chat message:\n\n```\n" + message + "\n```")
+                        .template("[Clan Notifications]: " + PLAYER_NAME + " received a chat message:\n\n```\n" + message + "\n```")
                         .build()
                 )
                 .extra(new ChatNotificationData(ChatMessageType.CLAN_MESSAGE, "", title, message))
+                .type(NotificationType.CHAT)
+                .playerName(PLAYER_NAME)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyPlayer() {
+        // update mocks
+        when(config.chatMessageTypes()).thenReturn(EnumSet.of(ChatNotificationType.PUBLIC));
+        setPatterns("*");
+
+        // fire event
+        String source = "forsen";
+        String message = "Basedge";
+        notifier.onMessage(ChatMessageType.PUBLICCHAT, source, message);
+
+        // verify notification message
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(source + ": " + PLAYER_NAME + " received a chat message:\n\n```\n" + message + "\n```")
+                        .build()
+                )
+                .extra(new ChatNotificationData(ChatMessageType.PUBLICCHAT, source, null, message))
                 .type(NotificationType.CHAT)
                 .playerName(PLAYER_NAME)
                 .build()
