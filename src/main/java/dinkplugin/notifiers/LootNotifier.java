@@ -160,6 +160,7 @@ public class LootNotifier extends BaseNotifier {
         RareItemStack rarest = null;
 
         final double rarityThreshold = config.lootRarityThreshold() > 0 ? 1.0 / config.lootRarityThreshold() : Double.NaN;
+        final boolean intersection = config.lootRarityValueIntersection() && Double.isFinite(rarityThreshold);
         for (ItemStack item : reduced) {
             SerializedItemStack stack = ItemUtils.stackFromItem(itemManager, item.getId(), item.getQuantity());
             long totalPrice = stack.getTotalPrice();
@@ -181,7 +182,7 @@ public class LootNotifier extends BaseNotifier {
             if (MathUtils.lessThanOrEqual(rarity.orElse(1), rarityThreshold)) {
                 criteria.add(LootCriteria.RARITY);
             }
-            if (config.lootRarityValueIntersection()) {
+            if (intersection) {
                 shouldSend = criteria.contains(LootCriteria.VALUE) && (rarity.isEmpty() || criteria.contains(LootCriteria.RARITY));
             } else {
                 shouldSend = criteria.contains(LootCriteria.VALUE) || criteria.contains(LootCriteria.RARITY);
