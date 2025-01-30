@@ -8,6 +8,7 @@ import dinkplugin.notifiers.data.BossNotificationData;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.TimeUtils;
 import dinkplugin.util.Utils;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
@@ -40,7 +41,7 @@ public class KillCountNotifier extends BaseNotifier {
 
     private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion|harvest)\\s?count is: ?(?<value>[\\d,]+)\\b", Pattern.CASE_INSENSITIVE);
     private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>[\\d,]+)\\b");
-    private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(.\\d+)?)\\.?", Pattern.CASE_INSENSITIVE);
+    private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(?:.\\d+)?)\\.?(?: Personal best: (?<pbtime>[\\d:+]+(?:.\\d+)?))?", Pattern.CASE_INSENSITIVE);
 
     private static final String BA_BOSS_NAME = "Penance Queen";
 
@@ -92,7 +93,7 @@ public class KillCountNotifier extends BaseNotifier {
             // https://oldschool.runescape.wiki/w/Barbarian_Assault/Rewards#Earning_Honour_points
             if (widget != null && widget.getText().contains("80 ") && widget.getText().contains("5 ")) {
                 int gambleCount = client.getVarbitValue(Varbits.BA_GC);
-                this.data.set(new BossNotificationData(BA_BOSS_NAME, gambleCount, "The Queen is dead!", null, null, null));
+                this.data.set(new BossNotificationData(BA_BOSS_NAME, gambleCount, "The Queen is dead!", null, null, null, null));
             }
         }
     }
@@ -174,6 +175,7 @@ public class KillCountNotifier extends BaseNotifier {
                     defaultIfNull(updated.getGameMessage(), old.getGameMessage()),
                     updated.getTime() == null || (tob && old.getTime() != null) ? old.getTime() : updated.getTime(),
                     updated.isPersonalBest() == null || (tob && old.isPersonalBest() != null) ? old.isPersonalBest() : updated.isPersonalBest(),
+                    defaultIfNull(updated.getPersonalBest(), old.getPersonalBest()),
                     defaultIfNull(updated.getParty(), old.getParty())
                 );
             }
@@ -184,21 +186,23 @@ public class KillCountNotifier extends BaseNotifier {
         if (message.startsWith("Preparation")) return Optional.empty();
         Optional<Pair<String, Integer>> boss = parseBoss(message);
         if (boss.isPresent())
-            return boss.map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null, Utils.getBossParty(client, pair.getLeft())));
+            return boss.map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null, null, Utils.getBossParty(client, pair.getLeft())));
 
         // TOB reports final wave duration before challenge time in the same message; skip to the part we care about
         int tobIndex = message.startsWith("Wave") ? message.indexOf(KillCountService.TOB) : -1;
         String msg = tobIndex < 0 ? message : message.substring(tobIndex);
 
-        return parseTime(msg).map(t -> new BossNotificationData(tobIndex < 0 ? null : KillCountService.TOB, null, null, t.getLeft(), t.getRight(), null));
+        return parseTime(msg).map(t -> new BossNotificationData(tobIndex < 0 ? null : KillCountService.TOB, null, null, t.getTime(), t.isPb(), t.getPb(), null));
     }
 
-    private static Optional<Pair<Duration, Boolean>> parseTime(String message) {
+    private static Optional<ParsedTime> parseTime(String message) {
         Matcher matcher = TIME_REGEX.matcher(message);
         if (matcher.find()) {
             Duration duration = TimeUtils.parseTime(matcher.group("time"));
-            boolean pb = message.toLowerCase().contains("(new personal best)");
-            return Optional.of(Pair.of(duration, pb));
+            boolean isPb = message.toLowerCase().contains("(new personal best)");
+            String pbTime = matcher.group("pbtime");
+            Duration pb = pbTime != null ? TimeUtils.parseTime(pbTime) : null;
+            return Optional.of(new ParsedTime(duration, isPb, pb));
         }
         return Optional.empty();
     }
@@ -270,5 +274,12 @@ public class KillCountNotifier extends BaseNotifier {
             return boss;
 
         return null;
+    }
+
+    @Value
+    private static class ParsedTime {
+        Duration time;
+        boolean isPb;
+        @Nullable Duration pb;
     }
 }

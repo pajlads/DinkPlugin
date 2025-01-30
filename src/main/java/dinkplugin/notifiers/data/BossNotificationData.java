@@ -23,6 +23,9 @@ public class BossNotificationData extends NotificationData {
     @Accessors(fluent = true)
     Boolean isPersonalBest;
     @Nullable
+    @JsonAdapter(DurationAdapter.class)
+    Duration personalBest;
+    @Nullable
     Collection<String> party;
 
     @Override
