@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add `personalBest` time to killcount notification metadata. (#648)
 - Minor: Add `%SENDER%` template variable for chat notifier. (#644)
 - Bugfix: Ignore misconfigured loot value-rarity intersection setting if rarity threshold is not configured. (#647)
 
