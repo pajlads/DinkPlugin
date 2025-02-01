@@ -126,11 +126,13 @@ public class KillCountNotifier extends BaseNotifier {
             return;
 
         // ensure interval met or pb or ba, depending on config
+        boolean isPb = data.isPersonalBest() == Boolean.TRUE;
         boolean ba = data.getBoss().equals(BA_BOSS_NAME);
-        if (!checkKillInterval(data.getCount(), data.isPersonalBest()) && !ba)
+        if (!checkKillInterval(data.getCount(), isPb) && !ba)
             return;
 
-        if (data.getPersonalBest() == null) {
+        // populate personalBest if absent
+        if (data.getPersonalBest() == null && !isPb) {
             Duration pb = kcService.getPb(data.getBoss());
             if (pb != null && (data.getTime() == null || pb.compareTo(data.getTime()) < 0)) {
                 data = data.withPersonalBest(pb);
@@ -138,7 +140,6 @@ public class KillCountNotifier extends BaseNotifier {
         }
 
         // Assemble content
-        boolean isPb = data.isPersonalBest() == Boolean.TRUE;
         String player = Utils.getPlayerName(client);
         String time = TimeUtils.format(data.getTime(), TimeUtils.isPreciseTiming(client));
         Template content = Template.builder()
@@ -159,8 +160,8 @@ public class KillCountNotifier extends BaseNotifier {
             .build());
     }
 
-    private boolean checkKillInterval(int killCount, @Nullable Boolean pb) {
-        if (pb == Boolean.TRUE && config.killCountNotifyBestTime())
+    private boolean checkKillInterval(int killCount, boolean pb) {
+        if (pb && config.killCountNotifyBestTime())
             return true;
 
         if (killCount == 1 && config.killCountNotifyInitial())
