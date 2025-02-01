@@ -210,6 +210,7 @@ public class KillCountService {
 
     @Nullable
     public Duration getPb(String boss) {
+        if (ConfigUtil.isPluginDisabled(configManager, RL_CHAT_CMD_PLUGIN_NAME)) return null;
         Double pb = configManager.getRSProfileConfiguration("personalbest", cleanBossName(boss), double.class);
         if (pb == null) return null;
         int seconds = pb.intValue();
