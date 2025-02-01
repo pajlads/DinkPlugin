@@ -21,6 +21,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.Duration;
 import java.util.Optional;
@@ -53,6 +54,9 @@ public class KillCountNotifier extends BaseNotifier {
      */
     @VisibleForTesting
     static final int MAX_BAD_TICKS = 10;
+
+    @Inject
+    private KillCountService kcService;
 
     private final AtomicInteger badTicks = new AtomicInteger();
     private final AtomicReference<BossNotificationData> data = new AtomicReference<>();
@@ -125,6 +129,13 @@ public class KillCountNotifier extends BaseNotifier {
         boolean ba = data.getBoss().equals(BA_BOSS_NAME);
         if (!checkKillInterval(data.getCount(), data.isPersonalBest()) && !ba)
             return;
+
+        if (data.getPersonalBest() == null) {
+            Duration pb = kcService.getPb(data.getBoss());
+            if (pb != null) {
+                data = data.withPersonalBest(pb);
+            }
+        }
 
         // Assemble content
         boolean isPb = data.isPersonalBest() == Boolean.TRUE;

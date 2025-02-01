@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -205,6 +206,15 @@ public class KillCountService {
     private boolean isCorruptedGauntlet(LootReceived event) {
         return event.getType() == LootRecordType.EVENT && lastDrop != null && "The Gauntlet".equals(event.getName())
             && (CG_NAME.equals(lastDrop.getSource()) || CG_BOSS.equals(lastDrop.getSource()));
+    }
+
+    @Nullable
+    public Duration getPb(String boss) {
+        Double pb = configManager.getRSProfileConfiguration("personalbest", cleanBossName(boss), double.class);
+        if (pb == null) return null;
+        int seconds = pb.intValue();
+        double millis = (pb - seconds) * 1000;
+        return Duration.ofSeconds(seconds).plusMillis((long) millis);
     }
 
     @Nullable
