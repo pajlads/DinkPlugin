@@ -132,7 +132,7 @@ public class KillCountNotifier extends BaseNotifier {
 
         if (data.getPersonalBest() == null) {
             Duration pb = kcService.getPb(data.getBoss());
-            if (pb != null) {
+            if (pb != null && (data.getTime() == null || pb.compareTo(data.getTime()) < 0)) {
                 data = data.withPersonalBest(pb);
             }
         }
