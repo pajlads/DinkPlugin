@@ -175,7 +175,7 @@ public class KillCountNotifier extends BaseNotifier {
                     defaultIfNull(updated.getGameMessage(), old.getGameMessage()),
                     updated.getTime() == null || (tob && old.getTime() != null) ? old.getTime() : updated.getTime(),
                     updated.isPersonalBest() == null || (tob && old.isPersonalBest() != null) ? old.isPersonalBest() : updated.isPersonalBest(),
-                    defaultIfNull(updated.getPersonalBest(), old.getPersonalBest()),
+                    updated.getPersonalBest() == null || (tob && old.getPersonalBest() != null) ? old.getPersonalBest() : updated.getPersonalBest(),
                     defaultIfNull(updated.getParty(), old.getParty())
                 );
             }
