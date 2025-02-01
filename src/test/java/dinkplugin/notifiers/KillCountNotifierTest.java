@@ -57,9 +57,10 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyInterval() {
-        // more config
+        // more mocks
         when(config.killCountNotifyInitial()).thenReturn(false);
         when(config.killCountInterval()).thenReturn(70);
+        when(configManager.getRSProfileConfiguration("personalbest", "king black dragon", double.class)).thenReturn(29.6);
 
         // fire event
         String gameMessage = "Your King Black Dragon kill count is: 420.";
@@ -69,7 +70,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // check notification
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
             .text(buildTemplate("King Black Dragon", 420))
-            .extra(new BossNotificationData("King Black Dragon", 420, gameMessage, null, null, null, null))
+            .extra(new BossNotificationData("King Black Dragon", 420, gameMessage, null, null, Duration.ofSeconds(29).plusMillis(600), null))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
             .build();
