@@ -334,13 +334,18 @@ JSON for Kill Count Notifications:
     "gameMessage": "Your completed Chambers of Xeric count is: 69.",
     "time": "PT46M34S",
     "isPersonalBest": true,
+    "personalBest": null,
     "party": ["%USERNAME%", "another RSN", "yet another RSN"]
   },
   "type": "KILL_COUNT"
 }
 ```
 
-When an associated duration is not found, `extra.time` and `extra.isPersonalBest` are not populated.
+Both `extra.time` and `extra.personalBest` are reported in [ISO-8601 duration format](https://en.wikipedia.org/wiki/ISO_8601#Durations).
+
+When an associated duration is not found, `extra.time`, `extra.isPersonalBest`, and `extra.personalBest` are not populated.
+It is possible for both `extra.time` and `extra.isPersonalBest` to be populated while `extra.personalBest` is absent.
+Also, `extra.personalBest` is never populated if `isPersonalBest` is true.
 
 Note: when `boss` is `Penance Queen`, `count` refers to the high level gamble count, rather than kill count.
 

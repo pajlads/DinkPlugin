@@ -5,6 +5,7 @@ import dinkplugin.message.Field;
 import dinkplugin.util.DurationAdapter;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import lombok.With;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,6 +13,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 
+@With
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class BossNotificationData extends NotificationData {
@@ -22,6 +24,9 @@ public class BossNotificationData extends NotificationData {
     Duration time;
     @Accessors(fluent = true)
     Boolean isPersonalBest;
+    @Nullable
+    @JsonAdapter(DurationAdapter.class)
+    Duration personalBest;
     @Nullable
     Collection<String> party;
 
