@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Fire loot notifications for new Royal Titans bosses. (#650)
 - Minor: Include Bran pet name in pet notifications. (#649)
 - Minor: Add `%SENDER%` template variable for chat notifier. (#644)
 - Bugfix: Ignore misconfigured loot value-rarity intersection setting if rarity threshold is not configured. (#647)
