@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.21
+
 - Minor: Add `personalBest` time to killcount notification metadata. (#648)
 - Minor: Fire loot notifications for new Royal Titans bosses. (#650)
 - Minor: Include Bran pet name in pet notifications. (#649)
