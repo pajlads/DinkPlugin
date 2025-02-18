@@ -14,6 +14,7 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.templating.Template;
 import dinkplugin.util.BlockingClientThread;
 import dinkplugin.util.BlockingExecutor;
+import dinkplugin.util.IndexedArray;
 import dinkplugin.util.TestImageUtil;
 import dinkplugin.util.Utils;
 import lombok.SneakyThrows;
@@ -47,7 +48,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -166,12 +166,12 @@ abstract class MockedNotifierTest extends MockedTestBase {
 
     protected void mockNpcs(NPC[] npcs) {
         Mockito.<IndexedObjectSet<? extends NPC>>when(worldView.npcs())
-            .thenReturn(new IndexedObjectSet<>(npcs, IntStream.range(0, npcs.length).toArray(), npcs.length));
+            .thenReturn(new IndexedArray<>(npcs));
     }
 
     protected void mockPlayers(Player[] players) {
         Mockito.<IndexedObjectSet<? extends Player>>when(worldView.players())
-            .thenReturn(new IndexedObjectSet<>(players, IntStream.range(0, players.length).toArray(), players.length));
+            .thenReturn(new IndexedArray<>(players));
     }
 
     @SneakyThrows
