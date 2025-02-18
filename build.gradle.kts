@@ -23,6 +23,7 @@ dependencies {
 
     // this version of annotations is verified by runelite
     compileOnly(group = "org.jetbrains", name = "annotations", version = "23.0.0")
+    testCompileOnly(group = "org.jetbrains", name = "annotations", version = "23.0.0")
 
     val runeLiteVersion = "latest." + if (project.hasProperty("use.snapshot")) "integration" else "release"
     compileOnly(group = "net.runelite", name = "client", version = runeLiteVersion)

@@ -11,12 +11,10 @@ import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.RareItemStack;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
-import net.runelite.api.IndexedObjectSet;
 import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.Player;
-import net.runelite.api.WorldView;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
@@ -35,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -88,12 +85,8 @@ class LootNotifierTest extends MockedNotifierTest {
         mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    private void mockWorldNpcs(NPC... npcs) {
-        WorldView worldView = Mockito.mock(WorldView.class);
-        when(client.getTopLevelWorldView()).thenReturn(worldView);
-        IndexedObjectSet ios = new IndexedObjectSet<>(npcs, IntStream.range(0, npcs.length).toArray(), npcs.length);
-        when(worldView.npcs()).thenReturn(ios);
+    private void mockWorldNpcs(NPC npc) {
+        mockNpcs(new NPC[] { npc });
     }
 
     @Test
