@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Treat `SPAM` messages as matchable game messages for the chat notifier. (#653)
+
 ## 1.10.21
 
 - Minor: Add `personalBest` time to killcount notification metadata. (#648)
