@@ -988,6 +988,17 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootIncludeGambles",
+        name = "Include BA Gambles",
+        description = "Allow notifications for barbarian assault high gambles",
+        position = 36,
+        section = lootSection
+    )
+    default boolean lootIncludeGambles() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "lootItemAllowlist",
         name = "Item Allowlist",
         description = "Always fire notifications for these items, despite value settings.<br/>" +
