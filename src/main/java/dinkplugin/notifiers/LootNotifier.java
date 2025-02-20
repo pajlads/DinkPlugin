@@ -131,6 +131,11 @@ public class LootNotifier extends BaseNotifier {
 
         // only consider non-NPC and non-PK loot
         if (lootReceived.getType() == LootRecordType.EVENT || lootReceived.getType() == LootRecordType.PICKPOCKET) {
+            if ("Barbarian Assault high gamble".equals(lootReceived.getName()) && !config.lootIncludeGambles()) {
+                // skip ba gambles, depending on config (since we have GambleNotifier)
+                return;
+            }
+
             if (!config.lootIncludeClueScrolls() && StringUtils.startsWithIgnoreCase(lootReceived.getName(), "Clue Scroll")) {
                 // skip clue scroll loot, depending on config
                 return;
