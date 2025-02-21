@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.10.22
+
 - Minor: Allow excluding Barbarian Assault high gambles from loot notifications to avoid duplication with the gambles notifier. (#657)
 - Minor: Treat `SPAM` messages as matchable game messages for the chat notifier. (#653)
 
