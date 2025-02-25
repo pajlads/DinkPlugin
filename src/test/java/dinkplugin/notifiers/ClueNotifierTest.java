@@ -93,6 +93,45 @@ class ClueNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyFirst() {
+        // fire chat event
+        notifier.onChatMessage("You have completed 1 easy Treasure Trail.");
+
+        // mock widgets
+        Widget widget = mock(Widget.class);
+        when(client.getWidget(ComponentID.CLUESCROLL_REWARD_ITEM_CONTAINER)).thenReturn(widget);
+
+        Widget child = mock(Widget.class);
+        when(child.getItemQuantity()).thenReturn(1);
+        when(child.getItemId()).thenReturn(ItemID.RUBY);
+
+        Widget[] children = { child };
+        when(widget.getChildren()).thenReturn(children);
+
+        // fire widget event
+        WidgetLoaded event = new WidgetLoaded();
+        event.setGroupId(InterfaceID.CLUESCROLL_REWARD);
+        plugin.onWidgetLoaded(event);
+
+        // verify notification message
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has completed a {{tier}} clue, for a total of %d. They obtained: 1 x {{ruby}} (%d)", PLAYER_NAME, 1312, RUBY_PRICE))
+                        .replacement("{{tier}}", Replacements.ofWiki("easy", "Clue scroll (easy)"))
+                        .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
+                        .build()
+                )
+                .extra(new ClueNotificationData("easy", 1, Collections.singletonList(new SerializedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby"))))
+                .type(NotificationType.CLUE)
+                .build()
+        );
+    }
+
+    @Test
     void testIgnoreTier() {
         // fire chat event
         notifier.onChatMessage("You have completed 1312 beginner Treasure Trails.");
