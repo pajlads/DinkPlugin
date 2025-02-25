@@ -94,6 +94,9 @@ class ClueNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyFirst() {
+        // update config mock
+        when(config.clueMinTier()).thenReturn(ClueTier.EASY);
+
         // fire chat event
         notifier.onChatMessage("You have completed 1 easy Treasure Trail.");
 
