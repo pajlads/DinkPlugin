@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Singleton
 public class ClueNotifier extends BaseNotifier {
-    private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails\\.");
+    private static final Pattern CLUE_SCROLL_REGEX = Pattern.compile("You have completed (?<scrollCount>\\d+) (?<scrollType>\\w+) Treasure Trails?\\.");
     private final AtomicInteger badTicks = new AtomicInteger(); // used to prevent notifs from using stale data
     private volatile int clueCount = -1;
     private volatile String clueType = "";

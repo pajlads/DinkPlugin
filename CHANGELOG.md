@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Fire clue notification upon the first completion of a scroll at a given tier. (#662)
+
 ## 1.10.22
 
 - Minor: Allow excluding Barbarian Assault high gambles from loot notifications to avoid duplication with the gambles notifier. (#657)
