@@ -181,6 +181,14 @@ public interface DinkPluginConfig extends Config {
     String chatSection = "Custom Chat Messages";
 
     @ConfigSection(
+        name = "External Plugin Requests",
+        description = "Settings for notifying when other plugins request Dink notifications to be fired",
+        position = 180,
+        closedByDefault = true
+    )
+    String externalSection = "External Plugin Requests";
+
+    @ConfigSection(
         name = "Leagues",
         description = "Settings for notifying when you complete league tasks, unlock areas, and redeem relics",
         position = 200,
@@ -699,11 +707,22 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "externalWebhook",
+        name = "External Webhook Override",
+        description = "If non-empty, external plugin messages are sent to this URL, instead of the primary URL",
+        position = -1,
+        section = webhookSection
+    )
+    default String externalWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "leaguesWebhook",
         name = "Leagues Webhook Override",
         description = "If non-empty, Leagues messages are sent to this URL, instead of the primary URL.<br/>" +
             "Note: this only applies to the Leagues notifier, not every notifier in a seasonal world",
-        position = -1,
+        position = 0,
         section = webhookSection
     )
     default String leaguesWebhook() {
@@ -2032,6 +2051,39 @@ public interface DinkPluginConfig extends Config {
     )
     default String chatNotifyMessage() {
         return "%USERNAME% received a chat message:\n\n```\n%MESSAGE%\n```";
+    }
+
+    @ConfigItem(
+        keyName = "notifyExternal",
+        name = "Enable External Plugin Notifications",
+        description = "Enable notifications upon requests by other plugins",
+        position = 180,
+        section = externalSection
+    )
+    default boolean notifyExternal() {
+        return true; // enabled by default, unlike other notifiers
+    }
+
+    @ConfigItem(
+        keyName = "externalSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 181,
+        section = externalSection
+    )
+    default boolean externalSendImage() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "externalImageOverride",
+        name = "Allow Overriding 'Send Image'",
+        description = "Whether to allow external plugins to request a screenshot despite the 'Send Image' config",
+        position = 182,
+        section = externalSection
+    )
+    default boolean externalImageOverride() {
+        return false;
     }
 
     @ConfigItem(

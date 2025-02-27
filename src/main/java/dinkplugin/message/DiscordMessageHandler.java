@@ -389,6 +389,7 @@ public class DiscordMessageHandler {
             .text(Utils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))
             .iconUrl(StringUtils.isBlank(footerIcon) ? null : footerIcon)
             .build();
+        String title = body.getCustomTitle() != null ? body.getCustomTitle() : type.getTitle();
         String thumbnail = body.getThumbnailUrl() != null
             ? body.getThumbnailUrl()
             : type.getThumbnail();
@@ -398,7 +399,7 @@ public class DiscordMessageHandler {
             Embed.builder()
                 .author(author)
                 .color(config.embedColor())
-                .title(body.isSeasonalWorld() ? "[Seasonal] " + type.getTitle() : type.getTitle())
+                .title(Utils.truncate(body.isSeasonalWorld() ? "[Seasonal] " + title : title, Embed.MAX_TITLE_LENGTH))
                 .description(Utils.truncate(body.getText().evaluate(config.discordRichEmbeds()), Embed.MAX_DESCRIPTION_LENGTH))
                 .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
                 .thumbnail(new Embed.UrlEmbed(thumbnail))

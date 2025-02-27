@@ -72,6 +72,14 @@ public class NotificationBody<T extends NotificationData> {
     String computedDiscordContent;
 
     /**
+     * An optional title override that of {@link NotificationType#getThumbnail}
+     * within the embed constructed by {@link DiscordMessageHandler#createMessage}
+     */
+    @Nullable
+    @EqualsAndHashCode.Exclude
+    transient String customTitle;
+
+    /**
      * An optional thumbnail to override that of {@link NotificationType#getThumbnail}
      * within the embed constructed by {@link DiscordMessageHandler#createMessage}
      */
