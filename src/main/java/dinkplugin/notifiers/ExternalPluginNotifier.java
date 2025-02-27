@@ -77,6 +77,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .playerName(player)
             .text(template)
             .customTitle(input.getTitle())
+            .customFooter(input.getFooter())
             .thumbnailUrl(input.getThumbnail())
             .extra(new ExternalNotificationData(input.getFields()))
             .build();

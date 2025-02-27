@@ -376,7 +376,7 @@ public class DiscordMessageHandler {
     private static List<Embed> computeEmbeds(@NotNull NotificationBody<?> body, boolean screenshot, DinkPluginConfig config) {
         NotificationType type = body.getType();
         NotificationData extra = body.getExtra();
-        String footerText = config.embedFooterText();
+        String footerText = body.getCustomFooter() != null ? body.getCustomFooter() : config.embedFooterText();
         String footerIcon = config.embedFooterIcon();
         PlayerLookupService playerLookupService = config.playerLookupService();
 

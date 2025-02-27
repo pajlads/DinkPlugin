@@ -52,6 +52,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.EXTERNAL_PLUGIN)
                 .playerName(PLAYER_NAME)
                 .customTitle("My Title")
+                .customFooter("external plugin name goes here")
                 .text(
                     Template.builder()
                         .template("Hello %TARGET% from %PLAYER%")
@@ -78,6 +79,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.EXTERNAL_PLUGIN)
                 .playerName(PLAYER_NAME)
                 .customTitle("My Title")
+                .customFooter("external plugin name goes here")
                 .text(
                     Template.builder()
                         .template("Hello %TARGET% from %PLAYER%")
@@ -106,6 +108,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.EXTERNAL_PLUGIN)
                 .playerName(PLAYER_NAME)
                 .customTitle("My Title")
+                .customFooter("external plugin name goes here")
                 .text(
                     Template.builder()
                         .template("Hello %TARGET% from %PLAYER%")
@@ -135,6 +138,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.EXTERNAL_PLUGIN)
                 .playerName(PLAYER_NAME)
                 .customTitle("My Title")
+                .customFooter("external plugin name goes here")
                 .text(
                     Template.builder()
                         .template("Hello %TARGET% from %PLAYER%")
@@ -167,6 +171,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.EXTERNAL_PLUGIN)
                 .playerName(PLAYER_NAME)
                 .customTitle("My Title")
+                .customFooter("external plugin name goes here")
                 .text(
                     Template.builder()
                         .template("Hello %TARGET% from %PLAYER%")
@@ -216,6 +221,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
         data.put("thumbnail", "not a url . com");
         data.put("fields", List.of(new Field("a", "b")));
         data.put("replacements", Map.of("%TARGET%", new SimpleReplacement("world", null)));
+        data.put("footer", "external plugin name goes here");
         data.put("url", url);
         return data;
     }
