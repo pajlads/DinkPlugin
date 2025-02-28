@@ -254,7 +254,10 @@ public class DiscordMessageHandler {
             }
 
             if (mBody.getRegionId() == null) {
-                builder.regionId(WorldUtils.getLocation(client).getRegionID());
+                var loc = WorldUtils.getLocation(client);
+                if (loc != null) {
+                    builder.regionId(loc.getRegionID());
+                }
             }
         }
 

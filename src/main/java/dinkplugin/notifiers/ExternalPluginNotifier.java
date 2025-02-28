@@ -41,8 +41,6 @@ public class ExternalPluginNotifier extends BaseNotifier {
             return;
         }
 
-        String s = "https://discord.com/api/webhooks/a/b \n https://discord.com/api/webhooks/c/d";
-
         // parse request
         ExternalNotificationRequest input;
         try {
