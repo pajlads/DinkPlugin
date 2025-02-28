@@ -71,7 +71,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .replacement("%PLAYER%", Replacements.ofText(player))
             .build();
 
-        boolean image = config.externalSendImage() || (input.isImageRequested() && config.externalImageOverride());
+        boolean image = input.getImage() != null || config.externalSendImage() || (input.isImageRequested() && config.externalImageOverride());
         var body = NotificationBody.builder()
             .type(NotificationType.EXTERNAL_PLUGIN)
             .playerName(player)
@@ -80,6 +80,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .customFooter(input.getFooter())
             .thumbnailUrl(input.getThumbnail())
             .extra(new ExternalNotificationData(input.getFields()))
+            .screenshotOverride(input.getImage())
             .build();
 
         createMessage(input.getSanitizedUrl(), image, body);
