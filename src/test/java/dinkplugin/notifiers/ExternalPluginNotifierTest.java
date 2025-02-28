@@ -55,9 +55,9 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .customFooter("external plugin name goes here")
                 .text(
                     Template.builder()
-                        .template("Hello %TARGET% from %PLAYER%")
+                        .template("Hello %TARGET% from %USERNAME%")
                         .replacement("%TARGET%", Replacements.ofText("world"))
-                        .replacement("%PLAYER%", Replacements.ofText(PLAYER_NAME))
+                        .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
                 .extra(new ExternalNotificationData(List.of(new Field("a", "b"))))
@@ -82,9 +82,9 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .customFooter("external plugin name goes here")
                 .text(
                     Template.builder()
-                        .template("Hello %TARGET% from %PLAYER%")
+                        .template("Hello %TARGET% from %USERNAME%")
                         .replacement("%TARGET%", Replacements.ofText("world"))
-                        .replacement("%PLAYER%", Replacements.ofText(PLAYER_NAME))
+                        .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
                 .extra(new ExternalNotificationData(List.of(new Field("a", "b"))))
@@ -111,9 +111,9 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .customFooter("external plugin name goes here")
                 .text(
                     Template.builder()
-                        .template("Hello %TARGET% from %PLAYER%")
+                        .template("Hello %TARGET% from %USERNAME%")
                         .replacement("%TARGET%", Replacements.ofText("world"))
-                        .replacement("%PLAYER%", Replacements.ofText(PLAYER_NAME))
+                        .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
                 .extra(new ExternalNotificationData(List.of(new Field("a", "b"))))
@@ -141,9 +141,9 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .customFooter("external plugin name goes here")
                 .text(
                     Template.builder()
-                        .template("Hello %TARGET% from %PLAYER%")
+                        .template("Hello %TARGET% from %USERNAME%")
                         .replacement("%TARGET%", Replacements.ofText("world"))
-                        .replacement("%PLAYER%", Replacements.ofText(PLAYER_NAME))
+                        .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
                 .extra(new ExternalNotificationData(List.of(new Field("a", "b"))))
@@ -174,9 +174,9 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .customFooter("external plugin name goes here")
                 .text(
                     Template.builder()
-                        .template("Hello %TARGET% from %PLAYER%")
+                        .template("Hello %TARGET% from %USERNAME%")
                         .replacement("%TARGET%", Replacements.ofText("world"))
-                        .replacement("%PLAYER%", Replacements.ofText(PLAYER_NAME))
+                        .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
                 .extra(new ExternalNotificationData(List.of(new Field("a", "b"))))
@@ -216,7 +216,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
 
     private static Map<String, Object> samplePayload(String url) {
         Map<String, Object> data = new HashMap<>();
-        data.put("text", "Hello %TARGET% from %PLAYER%");
+        data.put("text", "Hello %TARGET% from %USERNAME%");
         data.put("title", "My Title");
         data.put("thumbnail", "not a url . com");
         data.put("fields", List.of(new Field("a", "b")));

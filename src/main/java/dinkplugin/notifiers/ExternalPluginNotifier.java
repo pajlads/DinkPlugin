@@ -74,7 +74,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
         var template = Template.builder()
             .template(input.getText())
             .replacements(input.getReplacements())
-            .replacement("%PLAYER%", Replacements.ofText(player))
+            .replacement("%USERNAME%", Replacements.ofText(player))
             .build();
 
         boolean image = input.getImage() != null || config.externalSendImage() || (input.isImageRequested() && config.externalImageOverride());

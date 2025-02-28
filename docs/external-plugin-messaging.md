@@ -19,17 +19,17 @@ The `namespace` for the `PluginMessage` should be `dink` and the `name` should b
 
 The `Map<String, Object>` that is supplied to `PluginMessage` will be converted into [`ExternalNotificationRequest`](../src/main/java/dinkplugin/domain/ExternalNotificationRequest.java).
 
-| Field            | Required | Type             | Description                                                                                                                                                                             |
-| ---------------- | -------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `text`           | Y        | String           | The body text of the notification. This field supports templating (see `replacements` below) and by default `%PLAYER%` is an available replacement.                                     |
-| `url`            | N        | String           | The Discord URLs that the notification should be sent to (newline separated).                                                                                                           |
-| `title`          | N        | String           | The title for the Discord embed.                                                                                                                                                        |
-| `thumbnail`      | N        | String           | A URL to an image for the thumbnail icon of the Discord embed.                                                                                                                          |
-| `footer`         | N        | String           | The footer text for the Discord embed.                                                                                                                                                  |
-| `imageRequested` | N        | boolean          | Whether dink should include a screenshot with the notification.                                                                                                                         |
-| `image`          | N        | `java.awt.Image` | The image to use in place of a screenshot.                                                                                                                                              |
-| `fields`         | N        | List             | A list of [embed fields](https://discord.com/developers/docs/resources/message#embed-object-embed-field-structure). The contained objects should have `name` and `value` properties.    |
-| `replacements`   | N        | Map              | A map of strings to be replaced to objects containing `value` (and optionally `richValue`) that indicate what the template string should be replaced with for plain text and rich text. |
+| Field            | Required | Type             | Description                                                                                                                                                                               |
+| ---------------- | -------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `text`           | Y        | String           | The body text of the notification. This field supports templating (see `replacements` below) and by default `%USERNAME%` is an available replacement.                                     |
+| `url`            | N        | String           | The Discord URLs that the notification should be sent to (newline separated).                                                                                                             |
+| `title`          | N        | String           | The title for the Discord embed.                                                                                                                                                          |
+| `thumbnail`      | N        | String           | A URL to an image for the thumbnail icon of the Discord embed.                                                                                                                            |
+| `footer`         | N        | String           | The footer text for the Discord embed.                                                                                                                                                    |
+| `imageRequested` | N        | boolean          | Whether dink should include a screenshot with the notification.                                                                                                                           |
+| `image`          | N        | `java.awt.Image` | The image to use in place of a screenshot.                                                                                                                                                |
+| `fields`         | N        | List             | A list of [embed fields](https://discord.com/developers/docs/resources/message#embed-object-embed-field-structure). The contained objects should have `name` and `value` properties.      |
+| `replacements`   | N        | Map              | A map of strings to be replaced to objects containing `value` (and optionally `richValue`) that indicate what the template string should be replaced with for plain text and rich text.   |
 
 We strongly recommend you include your plugin name within the `footer` so it is clear where notifications are coming from.
 
@@ -39,7 +39,7 @@ The example below assumes you already have injected RuneLite's eventbus into you
 
 ```java
 Map<String, Object> data = new HashMap<>();
-data.put("text", "This is the primary content within the webhook. %PLAYER% will automatically be replaced with the player name and you can define your own template replacements like %XYZ%");
+data.put("text", "This is the primary content within the webhook. %USERNAME% will automatically be replaced with the player name and you can define your own template replacements like %XYZ%");
 data.put("replacements", Map.of("%XYZ%", Replacement.ofText("sample replacement")));
 data.put("footer", "Sent by INSERT_YOUR_PLUGIN_NAME_HERE via Dink");
 data.put("title", "An optional embed title for your notification");
