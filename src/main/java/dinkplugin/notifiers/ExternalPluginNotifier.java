@@ -10,6 +10,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.ExternalNotificationData;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.GameState;
 import okhttp3.HttpUrl;
 
 import javax.inject.Inject;
@@ -83,7 +84,10 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .build();
 
         var footer = String.format("Sent by %s, via Dink", input.getSourcePlugin());
-        boolean image = input.getImage() != null || config.externalSendImage() || (input.isImageRequested() && config.externalImageOverride());
+
+        boolean image = input.getImage() != null ||
+            client.getGameState().getState() >= GameState.LOGGING_IN.getState()
+                && (config.externalSendImage() || input.isImageRequested() && config.externalImageOverride());
         var body = NotificationBody.builder()
             .type(NotificationType.EXTERNAL_PLUGIN)
             .playerName(player)
