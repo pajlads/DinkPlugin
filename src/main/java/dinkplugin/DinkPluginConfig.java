@@ -709,7 +709,7 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "externalWebhook",
         name = "External Webhook Override",
-        description = "If non-empty, external plugin messages are sent to this URL, instead of the primary URL",
+        description = "If non-empty, external plugin messages that don't provide a custom URL are by default sent to this URL, instead of the primary URL",
         position = -1,
         section = webhookSection
     )

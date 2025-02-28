@@ -55,6 +55,11 @@ public class ExternalPluginNotifier extends BaseNotifier {
         }
 
         // validate request
+        if (input.getSourcePlugin() == null || input.getSourcePlugin().isBlank()) {
+            log.info("Skipping externally-requested dink due to missing 'sourcePlugin': {}", data);
+            return;
+        }
+
         if (input.getText() == null || input.getText().isBlank()) {
             log.info("Skipping externally-requested dink due to missing 'text': {}", data);
             return;
@@ -77,19 +82,25 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .replacement("%USERNAME%", Replacements.ofText(player))
             .build();
 
+        var footer = String.format("Sent by %s, via Dink", input.getSourcePlugin());
         boolean image = input.getImage() != null || config.externalSendImage() || (input.isImageRequested() && config.externalImageOverride());
         var body = NotificationBody.builder()
             .type(NotificationType.EXTERNAL_PLUGIN)
             .playerName(player)
             .text(template)
             .customTitle(input.getTitle())
-            .customFooter(input.getFooter())
+            .customFooter(footer)
             .thumbnailUrl(input.getThumbnail())
             .extra(new ExternalNotificationData(input.getFields()))
             .screenshotOverride(input.getImage())
             .build();
 
-        createMessage(input.getSanitizedUrl(), image, body);
+        var url = input.getSanitizedUrl();
+        if (!url.isEmpty()) {
+            log.info("{} requested a dink notification to an externally-specified url", input.getSourcePlugin());
+        }
+
+        createMessage(url, image, body);
     }
 
 }
