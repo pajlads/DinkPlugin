@@ -20,7 +20,7 @@ The `namespace` for the `PluginMessage` should be `dink` and the `name` should b
 The `Map<String, Object>` that is supplied to `PluginMessage` will be converted into `ExternalNotificationRequest`.
 
 | Field            | Required | Type             | Description                                                                                                                                                                             |
-|------------------|----------|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------- | -------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `text`           | Y        | String           | The body text of the notification. This field supports templating (see `replacements` below) and by default `%PLAYER%` is an available replacement.                                     |
 | `url`            | N        | String           | The Discord URLs that the notification should be sent to (newline separated).                                                                                                           |
 | `title`          | N        | String           | The title for the Discord embed.                                                                                                                                                        |
@@ -58,7 +58,7 @@ public class Field {
     String name;
     String value;
     Boolean inline;
-    
+
     public Field(String name, String value) {
         this(name, value, null);
     }
@@ -70,15 +70,15 @@ public class Field {
 public class Replacement {
     String value;
     String richValue;
-    
+
     public Replacement(String value) {
         this(value, null);
     }
-    
+
     public static Replacement ofLink(String text, String link) {
         return new Replacement(text, String.format("[%s](%s)", text, link));
     }
-    
+
     public static Replacement ofWiki(String text, String searchPhrase) {
         return ofLink(text, "https://oldschool.runescape.wiki/w/Special:Search?search=" + UrlEscapers.urlPathSegmentEscaper().escape(searchPhrase));
     }
