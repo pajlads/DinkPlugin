@@ -19,16 +19,16 @@ The `namespace` for the `PluginMessage` should be `dink` and the `name` should b
 
 The `Map<String, Object>` that is supplied to `PluginMessage` will be converted into [`ExternalNotificationRequest`](../src/main/java/dinkplugin/domain/ExternalNotificationRequest.java).
 
-| Field            | Required | Type             | Description                                                                                                                                                                             |
-| ---------------- | -------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `text`           | Y        | String           | The body text of the notification. This field supports templating (see `replacements` below) and by default `%USERNAME%` is an available replacement.                                   |
-| `sourcePlugin`   | Y        | String           | The human-facing name of the plugin submitting the webhook notification request.                                                                                                        |
-| `urls`           | N        | String           | The Discord URLs that the notification should be sent to (newline separated).                                                                                                           |
-| `title`          | N        | String           | The title for the Discord embed.                                                                                                                                                        |
-| `thumbnail`      | N        | String           | A URL to an image for the thumbnail icon of the Discord embed.                                                                                                                          |
-| `imageRequested` | N        | boolean          | Whether dink should include a screenshot with the notification.                                                                                                                         |
-| `fields`         | N        | List             | A list of [embed fields](https://discord.com/developers/docs/resources/message#embed-object-embed-field-structure). The contained objects should have `name` and `value` properties.    |
-| `replacements`   | N        | Map              | A map of strings to be replaced to objects containing `value` (and optionally `richValue`) that indicate what the template string should be replaced with for plain text and rich text. |
+| Field            | Required | Type    | Description                                                                                                                                                                             |
+| ---------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `text`           | Y        | String  | The body text of the notification. This field supports templating (see `replacements` below) and by default `%USERNAME%` is an available replacement.                                   |
+| `sourcePlugin`   | Y        | String  | The human-facing name of the plugin submitting the webhook notification request.                                                                                                        |
+| `urls`           | N        | String  | The Discord URLs that the notification should be sent to (newline separated).                                                                                                           |
+| `title`          | N        | String  | The title for the Discord embed.                                                                                                                                                        |
+| `thumbnail`      | N        | String  | A URL to an image for the thumbnail icon of the Discord embed.                                                                                                                          |
+| `imageRequested` | N        | boolean | Whether dink should include a screenshot with the notification.                                                                                                                         |
+| `fields`         | N        | List    | A list of [embed fields](https://discord.com/developers/docs/resources/message#embed-object-embed-field-structure). The contained objects should have `name` and `value` properties.    |
+| `replacements`   | N        | Map     | A map of strings to be replaced to objects containing `value` (and optionally `richValue`) that indicate what the template string should be replaced with for plain text and rich text. |
 
 ## Example
 
