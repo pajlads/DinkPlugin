@@ -9,7 +9,6 @@ import lombok.Getter;
 import okhttp3.HttpUrl;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.Image;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,6 @@ public class ExternalNotificationRequest {
     private String sourcePlugin;
     private String text;
     private boolean imageRequested;
-    private transient @Nullable Image image;
     private @Nullable String title;
     private @Nullable String thumbnail;
     private @Nullable List<Field> fields;

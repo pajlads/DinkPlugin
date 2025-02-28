@@ -15,7 +15,6 @@ import okhttp3.HttpUrl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.awt.Image;
 import java.util.Map;
 
 @Slf4j
@@ -50,11 +49,6 @@ public class ExternalPluginNotifier extends BaseNotifier {
             return;
         }
 
-        var image = data.get("image");
-        if (image instanceof Image) {
-            input.setImage((Image) image);
-        }
-
         // validate request
         if (input.getSourcePlugin() == null || input.getSourcePlugin().isBlank()) {
             log.info("Skipping externally-requested dink due to missing 'sourcePlugin': {}", data);
@@ -85,9 +79,8 @@ public class ExternalPluginNotifier extends BaseNotifier {
 
         var footer = String.format("Sent by %s, via Dink", input.getSourcePlugin());
 
-        boolean image = input.getImage() != null ||
-            client.getGameState().getState() >= GameState.LOGGING_IN.getState()
-                && (config.externalSendImage() || input.isImageRequested() && config.externalImageOverride());
+        boolean image = client.getGameState().getState() >= GameState.LOGGING_IN.getState()
+            && (config.externalSendImage() || input.isImageRequested() && config.externalImageOverride());
         var body = NotificationBody.builder()
             .type(NotificationType.EXTERNAL_PLUGIN)
             .playerName(player)
@@ -96,7 +89,6 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .customFooter(footer)
             .thumbnailUrl(input.getThumbnail())
             .extra(new ExternalNotificationData(input.getFields()))
-            .screenshotOverride(input.getImage())
             .build();
 
         var urls = input.getSanitizedUrls();

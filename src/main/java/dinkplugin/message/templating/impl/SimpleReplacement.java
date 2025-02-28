@@ -1,7 +1,11 @@
 package dinkplugin.message.templating.impl;
 
 import dinkplugin.message.templating.Evaluable;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 @Data
