@@ -28,10 +28,10 @@ public class ExternalNotificationRequest {
     private @Nullable List<Field> fields;
     private @Nullable Map<String, SimpleReplacement> replacements;
     @Getter(AccessLevel.PRIVATE) // to avoid accidentally using the requested url without sanitization
-    private @Nullable String url;
+    private @Nullable String urls;
 
-    public String getSanitizedUrl() {
-        return ConfigUtil.readDelimited(this.url)
+    public String getSanitizedUrls() {
+        return ConfigUtil.readDelimited(this.urls)
             .map(HttpUrl::parse)
             .filter(Objects::nonNull)
             .filter(url -> "discord.com".equalsIgnoreCase(url.host()))

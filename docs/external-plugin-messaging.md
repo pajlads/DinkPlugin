@@ -23,7 +23,7 @@ The `Map<String, Object>` that is supplied to `PluginMessage` will be converted 
 | ---------------- | -------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `text`           | Y        | String           | The body text of the notification. This field supports templating (see `replacements` below) and by default `%USERNAME%` is an available replacement.                                   |
 | `sourcePlugin`   | Y        | String           | The human-facing name of the plugin submitting the webhook notification request.                                                                                                        |
-| `url`            | N        | String           | The Discord URLs that the notification should be sent to (newline separated).                                                                                                           |
+| `urls`           | N        | String           | The Discord URLs that the notification should be sent to (newline separated).                                                                                                           |
 | `title`          | N        | String           | The title for the Discord embed.                                                                                                                                                        |
 | `thumbnail`      | N        | String           | A URL to an image for the thumbnail icon of the Discord embed.                                                                                                                          |
 | `imageRequested` | N        | boolean          | Whether dink should include a screenshot with the notification.                                                                                                                         |
@@ -43,6 +43,7 @@ data.put("replacements", Map.of("%XYZ%", Replacement.ofText("sample replacement"
 data.put("title", "An optional embed title for your notification");
 data.put("imageRequested", true);
 data.put("fields", List.of(new Field("sample key", "sample value")));
+data.put("urls", "https://discord.com/api/webhooks/a/b \n https://discord.com/api/webhooks/c/d");
 
 PluginMessage dinkRequest = new PluginMessage("dink", "notify", data);
 eventBus.post(dinkRequest);

@@ -41,6 +41,8 @@ public class ExternalPluginNotifier extends BaseNotifier {
             return;
         }
 
+        String s = "https://discord.com/api/webhooks/a/b \n https://discord.com/api/webhooks/c/d";
+
         // parse request
         ExternalNotificationRequest input;
         try {
@@ -99,12 +101,12 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .screenshotOverride(input.getImage())
             .build();
 
-        var url = input.getSanitizedUrl();
-        if (!url.isEmpty()) {
-            log.info("{} requested a dink notification to an externally-specified url", input.getSourcePlugin());
+        var urls = input.getSanitizedUrls();
+        if (!urls.isEmpty()) {
+            log.info("{} requested a dink notification to externally-specified url(s)", input.getSourcePlugin());
         }
 
-        createMessage(url, image, body);
+        createMessage(urls, image, body);
     }
 
 }

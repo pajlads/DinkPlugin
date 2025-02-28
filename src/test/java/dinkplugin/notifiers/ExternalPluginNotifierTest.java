@@ -214,7 +214,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
-    private static Map<String, Object> samplePayload(String url) {
+    private static Map<String, Object> samplePayload(String urls) {
         Map<String, Object> data = new HashMap<>();
         data.put("text", "Hello %TARGET% from %USERNAME%");
         data.put("title", "My Title");
@@ -222,7 +222,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
         data.put("fields", List.of(new Field("a", "b")));
         data.put("replacements", Map.of("%TARGET%", new SimpleReplacement("world", null)));
         data.put("sourcePlugin", "external plugin name goes here");
-        data.put("url", url);
+        data.put("urls", urls);
         return data;
     }
 
