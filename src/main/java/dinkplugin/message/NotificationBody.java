@@ -76,6 +76,7 @@ public class NotificationBody<T extends NotificationData> {
      * within the embed constructed by {@link DiscordMessageHandler#createMessage}
      */
     @Nullable
+    @EqualsAndHashCode.Include
     transient String customTitle;
 
     /**
@@ -83,6 +84,7 @@ public class NotificationBody<T extends NotificationData> {
      * within the embed constructed by {@link DiscordMessageHandler#createMessage}
      */
     @Nullable
+    @EqualsAndHashCode.Include
     transient String customFooter;
 
     /**

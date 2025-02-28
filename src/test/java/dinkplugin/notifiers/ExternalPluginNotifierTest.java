@@ -52,7 +52,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.EXTERNAL_PLUGIN)
                 .playerName(PLAYER_NAME)
                 .customTitle("My Title")
-                .customFooter("Sent by external plugin name goes here via Dink")
+                .customFooter("Sent by MyExternalPlugin via Dink")
                 .text(
                     Template.builder()
                         .template("Hello %TARGET% from %USERNAME%")
@@ -60,7 +60,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData(List.of(new Field("a", "b"))))
+                .extra(new ExternalNotificationData(List.of(new Field("sample key", "sample value"))))
                 .build()
         );
     }
@@ -79,7 +79,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.EXTERNAL_PLUGIN)
                 .playerName(PLAYER_NAME)
                 .customTitle("My Title")
-                .customFooter("Sent by external plugin name goes here via Dink")
+                .customFooter("Sent by MyExternalPlugin via Dink")
                 .text(
                     Template.builder()
                         .template("Hello %TARGET% from %USERNAME%")
@@ -87,7 +87,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData(List.of(new Field("a", "b"))))
+                .extra(new ExternalNotificationData(List.of(new Field("sample key", "sample value"))))
                 .build()
         );
     }
@@ -108,7 +108,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.EXTERNAL_PLUGIN)
                 .playerName(PLAYER_NAME)
                 .customTitle("My Title")
-                .customFooter("Sent by external plugin name goes here via Dink")
+                .customFooter("Sent by MyExternalPlugin via Dink")
                 .text(
                     Template.builder()
                         .template("Hello %TARGET% from %USERNAME%")
@@ -116,7 +116,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData(List.of(new Field("a", "b"))))
+                .extra(new ExternalNotificationData(List.of(new Field("sample key", "sample value"))))
                 .build()
         );
     }
@@ -138,7 +138,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.EXTERNAL_PLUGIN)
                 .playerName(PLAYER_NAME)
                 .customTitle("My Title")
-                .customFooter("Sent by external plugin name goes here via Dink")
+                .customFooter("Sent by MyExternalPlugin via Dink")
                 .text(
                     Template.builder()
                         .template("Hello %TARGET% from %USERNAME%")
@@ -146,7 +146,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData(List.of(new Field("a", "b"))))
+                .extra(new ExternalNotificationData(List.of(new Field("sample key", "sample value"))))
                 .build()
         );
     }
@@ -171,7 +171,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                 .type(NotificationType.EXTERNAL_PLUGIN)
                 .playerName(PLAYER_NAME)
                 .customTitle("My Title")
-                .customFooter("Sent by external plugin name goes here via Dink")
+                .customFooter("Sent by MyExternalPlugin via Dink")
                 .text(
                     Template.builder()
                         .template("Hello %TARGET% from %USERNAME%")
@@ -179,7 +179,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData(List.of(new Field("a", "b"))))
+                .extra(new ExternalNotificationData(List.of(new Field("sample key", "sample value"))))
                 .build()
         );
     }
@@ -219,9 +219,9 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
         data.put("text", "Hello %TARGET% from %USERNAME%");
         data.put("title", "My Title");
         data.put("thumbnail", "not a url . com");
-        data.put("fields", List.of(new Field("a", "b")));
+        data.put("fields", List.of(new Field("sample key", "sample value")));
         data.put("replacements", Map.of("%TARGET%", new SimpleReplacement("world", null)));
-        data.put("sourcePlugin", "external plugin name goes here");
+        data.put("sourcePlugin", "MyExternalPlugin");
         data.put("urls", urls);
         return data;
     }

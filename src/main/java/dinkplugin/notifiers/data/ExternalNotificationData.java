@@ -9,5 +9,6 @@ import java.util.List;
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class ExternalNotificationData extends NotificationData {
+    @EqualsAndHashCode.Include
     transient List<Field> fields;
 }

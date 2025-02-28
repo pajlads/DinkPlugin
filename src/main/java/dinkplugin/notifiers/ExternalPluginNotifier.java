@@ -77,7 +77,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .replacement("%USERNAME%", Replacements.ofText(player))
             .build();
 
-        var footer = String.format("Sent by %s, via Dink", input.getSourcePlugin());
+        var footer = String.format("Sent by %s via Dink", input.getSourcePlugin());
 
         boolean image = client.getGameState().getState() >= GameState.LOGGING_IN.getState()
             && (config.externalSendImage() || input.isImageRequested() && config.externalImageOverride());
