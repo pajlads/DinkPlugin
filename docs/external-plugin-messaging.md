@@ -17,7 +17,7 @@ Otherwise, external plugins have a great deal of customization for the webhook b
 
 The `namespace` for the `PluginMessage` should be `dink` and the `name` should be `notify`.
 
-The `Map<String, Object>` that is supplied to `PluginMessage` will be converted into `ExternalNotificationRequest`.
+The `Map<String, Object>` that is supplied to `PluginMessage` will be converted into [`ExternalNotificationRequest`](../src/main/java/dinkplugin/domain/ExternalNotificationRequest.java).
 
 | Field            | Required | Type             | Description                                                                                                                                                                             |
 | ---------------- | -------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
