@@ -21,7 +21,7 @@ public class ExternalNotificationRequest {
 
     private String text;
     private boolean imageRequested;
-    private @Nullable Image image;
+    private transient @Nullable Image image;
     private @Nullable String title;
     private @Nullable String thumbnail;
     private @Nullable List<Field> fields;

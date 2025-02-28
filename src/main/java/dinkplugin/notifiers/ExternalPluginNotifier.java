@@ -14,6 +14,7 @@ import okhttp3.HttpUrl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.awt.Image;
 import java.util.Map;
 
 @Slf4j
@@ -46,6 +47,11 @@ public class ExternalPluginNotifier extends BaseNotifier {
         } catch (JsonSyntaxException e) {
             log.warn("Failed to parse requested webhook notification from an external plugin: {}", data, e);
             return;
+        }
+
+        var image = data.get("image");
+        if (image instanceof Image) {
+            input.setImage((Image) image);
         }
 
         // validate request

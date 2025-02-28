@@ -177,7 +177,8 @@ public class Utils {
      * @return the name of the local player
      */
     public String getPlayerName(Client client) {
-        return client.getLocalPlayer().getName();
+        var player = client.getLocalPlayer();
+        return player != null ? player.getName() : null;
     }
 
     /**
