@@ -33,7 +33,7 @@ public enum NotificationType {
     TRADE("Player Trade", "trade.png", WIKI_IMG_BASE_URL + "Inventory.png"),
     CHAT("Chat Notification", "chat.png", WIKI_IMG_BASE_URL + "Toggle_Chat_effects.png"),
     XP_MILESTONE("XP Milestone", "xpImage.png", WIKI_IMG_BASE_URL + "Lamp.png"),
-    EXTERNAL_PLUGIN("External Plugin", "externalImage.png", "https://runelite.net/img/logo.png");
+    EXTERNAL_PLUGIN("External Plugin", "externalImage.png", "https://runelite.net/img/plugin-hub/missingicon.png");
 
     private final String title;
 
