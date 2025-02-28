@@ -60,7 +60,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData(List.of(new Field("sample key", "sample value"))))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value"))))
                 .build()
         );
     }
@@ -87,7 +87,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData(List.of(new Field("sample key", "sample value"))))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value"))))
                 .build()
         );
     }
@@ -116,7 +116,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData(List.of(new Field("sample key", "sample value"))))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value"))))
                 .build()
         );
     }
@@ -146,7 +146,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData(List.of(new Field("sample key", "sample value"))))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value"))))
                 .build()
         );
     }
@@ -179,7 +179,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData(List.of(new Field("sample key", "sample value"))))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value"))))
                 .build()
         );
     }
