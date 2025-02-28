@@ -40,7 +40,7 @@ The example below assumes you already have injected RuneLite's eventbus into you
 ```java
 Map<String, Object> data = new HashMap<>();
 data.put("text", "This is the primary content within the webhook. %PLAYER% will automatically be replaced with the player name and you can define your own template replacements like %XYZ%");
-data.put("replacements", Map.of("%XYZ%", new Replacement("sample replacement")));
+data.put("replacements", Map.of("%XYZ%", Replacement.ofText("sample replacement")));
 data.put("footer", "Sent by INSERT_YOUR_PLUGIN_NAME_HERE via Dink");
 data.put("title", "An optional embed title for your notification");
 data.put("imageRequested", true);
@@ -54,6 +54,7 @@ eventBus.post(dinkRequest);
 
 ```java
 @Value
+@AllArgsConstructor
 public class Field {
     String name;
     String value;
@@ -71,8 +72,8 @@ public class Replacement {
     String value;
     String richValue;
 
-    public Replacement(String value) {
-        this(value, null);
+    public static Replacement ofText(String value) {
+        return new Replacement(value, null);
     }
 
     public static Replacement ofLink(String text, String link) {
