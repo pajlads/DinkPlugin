@@ -769,6 +769,24 @@ When `extra.type` is `UNKNOWN`, the `extra.source` value is set to the originati
 
 When `extra.type` is `CLAN_CHAT` or `CLAN_GUEST_CHAT` or `CLAN_GIM_CHAT` or `CLAN_MESSAGE` (only for user joins), the `extra.clanTitle` object includes the clan rank `id` (integer) and title `name` (string), corresponding to RuneLite's [`ClanTitle` class](https://static.runelite.net/api/runelite-api/net/runelite/api/clan/ClanTitle.html).
 
+### External Plugins
+
+JSON for externally-requested notifications:
+
+```json5
+{
+  "type": "EXTERNAL_PLUGIN",
+  "extra": {
+    "sourcePlugin": "MyExternalPlugin",
+    "metadata": {
+      "hello": "world"
+    }
+  }
+}
+```
+
+The contents of `extra.metadata` are dependent on the source plugin, and `extra.metadata` can be null.
+
 ### Metadata
 
 JSON for Login Notifications:

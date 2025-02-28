@@ -11,6 +11,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = false)
 public class ExternalNotificationData extends NotificationData {
     String sourcePlugin;
-    List<Field> fields;
+    @EqualsAndHashCode.Include
+    transient List<Field> fields;
     Map<String, Object> metadata;
 }
