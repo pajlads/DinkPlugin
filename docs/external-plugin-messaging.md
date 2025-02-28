@@ -29,6 +29,7 @@ The `Map<String, Object>` that is supplied to `PluginMessage` will be converted 
 | `imageRequested` | N        | boolean | Whether dink should include a screenshot with the notification.                                                                                                                         |
 | `fields`         | N        | List    | A list of [embed fields](https://discord.com/developers/docs/resources/message#embed-object-embed-field-structure). The contained objects should have `name` and `value` properties.    |
 | `replacements`   | N        | Map     | A map of strings to be replaced to objects containing `value` (and optionally `richValue`) that indicate what the template string should be replaced with for plain text and rich text. |
+| `metadata`       | N        | Map     | A map of strings to any gson-serializable object to be included in the notification body for non-Discord consumers.                                                                     |
 
 ## Example
 
@@ -42,6 +43,7 @@ data.put("replacements", Map.of("%XYZ%", Replacement.ofText("sample replacement"
 data.put("title", "An optional embed title for your notification");
 data.put("imageRequested", true);
 data.put("fields", List.of(new Field("sample key", "sample value")));
+data.put("metadata", Map.of("custom key", "custom value"));
 data.put("urls", "https://discord.com/api/webhooks/a/b \n https://discord.com/api/webhooks/c/d");
 
 PluginMessage dinkRequest = new PluginMessage("dink", "notify", data);

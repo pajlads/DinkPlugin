@@ -25,6 +25,7 @@ public class ExternalNotificationRequest {
     private @Nullable String thumbnail;
     private @Nullable List<Field> fields;
     private @Nullable Map<String, SimpleReplacement> replacements;
+    private @Nullable Map<String, Object> metadata;
     @Getter(AccessLevel.PRIVATE) // to avoid accidentally using the requested url without sanitization
     private @Nullable String urls;
 

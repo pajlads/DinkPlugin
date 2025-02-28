@@ -88,7 +88,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .customTitle(input.getTitle())
             .customFooter(footer)
             .thumbnailUrl(input.getThumbnail())
-            .extra(new ExternalNotificationData(input.getSourcePlugin(), input.getFields()))
+            .extra(new ExternalNotificationData(input.getSourcePlugin(), input.getFields(), input.getMetadata()))
             .build();
 
         var urls = input.getSanitizedUrls();

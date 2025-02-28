@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +61,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value"))))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -87,7 +88,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value"))))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -116,7 +117,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value"))))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -146,7 +147,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value"))))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -179,7 +180,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value"))))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -221,6 +222,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
         data.put("thumbnail", "not a url . com");
         data.put("fields", List.of(new Field("sample key", "sample value")));
         data.put("replacements", Map.of("%TARGET%", new SimpleReplacement("world", null)));
+        data.put("metadata", Map.of("hello", "world"));
         data.put("sourcePlugin", "MyExternalPlugin");
         data.put("urls", urls);
         return data;
