@@ -257,12 +257,13 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
-    private static Player mockPlayer() {
+    private Player mockPlayer() {
         Player target = mock(Player.class);
         when(target.getName()).thenReturn(TARGET);
         when(target.isDead()).thenReturn(true);
         when(target.getCombatLevel()).thenReturn(LEVEL);
         when(target.getWorldLocation()).thenReturn(LOCATION);
+        when(target.getWorldView()).thenReturn(worldView);
         PlayerComposition comp = mock(PlayerComposition.class);
         when(target.getPlayerComposition()).thenReturn(comp);
         int[] equipment = new int[KitType.values().length];
