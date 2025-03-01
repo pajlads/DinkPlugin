@@ -777,7 +777,7 @@ JSON for externally-requested notifications:
 {
   "type": "EXTERNAL_PLUGIN",
   "extra": {
-    "sourcePlugin": "MyExternalPlugin",
+    "sourcePlugin": "My External Plugin",
     "metadata": {
       "hello": "world"
     }
