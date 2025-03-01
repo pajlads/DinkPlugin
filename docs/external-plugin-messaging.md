@@ -11,7 +11,7 @@ Plugins can include a Discord url for the webhook, otherwise Dink will utilize `
 (or `Primary Webhook URLs` if an external url override is not specified).
 If a plugin requests a non-Discord url, it will be ignored in favor of the Dink configuration.
 
-Otherwise, external plugins have a great deal of customization for the webhook body.
+Below we describe the payload structure for how plugins can customize the webhook body and include a full code example to streamline implementation.
 
 ## Payload
 
