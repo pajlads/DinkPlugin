@@ -7,6 +7,7 @@ import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.DeathNotifier;
 import dinkplugin.notifiers.DiaryNotifier;
+import dinkplugin.notifiers.ExternalPluginNotifier;
 import dinkplugin.notifiers.GambleNotifier;
 import dinkplugin.notifiers.GrandExchangeNotifier;
 import dinkplugin.notifiers.GroupStorageNotifier;
@@ -50,6 +51,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.events.NotificationFired;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
+import net.runelite.client.events.PluginMessage;
 import net.runelite.client.events.ProfileChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -98,6 +100,7 @@ public class DinkPlugin extends Plugin {
     private @Inject MetaNotifier metaNotifier;
     private @Inject TradeNotifier tradeNotifier;
     private @Inject ChatNotifier chatNotifier;
+    private @Inject ExternalPluginNotifier externalNotifier;
 
     private final AtomicReference<GameState> gameState = new AtomicReference<>();
 
@@ -349,6 +352,13 @@ public class DinkPlugin extends Plugin {
     public void onWidgetClosed(WidgetClosed event) {
         groupStorageNotifier.onWidgetClose(event);
         tradeNotifier.onWidgetClose(event);
+    }
+
+    @Subscribe
+    public void onPluginMessage(PluginMessage event) {
+        if ("dink".equalsIgnoreCase(event.getNamespace()) && "notify".equalsIgnoreCase(event.getName())) {
+            externalNotifier.onNotify(event.getData());
+        }
     }
 
     public void addChatSuccess(String message) {

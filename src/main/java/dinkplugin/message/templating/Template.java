@@ -38,6 +38,7 @@ public class Template implements Evaluable {
     }
 
     private String evaluateFast(boolean rich) {
+        assert replacementBoundary != null;
         StringBuilder message = new StringBuilder(template);
         int i = message.indexOf(replacementBoundary);
         while (i != -1) {

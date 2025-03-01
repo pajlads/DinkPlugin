@@ -126,6 +126,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
         when(localPlayer.getName()).thenReturn(PLAYER_NAME);
         when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(2500, 2500, 0));
+        when(localPlayer.getWorldView()).thenReturn(worldView);
 
         doAnswer(invocation -> {
             Consumer<Image> callback = invocation.getArgument(0);

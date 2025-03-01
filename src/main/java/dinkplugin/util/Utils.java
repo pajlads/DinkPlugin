@@ -176,8 +176,10 @@ public class Utils {
      * @param client {@link Client}
      * @return the name of the local player
      */
+    @Nullable
     public String getPlayerName(Client client) {
-        return client.getLocalPlayer().getName();
+        var player = client.getLocalPlayer();
+        return player != null ? player.getName() : null;
     }
 
     /**

@@ -40,6 +40,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 - [Trades](#trades): Sends a webhook message upon completing a trade with another player (with customizable item value threshold)
 - [Leagues](#leagues): Sends a webhook message upon completing a Leagues IV task or unlocking a region/relic
 - [Chat](#chat): Sends a webhook message upon receiving a chat message that matches a user-specified pattern
+- [External Plugins](#external-plugins): Sends a webhook message upon request by other plugin hub plugins
 
 ## Other Setup
 
@@ -345,6 +346,12 @@ You can customize the message patterns to your liking (`*` is a wildcard), and s
 `%MESSAGE%` will be replaced with the chat message the matched one of the patterns.
 
 `%SENDER%` will be replaced with the chat message sender (or the message category if no player sender is populated).
+
+### External Plugins:
+
+Other external plugins can request Dink fire webhook notifications.
+
+You can disable this functionality via `External Plugin Requests > Enable External Plugin Notifications`.
 
 ### Metadata:
 
