@@ -9,6 +9,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.message.templating.impl.SimpleReplacement;
 import dinkplugin.notifiers.data.ExternalNotificationData;
 import net.runelite.client.events.PluginMessage;
+import okhttp3.HttpUrl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -43,11 +44,11 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         // fire event
-        plugin.onPluginMessage(new PluginMessage("dink", "notify", samplePayload("https://example.com")));
+        plugin.onPluginMessage(new PluginMessage("dink", "notify", samplePayload("https://example.com/")));
 
         // verify notification
         verifyCreateMessage(
-            null,
+            "https://example.com/",
             false,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
@@ -67,10 +68,13 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     }
 
     @Test
-    void testUrl() {
-        // fire event
+    void testFallbackUrl() {
+        // update config mocks
         String url = "https://discord.com/example";
-        plugin.onPluginMessage(new PluginMessage("dink", "notify", samplePayload(url)));
+        when(config.externalWebhook()).thenReturn(url);
+
+        // fire event
+        plugin.onPluginMessage(new PluginMessage("dink", "notify", samplePayload(null)));
 
         // verify notification
         verifyCreateMessage(
@@ -188,7 +192,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreNamespace() {
         // fire event
-        plugin.onPluginMessage(new PluginMessage("DANK", "notify", samplePayload("https://example.com")));
+        plugin.onPluginMessage(new PluginMessage("DANK", "notify", samplePayload("https://example.com/")));
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -197,7 +201,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreName() {
         // fire event
-        plugin.onPluginMessage(new PluginMessage("dink", "donk", samplePayload("https://example.com")));
+        plugin.onPluginMessage(new PluginMessage("dink", "donk", samplePayload("https://example.com/")));
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
@@ -209,13 +213,13 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
         when(config.notifyExternal()).thenReturn(false);
 
         // fire event
-        plugin.onPluginMessage(new PluginMessage("dink", "notify", samplePayload("https://example.com")));
+        plugin.onPluginMessage(new PluginMessage("dink", "notify", samplePayload("https://example.com/")));
 
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
-    private static Map<String, Object> samplePayload(String urls) {
+    private static Map<String, Object> samplePayload(String url) {
         Map<String, Object> data = new HashMap<>();
         data.put("text", "Hello %TARGET% from %USERNAME%");
         data.put("title", "My Title");
@@ -224,7 +228,9 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
         data.put("replacements", Map.of("%TARGET%", new SimpleReplacement("world", null)));
         data.put("metadata", Map.of("hello", "world"));
         data.put("sourcePlugin", "MyExternalPlugin");
-        data.put("urls", urls);
+        if (url != null) {
+            data.put("urls", Collections.singletonList(HttpUrl.parse(url)));
+        }
         return data;
     }
 

@@ -8,6 +8,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.ExternalNotificationData;
+import dinkplugin.util.HttpUrlAdapter;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
@@ -21,7 +22,6 @@ import java.util.Map;
 @Singleton
 public class ExternalPluginNotifier extends BaseNotifier {
 
-    @Inject
     private Gson gson;
 
     @Override
@@ -32,6 +32,13 @@ public class ExternalPluginNotifier extends BaseNotifier {
     @Override
     protected String getWebhookUrl() {
         return config.externalWebhook();
+    }
+
+    @Inject
+    void init(Gson gson) {
+        this.gson = gson.newBuilder()
+            .registerTypeAdapter(HttpUrl.class, new HttpUrlAdapter())
+            .create();
     }
 
     public void onNotify(Map<String, Object> data) {
@@ -91,11 +98,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .extra(new ExternalNotificationData(input.getSourcePlugin(), input.getFields(), input.getMetadata()))
             .build();
 
-        var urls = input.getSanitizedUrls();
-        if (!urls.isEmpty()) {
-            log.info("{} requested a dink notification to externally-specified url(s)", input.getSourcePlugin());
-        }
-
+        var urls = input.getUrls(this::getWebhookUrl);
         createMessage(urls, image, body);
     }
 

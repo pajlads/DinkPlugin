@@ -2,10 +2,7 @@ package dinkplugin.domain;
 
 import dinkplugin.message.Field;
 import dinkplugin.message.templating.impl.SimpleReplacement;
-import dinkplugin.util.ConfigUtil;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
 import okhttp3.HttpUrl;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Data
@@ -26,16 +24,12 @@ public class ExternalNotificationRequest {
     private @Nullable List<Field> fields;
     private @Nullable Map<String, SimpleReplacement> replacements;
     private @Nullable Map<String, Object> metadata;
-    @Getter(AccessLevel.PRIVATE) // to avoid accidentally using the requested url without sanitization
-    private @Nullable String urls;
+    private @Nullable List<HttpUrl> urls;
 
-    public String getSanitizedUrls() {
-        return ConfigUtil.readDelimited(this.urls)
-            .map(HttpUrl::parse)
-            .filter(Objects::nonNull)
-            .filter(url -> "discord.com".equalsIgnoreCase(url.host()))
-            .map(HttpUrl::toString)
-            .collect(Collectors.joining("\n"));
+    public String getUrls(Supplier<String> defaultValue) {
+        return urls != null
+            ? urls.stream().filter(Objects::nonNull).map(HttpUrl::toString).collect(Collectors.joining("\n"))
+            : defaultValue.get();
     }
 
     public List<Field> getFields() {

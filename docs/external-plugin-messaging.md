@@ -7,9 +7,8 @@ Users can opt-out of this capability by disabling `External Plugin Requests > En
 Plugins can request that a screenshot is included with the notification, but users can also opt-out by
 disabling `External Plugin Requests > Send Image` (default: on) and `External Plugin Requests > Allow Overriding 'Send Image'` (default: off).
 
-Plugins can include a Discord url for the webhook, otherwise Dink will utilize `External Webhook Override`
+Plugins can include urls for the webhook, otherwise Dink will utilize `External Webhook Override`
 (or `Primary Webhook URLs` if an external url override is not specified).
-If a plugin requests a non-Discord url, it will be ignored in favor of the Dink configuration.
 
 Below we describe the payload structure for how plugins can customize the webhook body and include a full code example to streamline implementation.
 
@@ -23,7 +22,7 @@ The `Map<String, Object>` that is supplied to `PluginMessage` will be converted 
 | ---------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `text`           | Y        | String  | The body text of the notification. This field supports templating (see `replacements` below) and by default `%USERNAME%` is an available replacement.                                   |
 | `sourcePlugin`   | Y        | String  | The human-facing name of the plugin submitting the webhook notification request.                                                                                                        |
-| `urls`           | N        | String  | The Discord URLs that the notification should be sent to (newline separated).                                                                                                           |
+| `urls`           | N        | List    | A list of `okhttp3.HttpUrl`s that the notification should be sent to.                                                                                                                   |
 | `title`          | N        | String  | The title for the Discord embed.                                                                                                                                                        |
 | `thumbnail`      | N        | String  | A URL to an image for the thumbnail icon of the Discord embed.                                                                                                                          |
 | `imageRequested` | N        | boolean | Whether dink should include a screenshot with the notification.                                                                                                                         |
@@ -44,7 +43,7 @@ data.put("title", "An optional embed title for your notification");
 data.put("imageRequested", true);
 data.put("fields", List.of(new Field("sample key", "sample value")));
 data.put("metadata", Map.of("custom key", "custom value"));
-data.put("urls", "https://discord.com/api/webhooks/a/b \n https://discord.com/api/webhooks/c/d");
+data.put("urls", Arrays.asList(HttpUrl.parse("https://discord.com/api/webhooks/a/b"), HttpUrl.parse("https://discord.com/api/webhooks/c/d")));
 
 PluginMessage dinkRequest = new PluginMessage("dink", "notify", data);
 eventBus.post(dinkRequest);
