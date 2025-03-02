@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.0
+
 - Major: Allow external plugins to request Dink webhook notifications. (#666)
 
 ## 1.10.23
