@@ -7,6 +7,7 @@ import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.domain.ConfigImportPolicy;
 import dinkplugin.domain.ExceptionalDeath;
+import dinkplugin.domain.ExternalScreenshotPolicy;
 import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
@@ -179,6 +180,14 @@ public interface DinkPluginConfig extends Config {
         closedByDefault = true
     )
     String chatSection = "Custom Chat Messages";
+
+    @ConfigSection(
+        name = "External Plugin Requests",
+        description = "Settings for notifying when other plugins request Dink notifications to be fired",
+        position = 180,
+        closedByDefault = true
+    )
+    String externalSection = "External Plugin Requests";
 
     @ConfigSection(
         name = "Leagues",
@@ -699,11 +708,22 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "externalWebhook",
+        name = "External Webhook Override",
+        description = "If non-empty, external plugin messages that don't provide a custom URL are by default sent to this URL, instead of the primary URL",
+        position = -1,
+        section = webhookSection
+    )
+    default String externalWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "leaguesWebhook",
         name = "Leagues Webhook Override",
         description = "If non-empty, Leagues messages are sent to this URL, instead of the primary URL.<br/>" +
             "Note: this only applies to the Leagues notifier, not every notifier in a seasonal world",
-        position = -1,
+        position = 0,
         section = webhookSection
     )
     default String leaguesWebhook() {
@@ -2032,6 +2052,28 @@ public interface DinkPluginConfig extends Config {
     )
     default String chatNotifyMessage() {
         return "%USERNAME% received a chat message:\n\n```\n%MESSAGE%\n```";
+    }
+
+    @ConfigItem(
+        keyName = "notifyExternal",
+        name = "Enable External Plugin Notifications",
+        description = "Enable notifications upon requests by other plugins",
+        position = 180,
+        section = externalSection
+    )
+    default boolean notifyExternal() {
+        return true; // enabled by default, unlike other notifiers
+    }
+
+    @ConfigItem(
+        keyName = "externalSendImage",
+        name = "Send Image",
+        description = "Controls whether screenshots should be included with the notification",
+        position = 181,
+        section = externalSection
+    )
+    default ExternalScreenshotPolicy externalSendImage() {
+        return ExternalScreenshotPolicy.REQUESTED;
     }
 
     @ConfigItem(

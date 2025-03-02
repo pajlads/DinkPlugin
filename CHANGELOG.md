@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Major: Allow external plugins to request Dink webhook notifications. (#666)
+
 ## 1.10.23
 
 - Bugfix: Fire clue notification upon the first completion of a scroll at a given tier. (#662)

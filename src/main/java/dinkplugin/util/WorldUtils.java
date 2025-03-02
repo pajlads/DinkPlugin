@@ -9,11 +9,13 @@ import net.runelite.api.Actor;
 import net.runelite.api.Client;
 import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
+import net.runelite.api.WorldView;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.annotations.Varp;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.Widget;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Collections;
@@ -62,13 +64,19 @@ public class WorldUtils {
      */
     private final int DRAGON_SLAYER_II_COMPLETED = 215;
 
+    @Nullable
     public static WorldPoint getLocation(Client client) {
         return getLocation(client, client.getLocalPlayer());
     }
 
+    @Nullable
     public static WorldPoint getLocation(Client client, Actor actor) {
-        if (client.isInInstancedRegion())
-            return WorldPoint.fromLocalInstance(client, actor.getLocalLocation());
+        if (actor == null)
+            return null;
+
+        WorldView wv = actor.getWorldView();
+        if (wv.isInstance())
+            return WorldPoint.fromLocalInstance(client, actor.getLocalLocation(), wv.getPlane());
 
         return actor.getWorldLocation();
     }

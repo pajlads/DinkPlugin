@@ -20,6 +20,7 @@ import java.util.List;
 public class Embed {
     // The max size of the image before we rescale it to fit Discords file upload limits https://discord.com/developers/docs/reference#uploading-files
     public static final int MAX_IMAGE_SIZE = 8_000_000; // 8MB
+    public static final int MAX_TITLE_LENGTH = 256;
     public static final int MAX_DESCRIPTION_LENGTH = 4096;
     public static final int MAX_FOOTER_LENGTH = 2048;
     public static final int MAX_EMBEDS = 10;
