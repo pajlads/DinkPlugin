@@ -2072,7 +2072,7 @@ public interface DinkPluginConfig extends Config {
         section = externalSection
     )
     default boolean externalSendImage() {
-        return true;
+        return false;
     }
 
     @ConfigItem(
@@ -2083,7 +2083,7 @@ public interface DinkPluginConfig extends Config {
         section = externalSection
     )
     default boolean externalImageOverride() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
