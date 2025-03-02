@@ -5,7 +5,7 @@ Other Plugin Hub plugins can publish a `PluginMessage` via `EventBus#post` that 
 Users can opt-out of this capability by disabling `External Plugin Requests > Enable External Plugin Notifications`.
 
 Plugins can request that a screenshot is included with the notification, but users can also opt-out by
-disabling `External Plugin Requests > Send Image` (default: on) and `External Plugin Requests > Allow Overriding 'Send Image'` (default: off).
+setting `External Plugin Requests > Send Image` to `Never` (default: send image only when requested by the external plugin).
 
 Plugins can include urls for the webhook, otherwise Dink will utilize `External Webhook Override`
 (or `Primary Webhook URLs` if an external url override is not specified).

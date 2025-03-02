@@ -7,6 +7,7 @@ import dinkplugin.domain.ClueTier;
 import dinkplugin.domain.CombatAchievementTier;
 import dinkplugin.domain.ConfigImportPolicy;
 import dinkplugin.domain.ExceptionalDeath;
+import dinkplugin.domain.ExternalScreenshotPolicy;
 import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.LeagueTaskDifficulty;
 import dinkplugin.domain.PlayerLookupService;
@@ -2067,23 +2068,12 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "externalSendImage",
         name = "Send Image",
-        description = "Send image with the notification",
+        description = "Controls whether screenshots should be included with the notification",
         position = 181,
         section = externalSection
     )
-    default boolean externalSendImage() {
-        return false;
-    }
-
-    @ConfigItem(
-        keyName = "externalImageOverride",
-        name = "Allow Overriding 'Send Image'",
-        description = "Whether to allow external plugins to request a screenshot despite the 'Send Image' config",
-        position = 182,
-        section = externalSection
-    )
-    default boolean externalImageOverride() {
-        return true;
+    default ExternalScreenshotPolicy externalSendImage() {
+        return ExternalScreenshotPolicy.REQUESTED;
     }
 
     @ConfigItem(

@@ -3,6 +3,7 @@ package dinkplugin.notifiers;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dinkplugin.domain.ExternalNotificationRequest;
+import dinkplugin.domain.ExternalScreenshotPolicy;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
@@ -86,8 +87,10 @@ public class ExternalPluginNotifier extends BaseNotifier {
 
         var footer = String.format("Sent by %s via Dink", input.getSourcePlugin());
 
-        boolean image = client.getGameState().getState() >= GameState.LOGGING_IN.getState()
-            && (config.externalSendImage() || input.isImageRequested() && config.externalImageOverride());
+        var policy = config.externalSendImage();
+        boolean image = policy != ExternalScreenshotPolicy.NEVER
+            && client.getGameState().getState() >= GameState.LOGGING_IN.getState()
+            && (policy == ExternalScreenshotPolicy.ALWAYS || input.isImageRequested());
         var body = NotificationBody.builder()
             .type(NotificationType.EXTERNAL_PLUGIN)
             .playerName(player)

@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.domain.ExternalScreenshotPolicy;
 import dinkplugin.message.Field;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
@@ -38,7 +39,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
 
         // update config mocks
         when(config.notifyExternal()).thenReturn(true);
-        when(config.externalImageOverride()).thenReturn(true);
+        when(config.externalSendImage()).thenReturn(ExternalScreenshotPolicy.REQUESTED);
     }
 
     @Test
@@ -100,7 +101,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testImage() {
         // update config mocks
-        when(config.externalSendImage()).thenReturn(true);
+        when(config.externalSendImage()).thenReturn(ExternalScreenshotPolicy.ALWAYS);
 
         // fire event
         plugin.onPluginMessage(new PluginMessage("dink", "notify", samplePayload(null)));
@@ -159,7 +160,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testRequestImageDenied() {
         // update config mocks
-        when(config.externalImageOverride()).thenReturn(false);
+        when(config.externalSendImage()).thenReturn(ExternalScreenshotPolicy.NEVER);
 
         // prepare payload
         var data = samplePayload(null);
