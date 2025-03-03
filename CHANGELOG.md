@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.2
+
 - Dev: Harden input validation for urls provided to the external plugin notifier. (#672)
 
 ## 1.11.1
