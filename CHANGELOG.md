@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Harden input validation for urls provided to the external plugin notifier. (#672)
+
 ## 1.11.1
 
 - Dev: Require users to opt-in to the external plugin notifier. (#670)
