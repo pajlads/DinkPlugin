@@ -2062,7 +2062,7 @@ public interface DinkPluginConfig extends Config {
         section = externalSection
     )
     default boolean notifyExternal() {
-        return true; // enabled by default, unlike other notifiers
+        return false;
     }
 
     @ConfigItem(

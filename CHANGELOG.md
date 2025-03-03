@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Require users to opt-in to the external plugin notifier. (#670)
+
 ## 1.11.0
 
 - Major: Allow external plugins to request Dink webhook notifications. (#666)
