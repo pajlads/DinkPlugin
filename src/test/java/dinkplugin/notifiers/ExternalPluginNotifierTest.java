@@ -209,6 +209,19 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnoreBadUrls() {
+        // prepare payload
+        var data = samplePayload(null);
+        data.put("urls", List.of("https://example.com/"));
+
+        // fire event
+        plugin.onPluginMessage(new PluginMessage("dink", "notify", data));
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testDisabled() {
         // update config mocks
         when(config.notifyExternal()).thenReturn(false);
