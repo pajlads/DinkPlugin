@@ -3,7 +3,6 @@ package dinkplugin.domain;
 import dinkplugin.message.Field;
 import dinkplugin.message.templating.impl.SimpleReplacement;
 import lombok.Data;
-import okhttp3.HttpUrl;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -24,11 +23,11 @@ public class ExternalNotificationRequest {
     private @Nullable List<Field> fields;
     private @Nullable Map<String, SimpleReplacement> replacements;
     private @Nullable Map<String, Object> metadata;
-    private @Nullable List<HttpUrl> urls;
+    private @Nullable List<String> urls;
 
     public String getUrls(Supplier<String> defaultValue) {
         return urls != null
-            ? urls.stream().filter(Objects::nonNull).map(HttpUrl::toString).collect(Collectors.joining("\n"))
+            ? urls.stream().filter(Objects::nonNull).collect(Collectors.joining("\n"))
             : defaultValue.get();
     }
 

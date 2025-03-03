@@ -48,6 +48,12 @@ public class ExternalPluginNotifier extends BaseNotifier {
             return;
         }
 
+        // ensure input urls are specified correctly
+        if (!isUrlInputValid(data.get("urls"))) {
+            log.warn("Skipping externally-requested dink due to invalid 'urls' format from {}", data.get("sourcePlugin"));
+            return;
+        }
+
         // parse request
         ExternalNotificationRequest input;
         try {
@@ -103,6 +109,20 @@ public class ExternalPluginNotifier extends BaseNotifier {
 
         var urls = input.getUrls(this::getWebhookUrl);
         createMessage(urls, image, body);
+    }
+
+    private static boolean isUrlInputValid(Object urls) {
+        if (urls == null) {
+            return true; // use urls specified in dink's config
+        }
+        if (!(urls instanceof Iterable)) {
+            return false; // we try to convert to list in ExternalNotificationRequest
+        }
+        for (Object url : (Iterable<?>) urls) {
+            if (!(url instanceof HttpUrl))
+                return false; // received non-HttpUrl; input should be rejected
+        }
+        return true; // all elements are HttpUrl instances; proceed as normal
     }
 
 }
