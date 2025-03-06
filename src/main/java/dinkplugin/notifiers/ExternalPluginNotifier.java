@@ -88,7 +88,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
         var player = Utils.getPlayerName(client);
         var template = Template.builder()
             .template(input.getText())
-            .replacements(Objects.requireNonNullElse(input.getReplacements(), Map.of()))
+            .replacements(Objects.requireNonNullElse(input.getReplacements(), new HashMap<>(2)))
             .replacement("%USERNAME%", Replacements.ofText(player))
             .build();
 
