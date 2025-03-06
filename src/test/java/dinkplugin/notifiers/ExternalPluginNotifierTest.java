@@ -124,6 +124,34 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testPatternWithoutReplacement() {
+        // fire event
+        var payload = samplePayload("https://example.com/");
+        payload.remove("replacements");
+        payload.put("text", "text with no custom replacement %XD%");
+        plugin.onPluginMessage(new PluginMessage("dink", "notify", payload));
+
+        // verify notification
+        verifyCreateMessage(
+            "https://example.com/",
+            false,
+            NotificationBody.builder()
+                .type(NotificationType.EXTERNAL_PLUGIN)
+                .playerName(PLAYER_NAME)
+                .customTitle("My Title")
+                .customFooter("Sent by MyExternalPlugin via Dink")
+                .text(
+                    Template.builder()
+                        .template("text with no custom replacement %XD%")
+                        .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
+                        .build()
+                )
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .build()
+        );
+    }
+
+    @Test
     void testFallbackUrl() {
         // update config mocks
         String url = "https://discord.com/example";
