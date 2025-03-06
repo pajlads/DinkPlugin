@@ -45,11 +45,11 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         // fire event
-        plugin.onPluginMessage(new PluginMessage("dink", "notify", samplePayload("https://example.com/")));
+        plugin.onPluginMessage(new PluginMessage("dink", "notify", samplePayload(null)));
 
         // verify notification
         verifyCreateMessage(
-            "https://example.com/",
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
@@ -71,14 +71,14 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testNoReplacements() {
         // fire event
-        var payload = samplePayload("https://example.com/");
+        var payload = samplePayload(null);
         payload.remove("replacements");
         payload.put("text", "text with no replacements");
         plugin.onPluginMessage(new PluginMessage("dink", "notify", payload));
 
         // verify notification
         verifyCreateMessage(
-            "https://example.com/",
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
@@ -98,14 +98,14 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testMissingReplacement() {
         // fire event
-        var payload = samplePayload("https://example.com/");
+        var payload = samplePayload(null);
         payload.remove("replacements");
         payload.put("text", "text with no custom replacement %USERNAME%");
         plugin.onPluginMessage(new PluginMessage("dink", "notify", payload));
 
         // verify notification
         verifyCreateMessage(
-            "https://example.com/",
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
@@ -126,14 +126,14 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testPatternWithoutReplacement() {
         // fire event
-        var payload = samplePayload("https://example.com/");
+        var payload = samplePayload(null);
         payload.remove("replacements");
         payload.put("text", "text with no custom replacement %XD%");
         plugin.onPluginMessage(new PluginMessage("dink", "notify", payload));
 
         // verify notification
         verifyCreateMessage(
-            "https://example.com/",
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
@@ -154,7 +154,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testFallbackUrl() {
         // update config mocks
-        String url = "https://discord.com/example";
+        String url = "https://example.com/";
         when(config.externalWebhook()).thenReturn(url);
 
         // fire event
@@ -191,7 +191,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
 
         // verify notification
         verifyCreateMessage(
-            null,
+            PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
@@ -221,7 +221,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
 
         // verify notification
         verifyCreateMessage(
-            null,
+            PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
@@ -254,7 +254,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
 
         // verify notification
         verifyCreateMessage(
-            null,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
