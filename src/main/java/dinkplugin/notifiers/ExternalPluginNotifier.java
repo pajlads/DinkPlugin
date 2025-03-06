@@ -17,6 +17,7 @@ import okhttp3.HttpUrl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
