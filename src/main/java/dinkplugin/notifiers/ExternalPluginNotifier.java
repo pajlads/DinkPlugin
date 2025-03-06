@@ -17,7 +17,9 @@ import okhttp3.HttpUrl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Singleton
@@ -87,7 +89,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
         var player = Utils.getPlayerName(client);
         var template = Template.builder()
             .template(input.getText())
-            .replacements(input.getReplacements())
+            .replacements(Objects.requireNonNullElseGet(input.getReplacements(), () -> new HashMap<>(2)))
             .replacement("%USERNAME%", Replacements.ofText(player))
             .build();
 

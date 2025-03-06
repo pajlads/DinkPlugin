@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Actually allow null replacements to be sent to the external plugin notifier. (#676)
+
 ## 1.11.2
 
 - Dev: Harden input validation for urls provided to the external plugin notifier. (#672)
