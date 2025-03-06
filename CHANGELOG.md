@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Allow external plugin notifications to be requested off of the client thread. (#677)
 - Bugfix: Actually allow null replacements to be sent to the external plugin notifier. (#676)
 
 ## 1.11.2
