@@ -63,11 +63,11 @@ public static Map<String, Object> createField(String name, String value, boolean
 
 ```java
 public static Map<String, String> createTextReplacement(String text) {
-    return Map.of("value", "text");
+    return Map.of("value", text);
 }
 
 public static Map<String, String> createLinkReplacement(String text, String link) {
-    return Map.of("value", "text", "richValue", String.format("[%s](%s)", text, link));
+    return Map.of("value", text, "richValue", String.format("[%s](%s)", text, link));
 }
 
 public static Map<String, String> createWikiReplacement(String text, String searchPhrase) {

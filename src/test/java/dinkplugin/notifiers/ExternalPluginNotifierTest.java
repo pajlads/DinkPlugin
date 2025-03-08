@@ -7,7 +7,6 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
-import dinkplugin.message.templating.impl.SimpleReplacement;
 import dinkplugin.notifiers.data.ExternalNotificationData;
 import net.runelite.client.events.PluginMessage;
 import okhttp3.HttpUrl;
@@ -63,7 +62,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -90,7 +89,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .template("text with no replacements")
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -118,7 +117,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -146,7 +145,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -176,7 +175,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -205,7 +204,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -235,7 +234,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -268,7 +267,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -321,14 +320,22 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
         data.put("text", "Hello %TARGET% from %USERNAME%");
         data.put("title", "My Title");
         data.put("thumbnail", "not a url . com");
-        data.put("fields", List.of(new Field("sample key", "sample value")));
-        data.put("replacements", Map.of("%TARGET%", new SimpleReplacement("world", null)));
+        data.put("fields", List.of(createField("sample key", "sample value")));
+        data.put("replacements", Map.of("%TARGET%", createTextReplacement("world")));
         data.put("metadata", Map.of("hello", "world"));
         data.put("sourcePlugin", "MyExternalPlugin");
         if (url != null) {
             data.put("urls", Collections.singletonList(HttpUrl.parse(url)));
         }
         return data;
+    }
+
+    private static Map<String, Object> createField(String name, String value) {
+        return Map.of("name", name, "value", value);
+    }
+
+    private static Map<String, String> createTextReplacement(String text) {
+        return Map.of("value", text);
     }
 
 }
