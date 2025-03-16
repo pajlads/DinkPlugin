@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Minor: Fix link to `dinkHandler.js` example. (#684)
+- Dev: Fix link to `dinkHandler.js` example. (#684)
 
 ## 1.11.3
 
