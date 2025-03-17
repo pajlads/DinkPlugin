@@ -8,7 +8,7 @@ Thus, any third-party consumer should utilize the body entity named `payload_jso
 
 Due to this structure, trying to parse the full `multipart/form-data` as JSON will not succeed until you specifically grab the `payload_json` entity. Competent web frameworks should handle the multipart parsing, so you can easily access the relevant form values.
 
-See [here](https://gitea.ivr.fi/Leppunen/runelite-dink-api/src/branch/master/handlers/dinkHandler.js) for an example project that leverages [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) to read the JSON payload and screenshot file.  
+See [here](https://git.ivr.fi/Leppunen/runelite-dink-api/src/branch/master/handlers/dinkHandler.js) for an example project that leverages [`@fastify/multipart`](https://github.com/fastify/fastify-multipart) to read the JSON payload and screenshot file.  
 For Cloudflare Workers, utilize the [`request.formData()`](https://developer.mozilla.org/en-US/docs/Web/API/Request/formData) method.  
 For Express, utilize the [`Multer`](https://github.com/expressjs/multer) middleware.  
 For Golang, utilize the [`ParseMultipartForm`](https://pkg.go.dev/net/http#Request.ParseMultipartForm) function.  

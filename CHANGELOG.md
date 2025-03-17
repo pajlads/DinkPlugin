@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Fix link to `dinkHandler.js` example. (#684)
+
 ## 1.11.3
 
 - Bugfix: Allow external plugin notifications to be requested off of the client thread. (#677)
