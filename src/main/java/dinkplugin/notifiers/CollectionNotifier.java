@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.domain.CollectionLogRanks;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
@@ -12,11 +13,8 @@ import dinkplugin.util.KillCountService;
 import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.ScriptID;
-import net.runelite.api.VarClientStr;
-import net.runelite.api.Varbits;
+import net.runelite.api.*;
+import net.runelite.api.annotations.Varbit;
 import net.runelite.api.annotations.Varp;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
@@ -29,7 +27,10 @@ import org.jetbrains.annotations.VisibleForTesting;
 import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
+import java.util.NavigableMap;
 import java.util.OptionalDouble;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -44,14 +45,15 @@ public class CollectionNotifier extends BaseNotifier {
     /*
      * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
      */
-    public static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
+    public static final @Varp int COMPLETED_LOGS_VARP = 2943, TOTAL_LOGS_VARP = 2944;
 
-    static final @VisibleForTesting int TOTAL_ENTRIES = 1_560; // fallback if TOTAL_VARP is not populated
+    static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_LOGS_VARP is not populated
 
+    private static final NavigableMap<Integer, String> CLOG_RANKS;
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
     /**
-     * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.
+     * The number of completed entries in the collection log, as implied by {@link #COMPLETED_LOGS_VARP}.
      */
     private final AtomicInteger completed = new AtomicInteger(-1);
 
@@ -103,14 +105,14 @@ public class CollectionNotifier extends BaseNotifier {
             completed.set(-1);
         } else if (completed.get() < 0) {
             // initialize collection log entry completion count
-            int varpValue = client.getVarpValue(COMPLETED_VARP);
+            int varpValue = client.getVarpValue(COMPLETED_LOGS_VARP);
             if (varpValue > 0)
                 completed.set(varpValue);
         }
     }
 
     public void onVarPlayer(VarbitChanged event) {
-        if (event.getVarpId() != COMPLETED_VARP)
+        if (event.getVarpId() != COMPLETED_LOGS_VARP)
             return;
 
         // we only care about this event when the notifier is disabled
@@ -149,22 +151,23 @@ public class CollectionNotifier extends BaseNotifier {
         // varp isn't updated for a few ticks, so we increment the count locally.
         // this approach also has the benefit of yielding incrementing values even when
         // multiple collection log entries are completed within a single tick.
-        int completed = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
-        int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
-        boolean varpValid = total > 0 && completed > 0;
+        int completedLogs = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
+        int totalPossibleLogs = client.getVarpValue(TOTAL_LOGS_VARP); // unique; doesn't over-count duplicates
+        Map.Entry<Integer, String> entry = CLOG_RANKS.floorEntry(completedLogs);
+        String currentRank = (entry != null) ? entry.getValue() : null;
+        boolean varpValid = totalPossibleLogs > 0 && completedLogs > 0;
         if (!varpValid) {
             // This occurs if the player doesn't have the character summary tab selected
-            log.debug("Collection log progress varps were invalid ({} / {})", completed, total);
+            log.debug("Collection log progress varps were invalid ({} / {})", completed, totalPossibleLogs);
         }
-
         // build message
         Template notifyMessage = Template.builder()
             .template(config.collectionNotifyMessage())
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%ITEM%", Replacements.ofWiki(itemName))
-            .replacement("%COMPLETED%", Replacements.ofText(completed > 0 ? String.valueOf(completed) : "?"))
-            .replacement("%TOTAL_POSSIBLE%", Replacements.ofText(String.valueOf(total > 0 ? total : TOTAL_ENTRIES)))
+            .replacement("%COMPLETED%", Replacements.ofText(completedLogs > 0 ? String.valueOf(completed) : "?"))
+            .replacement("%TOTAL_POSSIBLE%", Replacements.ofText(String.valueOf(totalPossibleLogs > 0 ? totalPossibleLogs : TOTAL_ENTRIES)))
             .build();
 
         // populate metadata
@@ -178,8 +181,9 @@ public class CollectionNotifier extends BaseNotifier {
             itemName,
             itemId,
             price,
-            varpValid ? completed : null,
-            varpValid ? total : null,
+            varpValid ? completedLogs : null,
+            varpValid ? totalPossibleLogs : null,
+            currentRank,
             loot != null ? loot.getSource() : null,
             loot != null ? loot.getCategory() : null,
             killCount,
@@ -205,6 +209,20 @@ public class CollectionNotifier extends BaseNotifier {
             }
         }
         return null;
+    }
+
+    static {
+        NavigableMap<Integer, String> thresholds = new TreeMap<>();
+        thresholds.put(0, "");
+        thresholds.put(100, "Bronze");
+        thresholds.put(300, "Iron");
+        thresholds.put(500, "Steel");
+        thresholds.put(700, "Black");
+        thresholds.put(900, "Mithril");
+        thresholds.put(1_000, "Adamant");
+        thresholds.put(1_100, "Rune");
+        thresholds.put(1_200, "Dragon");
+        CLOG_RANKS = thresholds;
     }
 
 }

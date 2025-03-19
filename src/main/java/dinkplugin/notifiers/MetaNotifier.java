@@ -81,8 +81,8 @@ public class MetaNotifier extends BaseNotifier {
         // Gather data points
         int world = client.getWorld();
 
-        int collectionCompleted = client.getVarpValue(CollectionNotifier.COMPLETED_VARP);
-        int collectionTotal = client.getVarpValue(CollectionNotifier.TOTAL_VARP);
+        int collectionCompleted = client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP);
+        int collectionTotal = client.getVarpValue(CollectionNotifier.TOTAL_LOGS_VARP);
 
         int combatAchievementPoints = client.getVarbitValue(CombatTaskNotifier.TOTAL_POINTS_ID);
         int combatAchievementPointsTotal = client.getVarbitValue(CombatTaskNotifier.GRANDMASTER_TOTAL_POINTS_ID);
