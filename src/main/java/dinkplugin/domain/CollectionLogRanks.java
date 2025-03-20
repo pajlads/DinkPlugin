@@ -15,7 +15,7 @@ public enum CollectionLogRanks {
     ADAMANT(1719),
     RUNE(1740),
     DRAGON(1741),
-    GILDED(1742); //TODO: math this
+    GILDED(1742);
 
     /**
      * Collection log rank's structures.
@@ -32,5 +32,13 @@ public enum CollectionLogRanks {
             this.rankName = struct.getStringValue(2231).replaceAll(".*?<col=[^>]+>", "").trim();
             this.clogRankThreshold = struct.getIntValue(2232);
         }
+    }
+
+    public void setClogRankThreshold(int threshold) {
+        this.clogRankThreshold = threshold;
+    }
+
+    public int getClogRankThreshold() {
+        return clogRankThreshold;
     }
 }

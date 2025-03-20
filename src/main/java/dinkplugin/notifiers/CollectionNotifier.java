@@ -100,6 +100,10 @@ public class CollectionNotifier extends BaseNotifier {
                 try {
                     StructComposition struct = client.getStructComposition(rank.getStructId());
                     rank.initialize(struct);
+                    if ("Gilded".equals(rank.getRankName())) {
+                        int gildedThreshold = (int) (Math.floor(0.9 * client.getVarpValue(TOTAL_LOGS_VARP) / 25) * 25);
+                        rank.setClogRankThreshold(gildedThreshold);
+                    }
                     rankMap.put(rank.getClogRankThreshold(), rank);
                 } catch (Exception e) {
                     log.warn("Could not find struct for {} (ID: {})", rank.name(), rank.getStructId(), e);
@@ -165,6 +169,9 @@ public class CollectionNotifier extends BaseNotifier {
         boolean varpValid = totalPossibleLogs > 0 && completedLogs > 0;
         Map.Entry<Integer, CollectionLogRanks> nextRankEntry = rankMap.higherEntry(completedLogs);
         String clogRank = rankMap.floorEntry(completedLogs) != null ? rankMap.floorEntry(completedLogs).getValue().getRankName() : CollectionLogRanks.UNKNOWN.getRankName();
+        if (Math.floor(0.9 * totalPossibleLogs / 25) * 25 <= completedLogs) {
+            clogRank = "Gilded";
+        }
         String nextRank = rankMap.higherEntry(completedLogs) != null ? rankMap.higherEntry(completedLogs).getValue().getRankName() : null;
         Integer logsNeededForNextRank = (nextRankEntry != null) ? nextRankEntry.getKey() - completedLogs : null;
         if (!varpValid) {
