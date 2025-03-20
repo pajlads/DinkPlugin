@@ -2,6 +2,7 @@ package dinkplugin.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runelite.api.StructComposition;
+import net.runelite.api.annotations.Varp;
 
 @Getter
 @RequiredArgsConstructor
@@ -26,11 +27,13 @@ public enum CollectionLogRanks {
     private final int structId;
     private String rankName;
     private int clogRankThreshold;
+    private @Varp int RANK_VARP = 2231, RANK_CLOGS_VARP = 2232;
+
 
     public void initialize(StructComposition struct) {
         if (struct != null) {
-            this.rankName = struct.getStringValue(2231).replaceAll(".*?<col=[^>]+>", "").trim();
-            this.clogRankThreshold = struct.getIntValue(2232);
+            this.rankName = struct.getStringValue(RANK_VARP).replaceAll(".*?<col=[^>]+>", "").trim();
+            this.clogRankThreshold = struct.getIntValue(RANK_CLOGS_VARP);
         }
     }
 

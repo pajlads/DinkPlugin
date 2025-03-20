@@ -95,21 +95,6 @@ public class CollectionNotifier extends BaseNotifier {
     public void onGameState(GameState newState) {
         if (newState != GameState.HOPPING && newState != GameState.LOGGED_IN)
             this.reset();
-        clientThread.invokeLater(() -> { //TODO: Is this okay being here on log in or should this be moved to onTick() after varpValue has been verified?
-            for (CollectionLogRanks rank : CollectionLogRanks.values()) {
-                try {
-                    StructComposition struct = client.getStructComposition(rank.getStructId());
-                    rank.initialize(struct);
-                    if ("Gilded".equals(rank.getRankName())) {
-                        int gildedThreshold = (int) (Math.floor(0.9 * client.getVarpValue(TOTAL_LOGS_VARP) / 25) * 25);
-                        rank.setClogRankThreshold(gildedThreshold);
-                    }
-                    rankMap.put(rank.getClogRankThreshold(), rank);
-                } catch (Exception e) {
-                    log.warn("Could not find struct for {} (ID: {})", rank.name(), rank.getStructId(), e);
-                }
-            }
-        });
     }
 
     public void onTick() {
@@ -122,6 +107,26 @@ public class CollectionNotifier extends BaseNotifier {
             if (varpValue > 0)
                 completed.set(varpValue);
         }
+    }
+
+    public void init() {
+        clientThread.invokeLater(() -> {
+            for (CollectionLogRanks rank : CollectionLogRanks.values()) {
+                try {
+                    StructComposition clogStructs;
+                    clogStructs = client.getStructComposition(rank.getStructId());
+                    rank.initialize(clogStructs);
+                    if ("Gilded".equals(rank.getRankName())) {
+                        int gildedThreshold = (int) (Math.floor(0.9 * client.getVarpValue(TOTAL_LOGS_VARP) / 25) * 25);
+                        rank.setClogRankThreshold(gildedThreshold);
+                    }
+                    rankMap.put(rank.getClogRankThreshold(), rank);
+                } catch (Exception e) {
+                    log.warn("Could not find struct for {} (ID: {})", rank.name(), rank.getStructId(), e);
+                    return;
+                }
+            }
+        });
     }
 
     public void onVarPlayer(VarbitChanged event) {
