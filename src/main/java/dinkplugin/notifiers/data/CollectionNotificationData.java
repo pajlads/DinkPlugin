@@ -38,6 +38,9 @@ public class CollectionNotificationData extends NotificationData {
     Integer logsNeededForNextRank;
 
     @Nullable
+    String nextRank;
+
+    @Nullable
     String dropperName;
 
     @Nullable

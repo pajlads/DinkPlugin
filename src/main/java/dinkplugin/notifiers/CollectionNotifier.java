@@ -163,8 +163,9 @@ public class CollectionNotifier extends BaseNotifier {
         int completedLogs = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
         int totalPossibleLogs = client.getVarpValue(TOTAL_LOGS_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = totalPossibleLogs > 0 && completedLogs > 0;
-        String clogRank = rankMap.floorEntry(completedLogs) != null ? rankMap.floorEntry(completedLogs).getValue().getRankName() : CollectionLogRanks.UNKNOWN.getRankName();
         Map.Entry<Integer, CollectionLogRanks> nextRankEntry = rankMap.higherEntry(completedLogs);
+        String clogRank = rankMap.floorEntry(completedLogs) != null ? rankMap.floorEntry(completedLogs).getValue().getRankName() : CollectionLogRanks.UNKNOWN.getRankName();
+        String nextRank = rankMap.higherEntry(completedLogs) != null ? rankMap.higherEntry(completedLogs).getValue().getRankName() : null;
         Integer logsNeededForNextRank = (nextRankEntry != null) ? nextRankEntry.getKey() - completedLogs : null;
         if (!varpValid) {
             // This occurs if the player doesn't have the character summary tab selected
@@ -195,6 +196,7 @@ public class CollectionNotifier extends BaseNotifier {
             varpValid ? totalPossibleLogs : null,
             clogRank,
             logsNeededForNextRank,
+            nextRank,
             loot != null ? loot.getSource() : null,
             loot != null ? loot.getCategory() : null,
             killCount,
