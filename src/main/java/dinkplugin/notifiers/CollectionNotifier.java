@@ -100,7 +100,7 @@ public class CollectionNotifier extends BaseNotifier {
                 try {
                     StructComposition struct = client.getStructComposition(rank.getStructId());
                     rank.initialize(struct);
-                    rankMap.put(rank.getClogThreshold(), rank);
+                    rankMap.put(rank.getClogRankThreshold(), rank);
                 } catch (Exception e) {
                     log.warn("Could not find struct for {} (ID: {})", rank.name(), rank.getStructId(), e);
                 }
@@ -108,15 +108,16 @@ public class CollectionNotifier extends BaseNotifier {
         });
     }
 
-    public CollectionLogRanks getUserRank(int completedLogs) {
-        Map.Entry<Integer, CollectionLogRanks> entry = rankMap.floorEntry(completedLogs);
-        if (entry != null) {
-            log.info("User has {} completed logs, matching rank: {} (Threshold: {})",
-                completedLogs, entry.getValue().getRankName(), entry.getKey());
-            return entry.getValue();
-        } else {
-            log.info("User has {} completed logs, no rank found. Defaulting to UNKNOWN.", completedLogs);
-            return CollectionLogRanks.UNKNOWN;
+    public void getClogRanks() {
+        for (CollectionLogRanks rank : CollectionLogRanks.values()) {
+            StructComposition struct = client.getStructComposition(rank.getStructId());
+            if (struct != null) {
+                rank.initialize(struct);
+                rankMap.put(rank.getClogRankThreshold(), rank);
+                log.info("Loaded rank: {} (ID: {}, Threshold: {})", rank.getRankName(), rank.getStructId(), rank.getClogRankThreshold());
+            } else {
+                log.warn("Failed to load struct for rank: {} (ID: {})", rank.name(), rank.getStructId());
+            }
         }
     }
 
@@ -129,7 +130,7 @@ public class CollectionNotifier extends BaseNotifier {
             // initialize collection log entry completion count
             int varpValue = client.getVarpValue(COMPLETED_LOGS_VARP);
             if (varpValue > 0)
-                getUserRank(varpValue);
+                getClogRanks();
                 completed.set(varpValue);
         }
     }
@@ -177,6 +178,9 @@ public class CollectionNotifier extends BaseNotifier {
         int completedLogs = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
         int totalPossibleLogs = client.getVarpValue(TOTAL_LOGS_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = totalPossibleLogs > 0 && completedLogs > 0;
+        String clogRank = rankMap.floorEntry(completedLogs) != null ? rankMap.floorEntry(completedLogs).getValue().getRankName() : CollectionLogRanks.UNKNOWN.getRankName();
+        Map.Entry<Integer, CollectionLogRanks> nextRankEntry = rankMap.higherEntry(completedLogs);
+        Integer logsNeededForNextRank = (nextRankEntry != null) ? nextRankEntry.getKey() - completedLogs : null;
         if (!varpValid) {
             // This occurs if the player doesn't have the character summary tab selected
             log.debug("Collection log progress varps were invalid ({} / {})", completed, totalPossibleLogs);
@@ -204,6 +208,8 @@ public class CollectionNotifier extends BaseNotifier {
             price,
             varpValid ? completedLogs : null,
             varpValid ? totalPossibleLogs : null,
+            clogRank,
+            logsNeededForNextRank,
             loot != null ? loot.getSource() : null,
             loot != null ? loot.getCategory() : null,
             killCount,

@@ -17,14 +17,20 @@ public enum CollectionLogRanks {
     DRAGON(1741),
     GILDED(1742); //TODO: math this
 
+    /**
+     * Collection log rank's structures.
+     *
+     * @see <a href="https://oldschool.runescape.wiki/w/Collection_log">Wiki Reference</a>
+     */
+
     private final int structId;
     private String rankName;
-    private int clogThreshold;
+    private int clogRankThreshold;
 
     public void initialize(StructComposition struct) {
         if (struct != null) {
             this.rankName = struct.getStringValue(2231).replaceAll(".*?<col=[^>]+>", "").trim();
-            this.clogThreshold = struct.getIntValue(2232);
+            this.clogRankThreshold = struct.getIntValue(2232);
         }
     }
 }

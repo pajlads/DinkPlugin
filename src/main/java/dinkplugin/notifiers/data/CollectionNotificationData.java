@@ -32,6 +32,12 @@ public class CollectionNotificationData extends NotificationData {
     Integer totalEntries;
 
     @Nullable
+    String clogRank;
+
+    @Nullable
+    Integer logsNeededForNextRank;
+
+    @Nullable
     String dropperName;
 
     @Nullable
