@@ -95,7 +95,7 @@ public class CollectionNotifier extends BaseNotifier {
     public void onGameState(GameState newState) {
         if (newState != GameState.HOPPING && newState != GameState.LOGGED_IN)
             this.reset();
-        clientThread.invokeLater(() -> {
+        clientThread.invokeLater(() -> { //TODO: Is this okay being here on log in or should this be moved to onTick() after varpValue has been verified?
             for (CollectionLogRanks rank : CollectionLogRanks.values()) {
                 try {
                     StructComposition struct = client.getStructComposition(rank.getStructId());
@@ -108,20 +108,6 @@ public class CollectionNotifier extends BaseNotifier {
         });
     }
 
-    public void getClogRanks() {
-        for (CollectionLogRanks rank : CollectionLogRanks.values()) {
-            StructComposition struct = client.getStructComposition(rank.getStructId());
-            if (struct != null) {
-                rank.initialize(struct);
-                rankMap.put(rank.getClogRankThreshold(), rank);
-                log.info("Loaded rank: {} (ID: {}, Threshold: {})", rank.getRankName(), rank.getStructId(), rank.getClogRankThreshold());
-            } else {
-                log.warn("Failed to load struct for rank: {} (ID: {})", rank.name(), rank.getStructId());
-            }
-        }
-    }
-
-
     public void onTick() {
         if (client.getGameState() != GameState.LOGGED_IN) {
             // this shouldn't ever happen, but just in case
@@ -130,7 +116,6 @@ public class CollectionNotifier extends BaseNotifier {
             // initialize collection log entry completion count
             int varpValue = client.getVarpValue(COMPLETED_LOGS_VARP);
             if (varpValue > 0)
-                getClogRanks();
                 completed.set(varpValue);
         }
     }
