@@ -31,8 +31,6 @@ public class CollectionNotificationData extends NotificationData {
     @Nullable
     Integer totalEntries;
 
-    String currentRank;
-
     @Nullable
     String dropperName;
 

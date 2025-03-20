@@ -14,7 +14,6 @@ import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.annotations.Varbit;
 import net.runelite.api.annotations.Varp;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
@@ -48,8 +47,7 @@ public class CollectionNotifier extends BaseNotifier {
     public static final @Varp int COMPLETED_LOGS_VARP = 2943, TOTAL_LOGS_VARP = 2944;
 
     static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_LOGS_VARP is not populated
-
-    private static final NavigableMap<Integer, String> CLOG_RANKS;
+    private final NavigableMap<Integer, CollectionLogRanks> rankMap = new TreeMap<>();
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
     /**
@@ -97,7 +95,31 @@ public class CollectionNotifier extends BaseNotifier {
     public void onGameState(GameState newState) {
         if (newState != GameState.HOPPING && newState != GameState.LOGGED_IN)
             this.reset();
+        clientThread.invokeLater(() -> {
+            for (CollectionLogRanks rank : CollectionLogRanks.values()) {
+                try {
+                    StructComposition struct = client.getStructComposition(rank.getStructId());
+                    rank.initialize(struct);
+                    rankMap.put(rank.getClogThreshold(), rank);
+                } catch (Exception e) {
+                    log.warn("Could not find struct for {} (ID: {})", rank.name(), rank.getStructId(), e);
+                }
+            }
+        });
     }
+
+    public CollectionLogRanks getUserRank(int completedLogs) {
+        Map.Entry<Integer, CollectionLogRanks> entry = rankMap.floorEntry(completedLogs);
+        if (entry != null) {
+            log.info("User has {} completed logs, matching rank: {} (Threshold: {})",
+                completedLogs, entry.getValue().getRankName(), entry.getKey());
+            return entry.getValue();
+        } else {
+            log.info("User has {} completed logs, no rank found. Defaulting to UNKNOWN.", completedLogs);
+            return CollectionLogRanks.UNKNOWN;
+        }
+    }
+
 
     public void onTick() {
         if (client.getGameState() != GameState.LOGGED_IN) {
@@ -107,6 +129,7 @@ public class CollectionNotifier extends BaseNotifier {
             // initialize collection log entry completion count
             int varpValue = client.getVarpValue(COMPLETED_LOGS_VARP);
             if (varpValue > 0)
+                getUserRank(varpValue);
                 completed.set(varpValue);
         }
     }
@@ -153,8 +176,6 @@ public class CollectionNotifier extends BaseNotifier {
         // multiple collection log entries are completed within a single tick.
         int completedLogs = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
         int totalPossibleLogs = client.getVarpValue(TOTAL_LOGS_VARP); // unique; doesn't over-count duplicates
-        Map.Entry<Integer, String> entry = CLOG_RANKS.floorEntry(completedLogs);
-        String currentRank = (entry != null) ? entry.getValue() : null;
         boolean varpValid = totalPossibleLogs > 0 && completedLogs > 0;
         if (!varpValid) {
             // This occurs if the player doesn't have the character summary tab selected
@@ -183,7 +204,6 @@ public class CollectionNotifier extends BaseNotifier {
             price,
             varpValid ? completedLogs : null,
             varpValid ? totalPossibleLogs : null,
-            currentRank,
             loot != null ? loot.getSource() : null,
             loot != null ? loot.getCategory() : null,
             killCount,
@@ -210,19 +230,4 @@ public class CollectionNotifier extends BaseNotifier {
         }
         return null;
     }
-
-    static {
-        NavigableMap<Integer, String> thresholds = new TreeMap<>();
-        thresholds.put(0, "");
-        thresholds.put(100, "Bronze");
-        thresholds.put(300, "Iron");
-        thresholds.put(500, "Steel");
-        thresholds.put(700, "Black");
-        thresholds.put(900, "Mithril");
-        thresholds.put(1_000, "Adamant");
-        thresholds.put(1_100, "Rune");
-        thresholds.put(1_200, "Dragon");
-        CLOG_RANKS = thresholds;
-    }
-
 }

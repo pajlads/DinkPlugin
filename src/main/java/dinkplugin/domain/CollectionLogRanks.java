@@ -1,25 +1,30 @@
 package dinkplugin.domain;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import net.runelite.api.StructComposition;
 
 @Getter
 @RequiredArgsConstructor
 public enum CollectionLogRanks {
-    UNKNOWN(-1),
-    BRONZE(100),
-    IRON(300),
-    STEEL(500),
-    BLACK(700),
-    MITHRIL(900),
-    ADAMANT(1_000),
-    RUNE(1_100),
-    DRAGON(1_200);
-//    GILDED(1_200);
+    UNKNOWN(0),
+    BRONZE(1714),
+    IRON(1715),
+    STEEL(1716),
+    BLACK(1717),
+    MITHRIL(1718),
+    ADAMANT(1719),
+    RUNE(1740),
+    DRAGON(1741),
+    GILDED(1742); //TODO: math this
 
-    /**
-     * Points required to unlock a relic of a given tier.
-     *
-     * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League/Relics">Wiki Reference</a>
-     */
-    private final int defaultPoints;
+    private final int structId;
+    private String rankName;
+    private int clogThreshold;
+
+    public void initialize(StructComposition struct) {
+        if (struct != null) {
+            this.rankName = struct.getStringValue(2231).replaceAll(".*?<col=[^>]+>", "").trim();
+            this.clogThreshold = struct.getIntValue(2232);
+        }
+    }
 }
