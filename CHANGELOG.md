@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Dev: Fix link to `dinkHandler.js` example. (#684)
+- Dev: Add current collection log rank, number of collection logs needed til next rank, and the next rank to unlock. (TODO)
 
 ## 1.11.3
 
