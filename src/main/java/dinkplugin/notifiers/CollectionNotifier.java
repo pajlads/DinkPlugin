@@ -135,7 +135,9 @@ public class CollectionNotifier extends BaseNotifier {
 
         // we only care about this event when the notifier is disabled
         // to keep `completed` updated when `handleNotify` is not being called
-        completed.getAndAccumulate(event.getValue(), Integer::max);
+        if (!config.notifyCollectionLog()) {
+            completed.set(event.getValue());
+        }
     }
 
     public void onChatMessage(String chatMessage) {
