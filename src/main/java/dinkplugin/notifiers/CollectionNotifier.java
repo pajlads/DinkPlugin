@@ -191,7 +191,7 @@ public class CollectionNotifier extends BaseNotifier {
             .replacement("%ITEM%", Replacements.ofWiki(itemName))
             .replacement("%COMPLETED%", Replacements.ofText(completedLogs > 0 ? String.valueOf(completed) : "?"))
             .replacement("%TOTAL_POSSIBLE%", Replacements.ofText(String.valueOf(totalPossibleLogs > 0 ? totalPossibleLogs : TOTAL_ENTRIES)))
-            .replacement("%RANK", Replacements.ofText(clogRank))
+            .replacement("%RANK%", Replacements.ofText(clogRank))
             .build();
 
         // populate metadata
