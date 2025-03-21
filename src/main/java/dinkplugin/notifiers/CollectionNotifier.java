@@ -1,6 +1,6 @@
 package dinkplugin.notifiers;
 
-import dinkplugin.domain.CollectionLogRanks;
+import dinkplugin.domain.CollectionLogRank;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
@@ -47,7 +47,7 @@ public class CollectionNotifier extends BaseNotifier {
     public static final @Varp int COMPLETED_LOGS_VARP = 2943, TOTAL_POSSIBLE_LOGS_VARP = 2944;
 
     static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_POSSIBLE_LOGS_VARP is not populated
-    private final NavigableMap<Integer, CollectionLogRanks> rankMap = new TreeMap<>();
+    private final NavigableMap<Integer, CollectionLogRank> rankMap = new TreeMap<>();
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
     /**
@@ -111,16 +111,9 @@ public class CollectionNotifier extends BaseNotifier {
 
     public void init() {
         clientThread.invokeLater(() -> {
-            for (CollectionLogRanks rank : CollectionLogRanks.values()) {
+            for (CollectionLogRank rank : CollectionLogRank.values()) {
                 try {
-                    StructComposition clogStructs;
-                    clogStructs = client.getStructComposition(rank.getStructId());
-                    rank.initialize(clogStructs);
-                    if ("Gilded".equals(rank.getRankName())) {
-                        int gildedThreshold = (int) (Math.floor(0.9 * client.getVarpValue(TOTAL_POSSIBLE_LOGS_VARP) / 25) * 25);
-                        rank.setClogRankThreshold(gildedThreshold);
-                    }
-                    rankMap.put(rank.getClogRankThreshold(), rank);
+                    rankMap.put(rank.getClogRankThreshold(client), rank);
                 } catch (Exception e) {
                     log.warn("Could not find struct for {} (ID: {})", rank.name(), rank.getStructId(), e);
                     return;
@@ -172,12 +165,12 @@ public class CollectionNotifier extends BaseNotifier {
         int completedLogs = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
         int totalPossibleLogs = client.getVarpValue(TOTAL_POSSIBLE_LOGS_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = totalPossibleLogs > 0 && completedLogs > 0;
-        Map.Entry<Integer, CollectionLogRanks> nextRankEntry = rankMap.higherEntry(completedLogs);
-        String clogRank = rankMap.floorEntry(completedLogs) != null ? rankMap.floorEntry(completedLogs).getValue().getRankName() : CollectionLogRanks.NONE.getRankName();
+        Map.Entry<Integer, CollectionLogRank> nextRankEntry = rankMap.higherEntry(completedLogs);
+        String clogRank = rankMap.floorEntry(completedLogs) != null ? rankMap.floorEntry(completedLogs).getValue().toString() : CollectionLogRank.NONE.toString();
         if (Math.floor(0.9 * totalPossibleLogs / 25) * 25 <= completedLogs) {
             clogRank = "Gilded";
         }
-        String nextRank = rankMap.higherEntry(completedLogs) != null ? rankMap.higherEntry(completedLogs).getValue().getRankName() : null;
+        String nextRank = rankMap.higherEntry(completedLogs) != null ? rankMap.higherEntry(completedLogs).getValue().toString() : null;
         Integer logsNeededForNextRank = (nextRankEntry != null) ? nextRankEntry.getKey() - completedLogs : null;
         if (!varpValid) {
             // This occurs if the player doesn't have the character summary tab selected

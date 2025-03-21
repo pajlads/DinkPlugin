@@ -1,7 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
-import dinkplugin.domain.CollectionLogRanks;
+import dinkplugin.domain.CollectionLogRank;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
@@ -53,20 +53,16 @@ class CollectionNotifierTest extends MockedNotifierTest {
         when(client.getVarpValue(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP)).thenReturn(TOTAL_ENTRIES);
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
 
-        final String[] CLOG_RANK = {"None", "Bronze", "Iron", "Steel", "Black", "Mithril", "Adamant", "Rune", "Dragon", "Gilded"};
         final int[] CLOG_THRESHOLDS = {0, 100, 300, 500, 700, 900, 1000, 1100, 1200, 1300, 1400};
-        int i = 0;
-        for (CollectionLogRanks rank : CollectionLogRanks.values()) {
+        CollectionLogRank[] ranks = CollectionLogRank.values();
+        for (int i = 0; i < ranks.length; i++) {
+            CollectionLogRank rank = ranks[i];
             StructComposition s = mock(StructComposition.class);
-            when(s.getStringValue(CollectionLogRanks.RANK_VARP)).thenReturn(CLOG_RANK[i]);
-            when(s.getIntValue(CollectionLogRanks.RANK_CLOGS_VARP)).thenReturn(CLOG_THRESHOLDS[i]);
-            IterableHashTable params = mock(IterableHashTable.class);
-            when(s.getParams()).thenReturn(params);
+            when(s.getIntValue(CollectionLogRank.THRESHOLD_PARAM)).thenReturn(CLOG_THRESHOLDS[i]);
             when(client.getStructComposition(rank.getStructId())).thenReturn(s);
-            i++;
         }
         notifier.onTick();
-        notifier.init();;
+        notifier.init();
 
         VarbitChanged initCompleted = new VarbitChanged();
         initCompleted.setVarpId(CollectionNotifier.COMPLETED_LOGS_VARP);
