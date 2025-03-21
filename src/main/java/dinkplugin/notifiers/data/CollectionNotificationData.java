@@ -32,7 +32,7 @@ public class CollectionNotificationData extends NotificationData {
     Integer totalEntries;
 
     @Nullable
-    String clogRank;
+    String currentRank;
 
     @Nullable
     Integer logsNeededForNextRank;

@@ -160,7 +160,7 @@ JSON for Collection Notifications:
     "price": 500812,
     "completedEntries": 420,
     "totalEntries": 1443,
-    "clogRank": "IRON",
+    "currentRank": "IRON",
     "logsNeededForNextRank": 80,
     "nextRank": "BLACK",
     "dropperName": "Clue Scroll (Hard)",
