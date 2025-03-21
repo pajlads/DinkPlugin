@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Minor: Add current collection log rank, number of collection logs needed til next rank, and the next rank to unlock. (#689)
+- Minor: Add collection log rank and progress to notification metadata. (#689)
 - Dev: Fix link to `dinkHandler.js` example. (#684)
 
 ## 1.11.3
