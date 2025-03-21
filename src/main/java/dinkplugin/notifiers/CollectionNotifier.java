@@ -44,9 +44,9 @@ public class CollectionNotifier extends BaseNotifier {
     /*
      * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
      */
-    public static final @Varp int COMPLETED_LOGS_VARP = 2943, TOTAL_LOGS_VARP = 2944;
+    public static final @Varp int COMPLETED_LOGS_VARP = 2943, TOTAL_POSSIBLE_LOGS_VARP = 2944;
 
-    static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_LOGS_VARP is not populated
+    static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_POSSIBLE_LOGS_VARP is not populated
     private final NavigableMap<Integer, CollectionLogRanks> rankMap = new TreeMap<>();
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
@@ -117,7 +117,7 @@ public class CollectionNotifier extends BaseNotifier {
                     clogStructs = client.getStructComposition(rank.getStructId());
                     rank.initialize(clogStructs);
                     if ("Gilded".equals(rank.getRankName())) {
-                        int gildedThreshold = (int) (Math.floor(0.9 * client.getVarpValue(TOTAL_LOGS_VARP) / 25) * 25);
+                        int gildedThreshold = (int) (Math.floor(0.9 * client.getVarpValue(TOTAL_POSSIBLE_LOGS_VARP) / 25) * 25);
                         rank.setClogRankThreshold(gildedThreshold);
                     }
                     rankMap.put(rank.getClogRankThreshold(), rank);
@@ -168,7 +168,7 @@ public class CollectionNotifier extends BaseNotifier {
         // this approach also has the benefit of yielding incrementing values even when
         // multiple collection log entries are completed within a single tick.
         int completedLogs = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
-        int totalPossibleLogs = client.getVarpValue(TOTAL_LOGS_VARP); // unique; doesn't over-count duplicates
+        int totalPossibleLogs = client.getVarpValue(TOTAL_POSSIBLE_LOGS_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = totalPossibleLogs > 0 && completedLogs > 0;
         Map.Entry<Integer, CollectionLogRanks> nextRankEntry = rankMap.higherEntry(completedLogs);
         String clogRank = rankMap.floorEntry(completedLogs) != null ? rankMap.floorEntry(completedLogs).getValue().getRankName() : CollectionLogRanks.NONE.getRankName();

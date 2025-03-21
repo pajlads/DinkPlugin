@@ -3,6 +3,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runelite.api.StructComposition;
 import net.runelite.api.annotations.Varp;
+import org.jetbrains.annotations.VisibleForTesting;
 
 @Getter
 @RequiredArgsConstructor
@@ -27,7 +28,9 @@ public enum CollectionLogRanks {
     private final int structId;
     private String rankName;
     private int clogRankThreshold;
-    private @Varp int RANK_VARP = 2231, RANK_CLOGS_VARP = 2232;
+    @VisibleForTesting
+    @Varp
+    public static final int RANK_VARP = 2231, RANK_CLOGS_VARP = 2232;
 
 
     public void initialize(StructComposition struct) {

@@ -50,7 +50,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         // init client mocks
         when(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION)).thenReturn(1);
         when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(0);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_LOGS_VARP)).thenReturn(TOTAL_ENTRIES);
+        when(client.getVarpValue(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP)).thenReturn(TOTAL_ENTRIES);
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
 
         final String[] CLOG_RANK = {"None", "Bronze", "Iron", "Steel", "Black", "Mithril", "Adamant", "Rune", "Dragon", "Gilded"};
@@ -58,8 +58,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
         int i = 0;
         for (CollectionLogRanks rank : CollectionLogRanks.values()) {
             StructComposition s = mock(StructComposition.class);
-            when(s.getStringValue(2231)).thenReturn(CLOG_RANK[i]);
-            when(s.getIntValue(2232)).thenReturn(CLOG_THRESHOLDS[i]);
+            when(s.getStringValue(CollectionLogRanks.RANK_VARP)).thenReturn(CLOG_RANK[i]);
+            when(s.getIntValue(CollectionLogRanks.RANK_CLOGS_VARP)).thenReturn(CLOG_THRESHOLDS[i]);
             IterableHashTable params = mock(IterableHashTable.class);
             when(s.getParams()).thenReturn(params);
             when(client.getStructComposition(rank.getStructId())).thenReturn(s);
@@ -293,7 +293,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
          * first notification: no varbit data
          */
         when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(0);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_LOGS_VARP)).thenReturn(0);
+        when(client.getVarpValue(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP)).thenReturn(0);
 
         String item = "Seercull";
         int price = 23_000;
@@ -332,8 +332,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
         when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(1);
         notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.COMPLETED_LOGS_VARP, 1));
 
-        when(client.getVarpValue(CollectionNotifier.TOTAL_LOGS_VARP)).thenReturn(TOTAL_ENTRIES);
-        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.TOTAL_LOGS_VARP, TOTAL_ENTRIES));
+        when(client.getVarpValue(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP)).thenReturn(TOTAL_ENTRIES);
+        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP, TOTAL_ENTRIES));
 
         when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(100);
         notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.COMPLETED_LOGS_VARP, 100));
