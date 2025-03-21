@@ -58,10 +58,15 @@ public class CollectionNotificationData extends NotificationData {
 
     @Override
     public List<Field> getFields() {
-        List<Field> fields = new ArrayList<>(5);
+        List<Field> fields = new ArrayList<>(6);
         if (completedEntries != null && totalEntries != null) {
             fields.add(
                 new Field("Completed", Field.formatProgress(completedEntries, totalEntries))
+            );
+        }
+        if (currentRank != null) {
+            fields.add(
+                new Field("Rank", Field.formatBlock("", currentRank.toString()))
             );
         }
         if (dropperKillCount != null) {
