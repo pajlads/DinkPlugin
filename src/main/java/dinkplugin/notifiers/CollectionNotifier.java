@@ -13,7 +13,11 @@ import dinkplugin.util.KillCountService;
 import dinkplugin.util.RarityService;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.*;
+import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.ScriptID;
+import net.runelite.api.VarClientStr;
+import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Varp;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.callback.ClientThread;
@@ -47,8 +51,9 @@ public class CollectionNotifier extends BaseNotifier {
     public static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
 
     static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_POSSIBLE_LOGS_VARP is not populated
-    private final NavigableMap<Integer, CollectionLogRank> rankMap = new TreeMap<>();
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
+
+    private final NavigableMap<Integer, CollectionLogRank> rankByThreshold = new TreeMap<>();
 
     /**
      * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.
@@ -113,10 +118,9 @@ public class CollectionNotifier extends BaseNotifier {
         clientThread.invokeLater(() -> {
             for (CollectionLogRank rank : CollectionLogRank.values()) {
                 try {
-                    rankMap.put(rank.getClogRankThreshold(client), rank);
+                    rankByThreshold.put(rank.getClogRankThreshold(client), rank);
                 } catch (Exception e) {
-                    log.warn("Could not find struct for {} (ID: {})", rank.name(), rank.getStructId(), e);
-                    return;
+                    log.warn("Could not find struct for {}", rank, e);
                 }
             }
         });
@@ -165,8 +169,8 @@ public class CollectionNotifier extends BaseNotifier {
         int completed = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
         int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed > 0;
-        Map.Entry<Integer, CollectionLogRank> nextRankEntry = rankMap.higherEntry(completed);
-        CollectionLogRank rank = completed > 0 ? rankMap.floorEntry(completed).getValue() : null;
+        Map.Entry<Integer, CollectionLogRank> nextRankEntry = rankByThreshold.higherEntry(completed);
+        CollectionLogRank rank = completed > 0 ? rankByThreshold.floorEntry(completed).getValue() : null;
         CollectionLogRank nextRank = completed > 0 && nextRankEntry != null ? nextRankEntry.getValue() : null;
         Integer logsNeededForNextRank = (completed > 0 && nextRankEntry != null) ? nextRankEntry.getKey() - completed : null;
         if (!varpValid) {
@@ -226,4 +230,5 @@ public class CollectionNotifier extends BaseNotifier {
         }
         return null;
     }
+
 }
