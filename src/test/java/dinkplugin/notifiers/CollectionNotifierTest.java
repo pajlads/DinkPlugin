@@ -9,7 +9,14 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.CollectionNotificationData;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.KillCountService;
-import net.runelite.api.*;
+import net.runelite.api.GameState;
+import net.runelite.api.ItemID;
+import net.runelite.api.NPC;
+import net.runelite.api.NpcID;
+import net.runelite.api.ScriptID;
+import net.runelite.api.StructComposition;
+import net.runelite.api.VarClientStr;
+import net.runelite.api.Varbits;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.game.ItemStack;
@@ -26,7 +33,10 @@ import java.util.function.BiFunction;
 import static dinkplugin.notifiers.CollectionNotifier.TOTAL_ENTRIES;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class CollectionNotifierTest extends MockedNotifierTest {
 
@@ -49,8 +59,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
         // init client mocks
         when(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION)).thenReturn(1);
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(0);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP)).thenReturn(TOTAL_ENTRIES);
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
+        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
 
         final int[] CLOG_THRESHOLDS = {0, 100, 300, 500, 700, 900, 1000, 1100, 1200, 1300, 1400};
@@ -61,11 +71,11 @@ class CollectionNotifierTest extends MockedNotifierTest {
             when(s.getIntValue(CollectionLogRank.THRESHOLD_PARAM)).thenReturn(CLOG_THRESHOLDS[i]);
             when(client.getStructComposition(rank.getStructId())).thenReturn(s);
         }
-        notifier.onTick();
         notifier.init();
+        notifier.onTick();
 
         VarbitChanged initCompleted = new VarbitChanged();
-        initCompleted.setVarpId(CollectionNotifier.COMPLETED_LOGS_VARP);
+        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
         initCompleted.setValue(0);
         notifier.onVarPlayer(initCompleted);
 
@@ -106,7 +116,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, "None", 99, "Bronze", source, LootRecordType.NPC, kc, rarity))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 99, CollectionLogRank.BRONZE, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -114,10 +124,10 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
     @Test
     void testRankUp() {
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(299);
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(299);
         when(config.notifyCollectionLog()).thenReturn(false);
         VarbitChanged initCompleted = new VarbitChanged();
-        initCompleted.setVarpId(CollectionNotifier.COMPLETED_LOGS_VARP);
+        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
         initCompleted.setValue(299);
         notifier.onVarPlayer(initCompleted);
         when(config.notifyCollectionLog()).thenReturn(true);
@@ -151,7 +161,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 300, TOTAL_ENTRIES, "Iron", 200, "Steel", source, LootRecordType.NPC, kc, rarity))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 300, TOTAL_ENTRIES, CollectionLogRank.IRON, 200, CollectionLogRank.STEEL, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -159,10 +169,10 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
     @Test
     void testGildedRank() {
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(1399);
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(1399);
         when(config.notifyCollectionLog()).thenReturn(false);
         VarbitChanged initCompleted = new VarbitChanged();
-        initCompleted.setVarpId(CollectionNotifier.COMPLETED_LOGS_VARP);
+        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
         initCompleted.setValue(1399);
         notifier.onVarPlayer(initCompleted);
         when(config.notifyCollectionLog()).thenReturn(true);
@@ -196,7 +206,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1400, TOTAL_ENTRIES, "Gilded", null, null, source, LootRecordType.NPC, kc, rarity))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1400, TOTAL_ENTRIES, CollectionLogRank.GILDED, null, null, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -204,10 +214,10 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNoRank() {
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(0);
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
         when(config.notifyCollectionLog()).thenReturn(false);
         VarbitChanged initCompleted = new VarbitChanged();
-        initCompleted.setVarpId(CollectionNotifier.COMPLETED_LOGS_VARP);
+        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
         initCompleted.setValue(0);
         notifier.onVarPlayer(initCompleted);
         when(config.notifyCollectionLog()).thenReturn(true);
@@ -241,7 +251,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, "None", 99, "Bronze", source, LootRecordType.NPC, kc, rarity))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 99, CollectionLogRank.BRONZE, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -281,7 +291,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, "None", 99, "Bronze", null, null, null, null))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 99, CollectionLogRank.BRONZE, null, null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -294,8 +304,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
         /*
          * first notification: no varbit data
          */
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(0);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP)).thenReturn(0);
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
+        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(0);
 
         String item = "Seercull";
         int price = 23_000;
@@ -316,7 +326,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, null, null, "None", 1, "None", null, null, null, null))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, null, null, null, null, null, null, null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -331,14 +341,14 @@ class CollectionNotifierTest extends MockedNotifierTest {
             return e;
         };
 
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(1);
-        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.COMPLETED_LOGS_VARP, 1));
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(1);
+        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.COMPLETED_VARP, 1));
 
-        when(client.getVarpValue(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP)).thenReturn(TOTAL_ENTRIES);
-        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP, TOTAL_ENTRIES));
+        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
+        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.TOTAL_VARP, TOTAL_ENTRIES));
 
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(100);
-        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.COMPLETED_LOGS_VARP, 100));
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(100);
+        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.COMPLETED_VARP, 100));
 
         notifier.onTick();
 
@@ -364,7 +374,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item2))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item2, ItemID.SEERS_RING, (long) price2, 101, TOTAL_ENTRIES, "Bronze", 199, "Iron", null, null, null, null))
+                .extra(new CollectionNotificationData(item2, ItemID.SEERS_RING, (long) price2, 101, TOTAL_ENTRIES, CollectionLogRank.BRONZE, 199, CollectionLogRank.IRON, null, null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );

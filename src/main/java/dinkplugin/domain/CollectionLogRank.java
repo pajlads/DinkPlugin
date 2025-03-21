@@ -34,7 +34,7 @@ public enum CollectionLogRank {
 
     public int getClogRankThreshold(Client client) {
         if (this == GILDED) {
-            return 25 * (int) (0.9 * client.getVarpValue(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP) / 25);
+            return 25 * (int) (0.9 * client.getVarpValue(CollectionNotifier.TOTAL_VARP) / 25);
         }
         return client.getStructComposition(this.structId).getIntValue(THRESHOLD_PARAM);
     }

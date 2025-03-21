@@ -1,5 +1,6 @@
 package dinkplugin.notifiers.data;
 
+import dinkplugin.domain.CollectionLogRank;
 import dinkplugin.message.Field;
 import dinkplugin.util.Drop;
 import lombok.EqualsAndHashCode;
@@ -32,13 +33,13 @@ public class CollectionNotificationData extends NotificationData {
     Integer totalEntries;
 
     @Nullable
-    String currentRank;
+    CollectionLogRank currentRank;
 
     @Nullable
     Integer logsNeededForNextRank;
 
     @Nullable
-    String nextRank;
+    CollectionLogRank nextRank;
 
     @Nullable
     String dropperName;

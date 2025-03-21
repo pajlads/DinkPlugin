@@ -54,8 +54,8 @@ class MetaNotifierTest extends MockedNotifierTest {
         // update client mocks
         when(client.getWorld()).thenReturn(world);
 
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(1312);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP)).thenReturn(1477);
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(1312);
+        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(1477);
 
         when(client.getVarbitValue(CombatTaskNotifier.TOTAL_POINTS_ID)).thenReturn(1984);
         when(client.getVarbitValue(CombatTaskNotifier.GRANDMASTER_TOTAL_POINTS_ID)).thenReturn(2005);
@@ -120,8 +120,8 @@ class MetaNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyWithoutCollection() {
         // update client mock
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_LOGS_VARP)).thenReturn(0);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_POSSIBLE_LOGS_VARP)).thenReturn(0);
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
+        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(0);
 
         // fire events
         notifier.onGameState(GameState.LOGGING_IN, GameState.LOGGED_IN);

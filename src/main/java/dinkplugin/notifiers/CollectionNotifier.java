@@ -44,14 +44,14 @@ public class CollectionNotifier extends BaseNotifier {
     /*
      * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
      */
-    public static final @Varp int COMPLETED_LOGS_VARP = 2943, TOTAL_POSSIBLE_LOGS_VARP = 2944;
+    public static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
 
     static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_POSSIBLE_LOGS_VARP is not populated
     private final NavigableMap<Integer, CollectionLogRank> rankMap = new TreeMap<>();
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
     /**
-     * The number of completed entries in the collection log, as implied by {@link #COMPLETED_LOGS_VARP}.
+     * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.
      */
     private final AtomicInteger completed = new AtomicInteger(-1);
 
@@ -103,7 +103,7 @@ public class CollectionNotifier extends BaseNotifier {
             completed.set(-1);
         } else if (completed.get() < 0) {
             // initialize collection log entry completion count
-            int varpValue = client.getVarpValue(COMPLETED_LOGS_VARP);
+            int varpValue = client.getVarpValue(COMPLETED_VARP);
             if (varpValue > 0)
                 completed.set(varpValue);
         }
@@ -123,7 +123,7 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     public void onVarPlayer(VarbitChanged event) {
-        if (event.getVarpId() != COMPLETED_LOGS_VARP)
+        if (event.getVarpId() != COMPLETED_VARP)
             return;
 
         // we only care about this event when the notifier is disabled
@@ -162,19 +162,16 @@ public class CollectionNotifier extends BaseNotifier {
         // varp isn't updated for a few ticks, so we increment the count locally.
         // this approach also has the benefit of yielding incrementing values even when
         // multiple collection log entries are completed within a single tick.
-        int completedLogs = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
-        int totalPossibleLogs = client.getVarpValue(TOTAL_POSSIBLE_LOGS_VARP); // unique; doesn't over-count duplicates
-        boolean varpValid = totalPossibleLogs > 0 && completedLogs > 0;
-        Map.Entry<Integer, CollectionLogRank> nextRankEntry = rankMap.higherEntry(completedLogs);
-        String clogRank = rankMap.floorEntry(completedLogs) != null ? rankMap.floorEntry(completedLogs).getValue().toString() : CollectionLogRank.NONE.toString();
-        if (Math.floor(0.9 * totalPossibleLogs / 25) * 25 <= completedLogs) {
-            clogRank = "Gilded";
-        }
-        String nextRank = rankMap.higherEntry(completedLogs) != null ? rankMap.higherEntry(completedLogs).getValue().toString() : null;
-        Integer logsNeededForNextRank = (nextRankEntry != null) ? nextRankEntry.getKey() - completedLogs : null;
+        int completed = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
+        int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
+        boolean varpValid = total > 0 && completed > 0;
+        Map.Entry<Integer, CollectionLogRank> nextRankEntry = rankMap.higherEntry(completed);
+        CollectionLogRank rank = completed > 0 ? rankMap.floorEntry(completed).getValue() : null;
+        CollectionLogRank nextRank = completed > 0 && nextRankEntry != null ? nextRankEntry.getValue() : null;
+        Integer logsNeededForNextRank = (completed > 0 && nextRankEntry != null) ? nextRankEntry.getKey() - completed : null;
         if (!varpValid) {
             // This occurs if the player doesn't have the character summary tab selected
-            log.debug("Collection log progress varps were invalid ({} / {})", completed, totalPossibleLogs);
+            log.debug("Collection log progress varps were invalid ({} / {})", this.completed, total);
         }
         // build message
         Template notifyMessage = Template.builder()
@@ -182,9 +179,9 @@ public class CollectionNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%ITEM%", Replacements.ofWiki(itemName))
-            .replacement("%COMPLETED%", Replacements.ofText(completedLogs > 0 ? String.valueOf(completed) : "?"))
-            .replacement("%TOTAL_POSSIBLE%", Replacements.ofText(String.valueOf(totalPossibleLogs > 0 ? totalPossibleLogs : TOTAL_ENTRIES)))
-            .replacement("%RANK%", Replacements.ofText(clogRank))
+            .replacement("%COMPLETED%", Replacements.ofText(completed > 0 ? String.valueOf(this.completed) : "?"))
+            .replacement("%TOTAL_POSSIBLE%", Replacements.ofText(String.valueOf(total > 0 ? total : TOTAL_ENTRIES)))
+            .replacement("%RANK%", Replacements.ofText(rank != null ? rank.toString() : "Unknown"))
             .build();
 
         // populate metadata
@@ -198,9 +195,9 @@ public class CollectionNotifier extends BaseNotifier {
             itemName,
             itemId,
             price,
-            varpValid ? completedLogs : null,
-            varpValid ? totalPossibleLogs : null,
-            clogRank,
+            varpValid ? completed : null,
+            varpValid ? total : null,
+            rank,
             logsNeededForNextRank,
             nextRank,
             loot != null ? loot.getSource() : null,
