@@ -161,8 +161,9 @@ JSON for Collection Notifications:
     "completedEntries": 420,
     "totalEntries": 1443,
     "currentRank": "IRON",
+    "rankProgress": 120,
     "logsNeededForNextRank": 80,
-    "nextRank": "BLACK",
+    "nextRank": "STEEL",
     "dropperName": "Clue Scroll (Hard)",
     "dropperType": "EVENT",
     "dropperKillCount": 1500

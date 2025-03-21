@@ -36,6 +36,9 @@ public class CollectionNotificationData extends NotificationData {
     CollectionLogRank currentRank;
 
     @Nullable
+    Integer rankProgress;
+
+    @Nullable
     Integer logsNeededForNextRank;
 
     @Nullable

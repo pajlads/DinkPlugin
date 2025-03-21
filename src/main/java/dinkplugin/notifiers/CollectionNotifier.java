@@ -170,8 +170,10 @@ public class CollectionNotifier extends BaseNotifier {
         int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed > 0;
         Map.Entry<Integer, CollectionLogRank> nextRankEntry = rankByThreshold.higherEntry(completed);
-        CollectionLogRank rank = completed > 0 ? rankByThreshold.floorEntry(completed).getValue() : null;
+        Map.Entry<Integer, CollectionLogRank> prevRankEntry = rankByThreshold.floorEntry(completed);
+        CollectionLogRank rank = completed > 0 ? prevRankEntry.getValue() : null;
         CollectionLogRank nextRank = completed > 0 && nextRankEntry != null ? nextRankEntry.getValue() : null;
+        Integer rankProgress = prevRankEntry != null ? completed - prevRankEntry.getKey() : null;
         Integer logsNeededForNextRank = (completed > 0 && nextRankEntry != null) ? nextRankEntry.getKey() - completed : null;
         if (!varpValid) {
             // This occurs if the player doesn't have the character summary tab selected
@@ -202,6 +204,7 @@ public class CollectionNotifier extends BaseNotifier {
             varpValid ? completed : null,
             varpValid ? total : null,
             rank,
+            rankProgress,
             logsNeededForNextRank,
             nextRank,
             loot != null ? loot.getSource() : null,
