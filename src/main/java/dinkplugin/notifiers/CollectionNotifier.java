@@ -50,7 +50,7 @@ public class CollectionNotifier extends BaseNotifier {
      */
     public static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
 
-    static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_POSSIBLE_LOGS_VARP is not populated
+    static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_VARP is not populated
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
     private final NavigableMap<Integer, CollectionLogRank> rankByThreshold = new TreeMap<>();
@@ -175,7 +175,7 @@ public class CollectionNotifier extends BaseNotifier {
         Integer logsNeededForNextRank = (completed > 0 && nextRankEntry != null) ? nextRankEntry.getKey() - completed : null;
         if (!varpValid) {
             // This occurs if the player doesn't have the character summary tab selected
-            log.debug("Collection log progress varps were invalid ({} / {})", this.completed, total);
+            log.debug("Collection log progress varps were invalid ({} / {})", completed, total);
         }
         // build message
         Template notifyMessage = Template.builder()
@@ -183,7 +183,7 @@ public class CollectionNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%ITEM%", Replacements.ofWiki(itemName))
-            .replacement("%COMPLETED%", Replacements.ofText(completed > 0 ? String.valueOf(this.completed) : "?"))
+            .replacement("%COMPLETED%", Replacements.ofText(completed > 0 ? String.valueOf(completed) : "?"))
             .replacement("%TOTAL_POSSIBLE%", Replacements.ofText(String.valueOf(total > 0 ? total : TOTAL_ENTRIES)))
             .replacement("%RANK%", Replacements.ofText(rank != null ? rank.toString() : "Unknown"))
             .build();
