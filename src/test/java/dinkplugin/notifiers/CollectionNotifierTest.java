@@ -59,9 +59,9 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
         // init client mocks
         when(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION)).thenReturn(1);
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
         when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
+        setCompleted(0);
 
         final int[] CLOG_THRESHOLDS = {0, 100, 300, 500, 700, 900, 1000, 1100, 1200, 1300, 1400};
         CollectionLogRank[] ranks = CollectionLogRank.values();
@@ -73,11 +73,6 @@ class CollectionNotifierTest extends MockedNotifierTest {
         }
         notifier.init();
         notifier.onTick();
-
-        VarbitChanged initCompleted = new VarbitChanged();
-        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
-        initCompleted.setValue(0);
-        notifier.onVarPlayer(initCompleted);
 
         // init config mocks
         when(config.notifyCollectionLog()).thenReturn(true);
@@ -124,13 +119,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
     @Test
     void testRankUp() {
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(299);
-        when(config.notifyCollectionLog()).thenReturn(false);
-        VarbitChanged initCompleted = new VarbitChanged();
-        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
-        initCompleted.setValue(299);
-        notifier.onVarPlayer(initCompleted);
-        when(config.notifyCollectionLog()).thenReturn(true);
+        setCompleted(299);
 
         String item = "Seercull";
         int price = 23_000;
@@ -169,13 +158,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
     @Test
     void testGildedRank() {
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(1399);
-        when(config.notifyCollectionLog()).thenReturn(false);
-        VarbitChanged initCompleted = new VarbitChanged();
-        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
-        initCompleted.setValue(1399);
-        notifier.onVarPlayer(initCompleted);
-        when(config.notifyCollectionLog()).thenReturn(true);
+        setCompleted(1399);
 
         String item = "Seercull";
         int price = 23_000;
@@ -214,13 +197,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNoRank() {
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
-        when(config.notifyCollectionLog()).thenReturn(false);
-        VarbitChanged initCompleted = new VarbitChanged();
-        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
-        initCompleted.setValue(0);
-        notifier.onVarPlayer(initCompleted);
-        when(config.notifyCollectionLog()).thenReturn(true);
+        setCompleted(0);
 
         String item = "Seercull";
         int price = 23_000;
@@ -400,6 +377,16 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    private void setCompleted(int clogCount) {
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(clogCount);
+        when(config.notifyCollectionLog()).thenReturn(false);
+        VarbitChanged initCompleted = new VarbitChanged();
+        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
+        initCompleted.setValue(clogCount);
+        notifier.onVarPlayer(initCompleted);
+        when(config.notifyCollectionLog()).thenReturn(true);
     }
 
 }

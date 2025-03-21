@@ -179,6 +179,7 @@ public class CollectionNotifier extends BaseNotifier {
             // This occurs if the player doesn't have the character summary tab selected
             log.debug("Collection log progress varps were invalid ({} / {})", completed, total);
         }
+
         // build message
         Template notifyMessage = Template.builder()
             .template(config.collectionNotifyMessage())
