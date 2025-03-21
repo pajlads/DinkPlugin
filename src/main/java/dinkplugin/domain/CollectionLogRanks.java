@@ -7,7 +7,7 @@ import net.runelite.api.annotations.Varp;
 @Getter
 @RequiredArgsConstructor
 public enum CollectionLogRanks {
-    UNKNOWN(0),
+    NONE(0),
     BRONZE(1714),
     IRON(1715),
     STEEL(1716),

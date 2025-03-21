@@ -173,7 +173,7 @@ public class CollectionNotifier extends BaseNotifier {
         int totalPossibleLogs = client.getVarpValue(TOTAL_LOGS_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = totalPossibleLogs > 0 && completedLogs > 0;
         Map.Entry<Integer, CollectionLogRanks> nextRankEntry = rankMap.higherEntry(completedLogs);
-        String clogRank = rankMap.floorEntry(completedLogs) != null ? rankMap.floorEntry(completedLogs).getValue().getRankName() : CollectionLogRanks.UNKNOWN.getRankName();
+        String clogRank = rankMap.floorEntry(completedLogs) != null ? rankMap.floorEntry(completedLogs).getValue().getRankName() : CollectionLogRanks.NONE.getRankName();
         if (Math.floor(0.9 * totalPossibleLogs / 25) * 25 <= completedLogs) {
             clogRank = "Gilded";
         }
@@ -191,6 +191,7 @@ public class CollectionNotifier extends BaseNotifier {
             .replacement("%ITEM%", Replacements.ofWiki(itemName))
             .replacement("%COMPLETED%", Replacements.ofText(completedLogs > 0 ? String.valueOf(completed) : "?"))
             .replacement("%TOTAL_POSSIBLE%", Replacements.ofText(String.valueOf(totalPossibleLogs > 0 ? totalPossibleLogs : TOTAL_ENTRIES)))
+            .replacement("%RANK", Replacements.ofText(clogRank))
             .build();
 
         // populate metadata
