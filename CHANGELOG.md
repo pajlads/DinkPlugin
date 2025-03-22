@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add collection log rank and progress to notification metadata. (#689)
 - Dev: Fix link to `dinkHandler.js` example. (#684)
 
 ## 1.11.3

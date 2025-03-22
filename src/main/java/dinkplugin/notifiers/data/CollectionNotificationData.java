@@ -1,5 +1,6 @@
 package dinkplugin.notifiers.data;
 
+import dinkplugin.domain.CollectionLogRank;
 import dinkplugin.message.Field;
 import dinkplugin.util.Drop;
 import lombok.EqualsAndHashCode;
@@ -32,6 +33,18 @@ public class CollectionNotificationData extends NotificationData {
     Integer totalEntries;
 
     @Nullable
+    CollectionLogRank currentRank;
+
+    @Nullable
+    Integer rankProgress;
+
+    @Nullable
+    Integer logsNeededForNextRank;
+
+    @Nullable
+    CollectionLogRank nextRank;
+
+    @Nullable
     String dropperName;
 
     @Nullable
@@ -45,10 +58,15 @@ public class CollectionNotificationData extends NotificationData {
 
     @Override
     public List<Field> getFields() {
-        List<Field> fields = new ArrayList<>(5);
+        List<Field> fields = new ArrayList<>(6);
         if (completedEntries != null && totalEntries != null) {
             fields.add(
                 new Field("Completed", Field.formatProgress(completedEntries, totalEntries))
+            );
+        }
+        if (currentRank != null) {
+            fields.add(
+                new Field("Rank", Field.formatBlock("", currentRank.toString()))
             );
         }
         if (dropperKillCount != null) {
