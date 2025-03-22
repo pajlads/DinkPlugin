@@ -80,6 +80,8 @@ public class CollectionNotifier extends BaseNotifier {
     @Inject
     private RarityService rarityService;
 
+    private boolean initialized = false;
+
     @Override
     public boolean isEnabled() {
         return config.notifyCollectionLog() && super.isEnabled();
@@ -103,6 +105,10 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     public void onTick() {
+        if (!initialized) {
+            clientThread.invokeLater(this::init);
+        }
+
         if (client.getGameState() != GameState.LOGGED_IN) {
             // this shouldn't ever happen, but just in case
             completed.set(-1);
@@ -112,18 +118,6 @@ public class CollectionNotifier extends BaseNotifier {
             if (varpValue > 0)
                 completed.set(varpValue);
         }
-    }
-
-    public void init() {
-        clientThread.invokeLater(() -> {
-            for (CollectionLogRank rank : CollectionLogRank.values()) {
-                try {
-                    rankByThreshold.put(rank.getClogRankThreshold(client), rank);
-                } catch (Exception e) {
-                    log.warn("Could not find struct for {}", rank, e);
-                }
-            }
-        });
     }
 
     public void onVarPlayer(VarbitChanged event) {
@@ -160,6 +154,23 @@ public class CollectionNotifier extends BaseNotifier {
                 handleNotify(bottomText.substring(POPUP_PREFIX_LENGTH).trim());
             }
         }
+    }
+
+    private void init() {
+        for (CollectionLogRank rank : CollectionLogRank.values()) {
+            try {
+                rankByThreshold.put(rank.getClogRankThreshold(client), rank);
+            } catch (Exception e) {
+                String msg = "Could not find struct for {}";
+                if (log.isDebugEnabled()) {
+                    log.debug(msg, rank, e);
+                } else {
+                    log.warn(msg, rank);
+                }
+            }
+        }
+        log.debug("Rank Thresholds: {}", rankByThreshold);
+        initialized = true;
     }
 
     private void handleNotify(String itemName) {
