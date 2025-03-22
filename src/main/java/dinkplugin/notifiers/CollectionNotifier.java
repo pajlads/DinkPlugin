@@ -174,6 +174,8 @@ public class CollectionNotifier extends BaseNotifier {
         CollectionLogRank rank = completed > 0 ? prevRankEntry.getValue() : null;
         CollectionLogRank nextRank = completed > 0 && nextRankEntry != null ? nextRankEntry.getValue() : null;
         Integer rankProgress = prevRankEntry != null ? completed - prevRankEntry.getKey() : null;
+        Map.Entry<Integer, CollectionLogRank> earlierRankEntry = (rankProgress != null && rankProgress == 0 && prevRankEntry != null) ? rankByThreshold.lowerEntry(prevRankEntry.getKey()) : null;
+        CollectionLogRank justCompletedRank = completed > 0 && earlierRankEntry != null ? earlierRankEntry.getValue(): null;
         Integer logsNeededForNextRank = (completed > 0 && nextRankEntry != null) ? nextRankEntry.getKey() - completed : null;
         if (!varpValid) {
             // This occurs if the player doesn't have the character summary tab selected
@@ -208,6 +210,7 @@ public class CollectionNotifier extends BaseNotifier {
             rankProgress,
             logsNeededForNextRank,
             nextRank,
+            justCompletedRank,
             loot != null ? loot.getSource() : null,
             loot != null ? loot.getCategory() : null,
             killCount,
