@@ -30,7 +30,6 @@ import org.jetbrains.annotations.VisibleForTesting;
 import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Map;
 import java.util.NavigableMap;
 import java.util.OptionalDouble;
 import java.util.TreeMap;
@@ -180,13 +179,13 @@ public class CollectionNotifier extends BaseNotifier {
         int completed = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
         int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed > 0;
-        Map.Entry<Integer, CollectionLogRank> nextRankEntry = rankByThreshold.higherEntry(completed);
-        Map.Entry<Integer, CollectionLogRank> prevRankEntry = rankByThreshold.floorEntry(completed);
+        var nextRankEntry = rankByThreshold.higherEntry(completed);
+        var prevRankEntry = rankByThreshold.floorEntry(completed);
         CollectionLogRank rank = completed > 0 ? prevRankEntry.getValue() : null;
         CollectionLogRank nextRank = completed > 0 && nextRankEntry != null ? nextRankEntry.getValue() : null;
         Integer rankProgress = prevRankEntry != null ? completed - prevRankEntry.getKey() : null;
-        Map.Entry<Integer, CollectionLogRank> earlierRankEntry = (prevRankEntry != null && rankProgress == 0) ? rankByThreshold.lowerEntry(prevRankEntry.getKey()) : null;
-        CollectionLogRank justCompletedRank = completed > 0 && earlierRankEntry != null ? earlierRankEntry.getValue(): null;
+        var justCompletedEntry = prevRankEntry != null && rankProgress == 0 ? rankByThreshold.lowerEntry(prevRankEntry.getKey()) : null;
+        CollectionLogRank justCompletedRank = justCompletedEntry != null ? justCompletedEntry.getValue() : null;
         Integer logsNeededForNextRank = (completed > 0 && nextRankEntry != null) ? nextRankEntry.getKey() - completed : null;
         if (!varpValid) {
             // This occurs if the player doesn't have the character summary tab selected
