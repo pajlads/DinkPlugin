@@ -24,6 +24,7 @@ import dinkplugin.notifiers.SpeedrunNotifier;
 import dinkplugin.notifiers.TradeNotifier;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.Utils;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameState;
@@ -240,6 +241,11 @@ public class DinkPlugin extends Plugin {
         chatNotifier.onMessage(message.getType(), source, chatMessage);
         switch (message.getType()) {
             case GAMEMESSAGE:
+                if ("runelite".equals(source)) {
+                    // filter out plugin-sourced chat messages
+                    return;
+                }
+
                 collectionNotifier.onChatMessage(chatMessage);
                 petNotifier.onChatMessage(chatMessage);
                 killCountService.onGameMessage(chatMessage);
