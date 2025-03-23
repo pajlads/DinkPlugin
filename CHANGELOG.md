@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Ignore fake game messages submitted by other external plugins. (#691)
 - Dev: Fix link to `dinkHandler.js` example. (#684)
 
 ## 1.11.3
