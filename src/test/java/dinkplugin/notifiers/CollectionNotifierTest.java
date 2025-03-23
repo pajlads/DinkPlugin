@@ -58,6 +58,9 @@ class CollectionNotifierTest extends MockedNotifierTest {
         super.setUp();
 
         // init client mocks
+        Thread thread = Thread.currentThread();
+        Mockito.doAnswer(invocation -> Thread.currentThread() == thread).when(client).isClientThread();
+
         when(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION)).thenReturn(1);
         when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
