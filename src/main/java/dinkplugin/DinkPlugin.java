@@ -24,7 +24,6 @@ import dinkplugin.notifiers.SpeedrunNotifier;
 import dinkplugin.notifiers.TradeNotifier;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.Utils;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameState;
