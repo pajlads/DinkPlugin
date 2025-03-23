@@ -32,18 +32,33 @@ public class CollectionNotificationData extends NotificationData {
     @Nullable
     Integer totalEntries;
 
+    /**
+     * The current rank after unlocking this collection log entry.
+     */
     @Nullable
     CollectionLogRank currentRank;
 
+    /**
+     * The number of entries that have been completed since the latest rank.
+     */
     @Nullable
     Integer rankProgress;
 
+    /**
+     * The number of entries remaining until the next rank unlock.
+     */
     @Nullable
     Integer logsNeededForNextRank;
 
+    /**
+     * The next rank that can be unlocked.
+     */
     @Nullable
     CollectionLogRank nextRank;
 
+    /**
+     * The previous rank, if it was just completed (i.e., {@code rankProgress} is zero).
+     */
     @Nullable
     CollectionLogRank justCompletedRank;
 

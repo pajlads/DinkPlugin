@@ -32,12 +32,18 @@ public enum CollectionLogRank {
         return this.displayName;
     }
 
+    /**
+     * @param client {@link Client}
+     * @return the number of collection log entries needed to unlock this rank
+     */
     public int getClogRankThreshold(Client client) {
+        assert client.isClientThread();
         switch (this) {
             case NONE:
                 return 0;
 
             case GILDED:
+                // https://oldschool.runescape.wiki/w/Gilded_staff_of_collection
                 return 25 * (int) (0.9 * client.getVarpValue(CollectionNotifier.TOTAL_VARP) / 25);
 
             default:

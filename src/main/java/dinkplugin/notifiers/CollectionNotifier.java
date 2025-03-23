@@ -52,6 +52,11 @@ public class CollectionNotifier extends BaseNotifier {
     static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_VARP is not populated
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
+    /**
+     * Red-black tree of ranks by log thresholds; populated using client cache in {@link #init()}.
+     *
+     * @see <a href="https://oldschool.runescape.wiki/w/Collection_log#Ranks">Wiki Reference</a>
+     */
     private final NavigableMap<Integer, CollectionLogRank> rankByThreshold = new TreeMap<>();
 
     /**
