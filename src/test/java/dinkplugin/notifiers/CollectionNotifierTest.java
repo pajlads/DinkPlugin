@@ -71,7 +71,6 @@ class CollectionNotifierTest extends MockedNotifierTest {
             when(s.getIntValue(CollectionLogRank.THRESHOLD_PARAM)).thenReturn(CLOG_THRESHOLDS[i]);
             when(client.getStructComposition(rank.getStructId())).thenReturn(s);
         }
-        notifier.init();
         notifier.onTick();
 
         // init config mocks
