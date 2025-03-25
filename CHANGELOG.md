@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add collection log rank and progress to notification metadata. (#689)
+
 ## 1.11.4
 
 - Bugfix: Ignore fake game messages submitted by other external plugins. (#691)
