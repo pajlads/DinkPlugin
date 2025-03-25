@@ -351,7 +351,7 @@ You can customize the message patterns to your liking (`*` is a wildcard), and s
 
 Other external plugins can request Dink fire webhook notifications.
 
-You can disable this functionality via `External Plugin Requests > Enable External Plugin Notifications`.
+You can enable this functionality via `External Plugin Requests > Enable External Plugin Notifications`.
 
 ### Metadata:
 

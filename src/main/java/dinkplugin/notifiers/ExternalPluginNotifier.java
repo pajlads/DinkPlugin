@@ -13,16 +13,20 @@ import dinkplugin.util.HttpUrlAdapter;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
+import net.runelite.client.callback.ClientThread;
 import okhttp3.HttpUrl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Singleton
 public class ExternalPluginNotifier extends BaseNotifier {
 
+    private ClientThread clientThread;
     private Gson gson;
 
     @Override
@@ -36,7 +40,8 @@ public class ExternalPluginNotifier extends BaseNotifier {
     }
 
     @Inject
-    void init(Gson gson) {
+    void init(ClientThread clientThread, Gson gson) {
+        this.clientThread = clientThread;
         this.gson = gson.newBuilder()
             .registerTypeAdapter(HttpUrl.class, new HttpUrlAdapter())
             .create();
@@ -45,6 +50,12 @@ public class ExternalPluginNotifier extends BaseNotifier {
     public void onNotify(Map<String, Object> data) {
         if (!isEnabled()) {
             log.debug("Skipping requested external dink since notifier is disabled: {}", data);
+            return;
+        }
+
+        // ensure input urls are specified correctly
+        if (!isUrlInputValid(data.get("urls"))) {
+            log.warn("Skipping externally-requested dink due to invalid 'urls' format from {}", data.get("sourcePlugin"));
             return;
         }
 
@@ -81,7 +92,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
         var player = Utils.getPlayerName(client);
         var template = Template.builder()
             .template(input.getText())
-            .replacements(input.getReplacements())
+            .replacements(Objects.requireNonNullElseGet(input.getReplacements(), () -> new HashMap<>(2)))
             .replacement("%USERNAME%", Replacements.ofText(player))
             .build();
 
@@ -102,7 +113,21 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .build();
 
         var urls = input.getUrls(this::getWebhookUrl);
-        createMessage(urls, image, body);
+        clientThread.invoke(() -> createMessage(urls, image, body));
+    }
+
+    private static boolean isUrlInputValid(Object urls) {
+        if (urls == null) {
+            return true; // use urls specified in dink's config
+        }
+        if (!(urls instanceof Iterable)) {
+            return false; // we try to convert to list in ExternalNotificationRequest
+        }
+        for (Object url : (Iterable<?>) urls) {
+            if (!(url instanceof HttpUrl))
+                return false; // received non-HttpUrl; input should be rejected
+        }
+        return true; // all elements are HttpUrl instances; proceed as normal
     }
 
 }

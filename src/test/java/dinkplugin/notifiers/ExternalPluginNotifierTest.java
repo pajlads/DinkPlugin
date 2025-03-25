@@ -7,7 +7,6 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
-import dinkplugin.message.templating.impl.SimpleReplacement;
 import dinkplugin.notifiers.data.ExternalNotificationData;
 import net.runelite.client.events.PluginMessage;
 import okhttp3.HttpUrl;
@@ -45,11 +44,11 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         // fire event
-        plugin.onPluginMessage(new PluginMessage("dink", "notify", samplePayload("https://example.com/")));
+        plugin.onPluginMessage(new PluginMessage("dink", "notify", samplePayload(null)));
 
         // verify notification
         verifyCreateMessage(
-            "https://example.com/",
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
@@ -63,7 +62,90 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
+                .build()
+        );
+    }
+
+    @Test
+    void testNoReplacements() {
+        // fire event
+        var payload = samplePayload(null);
+        payload.remove("replacements");
+        payload.put("text", "text with no replacements");
+        plugin.onPluginMessage(new PluginMessage("dink", "notify", payload));
+
+        // verify notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .type(NotificationType.EXTERNAL_PLUGIN)
+                .playerName(PLAYER_NAME)
+                .customTitle("My Title")
+                .customFooter("Sent by MyExternalPlugin via Dink")
+                .text(
+                    Template.builder()
+                        .template("text with no replacements")
+                        .build()
+                )
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
+                .build()
+        );
+    }
+
+    @Test
+    void testMissingReplacement() {
+        // fire event
+        var payload = samplePayload(null);
+        payload.remove("replacements");
+        payload.put("text", "text with no custom replacement %USERNAME%");
+        plugin.onPluginMessage(new PluginMessage("dink", "notify", payload));
+
+        // verify notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .type(NotificationType.EXTERNAL_PLUGIN)
+                .playerName(PLAYER_NAME)
+                .customTitle("My Title")
+                .customFooter("Sent by MyExternalPlugin via Dink")
+                .text(
+                    Template.builder()
+                        .template("text with no custom replacement %USERNAME%")
+                        .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
+                        .build()
+                )
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
+                .build()
+        );
+    }
+
+    @Test
+    void testPatternWithoutReplacement() {
+        // fire event
+        var payload = samplePayload(null);
+        payload.remove("replacements");
+        payload.put("text", "text with no custom replacement %XD%");
+        plugin.onPluginMessage(new PluginMessage("dink", "notify", payload));
+
+        // verify notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .type(NotificationType.EXTERNAL_PLUGIN)
+                .playerName(PLAYER_NAME)
+                .customTitle("My Title")
+                .customFooter("Sent by MyExternalPlugin via Dink")
+                .text(
+                    Template.builder()
+                        .template("text with no custom replacement %XD%")
+                        .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
+                        .build()
+                )
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -71,7 +153,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     @Test
     void testFallbackUrl() {
         // update config mocks
-        String url = "https://discord.com/example";
+        String url = "https://example.com/";
         when(config.externalWebhook()).thenReturn(url);
 
         // fire event
@@ -93,7 +175,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -108,7 +190,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
 
         // verify notification
         verifyCreateMessage(
-            null,
+            PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
@@ -122,7 +204,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -138,7 +220,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
 
         // verify notification
         verifyCreateMessage(
-            null,
+            PRIMARY_WEBHOOK_URL,
             true,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
@@ -152,7 +234,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -171,7 +253,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
 
         // verify notification
         verifyCreateMessage(
-            null,
+            PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
                 .type(NotificationType.EXTERNAL_PLUGIN)
@@ -185,7 +267,7 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .build()
                 )
-                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value")), Collections.singletonMap("hello", "world")))
+                .extra(new ExternalNotificationData("MyExternalPlugin", List.of(new Field("sample key", "sample value", null)), Collections.singletonMap("hello", "world")))
                 .build()
         );
     }
@@ -209,6 +291,19 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnoreBadUrls() {
+        // prepare payload
+        var data = samplePayload(null);
+        data.put("urls", List.of("https://example.com/"));
+
+        // fire event
+        plugin.onPluginMessage(new PluginMessage("dink", "notify", data));
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testDisabled() {
         // update config mocks
         when(config.notifyExternal()).thenReturn(false);
@@ -225,14 +320,22 @@ public class ExternalPluginNotifierTest extends MockedNotifierTest {
         data.put("text", "Hello %TARGET% from %USERNAME%");
         data.put("title", "My Title");
         data.put("thumbnail", "not a url . com");
-        data.put("fields", List.of(new Field("sample key", "sample value")));
-        data.put("replacements", Map.of("%TARGET%", new SimpleReplacement("world", null)));
+        data.put("fields", List.of(createField("sample key", "sample value")));
+        data.put("replacements", Map.of("%TARGET%", createTextReplacement("world")));
         data.put("metadata", Map.of("hello", "world"));
         data.put("sourcePlugin", "MyExternalPlugin");
         if (url != null) {
             data.put("urls", Collections.singletonList(HttpUrl.parse(url)));
         }
         return data;
+    }
+
+    private static Map<String, Object> createField(String name, String value) {
+        return Map.of("name", name, "value", value);
+    }
+
+    private static Map<String, String> createTextReplacement(String text) {
+        return Map.of("value", text);
     }
 
 }

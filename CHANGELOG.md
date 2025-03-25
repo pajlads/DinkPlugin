@@ -1,5 +1,25 @@
 ## Unreleased
 
+## 1.11.4
+
+- Bugfix: Ignore fake game messages submitted by other external plugins. (#691)
+- Dev: Fix link to `dinkHandler.js` example. (#684)
+
+## 1.11.3
+
+- Bugfix: Allow external plugin notifications to be requested off of the client thread. (#677)
+- Bugfix: Actually allow null replacements to be sent to the external plugin notifier. (#676)
+
+## 1.11.2
+
+- Dev: Harden input validation for urls provided to the external plugin notifier. (#672)
+
+## 1.11.1
+
+- Dev: Require users to opt-in to the external plugin notifier. (#670)
+
+## 1.11.0
+
 - Major: Allow external plugins to request Dink webhook notifications. (#666)
 
 ## 1.10.23

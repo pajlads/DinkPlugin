@@ -239,6 +239,11 @@ public class DinkPlugin extends Plugin {
         chatNotifier.onMessage(message.getType(), source, chatMessage);
         switch (message.getType()) {
             case GAMEMESSAGE:
+                if ("runelite".equals(source)) {
+                    // filter out plugin-sourced chat messages
+                    return;
+                }
+
                 collectionNotifier.onChatMessage(chatMessage);
                 petNotifier.onChatMessage(chatMessage);
                 killCountService.onGameMessage(chatMessage);
