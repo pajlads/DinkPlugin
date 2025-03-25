@@ -12,6 +12,7 @@ import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.PetNotifier;
+import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.MigrationUtil;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
@@ -521,6 +522,9 @@ public class SettingsManager {
     private void handleImport(Map<String, Object> map, boolean quiet) {
         if (map == null) return;
 
+        final int size = map.size();
+        boolean webhooksRemoved = removeWebhooks(map.remove("deletedWebhooks"));
+
         Set<ConfigImportPolicy> policies = config.importPolicy();
         AtomicInteger numUpdated = new AtomicInteger();
         Collection<String> mergedConfigs = new TreeSet<>();
@@ -587,8 +591,8 @@ public class SettingsManager {
         });
 
         int count = numUpdated.get();
-        if (quiet && count <= 0) {
-            log.debug("Updated 0 config settings from map of size {}", map.size());
+        if (quiet && count <= 0 && !webhooksRemoved) {
+            log.debug("Updated 0 config settings from map of size {}", size);
             return;
         }
 
@@ -596,14 +600,48 @@ public class SettingsManager {
             String.format(
                 "Updated %d config settings (from %d total specified in import). " +
                     "Please close and open the plugin settings panel for these changes to be visually reflected.",
-                count,
-                map.size()
+                Math.max(count, 1),
+                size
             )
         );
 
         if (!mergedConfigs.isEmpty()) {
             plugin.addChatSuccess("The following settings were merged (rather than being overwritten): " + String.join(", ", mergedConfigs));
         }
+    }
+
+    private boolean removeWebhooks(Object input) {
+        if (!(input instanceof Iterable)) return false;
+
+        // read deleted urls
+        Set<String> deletedUrls = new HashSet<>();
+        for (Object o : (Iterable<?>) input) {
+            if (o instanceof String) {
+                deletedUrls.add((String) o);
+            }
+        }
+
+        // update existing configs
+        if (deletedUrls.isEmpty()) return false;
+        boolean anyRemoved = false;
+        for (String webhookConfigKey : webhookConfigKeys) {
+            String configValue = configManager.getConfiguration(CONFIG_GROUP, webhookConfigKey);
+            boolean[] filtered = { false };
+            String updatedValue = ConfigUtil.readDelimited(configValue)
+                .filter(url -> {
+                    if (deletedUrls.contains(url)) {
+                        filtered[0] = true;
+                        return false;
+                    }
+                    return true;
+                })
+                .collect(Collectors.joining("\n"));
+            if (filtered[0]) {
+                configManager.setConfiguration(CONFIG_GROUP, webhookConfigKey, updatedValue);
+                anyRemoved = true;
+            }
+        }
+        return anyRemoved;
     }
 
     private boolean shouldMerge(Set<ConfigImportPolicy> policies, String configKey) {
