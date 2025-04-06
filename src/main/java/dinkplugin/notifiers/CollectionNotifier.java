@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.domain.CollectionLogRank;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
@@ -29,7 +30,9 @@ import org.jetbrains.annotations.VisibleForTesting;
 import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.NavigableMap;
 import java.util.OptionalDouble;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -46,9 +49,15 @@ public class CollectionNotifier extends BaseNotifier {
      */
     public static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
 
-    static final @VisibleForTesting int TOTAL_ENTRIES = 1_560; // fallback if TOTAL_VARP is not populated
-
+    static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_VARP is not populated
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
+
+    /**
+     * Red-black tree of ranks by log thresholds; populated using client cache in {@link #init()}.
+     *
+     * @see <a href="https://oldschool.runescape.wiki/w/Collection_log#Ranks">Wiki Reference</a>
+     */
+    private final NavigableMap<Integer, CollectionLogRank> rankByThreshold = new TreeMap<>();
 
     /**
      * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.
@@ -75,6 +84,8 @@ public class CollectionNotifier extends BaseNotifier {
     @Inject
     private RarityService rarityService;
 
+    private boolean initialized = false;
+
     @Override
     public boolean isEnabled() {
         return config.notifyCollectionLog() && super.isEnabled();
@@ -98,6 +109,10 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     public void onTick() {
+        if (!initialized) {
+            clientThread.invokeLater(this::init);
+        }
+
         if (client.getGameState() != GameState.LOGGED_IN) {
             // this shouldn't ever happen, but just in case
             completed.set(-1);
@@ -145,6 +160,23 @@ public class CollectionNotifier extends BaseNotifier {
         }
     }
 
+    private void init() {
+        for (CollectionLogRank rank : CollectionLogRank.values()) {
+            try {
+                rankByThreshold.put(rank.getClogRankThreshold(client), rank);
+            } catch (Exception e) {
+                String msg = "Could not find struct for {}";
+                if (log.isDebugEnabled()) {
+                    log.debug(msg, rank, e);
+                } else {
+                    log.warn(msg, rank);
+                }
+            }
+        }
+        log.debug("Rank Thresholds: {}", rankByThreshold);
+        initialized = true;
+    }
+
     private void handleNotify(String itemName) {
         // varp isn't updated for a few ticks, so we increment the count locally.
         // this approach also has the benefit of yielding incrementing values even when
@@ -152,6 +184,14 @@ public class CollectionNotifier extends BaseNotifier {
         int completed = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
         int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed > 0;
+        var nextRankEntry = rankByThreshold.higherEntry(completed);
+        var prevRankEntry = rankByThreshold.floorEntry(completed);
+        CollectionLogRank rank = completed > 0 ? prevRankEntry.getValue() : null;
+        CollectionLogRank nextRank = completed > 0 && nextRankEntry != null ? nextRankEntry.getValue() : null;
+        Integer rankProgress = prevRankEntry != null ? completed - prevRankEntry.getKey() : null;
+        var justCompletedEntry = prevRankEntry != null && rankProgress == 0 ? rankByThreshold.lowerEntry(prevRankEntry.getKey()) : null;
+        CollectionLogRank justCompletedRank = justCompletedEntry != null ? justCompletedEntry.getValue() : null;
+        Integer logsNeededForNextRank = (completed > 0 && nextRankEntry != null) ? nextRankEntry.getKey() - completed : null;
         if (!varpValid) {
             // This occurs if the player doesn't have the character summary tab selected
             log.debug("Collection log progress varps were invalid ({} / {})", completed, total);
@@ -165,6 +205,7 @@ public class CollectionNotifier extends BaseNotifier {
             .replacement("%ITEM%", Replacements.ofWiki(itemName))
             .replacement("%COMPLETED%", Replacements.ofText(completed > 0 ? String.valueOf(completed) : "?"))
             .replacement("%TOTAL_POSSIBLE%", Replacements.ofText(String.valueOf(total > 0 ? total : TOTAL_ENTRIES)))
+            .replacement("%RANK%", Replacements.ofText(rank != null ? rank.toString() : "Unknown"))
             .build();
 
         // populate metadata
@@ -180,6 +221,11 @@ public class CollectionNotifier extends BaseNotifier {
             price,
             varpValid ? completed : null,
             varpValid ? total : null,
+            rank,
+            rankProgress,
+            logsNeededForNextRank,
+            nextRank,
+            justCompletedRank,
             loot != null ? loot.getSource() : null,
             loot != null ? loot.getCategory() : null,
             killCount,
