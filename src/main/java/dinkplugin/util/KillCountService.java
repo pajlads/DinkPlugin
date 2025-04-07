@@ -53,7 +53,7 @@ public class KillCountService {
 
     public static final Set<Integer> SPECIAL_LOOT_NPC_IDS = Set.of(
         NpcID.THE_WHISPERER, NpcID.THE_WHISPERER_12205, NpcID.THE_WHISPERER_12206, NpcID.THE_WHISPERER_12207,
-        NpcID.ARAXXOR, NpcID.ARAXXOR_13669, 14148, 14149
+        NpcID.ARAXXOR, NpcID.ARAXXOR_13669, NpcID.BRANDA_THE_FIRE_QUEEN_14148, NpcID.ELDRIC_THE_ICE_KING_14149
     );
     public static final Set<String> SPECIAL_LOOT_NPC_NAMES = Set.of("The Whisperer", "Araxxor", "Branda the Fire Queen", "Eldric the Ice King");
 

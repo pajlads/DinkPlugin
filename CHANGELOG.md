@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add drop rate of Bran pet for luck calculation. (#695)
 - Minor: Add collection log rank and progress to notification metadata. (#689)
 
 ## 1.11.4
