@@ -161,8 +161,8 @@ public class KillCountService {
             String cacheKey = getCacheKey(LootRecordType.UNKNOWN, boss);
             killCounts.asMap().merge(cacheKey, kc - 1, Math::max);
 
-            if (boss.equals(GAUNTLET_BOSS) || boss.equals(CG_BOSS) || boss.startsWith(TOA) || boss.startsWith(TOB) || boss.startsWith(COX)) {
-                // populate lastDrop to workaround loot tracker quirks
+            if (boss.equals("Araxxor") || boss.equals(GAUNTLET_BOSS) || boss.equals(CG_BOSS) || boss.startsWith(TOA) || boss.startsWith(TOB) || boss.startsWith(COX)) {
+                // populate lastDrop to workaround loot tracking quirks
                 this.lastDrop = new Drop(boss, LootRecordType.EVENT, Collections.emptyList());
 
                 if (!ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
