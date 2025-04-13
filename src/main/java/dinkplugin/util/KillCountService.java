@@ -318,8 +318,11 @@ public class KillCountService {
             case PLAYER:
                 return "player_" + sourceName;
             default:
+                // exceptions where boss name in chat message differs from npc name
+                if ("Whisperer".equals(sourceName)) return "The Whisperer";
                 if ("The Gauntlet".equals(sourceName)) return GAUNTLET_BOSS;
                 if (CG_NAME.equals(sourceName)) return CG_BOSS;
+
                 return sourceName;
         }
     }
