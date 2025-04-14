@@ -2,6 +2,7 @@
 
 - Minor: Add drop rate of Bran pet for luck calculation. (#695)
 - Minor: Add collection log rank and progress to notification metadata. (#689)
+- Bugfix: Report correct Araxxor kill count in loot notifications if harvest is delayed. (#696)
 
 ## 1.11.4
 
