@@ -152,6 +152,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.threadNameTemplate()).thenReturn("[%TYPE%] %MESSAGE%");
         when(config.nameFilterMode()).thenReturn(FilterMode.DENY);
         when(config.embedColor()).thenReturn(Utils.PINK);
+        when(config.deniedAccountTypes()).thenReturn(EnumSet.noneOf(AccountType.class));
     }
 
     protected void mockItem(int id, int price, String name) {
