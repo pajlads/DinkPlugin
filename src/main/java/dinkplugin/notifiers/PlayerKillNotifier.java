@@ -58,7 +58,7 @@ public class PlayerKillNotifier extends BaseNotifier {
         // duplicated logic from super class but allow Duel Arena
         EnumSet<WorldType> world = client.getWorldType().clone(); // fast on RegularEnumSet
         world.remove(WorldType.PVP_ARENA);
-        return !WorldUtils.isIgnoredWorld(world) && settingsManager.isNamePermitted(client.getLocalPlayer().getName());
+        return !WorldUtils.isIgnoredWorld(world) && accountPassesConfig();
     }
 
     @Override

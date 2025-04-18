@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Allow configuration of account types that should not trigger notifications. (#701)
+
 ## 1.11.5
 
 - Minor: Add drop rate of Bran pet for luck calculation. (#695)

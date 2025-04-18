@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.domain.AccountType;
 import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.SeasonalPolicy;
 import dinkplugin.message.NotificationBody;
@@ -425,6 +426,7 @@ class PetNotifierTest extends MockedNotifierTest {
         // only allow notifications for "dank dank"
         when(config.nameFilterMode()).thenReturn(FilterMode.ALLOW);
         when(config.filteredNames()).thenReturn(PLAYER_NAME);
+        when(config.deniedAccountTypes()).thenReturn(EnumSet.of(AccountType.GROUP_IRONMAN));
         settingsManager.init();
 
         // send fake message
@@ -440,6 +442,21 @@ class PetNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(PLAYER_NAME + " got a pet"))
                 .type(NotificationType.PET)
                 .build());
+    }
+
+    @Test
+    void testIgnoreAccountType() {
+        // prevent notifs from group ironmen
+        when(config.nameFilterMode()).thenReturn(FilterMode.DENY);
+        when(config.deniedAccountTypes()).thenReturn(EnumSet.of(AccountType.GROUP_IRONMAN));
+        settingsManager.init();
+
+        // send fake message
+        notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
 
     @Test

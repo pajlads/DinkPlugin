@@ -1,5 +1,6 @@
 package dinkplugin;
 
+import dinkplugin.domain.AccountType;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.domain.ChatNotificationType;
 import dinkplugin.domain.ChatPrivacyMode;
@@ -498,6 +499,18 @@ public interface DinkPluginConfig extends Config {
     )
     default Color embedColor() {
         return Utils.PINK;
+    }
+
+    @ConfigItem(
+        keyName = "deniedAccountTypes",
+        name = "Denied Account Types",
+        description = "Types of accounts that should not trigger notifications.<br/>" +
+            "Has no effect if 'RSN Filter Mode' is set to 'Exclusively Allow'",
+        position = 1021,
+        section = advancedSection
+    )
+    default Set<AccountType> deniedAccountTypes() {
+        return EnumSet.noneOf(AccountType.class);
     }
 
     @ConfigItem(

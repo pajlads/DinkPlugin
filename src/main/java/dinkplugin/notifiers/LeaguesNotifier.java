@@ -117,7 +117,7 @@ public class LeaguesNotifier extends BaseNotifier {
         return config.notifyLeagues() &&
             client.getVarbitValue(LEAGUES_VERSION) == CURRENT_LEAGUE_VERSION &&
             client.getWorldType().contains(WorldType.SEASONAL) &&
-            settingsManager.isNamePermitted(client.getLocalPlayer().getName());
+            accountPassesConfig();
     }
 
     @Override
