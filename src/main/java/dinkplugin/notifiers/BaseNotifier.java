@@ -8,6 +8,7 @@ import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.Player;
 import net.runelite.api.WorldType;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.inject.Inject;
 import java.util.Set;
 
+@Slf4j
 public abstract class BaseNotifier {
 
     @Inject
@@ -50,6 +52,7 @@ public abstract class BaseNotifier {
             return false;
         }
         if (config.nameFilterMode() != FilterMode.ALLOW && config.deniedAccountTypes().contains(Utils.getAccountType(client))) {
+            log.info("Skipping notification from {} due to denied account type", getClass().getSimpleName());
             return false;
         }
         return settingsManager.isNamePermitted(player.getName());
