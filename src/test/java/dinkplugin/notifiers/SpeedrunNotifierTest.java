@@ -1,6 +1,8 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.domain.AccountType;
+import dinkplugin.domain.FilterMode;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 
 import java.time.Duration;
+import java.util.EnumSet;
 
 import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_DURATION_CHILD_ID;
 import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_GROUP_ID;
@@ -194,6 +197,57 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         settingsManager.init();
 
         // mock widget
+        Widget time = mock(Widget.class);
+        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(time.getText()).thenReturn(latest);
+
+        // fire fake event
+        notifier.onGameMessage(String.format("Speedrun duration: %s (new personal best)", latest));
+        plugin.onWidgetLoaded(event());
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testNotifyAccountType() {
+        // update config mocks
+        when(config.nameFilterMode()).thenReturn(FilterMode.ALLOW);
+        when(config.filteredNames()).thenReturn(PLAYER_NAME);
+        when(config.deniedAccountTypes()).thenReturn(EnumSet.of(AccountType.GROUP_IRONMAN));
+        settingsManager.init();
+
+        // mock widget
+        String latest = "1:15.30";
+        Widget time = mock(Widget.class);
+        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(time.getText()).thenReturn(latest);
+
+        // fire fake event
+        notifier.onGameMessage(String.format("Speedrun duration: %s (new personal best)", latest));
+        plugin.onWidgetLoaded(event());
+
+        // check notification message
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(buildTemplate(QUEST_NAME, latest))
+                .extra(new SpeedrunNotificationData(QUEST_NAME, Duration.ofMinutes(1).plusSeconds(30).plusMillis(250).toString(), Duration.ofMinutes(1).plusSeconds(15).plusMillis(300).toString(), true))
+                .type(NotificationType.SPEEDRUN)
+                .build()
+        );
+
+    }
+
+    @Test
+    void testIgnoreAccountType() {
+        // update config mocks
+        when(config.deniedAccountTypes()).thenReturn(EnumSet.of(AccountType.GROUP_IRONMAN));
+        settingsManager.init();
+
+        // mock widget
+        String latest = "1:15.30";
         Widget time = mock(Widget.class);
         when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
         when(time.getText()).thenReturn(latest);
