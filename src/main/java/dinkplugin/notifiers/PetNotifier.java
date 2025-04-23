@@ -490,7 +490,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Pet dark core", new KcSource("Corporeal Beast", 1.0 / 5_000)),
             entry("Pet general graardor", new KcSource("General Graardor", 1.0 / 5_000)),
             entry("Pet k'ril tsutsaroth", new KcSource("K'ril Tsutsaroth", 1.0 / 5_000)),
-            entry("Pet kraken", new KcSource("Kraken", 1.0 / 5_000)),
+            entry("Pet kraken", new KcSource("Kraken", 1.0 / 3_000)),
             entry("Pet penance queen", new Source() {
                 @Override
                 Double getProbability(Client client, KillCountService kcService) {
