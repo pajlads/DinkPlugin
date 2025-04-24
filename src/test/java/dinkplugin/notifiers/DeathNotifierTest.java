@@ -12,22 +12,22 @@ import dinkplugin.notifiers.data.DeathNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Region;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
-import net.runelite.api.NpcID;
 import net.runelite.api.ParamID;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.SkullIcon;
-import net.runelite.api.Varbits;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.NpcID;
+import net.runelite.api.gameval.VarbitID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -75,7 +75,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(config.deathNotifPvpMessage()).thenReturn("%USERNAME% has been PKed by %PKER% for %VALUELOST% gp");
 
         // init client mocks
-        when(client.getVarbitValue(Varbits.IN_WILDERNESS)).thenReturn(1);
+        when(client.getVarbitValue(VarbitID.INSIDE_WILDERNESS)).thenReturn(1);
         mockNpcs(new NPC[0]);
         mockPlayers(new Player[0]);
         WorldPoint location = new WorldPoint(0, 0, 0);
@@ -123,7 +123,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INV)).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -216,7 +216,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(other.getName()).thenReturn("Rasmus");
         when(other.getInteracting()).thenReturn(localPlayer);
         mockPlayers(new Player[] { other });
-        when(client.getVarbitValue(Varbits.IN_WILDERNESS)).thenReturn(0);
+        when(client.getVarbitValue(VarbitID.INSIDE_WILDERNESS)).thenReturn(0);
 
         // fire event
         plugin.onActorDeath(new ActorDeath(localPlayer));
@@ -239,7 +239,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         String name = "Guard";
         NPC other = mock(NPC.class);
         when(other.getName()).thenReturn(name);
-        when(other.getId()).thenReturn(NpcID.GUARD);
+        when(other.getId()).thenReturn(NpcID.HOS_TOWN_GUARD_01);
         when(other.isDead()).thenReturn(false);
         when(other.getCombatLevel()).thenReturn(21);
         when(other.getInteracting()).thenReturn(localPlayer);
@@ -251,13 +251,13 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(comp.isFollower()).thenReturn(false);
         when(comp.getSize()).thenReturn(1);
         when(comp.isMinimapVisible()).thenReturn(true);
-        when(comp.getId()).thenReturn(NpcID.GUARD);
+        when(comp.getId()).thenReturn(NpcID.HOS_TOWN_GUARD_01);
         when(comp.getName()).thenReturn(name);
         when(comp.getStringValue(ParamID.NPC_HP_NAME)).thenReturn(name);
         when(comp.getCombatLevel()).thenReturn(21);
         when(comp.getActions()).thenReturn(new String[] { "Pickpocket", "Attack", "Examine" });
 
-        when(npcManager.getHealth(NpcID.GUARD)).thenReturn(22);
+        when(npcManager.getHealth(NpcID.HOS_TOWN_GUARD_01)).thenReturn(22);
         mockNpcs(new NPC[] { other });
         when(config.deathNotifyMessage()).thenReturn("%USERNAME% has died to %NPC%");
 
@@ -275,7 +275,7 @@ class DeathNotifierTest extends MockedNotifierTest {
                         .replacement("{{npc}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new DeathNotificationData(0L, false, null, name, NpcID.GUARD, Collections.emptyList(), Collections.emptyList(), Region.of(client)))
+                .extra(new DeathNotificationData(0L, false, null, name, NpcID.HOS_TOWN_GUARD_01, Collections.emptyList(), Collections.emptyList(), Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
@@ -295,7 +295,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INV)).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -337,7 +337,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INV)).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // mock castle wars
@@ -376,7 +376,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INV)).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -418,7 +418,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INV)).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -456,7 +456,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INV)).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -487,7 +487,7 @@ class DeathNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyAmascutHardcoreIron() {
         // update mocks
-        when(client.getVarbitValue(Varbits.ACCOUNT_TYPE)).thenReturn(AccountType.HARDCORE_IRONMAN.ordinal());
+        when(client.getVarbitValue(VarbitID.IRONMAN)).thenReturn(AccountType.HARDCORE_IRONMAN.ordinal());
         when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(3520, 5120, 0));
         when(config.deathEmbedKeptItems()).thenReturn(false);
         when(client.isPrayerActive(Prayer.PROTECT_ITEM)).thenReturn(true);
@@ -499,7 +499,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INV)).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -543,7 +543,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INV)).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -568,7 +568,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INV)).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -593,7 +593,7 @@ class DeathNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyGauntletHardcore() {
         // update mocks
-        when(client.getVarbitValue(Varbits.ACCOUNT_TYPE)).thenReturn(3);
+        when(client.getVarbitValue(VarbitID.IRONMAN)).thenReturn(3);
         when(localPlayer.getWorldLocation()).thenReturn(new WorldPoint(1950, 5650, 0));
         when(config.deathIgnoreSafe()).thenReturn(true);
         when(config.deathEmbedKeptItems()).thenReturn(false);
@@ -606,7 +606,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INV)).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -707,7 +707,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INV)).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event

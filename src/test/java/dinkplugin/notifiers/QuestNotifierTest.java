@@ -6,12 +6,10 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.QuestNotificationData;
-import net.runelite.api.VarPlayer;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
-import net.runelite.api.widgets.ComponentID;
-import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,11 +53,11 @@ class QuestNotifierTest extends MockedNotifierTest {
 
         // mock widget
         Widget questWidget = mock(Widget.class);
-        when(client.getWidget(ComponentID.QUEST_COMPLETED_NAME_TEXT)).thenReturn(questWidget);
+        when(client.getWidget(InterfaceID.Questscroll.QUEST_TITLE)).thenReturn(questWidget);
         when(questWidget.getText()).thenReturn("You have completed the Dragon Slayer I quest!");
 
         // send event
-        plugin.onWidgetLoaded(event(InterfaceID.QUEST_COMPLETED));
+        plugin.onWidgetLoaded(event(InterfaceID.QUESTSCROLL));
 
         // verify notification
         verifyCreateMessage(
@@ -94,11 +92,11 @@ class QuestNotifierTest extends MockedNotifierTest {
 
         // mock widget
         Widget questWidget = mock(Widget.class);
-        when(client.getWidget(ComponentID.QUEST_COMPLETED_NAME_TEXT)).thenReturn(questWidget);
+        when(client.getWidget(InterfaceID.Questscroll.QUEST_TITLE)).thenReturn(questWidget);
         when(questWidget.getText()).thenReturn("You have completed the Dragon Slayer quest!");
 
         // send event
-        plugin.onWidgetLoaded(event(InterfaceID.QUEST_COMPLETED));
+        plugin.onWidgetLoaded(event(InterfaceID.QUESTSCROLL));
 
         // verify no message
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());

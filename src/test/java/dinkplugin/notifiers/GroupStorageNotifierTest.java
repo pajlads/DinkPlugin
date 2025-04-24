@@ -10,14 +10,14 @@ import dinkplugin.notifiers.data.GroupStorageNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
-import net.runelite.api.Varbits;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetModalMode;
 import net.runelite.api.widgets.WidgetUtil;
@@ -64,15 +64,15 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
             .thenReturn("%USERNAME% has deposited:\n%DEPOSITED%\n\n%USERNAME% has withdrawn:\n%WITHDRAWN%");
 
         // init item mocks
-        mockItem(ItemID.COINS, 1, "Coins");
+        mockItem(ItemID.FAKE_COINS, 1, "Coins");
         mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
         mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
         mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
-        mockItem(ItemID.TUNA_26149, TUNA_PRICE, "Tuna");
-        when(itemManager.canonicalize(ItemID.TUNA_26149)).thenReturn(ItemID.TUNA);
+        mockItem(ItemID.DEADMAN_STARTER_TUNA, TUNA_PRICE, "Tuna");
+        when(itemManager.canonicalize(ItemID.DEADMAN_STARTER_TUNA)).thenReturn(ItemID.TUNA);
 
         // init group mock
-        when(client.getVarbitValue(Varbits.ACCOUNT_TYPE)).thenReturn(AccountType.HARDCORE_GROUP_IRONMAN.ordinal());
+        when(client.getVarbitValue(VarbitID.IRONMAN)).thenReturn(AccountType.HARDCORE_GROUP_IRONMAN.ordinal());
         ClanChannel channel = mock(ClanChannel.class);
         when(channel.getName()).thenReturn(GROUP_NAME);
         when(client.getClanChannel(ClanID.GROUP_IRONMAN)).thenReturn(channel);
@@ -135,12 +135,12 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyCoins() {
         // mock initial inventory state
-        Item[] initialItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.COINS_6964, 100) };
+        Item[] initialItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.COINS, 100) };
         mockContainer(initialItems);
         notifier.onWidgetLoad(LOAD_EVENT);
 
         // mock updated inventory
-        Item[] updatedItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.COINS_8890, 1000) };
+        Item[] updatedItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.CERT_ROLL, 1000) };
         mockContainer(updatedItems);
 
         mockSaveWidget();
@@ -149,7 +149,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         // verify notification message
         GroupStorageNotificationData extra = new GroupStorageNotificationData(
             Collections.emptyList(),
-            Collections.singletonList(new SerializedItemStack(ItemID.COINS, 900, 1, "Coins")),
+            Collections.singletonList(new SerializedItemStack(ItemID.FAKE_COINS, 900, 1, "Coins")),
             -900,
             GROUP_NAME,
             true
@@ -161,12 +161,12 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyStackable() {
         // mock initial inventory state
-        Item[] initialItems = { new Item(ItemID.RUBY, 2), new Item(ItemID.COINS_6964, 100), new Item(ItemID.COINS_995, 150) };
+        Item[] initialItems = { new Item(ItemID.RUBY, 2), new Item(ItemID.FAKE_COINS, 100), new Item(ItemID.COINS, 150) };
         mockContainer(initialItems);
         notifier.onWidgetLoad(LOAD_EVENT);
 
         // mock updated inventory
-        Item[] updatedItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.RUBY, 1), new Item(ItemID.COINS_8890, 1000), new Item(ItemID.COINS, 50) };
+        Item[] updatedItems = { new Item(ItemID.RUBY, 1), new Item(ItemID.RUBY, 1), new Item(ItemID.CERT_ROLL, 1000), new Item(ItemID.MAGICTRAINING_COINS, 50) };
         mockContainer(updatedItems);
 
         mockSaveWidget();
@@ -175,7 +175,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         // verify notification message
         GroupStorageNotificationData extra = new GroupStorageNotificationData(
             Collections.emptyList(),
-            Collections.singletonList(new SerializedItemStack(ItemID.COINS, 800, 1, "Coins")),
+            Collections.singletonList(new SerializedItemStack(ItemID.FAKE_COINS, 800, 1, "Coins")),
             -800,
             GROUP_NAME,
             true
@@ -242,7 +242,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         notifier.onWidgetLoad(LOAD_EVENT);
 
         // mock updated inventory
-        Item[] updatedItems = { new Item(ItemID.TUNA_26149, 3) };
+        Item[] updatedItems = { new Item(ItemID.DEADMAN_STARTER_TUNA, 3) };
         mockContainer(updatedItems);
 
         mockSaveWidget();
@@ -297,7 +297,7 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
         notifier.onWidgetLoad(LOAD_EVENT);
 
         // mock updated inventory
-        Item[] updatedItems = { new Item(ItemID.TUNA_26149, 2) };
+        Item[] updatedItems = { new Item(ItemID.DEADMAN_STARTER_TUNA, 2) };
         mockContainer(updatedItems);
 
         mockSaveWidget();

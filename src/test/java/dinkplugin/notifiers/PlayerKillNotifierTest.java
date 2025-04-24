@@ -12,12 +12,12 @@ import dinkplugin.util.WorldUtils;
 import net.runelite.api.Actor;
 import net.runelite.api.Hitsplat;
 import net.runelite.api.HitsplatID;
-import net.runelite.api.ItemID;
 import net.runelite.api.Player;
 import net.runelite.api.PlayerComposition;
 import net.runelite.api.Skill;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.HitsplatApplied;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.api.kit.KitType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -281,11 +281,11 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
 
     static {
         Map<KitType, SerializedItemStack> m = new EnumMap<>(KitType.class);
-        m.put(KitType.WEAPON, new SerializedItemStack(ItemID.ANCIENT_STAFF, 1, WEAPON_PRICE, "Ancient staff"));
+        m.put(KitType.WEAPON, new SerializedItemStack(ItemID.STAFF_OF_ZAROS, 1, WEAPON_PRICE, "Ancient staff"));
         m.put(KitType.TORSO, new SerializedItemStack(ItemID.MYSTIC_ROBE_TOP, 1, TOP_PRICE, "Mystic robe top"));
         m.put(KitType.LEGS, new SerializedItemStack(ItemID.MYSTIC_ROBE_BOTTOM, 1, LEGS_PRICE, "Mystic robe bottom"));
-        m.put(KitType.HANDS, new SerializedItemStack(ItemID.BARROWS_GLOVES, 1, HAND_PRICE, "Barrows gloves"));
-        m.put(KitType.SHIELD, new SerializedItemStack(ItemID.UNHOLY_BOOK, 1, SHIELD_PRICE, "Unholy book"));
+        m.put(KitType.HANDS, new SerializedItemStack(ItemID.HUNDRED_GAUNTLETS_LEVEL_10, 1, HAND_PRICE, "Barrows gloves"));
+        m.put(KitType.SHIELD, new SerializedItemStack(ItemID.ZAMORAKBOOK_COMPLETE, 1, SHIELD_PRICE, "Unholy book"));
         EQUIPMENT = Collections.unmodifiableMap(m);
     }
 }

@@ -8,8 +8,8 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.DiaryNotificationData;
 import net.runelite.api.GameState;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.gameval.VarbitID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -76,7 +76,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
             new int[] { tasksCompleted }, // then COMPLETED_AREA_TASKS_SCRIPT_ID is run
             new int[] { totalAreaTasks } // then TOTAL_TASKS_SCRIPT_ID is run
         );
-        int id = Varbits.DIARY_DESERT_EASY;
+        int id = VarbitID.DESERT_DIARY_EASY_COMPLETE;
         plugin.onVarbitChanged(event(id, 1));
 
         // verify notification message
@@ -102,7 +102,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 16).forEach(i -> notifier.onTick());
 
         // trigger diary started
-        int id = Varbits.DIARY_KARAMJA_HARD;
+        int id = VarbitID.ATJUN_HARD_DONE;
         plugin.onVarbitChanged(event(id, 2));
 
         // verify notification message
@@ -162,7 +162,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
     void testNotifyWesternMessageBox() {
         // initially many diary completions
         when(client.getVarbitValue(anyInt())).thenReturn(1);
-        when(client.getVarbitValue(Varbits.DIARY_WESTERN_HARD)).thenReturn(0);
+        when(client.getVarbitValue(VarbitID.WESTERN_DIARY_HARD_COMPLETE)).thenReturn(0);
         int total = AchievementDiary.DIARIES.size() - 3 - 1;
 
         // perform enough ticks to trigger diary initialization
@@ -202,7 +202,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 16).forEach(i -> notifier.onTick());
 
         // trigger diary completion
-        int id = Varbits.DIARY_KARAMJA_HARD;
+        int id = VarbitID.ATJUN_HARD_DONE;
         plugin.onVarbitChanged(event(id, 2));
 
         // verify notification message
@@ -233,7 +233,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 16).forEach(i -> notifier.onTick());
 
         // trigger diary started
-        int id = Varbits.DIARY_KARAMJA_HARD;
+        int id = VarbitID.ATJUN_HARD_DONE;
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
@@ -249,7 +249,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 16).forEach(i -> notifier.onTick());
 
         // trigger varbit event
-        int id = Varbits.DIARY_DESERT_ELITE;
+        int id = VarbitID.DESERT_DIARY_ELITE_COMPLETE;
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
@@ -259,7 +259,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
     @Test
     void testIgnoreUninitialized() {
         // trigger varbit event
-        int id = Varbits.DIARY_DESERT_ELITE;
+        int id = VarbitID.DESERT_DIARY_ELITE_COMPLETE;
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
@@ -275,7 +275,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 16).forEach(i -> notifier.onTick());
 
         // trigger varbit event
-        int id = Varbits.DIARY_FALADOR_EASY;
+        int id = VarbitID.FALADOR_DIARY_EASY_COMPLETE;
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification
@@ -294,7 +294,7 @@ class DiaryNotifierTest extends MockedNotifierTest {
         IntStream.range(0, 16).forEach(i -> notifier.onTick());
 
         // trigger diary completion
-        int id = Varbits.DIARY_DESERT_ELITE;
+        int id = VarbitID.DESERT_DIARY_ELITE_COMPLETE;
         plugin.onVarbitChanged(event(id, 1));
 
         // ensure no notification

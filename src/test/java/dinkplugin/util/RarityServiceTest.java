@@ -2,7 +2,7 @@ package dinkplugin.util;
 
 import com.google.inject.testing.fieldbinder.Bind;
 import lombok.Getter;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,29 +28,29 @@ class RarityServiceTest extends AbstractRarityServiceTest {
         mockItem(ItemID.DRAGON_AXE, "Dragon axe");
         mockItem(ItemID.SHARK, "Shark");
         mockItem(ItemID.SNAPE_GRASS, "Snape grass");
-        mockItem(ItemID.GOBLIN_SKULL, "Goblin skull");
+        mockItem(ItemID.RAG_GOBLIN_BONE, "Goblin skull");
+        mockItem(ItemID.FAKE_COINS, "Coins");
         mockItem(ItemID.COINS, "Coins");
-        mockItem(ItemID.COINS_995, "Coins");
-        mockItem(ItemID.ARMADYL_HILT, "Armadyl hilt");
+        mockItem(ItemID.GODWARS_GODSWORD_HILT_ARMADYL, "Armadyl hilt");
         mockItem(ItemID.STEEL_ARROW, "Steel arrow");
         mockItem(ItemID.SILVER_ORE, "Silver ore");
         mockItem(ItemID.SILVER_ORE + 1, "Silver ore", true);
         mockItem(ItemID.UNCUT_RUBY, "Uncut ruby");
         mockItem(ItemID.ECUMENICAL_KEY, "Ecumenical key");
-        mockItem(ItemID.DEATH_RUNE, "Death rune");
+        mockItem(ItemID.DEATHRUNE, "Death rune");
         mockItem(ItemID.SNAPE_GRASS_SEED, "Snape grass seed");
         mockItem(ItemID.DRAGONSTONE, "Dragonstone");
-        mockItem(ItemID.ANCIENT_SHARD, "Ancient shard");
-        mockItem(ItemID.LARRANS_KEY, "Larran's key");
-        mockItem(ItemID.UNIDENTIFIED_RARE_FOSSIL, "Unidentified rare fossil");
-        mockItem(ItemID.GRIMY_GUAM_LEAF, "Grimy guam leaf");
+        mockItem(ItemID.CATA_SHARD, "Ancient shard");
+        mockItem(ItemID.SLAYER_WILDERNESS_KEY, "Larran's key");
+        mockItem(ItemID.FOSSIL_RARE_UNID, "Unidentified rare fossil");
+        mockItem(ItemID.UNIDENTIFIED_GUAM, "Grimy guam leaf");
         mockItem(ItemID.DUST_BATTLESTAFF, "Dust battlestaff");
-        mockItem(ItemID.GRIMY_AVANTOE, "Grimy avantoe");
+        mockItem(ItemID.UNIDENTIFIED_AVANTOE, "Grimy avantoe");
         mockItem(ItemID.FIRE_TALISMAN, "Fire talisman");
-        mockItem(ItemID.CLUE_SCROLL_ELITE, "Clue scroll (elite)");
-        mockItem(ItemID.CLUE_SCROLL_ELITE_12157, "Clue scroll (elite)"); // wiki prefers this ID
-        mockItem(ItemID.SUPERANTIPOISON2, "Superantipoison(2)");
-        mockItem(ItemID.SUPERANTIPOISON3, "Superantipoison(3)");
+        mockItem(ItemID.TRAIL_ELITE_EMOTE_EXP1, "Clue scroll (elite)");
+        mockItem(ItemID.TRAIL_ELITE_RIDDLE_EXP18, "Clue scroll (elite)"); // wiki prefers this ID
+        mockItem(ItemID._2DOSE2ANTIPOISON, "Superantipoison(2)");
+        mockItem(ItemID._3DOSE2ANTIPOISON, "Superantipoison(3)");
     }
 
     @Test
@@ -80,14 +80,14 @@ class RarityServiceTest extends AbstractRarityServiceTest {
     @Test
     @DisplayName("Ensure drops are de-duplicated across combat levels")
     void testCombatLevel() {
-        test("Goblin", ItemID.GOBLIN_SKULL, 1, 1.0 / 4);
+        test("Goblin", ItemID.RAG_GOBLIN_BONE, 1, 1.0 / 4);
     }
 
     @Test
     @DisplayName("Ensure drop is matched despite which coin item variation is present")
     void testCoins() {
+        test("Cave goblin miner", ItemID.FAKE_COINS, 6, 1 / 6.4);
         test("Cave goblin miner", ItemID.COINS, 6, 1 / 6.4);
-        test("Cave goblin miner", ItemID.COINS_995, 6, 1 / 6.4);
     }
 
     @Test
@@ -99,7 +99,7 @@ class RarityServiceTest extends AbstractRarityServiceTest {
     @Test
     @DisplayName("Ensure drop is matched when NPC has a non-alphanumeric name")
     void testSpecialName() {
-        test("Kree'arra", ItemID.ARMADYL_HILT, 1, 1.0 / 508);
+        test("Kree'arra", ItemID.GODWARS_GODSWORD_HILT_ARMADYL, 1, 1.0 / 508);
     }
 
     @Test
@@ -142,8 +142,8 @@ class RarityServiceTest extends AbstractRarityServiceTest {
     @DisplayName("Ensure correct drop rate is calculated when multiple rolls are performed")
     void testMultipleRolls() {
         double p = 1.0 / 25;
-        test("Vorkath", ItemID.DEATH_RUNE, 800, p * p);
-        test("Vorkath", ItemID.DEATH_RUNE, 400, 2 * p * (1 - p));
+        test("Vorkath", ItemID.DEATHRUNE, 800, p * p);
+        test("Vorkath", ItemID.DEATHRUNE, 400, 2 * p * (1 - p));
     }
 
     @Test
@@ -161,25 +161,25 @@ class RarityServiceTest extends AbstractRarityServiceTest {
     @Test
     @DisplayName("Ensure accurate drop rate for catacombs table")
     void testCatacombs() {
-        test("Hellhound", ItemID.ANCIENT_SHARD, 1, 1.0 / 256);
+        test("Hellhound", ItemID.CATA_SHARD, 1, 1.0 / 256);
     }
 
     @Test
     @DisplayName("Ensure accurate drop rate for wilderness slayer table")
     void testSlayerWildy() {
-        test("Moss giant", ItemID.LARRANS_KEY, 1, 1.0 / 533);
+        test("Moss giant", ItemID.SLAYER_WILDERNESS_KEY, 1, 1.0 / 533);
     }
 
     @Test
     @DisplayName("Ensure accurate drop rate for fossil table")
     void testFossil() {
-        test("Lobstrosity", ItemID.UNIDENTIFIED_RARE_FOSSIL, 1, 1.0 / 700);
+        test("Lobstrosity", ItemID.FOSSIL_RARE_UNID, 1, 1.0 / 700);
     }
 
     @Test
     @DisplayName("Ensure accurate drop rate for herb table")
     void testHerb() {
-        test("Hydra", ItemID.GRIMY_GUAM_LEAF, 1, 1.0 / 128);
+        test("Hydra", ItemID.UNIDENTIFIED_GUAM, 1, 1.0 / 128);
     }
 
     @Test
@@ -191,7 +191,7 @@ class RarityServiceTest extends AbstractRarityServiceTest {
     @Test
     @DisplayName("Ensure accurate drop rate for useful herb table")
     void testHerbUseful() {
-        test("Rune dragon", ItemID.GRIMY_AVANTOE, 1, 1 / 50.8);
+        test("Rune dragon", ItemID.UNIDENTIFIED_AVANTOE, 1, 1 / 50.8);
     }
 
     @Test
@@ -203,7 +203,7 @@ class RarityServiceTest extends AbstractRarityServiceTest {
     @Test
     @DisplayName("Ensure accurate drop rate for clue scrolls")
     void testClueScroll() {
-        test("Dagannoth Supreme", ItemID.CLUE_SCROLL_ELITE, 1, 1.0 / 750);
+        test("Dagannoth Supreme", ItemID.TRAIL_ELITE_EMOTE_EXP1, 1, 1.0 / 750);
     }
 
     @Test
@@ -231,14 +231,14 @@ class RarityServiceTest extends AbstractRarityServiceTest {
     @DisplayName("Ensure monster name excludes any parenthetical suffix from the wiki")
     void testSuffix() {
         // RarityCalculator removes wiki's (monster) suffix: https://oldschool.runescape.wiki/w/TzHaar-Mej_(monster)
-        test("TzHaar-Mej", ItemID.OBSIDIAN_CAPE, 1, 1.0 / 4_096);
+        test("TzHaar-Mej", ItemID.TZHAAR_CAPE_OBSIDIAN, 1, 1.0 / 4_096);
     }
 
     @Test
     @DisplayName("Ensure accurate rate when monster can drop multiple variations of the same item")
     void testVariations() {
-        test("Tribesman", ItemID.SUPERANTIPOISON2, 1, 1.0 / 46);
-        test("Tribesman", ItemID.SUPERANTIPOISON3, 1, 1.0 / 138);
+        test("Tribesman", ItemID._2DOSE2ANTIPOISON, 1, 1.0 / 46);
+        test("Tribesman", ItemID._3DOSE2ANTIPOISON, 1, 1.0 / 138);
     }
 
 }

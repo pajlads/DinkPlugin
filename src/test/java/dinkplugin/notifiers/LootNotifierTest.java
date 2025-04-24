@@ -11,11 +11,11 @@ import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.RareItemStack;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
-import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
 import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.NpcID;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemStack;
@@ -79,7 +79,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // init item mocks
         mockItem(ItemID.BLOOD_SHARD, SHARD_PRICE, "Blood shard");
-        mockItem(ItemID.LARRANS_KEY, LARRAN_PRICE, "Larran's key");
+        mockItem(ItemID.SLAYER_WILDERNESS_KEY, LARRAN_PRICE, "Larran's key");
         mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
         mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
         mockItem(ItemID.TUNA, TUNA_PRICE, "Tuna");
@@ -140,7 +140,7 @@ class LootNotifierTest extends MockedNotifierTest {
         // fire event
         var criteria = EnumSet.of(LootCriteria.RARITY);
         double rarity = 1.0 / 208;
-        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1)));
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SLAYER_WILDERNESS_KEY, 1)));
         plugin.onNpcLootReceived(event);
 
         // verify notification message
@@ -156,9 +156,9 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new RareItemStack(ItemID.LARRANS_KEY, 1, LARRAN_PRICE, "Larran's key", criteria, rarity)), name, LootRecordType.NPC, 1, rarity, null, NpcID.ICE_SPIDER))
+                .extra(new LootNotificationData(List.of(new RareItemStack(ItemID.SLAYER_WILDERNESS_KEY, 1, LARRAN_PRICE, "Larran's key", criteria, rarity)), name, LootRecordType.NPC, 1, rarity, null, NpcID.ICE_SPIDER))
                 .type(NotificationType.LOOT)
-                .thumbnailUrl(ItemUtils.getItemImageUrl(ItemID.LARRANS_KEY))
+                .thumbnailUrl(ItemUtils.getItemImageUrl(ItemID.SLAYER_WILDERNESS_KEY))
                 .build()
         );
     }
@@ -177,7 +177,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // fire event
         double rarity = 1.0 / 208;
-        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1)));
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SLAYER_WILDERNESS_KEY, 1)));
         plugin.onNpcLootReceived(event);
 
         // ensure no notification
@@ -199,7 +199,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // fire event
         double rarity = 1.0 / 208;
-        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1)));
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SLAYER_WILDERNESS_KEY, 1)));
         plugin.onNpcLootReceived(event);
 
         // ensure no notification
@@ -292,7 +292,7 @@ class LootNotifierTest extends MockedNotifierTest {
         String name = "The Whisperer";
         NPC npc = Mockito.mock(NPC.class);
         when(npc.getName()).thenReturn(name);
-        when(npc.getId()).thenReturn(NpcID.THE_WHISPERER);
+        when(npc.getId()).thenReturn(NpcID.WHISPERER);
         mockWorldNpcs(npc);
 
         // fire event
@@ -311,7 +311,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new LootNotificationData(Collections.singletonList(new AnnotatedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), name, LootRecordType.NPC, 1, null, null, NpcID.THE_WHISPERER))
+                .extra(new LootNotificationData(Collections.singletonList(new AnnotatedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), name, LootRecordType.NPC, 1, null, null, NpcID.WHISPERER))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -324,7 +324,7 @@ class LootNotifierTest extends MockedNotifierTest {
         NPC npc = mock(NPC.class);
         String name = "The Whisperer";
         when(npc.getName()).thenReturn(name);
-        when(npc.getId()).thenReturn(NpcID.THE_WHISPERER);
+        when(npc.getId()).thenReturn(NpcID.WHISPERER);
 
         // fire event
         NpcLootReceived event = new NpcLootReceived(npc, Collections.singletonList(new ItemStack(ItemID.RUBY, 1)));
@@ -822,7 +822,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // fire event
         double rarity = 1.0 / 208;
-        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1)));
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SLAYER_WILDERNESS_KEY, 1)));
         plugin.onNpcLootReceived(event);
 
         // verify notification message
@@ -839,9 +839,9 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(name))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new RareItemStack(ItemID.LARRANS_KEY, 1, LARRAN_PRICE, "Larran's key", criteria, rarity)), name, LootRecordType.NPC, 1, rarity, null, NpcID.ICE_SPIDER))
+                .extra(new LootNotificationData(List.of(new RareItemStack(ItemID.SLAYER_WILDERNESS_KEY, 1, LARRAN_PRICE, "Larran's key", criteria, rarity)), name, LootRecordType.NPC, 1, rarity, null, NpcID.ICE_SPIDER))
                 .type(NotificationType.LOOT)
-                .thumbnailUrl(ItemUtils.getItemImageUrl(ItemID.LARRANS_KEY))
+                .thumbnailUrl(ItemUtils.getItemImageUrl(ItemID.SLAYER_WILDERNESS_KEY))
                 .build()
         );
     }
@@ -859,7 +859,7 @@ class LootNotifierTest extends MockedNotifierTest {
         when(npc.getName()).thenReturn(name);
 
         // fire event
-        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1)));
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SLAYER_WILDERNESS_KEY, 1)));
         plugin.onNpcLootReceived(event);
 
         // verify notification message doesn't fire
@@ -879,7 +879,7 @@ class LootNotifierTest extends MockedNotifierTest {
         when(npc.getName()).thenReturn(name);
 
         // fire event
-        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.LARRANS_KEY, 1)));
+        NpcLootReceived event = new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SLAYER_WILDERNESS_KEY, 1)));
         plugin.onNpcLootReceived(event);
 
         // verify notification message doesn't fire
