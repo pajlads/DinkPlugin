@@ -1,7 +1,7 @@
 package dinkplugin.util;
 
 import com.google.gson.Gson;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.game.ItemManager;
 
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ public class ThievingService extends AbstractRarityService {
             return OptionalDouble.of(1.0 / 5000);
         }
 
-        if (itemId == ItemID.ENHANCED_CRYSTAL_TELEPORT_SEED) {
+        if (itemId == ItemID.PRIF_TELEPORT_SEED) {
             // https://oldschool.runescape.wiki/w/Enhanced_crystal_teleport_seed#Item_sources
             return OptionalDouble.of(1.0 / 1024);
         }

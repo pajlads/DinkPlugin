@@ -8,7 +8,6 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GroupStorageNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.ItemID;
@@ -17,8 +16,11 @@ import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetModalMode;
+import net.runelite.api.widgets.WidgetUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -389,18 +391,18 @@ class GroupStorageNotifierTest extends MockedNotifierTest {
     private void mockContainer(Item[] items) {
         ItemContainer container = mock(ItemContainer.class);
         when(container.getItems()).thenReturn(items);
-        when(client.getItemContainer(InventoryID.GROUP_STORAGE_INV)).thenReturn(container);
+        when(client.getItemContainer(InventoryID.INV_PLAYER_TEMP)).thenReturn(container);
     }
 
     private void mockSaveWidget() {
         Widget widget = mock(Widget.class);
-        when(client.getWidget(GroupStorageNotifier.GROUP_STORAGE_SAVING_WIDGET_ID, 1)).thenReturn(widget);
+        when(client.getWidget(WidgetUtil.packComponentId(InterfaceID.LOADING_ICON_MODAL, 1))).thenReturn(widget);
         when(widget.getText()).thenReturn("Saving...");
     }
 
     static {
         LOAD_EVENT = new WidgetLoaded();
-        LOAD_EVENT.setGroupId(GroupStorageNotifier.GROUP_STORAGE_WIDGET_GROUP);
-        CLOSE_EVENT = new WidgetClosed(GroupStorageNotifier.GROUP_STORAGE_SAVING_WIDGET_ID, WidgetModalMode.MODAL_NOCLICKTHROUGH, true);
+        LOAD_EVENT.setGroupId(InterfaceID.SHARED_BANK);
+        CLOSE_EVENT = new WidgetClosed(InterfaceID.LOADING_ICON_MODAL, WidgetModalMode.MODAL_NOCLICKTHROUGH, true);
     }
 }

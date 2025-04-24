@@ -9,13 +9,11 @@ import dinkplugin.domain.ChatPrivacyMode;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.Varbits;
 import net.runelite.api.annotations.Component;
 import net.runelite.api.annotations.VarCStr;
-import net.runelite.api.widgets.ComponentID;
-import net.runelite.api.widgets.InterfaceID;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
-import net.runelite.api.widgets.WidgetUtil;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.ColorUtil;
@@ -76,8 +74,6 @@ public class Utils {
     @VisibleForTesting
     public final @VarCStr int TOA_MEMBER_NAME = 1099, TOB_MEMBER_NAME = 330;
     private final int TOA_PARTY_MAX_SIZE = 8, TOB_PARTY_MAX_SIZE = 5;
-
-    private final @Component int PRIVATE_CHAT_WIDGET = WidgetUtil.packComponentId(InterfaceID.PRIVATE_CHAT, 0);
 
     /**
      * Custom padding for applying SHA-256 to a long.
@@ -183,14 +179,14 @@ public class Utils {
     }
 
     /**
-     * Transforms the value from {@link Varbits#ACCOUNT_TYPE} to a convenient enum.
+     * Transforms the value from {@link VarbitID#IRONMAN} to a convenient enum.
      *
      * @param client {@link Client}
      * @return {@link AccountType}
      * @apiNote This function should only be called from the client thread.
      */
     public AccountType getAccountType(@NotNull Client client) {
-        return AccountType.get(client.getVarbitValue(Varbits.ACCOUNT_TYPE));
+        return AccountType.get(client.getVarbitValue(VarbitID.IRONMAN));
     }
 
     @Nullable
@@ -236,7 +232,7 @@ public class Utils {
     }
 
     private Collection<String> getXericChambersParty(@NotNull Client client) {
-        Widget widget = client.getWidget(InterfaceID.RAIDING_PARTY, 10);
+        Widget widget = client.getWidget(InterfaceID.RaidsSidepanel.LIST);
         if (widget == null) return Collections.emptyList();
 
         Widget[] children = widget.getChildren();
@@ -315,8 +311,8 @@ public class Utils {
 
     public void captureScreenshot(Client client, ClientThread clientThread, DrawManager drawManager, ImageCapture imageCapture, ExecutorService executor, DinkPluginConfig config, Consumer<Image> consumer) {
         ChatPrivacyMode privacyMode = config.chatPrivacy();
-        boolean chatHidden = hideWidget(privacyMode == ChatPrivacyMode.HIDE_ALL, client, ComponentID.CHATBOX_FRAME);
-        boolean whispersHidden = hideWidget(privacyMode != ChatPrivacyMode.HIDE_NONE, client, PRIVATE_CHAT_WIDGET);
+        boolean chatHidden = hideWidget(privacyMode == ChatPrivacyMode.HIDE_ALL, client, InterfaceID.Chatbox.CHATAREA);
+        boolean whispersHidden = hideWidget(privacyMode != ChatPrivacyMode.HIDE_NONE, client, InterfaceID.PmChat.CONTAINER);
         drawManager.requestNextFrameListener(frame -> {
             if (config.includeClientFrame()) {
                 executor.execute(() -> consumer.accept(imageCapture.addClientFrame(frame)));
@@ -324,8 +320,8 @@ public class Utils {
                 consumer.accept(frame);
             }
 
-            unhideWidget(chatHidden, client, clientThread, ComponentID.CHATBOX_FRAME);
-            unhideWidget(whispersHidden, client, clientThread, PRIVATE_CHAT_WIDGET);
+            unhideWidget(chatHidden, client, clientThread, InterfaceID.Chatbox.CHATAREA);
+            unhideWidget(whispersHidden, client, clientThread, InterfaceID.PmChat.CONTAINER);
         });
     }
 

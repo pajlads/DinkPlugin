@@ -21,8 +21,8 @@ import net.runelite.api.GameState;
 import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GrandExchangeOfferState;
 import net.runelite.api.ItemComposition;
-import net.runelite.api.ItemID;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.grandexchange.GrandExchangePlugin;
@@ -269,11 +269,11 @@ public class GrandExchangeNotifier extends BaseNotifier {
     static {
         // https://oldschool.runescape.wiki/w/Category:Items_exempt_from_Grand_Exchange_tax
         TAX_EXEMPT_ITEMS = ImmutableSet.of(
-            ItemID.CHISEL, ItemID.SEED_DIBBER, ItemID.GARDENING_TROWEL,
-            ItemID.GLASSBLOWING_PIPE, ItemID.HAMMER, ItemID.NEEDLE,
-            ItemID.PESTLE_AND_MORTAR, ItemID.RAKE, ItemID.SAW,
+            ItemID.CHISEL, ItemID.DIBBER, ItemID.GARDENING_TROWEL,
+            ItemID.GLASSBLOWINGPIPE, ItemID.HAMMER, ItemID.NEEDLE,
+            ItemID.PESTLE_AND_MORTAR, ItemID.RAKE, ItemID.POH_SAW,
             ItemID.SECATEURS, ItemID.SHEARS, ItemID.SPADE,
-            ItemID.WATERING_CAN, ItemID.OLD_SCHOOL_BOND
+            ItemID.WATERING_CAN_0, ItemID.OSRS_BOND
         );
     }
 }

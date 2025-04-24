@@ -12,6 +12,8 @@ import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.Varbits;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.config.RuneLiteConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -54,11 +56,11 @@ class MetaNotifierTest extends MockedNotifierTest {
         // update client mocks
         when(client.getWorld()).thenReturn(world);
 
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(1312);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(1477);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(1312);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX)).thenReturn(1477);
 
-        when(client.getVarbitValue(CombatTaskNotifier.TOTAL_POINTS_ID)).thenReturn(1984);
-        when(client.getVarbitValue(CombatTaskNotifier.GRANDMASTER_TOTAL_POINTS_ID)).thenReturn(2005);
+        when(client.getVarbitValue(VarbitID.CA_POINTS)).thenReturn(1984);
+        when(client.getVarbitValue(VarbitID.CA_THRESHOLD_GRANDMASTER)).thenReturn(2005);
 
         when(client.getVarbitValue(Varbits.DIARY_FALADOR_EASY)).thenReturn(1);
         when(client.getVarbitValue(Varbits.DIARY_VARROCK_EASY)).thenReturn(1);
@@ -71,10 +73,10 @@ class MetaNotifierTest extends MockedNotifierTest {
         when(client.getTotalLevel()).thenReturn(skillCount * level);
         when(client.getOverallExperience()).thenReturn(skillCount * xp);
 
-        when(client.getVarbitValue(QuestNotifier.COMPLETED_ID)).thenReturn(21);
-        when(client.getVarbitValue(QuestNotifier.TOTAL_ID)).thenReturn(158);
-        when(client.getVarpValue(VarPlayer.QUEST_POINTS)).thenReturn(43);
-        when(client.getVarbitValue(QuestNotifier.QP_TOTAL_ID)).thenReturn(300);
+        when(client.getVarbitValue(VarbitID.QUESTS_COMPLETED_COUNT)).thenReturn(21);
+        when(client.getVarbitValue(VarbitID.QUESTS_TOTAL_COUNT)).thenReturn(158);
+        when(client.getVarpValue(VarPlayerID.QP)).thenReturn(43);
+        when(client.getVarbitValue(VarbitID.QP_MAX)).thenReturn(300);
 
         when(client.getVarbitValue(Varbits.SLAYER_POINTS)).thenReturn(2484);
         when(client.getVarbitValue(Varbits.SLAYER_TASK_STREAK)).thenReturn(300);
@@ -120,8 +122,8 @@ class MetaNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyWithoutCollection() {
         // update client mock
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(0);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(0);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX)).thenReturn(0);
 
         // fire events
         notifier.onGameState(GameState.LOGGING_IN, GameState.LOGGED_IN);

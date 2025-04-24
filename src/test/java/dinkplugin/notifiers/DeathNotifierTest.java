@@ -123,7 +123,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -295,7 +295,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -337,7 +337,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // mock castle wars
@@ -376,7 +376,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -418,7 +418,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -456,7 +456,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -499,7 +499,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -543,7 +543,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -568,7 +568,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -606,7 +606,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event
@@ -707,7 +707,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             new Item(ItemID.OPAL, 1),
         };
         ItemContainer inv = mock(ItemContainer.class);
-        when(client.getItemContainer(InventoryID.INVENTORY)).thenReturn(inv);
+        when(client.getItemContainer(InventoryID.INVENTORY.getId())).thenReturn(inv);
         when(inv.getItems()).thenReturn(items);
 
         // fire event

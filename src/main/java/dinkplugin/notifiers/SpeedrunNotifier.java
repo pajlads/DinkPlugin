@@ -10,17 +10,13 @@ import dinkplugin.util.TimeUtils;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.Widget;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import java.time.Duration;
 
 @Slf4j
 public class SpeedrunNotifier extends BaseNotifier {
-    static final @VisibleForTesting int SPEEDRUN_COMPLETED_GROUP_ID = 781;
-    static final @VisibleForTesting int SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID = 4;
-    static final @VisibleForTesting int SPEEDRUN_COMPLETED_DURATION_CHILD_ID = 10;
-    static final @VisibleForTesting int SPEEDRUN_COMPLETED_PB_CHILD_ID = 12;
     private boolean isPersonalBest = false;
 
     @Override
@@ -39,14 +35,14 @@ public class SpeedrunNotifier extends BaseNotifier {
     }
 
     public void onWidgetLoaded(WidgetLoaded event) {
-        if (event.getGroupId() == SPEEDRUN_COMPLETED_GROUP_ID && isEnabled()) {
-            Widget questName = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID);
-            Widget duration = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID);
-            Widget personalBest = client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID);
+        if (event.getGroupId() == InterfaceID.QUESTSCROLL_SPEEDRUN && isEnabled()) {
+            Widget questName = client.getWidget(InterfaceID.QuestscrollSpeedrun.QUEST_TITLE);
+            Widget duration = client.getWidget(InterfaceID.QuestscrollSpeedrun.TIME_TEXT);
+            Widget personalBest = client.getWidget(InterfaceID.QuestscrollSpeedrun.BEST_TEXT);
             if (questName != null && duration != null && personalBest != null) {
                 this.attemptNotify(QuestUtils.parseQuestWidget(questName.getText()), duration.getText(), personalBest.getText());
             } else {
-                log.error("Found speedrun finished widget (group id {}) but it is missing something, questName={}, duration={}, pb={}", SPEEDRUN_COMPLETED_GROUP_ID, questName, duration, personalBest);
+                log.warn("Found speedrun finished widget (group id {}) but it is missing something, questName={}, duration={}, pb={}", event.getGroupId(), questName, duration, personalBest);
             }
         }
     }

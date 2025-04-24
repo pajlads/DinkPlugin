@@ -18,17 +18,17 @@ import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Actor;
 import net.runelite.api.Item;
-import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.ParamID;
 import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.SkullIcon;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.ActorDeath;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ScriptPreFired;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
@@ -43,7 +43,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -336,7 +335,7 @@ public class DeathNotifier extends BaseNotifier {
     private Actor identifyKiller() {
         // must be in unsafe wildness or pvp world to be pk'd
         boolean pvpEnabled = !WorldUtils.isPvpSafeZone(client) &&
-            (client.getVarbitValue(Varbits.IN_WILDERNESS) > 0 || WorldUtils.isPvpWorld(client.getWorldType()));
+            (client.getVarbitValue(VarbitID.INSIDE_WILDERNESS) > 0 || WorldUtils.isPvpWorld(client.getWorldType()));
 
         Player localPlayer = client.getLocalPlayer();
         Predicate<Actor> interacting = a -> INTERACTING.test(localPlayer, a);
@@ -418,7 +417,7 @@ public class DeathNotifier extends BaseNotifier {
         for (Pair<Item, Long> item : itemsByPrice) {
             int id = item.getKey().getId();
 
-            if (id == ItemID.OLD_SCHOOL_BOND || id == ItemID.OLD_SCHOOL_BOND_UNTRADEABLE) {
+            if (id == ItemID.OSRS_BOND || id == ItemID.BOUGHT_OSRS_BOND || id == ItemID.OSRS_BOND_UNTRADEABLE) {
                 // deliberately do not increment kept
                 keep.add(item);
                 continue;

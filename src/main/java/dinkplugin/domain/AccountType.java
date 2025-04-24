@@ -16,7 +16,7 @@ public enum AccountType {
     }
 
     /**
-     * @param varbitValue the value associated with {@link net.runelite.api.Varbits#ACCOUNT_TYPE}
+     * @param varbitValue the value associated with {@link net.runelite.api.gameval.VarbitID#IRONMAN}
      * @return the equivalent enum value
      */
     public static AccountType get(int varbitValue) {

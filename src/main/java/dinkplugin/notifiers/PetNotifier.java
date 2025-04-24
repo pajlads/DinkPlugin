@@ -17,10 +17,9 @@ import lombok.Setter;
 import lombok.Value;
 import net.runelite.api.Client;
 import net.runelite.api.Experience;
-import net.runelite.api.ItemID;
 import net.runelite.api.Skill;
-import net.runelite.api.Varbits;
-import net.runelite.api.annotations.Varbit;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -41,12 +40,6 @@ import static java.util.Map.entry;
 
 @Singleton
 public class PetNotifier extends BaseNotifier {
-
-    @Varbit
-    public static final int LOOT_DROP_NOTIFICATIONS = 5399;
-
-    @Varbit
-    public static final int UNTRADEABLE_LOOT_DROPS = 5402;
 
     public static final String UNTRADEABLE_WARNING = "Pet Notifier cannot reliably identify pet names unless you enable the game setting: Untradeable loot notifications";
 
@@ -170,7 +163,7 @@ public class PetNotifier extends BaseNotifier {
         Boolean previouslyOwned;
         if (duplicate) {
             previouslyOwned = true;
-        } else if (client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) % 2 == 1) {
+        } else if (client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM) % 2 == 1) {
             // when collection log chat notification is enabled, presence or absence of notification indicates ownership history
             previouslyOwned = !collection;
         } else {
@@ -466,7 +459,7 @@ public class PetNotifier extends BaseNotifier {
                 @Override
                 Double getProbability(Client client, KillCountService kcService) {
                     // https://oldschool.runescape.wiki/w/Ancient_chest#Unique_drop_table
-                    int totalPoints = client.getVarbitValue(Varbits.TOTAL_POINTS);
+                    int totalPoints = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSCORE);
                     if (totalPoints <= 0) {
                         totalPoints = 26_025;
                     }
@@ -499,7 +492,7 @@ public class PetNotifier extends BaseNotifier {
 
                 @Override
                 Integer estimateActions(Client client, KillCountService kcService) {
-                    return client.getVarbitValue(Varbits.BA_GC);
+                    return client.getVarbitValue(VarbitID.BARBASSAULT_GAMBLECOUNT);
                 }
             }),
             entry("Pet smoke devil", new KcSource("Thermonuclear smoke devil", 1.0 / 3_000)),
@@ -534,8 +527,8 @@ public class PetNotifier extends BaseNotifier {
                 @Override
                 Double getProbability(Client client, KillCountService kcService) {
                     // https://oldschool.runescape.wiki/w/Chest_(Tombs_of_Amascut)#Tertiary_rewards
-                    int rewardPoints = client.getVarbitValue(Varbits.TOTAL_POINTS);
-                    int raidLevels = Math.min(client.getVarbitValue(Varbits.TOA_RAID_LEVEL), 550);
+                    int rewardPoints = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSCORE);
+                    int raidLevels = Math.min(client.getVarbitValue(VarbitID.TOA_CLIENT_RAID_LEVEL), 550);
                     int x = Math.min(raidLevels, 400);
                     int y = Math.max(raidLevels - 400, 0);
                     return 0.01 * rewardPoints / (350_000 - 700 * (x + y / 3)); // assume latest is representative

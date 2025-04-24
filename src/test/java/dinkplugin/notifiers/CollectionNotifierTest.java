@@ -18,6 +18,7 @@ import net.runelite.api.StructComposition;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.game.ItemStack;
 import net.runelite.http.api.loottracker.LootRecordType;
@@ -62,7 +63,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         Mockito.doAnswer(invocation -> Thread.currentThread() == thread).when(client).isClientThread();
 
         when(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION)).thenReturn(1);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX)).thenReturn(TOTAL_ENTRIES);
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
         setCompleted(0);
 
@@ -283,8 +284,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
         /*
          * first notification: no varbit data
          */
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(0);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(0);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX)).thenReturn(0);
 
         String item = "Seercull";
         int price = 23_000;
@@ -320,14 +321,14 @@ class CollectionNotifierTest extends MockedNotifierTest {
             return e;
         };
 
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(1);
-        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.COMPLETED_VARP, 1));
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(1);
+        notifier.onVarPlayer(varpEvent.apply(VarPlayerID.COLLECTION_COUNT, 1));
 
-        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
-        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.TOTAL_VARP, TOTAL_ENTRIES));
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX)).thenReturn(TOTAL_ENTRIES);
+        notifier.onVarPlayer(varpEvent.apply(VarPlayerID.COLLECTION_COUNT_MAX, TOTAL_ENTRIES));
 
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(100);
-        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.COMPLETED_VARP, 100));
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(100);
+        notifier.onVarPlayer(varpEvent.apply(VarPlayerID.COLLECTION_COUNT, 100));
 
         notifier.onTick();
 
@@ -382,10 +383,10 @@ class CollectionNotifierTest extends MockedNotifierTest {
     }
 
     private void setCompleted(int clogCount) {
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(clogCount);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(clogCount);
         when(config.notifyCollectionLog()).thenReturn(false);
         VarbitChanged initCompleted = new VarbitChanged();
-        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
+        initCompleted.setVarpId(VarPlayerID.COLLECTION_COUNT);
         initCompleted.setValue(clogCount);
         notifier.onVarPlayer(initCompleted);
         when(config.notifyCollectionLog()).thenReturn(true);

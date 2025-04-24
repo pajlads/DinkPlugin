@@ -11,11 +11,9 @@ import dinkplugin.util.Utils;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.Varbits;
-import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.ComponentID;
-import net.runelite.api.widgets.InterfaceID;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -36,8 +34,6 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Singleton
 public class KillCountNotifier extends BaseNotifier {
 
-    @Varbit
-    public static final int KILL_COUNT_SPAM_FILTER = 4930;
     public static final String SPAM_WARNING = "Kill Count Notifier requires disabling the in-game setting: Filter out boss kill-count with spam-filter";
 
     private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion|harvest)\\s?count is: ?(?<value>[\\d,]+)\\b", Pattern.CASE_INSENSITIVE);
@@ -92,11 +88,11 @@ public class KillCountNotifier extends BaseNotifier {
             return;
 
         // Barbarian Assault: Track Penance Queen kills
-        if (config.killCountPenanceQueen() && event.getGroupId() == InterfaceID.BA_REWARD) {
-            Widget widget = client.getWidget(ComponentID.BA_REWARD_REWARD_TEXT);
+        if (config.killCountPenanceQueen() && event.getGroupId() == InterfaceID.BARBASSAULT_WAVECOMPLETE) {
+            Widget widget = client.getWidget(InterfaceID.BarbassaultWavecomplete.BARBASSAULT_COMPL_QUEENREWARDS);
             // https://oldschool.runescape.wiki/w/Barbarian_Assault/Rewards#Earning_Honour_points
             if (widget != null && widget.getText().contains("80 ") && widget.getText().contains("5 ")) {
-                int gambleCount = client.getVarbitValue(Varbits.BA_GC);
+                int gambleCount = client.getVarbitValue(VarbitID.BARBASSAULT_GAMBLECOUNT);
                 this.data.set(new BossNotificationData(BA_BOSS_NAME, gambleCount, "The Queen is dead!", null, null, null, null));
             }
         }

@@ -9,13 +9,13 @@ import dinkplugin.notifiers.data.TradeNotificationData;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.annotations.Interface;
 import net.runelite.api.annotations.VarCStr;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.DrawManager;
@@ -44,7 +44,6 @@ public class TradeNotifier extends BaseNotifier {
      */
     @VisibleForTesting
     public static final @VarCStr int TRADE_COUNTERPARTY_VAR = 357;
-    private static final @Interface int TRADE_CONFIRMATION_GROUP = 334;
 
     @Inject
     private ClientThread clientThread;
@@ -83,8 +82,8 @@ public class TradeNotifier extends BaseNotifier {
             return;
         }
 
-        ItemContainer tradeInv = client.getItemContainer(InventoryID.TRADE);
-        ItemContainer otherInv = client.getItemContainer(InventoryID.TRADEOTHER);
+        ItemContainer tradeInv = client.getItemContainer(InventoryID.TRADEOFFER);
+        ItemContainer otherInv = client.getItemContainer(InventoryID.TRADEOFFER | 0x8000);
         if (tradeInv == null && otherInv == null) {
             log.debug("Could not find traded items!");
             this.reset();
@@ -125,14 +124,14 @@ public class TradeNotifier extends BaseNotifier {
     }
 
     public void onWidgetLoad(WidgetLoaded event) {
-        if (event.getGroupId() == TRADE_CONFIRMATION_GROUP) {
+        if (event.getGroupId() == InterfaceID.TRADECONFIRM) {
             Utils.captureScreenshot(client, clientThread, drawManager, imageCapture, executor, config, image::set);
         }
     }
 
     public void onWidgetClose(WidgetClosed event) {
         // relevant when local player declines a trade since no chat message occurs
-        if (event.getGroupId() == TRADE_CONFIRMATION_GROUP) {
+        if (event.getGroupId() == InterfaceID.TRADECONFIRM) {
             clientThread.invokeAtTickEnd(this::reset);
         }
     }

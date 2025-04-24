@@ -8,6 +8,8 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.QuestNotificationData;
 import net.runelite.api.VarPlayer;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.ComponentID;
 import net.runelite.api.widgets.InterfaceID;
 import net.runelite.api.widgets.Widget;
@@ -46,10 +48,10 @@ class QuestNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         // init client mocks
-        when(client.getVarbitValue(QuestNotifier.COMPLETED_ID)).thenReturn(22);
-        when(client.getVarbitValue(QuestNotifier.TOTAL_ID)).thenReturn(156);
-        when(client.getVarpValue(VarPlayer.QUEST_POINTS)).thenReturn(44);
-        when(client.getVarbitValue(QuestNotifier.QP_TOTAL_ID)).thenReturn(293);
+        when(client.getVarbitValue(VarbitID.QUESTS_COMPLETED_COUNT)).thenReturn(22);
+        when(client.getVarbitValue(VarbitID.QUESTS_TOTAL_COUNT)).thenReturn(156);
+        when(client.getVarpValue(VarPlayerID.QP)).thenReturn(44);
+        when(client.getVarbitValue(VarbitID.QP_MAX)).thenReturn(293);
 
         // mock widget
         Widget questWidget = mock(Widget.class);

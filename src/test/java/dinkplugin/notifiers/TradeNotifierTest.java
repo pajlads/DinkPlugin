@@ -57,12 +57,12 @@ public class TradeNotifierTest extends MockedNotifierTest {
         ItemContainer tradeContainer = mock(ItemContainer.class);
         Item[] tradeItems = {new Item(ItemID.OPAL, 2)};
         when(tradeContainer.getItems()).thenReturn(tradeItems);
-        when(client.getItemContainer(InventoryID.TRADE)).thenReturn(tradeContainer);
+        when(client.getItemContainer(InventoryID.TRADE.getId())).thenReturn(tradeContainer);
 
         ItemContainer otherContainer = mock(ItemContainer.class);
         Item[] otherItems = {new Item(ItemID.RUBY, 1)};
         when(otherContainer.getItems()).thenReturn(otherItems);
-        when(client.getItemContainer(InventoryID.TRADEOTHER)).thenReturn(otherContainer);
+        when(client.getItemContainer(InventoryID.TRADEOTHER.getId())).thenReturn(otherContainer);
 
         // fire event
         notifier.onTradeMessage(TradeNotifier.TRADE_ACCEPTED_MESSAGE);
