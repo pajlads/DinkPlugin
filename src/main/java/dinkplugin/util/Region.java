@@ -3,6 +3,8 @@ package dinkplugin.util;
 import lombok.Value;
 import net.runelite.api.Client;
 
+import java.util.Objects;
+
 @Value
 public class Region {
     int regionId;
@@ -10,10 +12,11 @@ public class Region {
     boolean instanced;
 
     public static Region of(Client client, int regionId) {
-        return new Region(regionId, client.getPlane(), client.isInInstancedRegion());
+        var wv = client.getTopLevelWorldView();
+        return new Region(regionId, wv.getPlane(), wv.isInstance());
     }
 
     public static Region of(Client client) {
-        return of(client, WorldUtils.getLocation(client).getRegionID());
+        return of(client, Objects.requireNonNull(WorldUtils.getLocation(client)).getRegionID());
     }
 }
