@@ -4,12 +4,17 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import dinkplugin.SettingsManager;
 import dinkplugin.notifiers.ClueNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
@@ -59,6 +64,12 @@ public class KillCountService {
 
     @Inject
     private ConfigManager configManager;
+
+    @Inject
+    private Client client;
+
+    @Inject
+    private ClientThread clientThread;
 
     @Inject
     private Gson gson;
@@ -181,6 +192,12 @@ public class KillCountService {
         });
     }
 
+    public void onWidget(WidgetLoaded event) {
+        if (event.getGroupId() == InterfaceID.KILL_LOG) {
+            clientThread.invokeAtTickEnd(this::handleSlayerLog);
+        }
+    }
+
     public String getStandardizedSource(LootReceived event) {
         if (isCorruptedGauntlet(event)) {
             return KillCountService.CG_NAME;
@@ -230,7 +247,7 @@ public class KillCountService {
 
     private void incrementKills(@NotNull LootRecordType type, @NotNull String sourceName, @NotNull Collection<ItemStack> items) {
         String cacheKey = getCacheKey(type, sourceName);
-        killCounts.asMap().compute(cacheKey, (key, cachedKc) -> {
+        Integer newKc = killCounts.asMap().compute(cacheKey, (key, cachedKc) -> {
             if (cachedKc != null) {
                 // increment kill count
                 return cachedKc + 1;
@@ -242,6 +259,10 @@ public class KillCountService {
             }
         });
         this.lastDrop = new Drop(sourceName, type, items);
+
+        if (newKc != null && type == LootRecordType.NPC && getSlayerKc(sourceName) != null) {
+            setSlayerKc(sourceName, newKc);
+        }
     }
 
     /**
@@ -259,8 +280,15 @@ public class KillCountService {
             }
         }
 
+        Integer slayerKc = type == LootRecordType.NPC ? getSlayerKc(sourceName) : null;
         SerializedLoot lootRecord = getLootTrackerRecord(type, sourceName);
-        return lootRecord != null ? lootRecord.getKills() : null;
+        if (lootRecord != null) {
+            if (slayerKc != null) {
+                return Math.max(lootRecord.getKills(), slayerKc);
+            }
+            return lootRecord.getKills();
+        }
+        return slayerKc;
     }
 
     @Nullable
@@ -294,6 +322,53 @@ public class KillCountService {
             log.warn("Failed to read kills from loot tracker config", e);
             return null;
         }
+    }
+
+    private void handleSlayerLog() {
+        var title = client.getWidget(InterfaceID.KillLog.INTERFACE_TITLE);
+        if (title == null || !"Slayer Kill Log".equals(title.getText())) {
+            return;
+        }
+
+        var monsters = client.getWidget(InterfaceID.KillLog.NAME);
+        var counts = client.getWidget(InterfaceID.KillLog.KILL);
+        if (monsters == null || counts == null) {
+            return;
+        }
+
+        var mobs = monsters.getChildren();
+        var kills = counts.getChildren();
+        if (mobs == null || kills == null) {
+            return;
+        }
+
+        final int n = Math.min(mobs.length, kills.length);
+        for (int i = 0; i < n; i++) {
+            var mob = mobs[i].getText().replace(":", "");
+            var count = kills[i].getText().replace(",", "");
+
+            int kc;
+            try {
+                kc = Integer.parseInt(count);
+            } catch (NumberFormatException e) {
+                if (count.startsWith("Lots")) {
+                    kc = 65_535;
+                } else {
+                    log.debug("Failed to parse slayer log entry for mob '{}' with kc '{}'", mob, count);
+                    continue;
+                }
+            }
+
+            setSlayerKc(mob, kc);
+        }
+    }
+
+    private void setSlayerKc(String mob, int kc) {
+        configManager.setRSProfileConfiguration(SettingsManager.CONFIG_GROUP, "kc_" + mob.toLowerCase(), kc);
+    }
+
+    private Integer getSlayerKc(String mob) {
+        return configManager.getRSProfileConfiguration(SettingsManager.CONFIG_GROUP, "kc_" + mob.toLowerCase(), int.class);
     }
 
     /**
