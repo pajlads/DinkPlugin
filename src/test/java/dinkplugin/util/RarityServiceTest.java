@@ -48,7 +48,7 @@ class RarityServiceTest extends AbstractRarityServiceTest {
         mockItem(ItemID.UNIDENTIFIED_AVANTOE, "Grimy avantoe");
         mockItem(ItemID.FIRE_TALISMAN, "Fire talisman");
         mockItem(ItemID.TRAIL_ELITE_EMOTE_EXP1, "Clue scroll (elite)");
-        mockItem(ItemID.TRAIL_ELITE_RIDDLE_EXP18, "Clue scroll (elite)"); // wiki prefers this ID
+        mockItem(ItemID.TRAIL_ELITE_ANAGRAM_EXP12, "Clue scroll (elite)"); // wiki prefers this ID
         mockItem(ItemID._2DOSE2ANTIPOISON, "Superantipoison(2)");
         mockItem(ItemID._3DOSE2ANTIPOISON, "Superantipoison(3)");
     }
