@@ -316,7 +316,7 @@ class DeathNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .text(buildTemplate(String.format("%s has died, losing %s gp", PLAYER_NAME, "10M")))
-                .extra(new DeathNotificationData(9999900L, false, null, null, null, kept, lost, Region.of(client)))
+                .extra(new DeathNotificationData(99999 * TUNA_PRICE, false, null, null, null, kept, lost, Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
