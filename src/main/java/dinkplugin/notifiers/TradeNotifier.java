@@ -43,7 +43,10 @@ public class TradeNotifier extends BaseNotifier {
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript%2Ctrade_partner_set%5D.cs2#L3">CS2 Reference</a>
      */
     @VisibleForTesting
-    public static final @VarCStr int TRADE_COUNTERPARTY_VAR = 357;
+    static final @VarCStr int TRADE_COUNTERPARTY_VAR = 357;
+
+    @VisibleForTesting
+    static final int INV_TRADE_OTHER = InventoryID.TRADEOFFER | 0x8000;
 
     @Inject
     private ClientThread clientThread;
@@ -83,7 +86,7 @@ public class TradeNotifier extends BaseNotifier {
         }
 
         ItemContainer tradeInv = client.getItemContainer(InventoryID.TRADEOFFER);
-        ItemContainer otherInv = client.getItemContainer(InventoryID.TRADEOFFER | 0x8000);
+        ItemContainer otherInv = client.getItemContainer(INV_TRADE_OTHER);
         if (tradeInv == null && otherInv == null) {
             log.debug("Could not find traded items!");
             this.reset();
