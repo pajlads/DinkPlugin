@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add RuneProfile as an available player lookup service. (#2572)
 - Minor: Apply cleaner formatting to value lost reported in death notifications. (#719)
 - Minor: Allow configuration of account types that should not trigger notifications. (#701)
 
