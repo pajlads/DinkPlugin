@@ -364,6 +364,7 @@ public class KillCountService {
     }
 
     private void setSlayerKc(String mob, int kc) {
+        if (kc <= 0) return;
         configManager.setRSProfileConfiguration(SettingsManager.CONFIG_GROUP, "kc_" + mob.toLowerCase(), kc);
     }
 
