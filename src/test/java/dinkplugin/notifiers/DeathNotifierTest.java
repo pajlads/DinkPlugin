@@ -289,7 +289,7 @@ class DeathNotifierTest extends MockedNotifierTest {
         when(client.isPrayerActive(Prayer.PROTECT_ITEM)).thenReturn(true);
         Item[] items = {
             new Item(ItemID.RUBY, 1),
-            new Item(ItemID.TUNA, 1),
+            new Item(ItemID.TUNA, 99999),
             new Item(ItemID.COAL, 1),
             new Item(ItemID.SHARK, 1),
             new Item(ItemID.OPAL, 1),
@@ -315,8 +315,8 @@ class DeathNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .text(buildTemplate(String.format("%s has died, losing %d gp", PLAYER_NAME, TUNA_PRICE)))
-                .extra(new DeathNotificationData(TUNA_PRICE, false, null, null, null, kept, lost, Region.of(client)))
+                .text(buildTemplate(String.format("%s has died, losing %s gp", PLAYER_NAME, "10M")))
+                .extra(new DeathNotificationData(99999 * TUNA_PRICE, false, null, null, null, kept, lost, Region.of(client)))
                 .type(NotificationType.DEATH)
                 .build()
         );
