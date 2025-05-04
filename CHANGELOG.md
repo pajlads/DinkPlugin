@@ -2,7 +2,7 @@
 
 - Minor: Allow configuration of account types that should not trigger notifications. (#701)
 - Bugfix: Report correct rarity and luck for pet kraken. (#703)
-- Dev: Migrate to GameVal constants defined by jagex. (#705)
+- Dev: Migrate to GameVal constants defined by Jagex. (#705)
 
 ## 1.11.5
 
