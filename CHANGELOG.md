@@ -1,5 +1,24 @@
 ## Unreleased
 
+- Minor: Apply cleaner formatting to value lost reported in death notifications. (#719)
+- Minor: Allow configuration of account types that should not trigger notifications. (#701)
+
+## 1.11.5
+
+- Minor: Add drop rate of Bran pet for luck calculation. (#695)
+- Minor: Add collection log rank and progress to notification metadata. (#689)
+- Bugfix: Report correct Araxxor kill count in loot notifications if harvest is delayed. (#696)
+
+## 1.11.4
+
+- Bugfix: Ignore fake game messages submitted by other external plugins. (#691)
+- Dev: Fix link to `dinkHandler.js` example. (#684)
+
+## 1.11.3
+
+- Bugfix: Allow external plugin notifications to be requested off of the client thread. (#677)
+- Bugfix: Actually allow null replacements to be sent to the external plugin notifier. (#676)
+
 ## 1.11.2
 
 - Dev: Harden input validation for urls provided to the external plugin notifier. (#672)

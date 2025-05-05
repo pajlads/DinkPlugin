@@ -13,16 +13,20 @@ import dinkplugin.util.HttpUrlAdapter;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameState;
+import net.runelite.client.callback.ClientThread;
 import okhttp3.HttpUrl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Singleton
 public class ExternalPluginNotifier extends BaseNotifier {
 
+    private ClientThread clientThread;
     private Gson gson;
 
     @Override
@@ -36,7 +40,8 @@ public class ExternalPluginNotifier extends BaseNotifier {
     }
 
     @Inject
-    void init(Gson gson) {
+    void init(ClientThread clientThread, Gson gson) {
+        this.clientThread = clientThread;
         this.gson = gson.newBuilder()
             .registerTypeAdapter(HttpUrl.class, new HttpUrlAdapter())
             .create();
@@ -87,7 +92,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
         var player = Utils.getPlayerName(client);
         var template = Template.builder()
             .template(input.getText())
-            .replacements(input.getReplacements())
+            .replacements(Objects.requireNonNullElseGet(input.getReplacements(), () -> new HashMap<>(2)))
             .replacement("%USERNAME%", Replacements.ofText(player))
             .build();
 
@@ -108,7 +113,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .build();
 
         var urls = input.getUrls(this::getWebhookUrl);
-        createMessage(urls, image, body);
+        clientThread.invoke(() -> createMessage(urls, image, body));
     }
 
     private static boolean isUrlInputValid(Object urls) {

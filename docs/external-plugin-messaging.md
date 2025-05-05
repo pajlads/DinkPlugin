@@ -38,10 +38,10 @@ The example below assumes you already have injected RuneLite's eventbus into you
 Map<String, Object> data = new HashMap<>();
 data.put("sourcePlugin", "My Plugin Name");
 data.put("text", "This is the primary content within the webhook. %USERNAME% will automatically be replaced with the player name and you can define your own template replacements like %XYZ%");
-data.put("replacements", Map.of("%XYZ%", Replacement.ofText("sample replacement")));
+data.put("replacements", Map.of("%XYZ%", createTextReplacement("sample replacement")));
 data.put("title", "An optional embed title for your notification");
 data.put("imageRequested", true);
-data.put("fields", List.of(new Field("sample key", "sample value")));
+data.put("fields", List.of(createField("sample key", "sample value")));
 data.put("metadata", Map.of("custom key", "custom value"));
 data.put("urls", Arrays.asList(HttpUrl.parse("https://discord.com/api/webhooks/a/b"), HttpUrl.parse("https://discord.com/api/webhooks/c/d")));
 
@@ -49,38 +49,28 @@ PluginMessage dinkRequest = new PluginMessage("dink", "notify", data);
 eventBus.post(dinkRequest);
 ```
 
-### Useful Classes
+### Helper Methods
 
 ```java
-@Value
-@AllArgsConstructor
-public class Field {
-    String name;
-    String value;
-    Boolean inline;
+public static Map<String, Object> createField(String name, String value) {
+    return Map.of("name", name, "value", value);
+}
 
-    public Field(String name, String value) {
-        this(name, value, null);
-    }
+public static Map<String, Object> createField(String name, String value, boolean inline) {
+    return Map.of("name", name, "value", value, "inline", inline);
 }
 ```
 
 ```java
-@Value
-public class Replacement {
-    String value;
-    String richValue;
+public static Map<String, String> createTextReplacement(String text) {
+    return Map.of("value", text);
+}
 
-    public static Replacement ofText(String value) {
-        return new Replacement(value, null);
-    }
+public static Map<String, String> createLinkReplacement(String text, String link) {
+    return Map.of("value", text, "richValue", String.format("[%s](%s)", text, link));
+}
 
-    public static Replacement ofLink(String text, String link) {
-        return new Replacement(text, String.format("[%s](%s)", text, link));
-    }
-
-    public static Replacement ofWiki(String text, String searchPhrase) {
-        return ofLink(text, "https://oldschool.runescape.wiki/w/Special:Search?search=" + UrlEscapers.urlPathSegmentEscaper().escape(searchPhrase));
-    }
+public static Map<String, String> createWikiReplacement(String text, String searchPhrase) {
+    return createLinkReplacement(text, "https://oldschool.runescape.wiki/w/Special:Search?search=" + UrlEscapers.urlPathSegmentEscaper().escape(searchPhrase));
 }
 ```

@@ -152,6 +152,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.threadNameTemplate()).thenReturn("[%TYPE%] %MESSAGE%");
         when(config.nameFilterMode()).thenReturn(FilterMode.DENY);
         when(config.embedColor()).thenReturn(Utils.PINK);
+        when(config.deniedAccountTypes()).thenReturn(EnumSet.noneOf(AccountType.class));
     }
 
     protected void mockItem(int id, int price, String name) {
@@ -180,7 +181,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         Mockito.verify(messageHandler).createMessage(url, image, body);
 
         // wait for http calls to complete
-        if (url != null && !url.isEmpty()) {
+        if (url != null && !url.isEmpty() && !"https://example.com/".equals(url)) {
             Dispatcher dispatcher = httpClient.dispatcher();
             while (dispatcher.queuedCallsCount() > 0 || dispatcher.runningCallsCount() > 0) {
                 // noinspection BusyWait - comply with discord's undocumented 30/60s ratelimit

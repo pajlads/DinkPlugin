@@ -1,6 +1,7 @@
 package dinkplugin.notifiers;
 
 import com.google.inject.testing.fieldbinder.Bind;
+import dinkplugin.domain.CollectionLogRank;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
@@ -13,6 +14,7 @@ import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.ScriptID;
+import net.runelite.api.StructComposition;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.Varbits;
 import net.runelite.api.events.VarbitChanged;
@@ -56,16 +58,23 @@ class CollectionNotifierTest extends MockedNotifierTest {
         super.setUp();
 
         // init client mocks
+        Thread thread = Thread.currentThread();
+        Mockito.doAnswer(invocation -> Thread.currentThread() == thread).when(client).isClientThread();
+
         when(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION)).thenReturn(1);
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
         when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
-        notifier.onTick();
+        setCompleted(0);
 
-        VarbitChanged initCompleted = new VarbitChanged();
-        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
-        initCompleted.setValue(0);
-        notifier.onVarPlayer(initCompleted);
+        final int[] CLOG_THRESHOLDS = {0, 100, 300, 500, 700, 900, 1000, 1100, 1200, 1300, 1400};
+        CollectionLogRank[] ranks = CollectionLogRank.values();
+        for (int i = 0; i < ranks.length; i++) {
+            CollectionLogRank rank = ranks[i];
+            StructComposition s = mock(StructComposition.class);
+            when(s.getIntValue(CollectionLogRank.THRESHOLD_PARAM)).thenReturn(CLOG_THRESHOLDS[i]);
+            when(client.getStructComposition(rank.getStructId())).thenReturn(s);
+        }
+        notifier.onTick();
 
         // init config mocks
         when(config.notifyCollectionLog()).thenReturn(true);
@@ -104,7 +113,124 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, source, LootRecordType.NPC, kc, rarity))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 1, 99, CollectionLogRank.BRONZE, null, source, LootRecordType.NPC, kc, rarity))
+                .type(NotificationType.COLLECTION)
+                .build()
+        );
+    }
+
+    @Test
+    void testRankUp() {
+        setCompleted(299);
+
+        String item = "Seercull";
+        int price = 23_000;
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
+        mockItem(ItemID.SEERCULL, price, item);
+
+        // prepare kc
+        int kc = 150;
+        double rarity = 1.0 / 128;
+        String source = "Dagannoth Supreme";
+        NPC npc = mock(NPC.class);
+        when(npc.getName()).thenReturn(source);
+        when(npc.getId()).thenReturn(NpcID.DAGANNOTH_SUPREME);
+        when(configManager.getRSProfileConfiguration("killcount", source.toLowerCase(), int.class)).thenReturn(kc);
+        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SEERCULL, 1))));
+
+        // send fake message
+        notifier.onChatMessage("New item added to your collection log: " + item);
+
+        // verify handled
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has added {{item}} to their collection", PLAYER_NAME))
+                        .replacement("{{item}}", Replacements.ofWiki(item))
+                        .build()
+                )
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 300, TOTAL_ENTRIES, CollectionLogRank.IRON, 0, 200, CollectionLogRank.STEEL, CollectionLogRank.BRONZE, source, LootRecordType.NPC, kc, rarity))
+                .type(NotificationType.COLLECTION)
+                .build()
+        );
+    }
+
+    @Test
+    void testGildedRank() {
+        setCompleted(1399);
+
+        String item = "Seercull";
+        int price = 23_000;
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
+        mockItem(ItemID.SEERCULL, price, item);
+
+        // prepare kc
+        int kc = 150;
+        double rarity = 1.0 / 128;
+        String source = "Dagannoth Supreme";
+        NPC npc = mock(NPC.class);
+        when(npc.getName()).thenReturn(source);
+        when(npc.getId()).thenReturn(NpcID.DAGANNOTH_SUPREME);
+        when(configManager.getRSProfileConfiguration("killcount", source.toLowerCase(), int.class)).thenReturn(kc);
+        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SEERCULL, 1))));
+
+        // send fake message
+        notifier.onChatMessage("New item added to your collection log: " + item);
+
+        // verify handled
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has added {{item}} to their collection", PLAYER_NAME))
+                        .replacement("{{item}}", Replacements.ofWiki(item))
+                        .build()
+                )
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1400, TOTAL_ENTRIES, CollectionLogRank.GILDED, 0, null, null, CollectionLogRank.DRAGON, source, LootRecordType.NPC, kc, rarity))
+                .type(NotificationType.COLLECTION)
+                .build()
+        );
+    }
+
+    @Test
+    void testNoRank() {
+        setCompleted(0);
+
+        String item = "Seercull";
+        int price = 23_000;
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
+        mockItem(ItemID.SEERCULL, price, item);
+
+        // prepare kc
+        int kc = 150;
+        double rarity = 1.0 / 128;
+        String source = "Dagannoth Supreme";
+        NPC npc = mock(NPC.class);
+        when(npc.getName()).thenReturn(source);
+        when(npc.getId()).thenReturn(NpcID.DAGANNOTH_SUPREME);
+        when(configManager.getRSProfileConfiguration("killcount", source.toLowerCase(), int.class)).thenReturn(kc);
+        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SEERCULL, 1))));
+
+        // send fake message
+        notifier.onChatMessage("New item added to your collection log: " + item);
+
+        // verify handled
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has added {{item}} to their collection", PLAYER_NAME))
+                        .replacement("{{item}}", Replacements.ofWiki(item))
+                        .build()
+                )
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 1, 99, CollectionLogRank.BRONZE, null, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -144,7 +270,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, null, null, null, null))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 1, 99, CollectionLogRank.BRONZE, null, null,null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -179,7 +305,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, null, null, null, null, null, null))
+                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, null, null, null, null, null, null, null, null,null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -227,7 +353,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item2))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item2, ItemID.SEERS_RING, (long) price2, 101, TOTAL_ENTRIES, null, null, null, null))
+                .extra(new CollectionNotificationData(item2, ItemID.SEERS_RING, (long) price2, 101, TOTAL_ENTRIES, CollectionLogRank.BRONZE, 1, 199, CollectionLogRank.IRON, null, null,null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -253,6 +379,16 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    private void setCompleted(int clogCount) {
+        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(clogCount);
+        when(config.notifyCollectionLog()).thenReturn(false);
+        VarbitChanged initCompleted = new VarbitChanged();
+        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
+        initCompleted.setValue(clogCount);
+        notifier.onVarPlayer(initCompleted);
+        when(config.notifyCollectionLog()).thenReturn(true);
     }
 
 }
