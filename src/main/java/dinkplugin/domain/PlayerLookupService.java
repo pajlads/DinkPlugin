@@ -7,7 +7,9 @@ public enum PlayerLookupService {
     OSRS_HISCORE("OSRS HiScore"),
     CRYSTAL_MATH_LABS("Crystal Math Labs"),
     TEMPLE_OSRS("Temple OSRS"),
-    WISE_OLD_MAN("Wise Old Man");
+    WISE_OLD_MAN("Wise Old Man"),
+    RUNE_PROFILE("RuneProfile"),
+    ;
 
     private final String name;
 
@@ -26,6 +28,8 @@ public enum PlayerLookupService {
                 return "https://crystalmathlabs.com/track.php?player=" + escapedName;
             case TEMPLE_OSRS:
                 return "https://templeosrs.com/player/overview.php?player=" + escapedName;
+            case RUNE_PROFILE:
+                return "https://runeprofile.com/" + escapedName;
             case NONE:
             default:
                 return null;
