@@ -32,6 +32,7 @@ import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
+import net.runelite.client.util.QuantityFormatter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -272,7 +273,7 @@ public class DeathNotifier extends BaseNotifier {
             .template(template)
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
-            .replacement("%VALUELOST%", Replacements.ofText(String.valueOf(losePrice)));
+            .replacement("%VALUELOST%", Replacements.ofText(QuantityFormatter.quantityToStackSize(losePrice)));
         if (pvp) {
             builder.replacement("%PKER%", Replacements.ofText(killer));
         } else if (npc) {
