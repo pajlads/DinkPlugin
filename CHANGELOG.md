@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.7
+
 - Dev: Migrate to GameVal constants defined by Jagex. (#705)
 
 ## 1.11.6
