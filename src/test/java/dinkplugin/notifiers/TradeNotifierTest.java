@@ -7,10 +7,10 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.notifiers.data.TradeNotificationData;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -57,12 +57,12 @@ public class TradeNotifierTest extends MockedNotifierTest {
         ItemContainer tradeContainer = mock(ItemContainer.class);
         Item[] tradeItems = {new Item(ItemID.OPAL, 2)};
         when(tradeContainer.getItems()).thenReturn(tradeItems);
-        when(client.getItemContainer(InventoryID.TRADE)).thenReturn(tradeContainer);
+        when(client.getItemContainer(InventoryID.TRADEOFFER)).thenReturn(tradeContainer);
 
         ItemContainer otherContainer = mock(ItemContainer.class);
         Item[] otherItems = {new Item(ItemID.RUBY, 1)};
         when(otherContainer.getItems()).thenReturn(otherItems);
-        when(client.getItemContainer(InventoryID.TRADEOTHER)).thenReturn(otherContainer);
+        when(client.getItemContainer(TradeNotifier.INV_TRADE_OTHER)).thenReturn(otherContainer);
 
         // fire event
         notifier.onTradeMessage(TradeNotifier.TRADE_ACCEPTED_MESSAGE);
@@ -100,12 +100,12 @@ public class TradeNotifierTest extends MockedNotifierTest {
         ItemContainer tradeContainer = mock(ItemContainer.class);
         Item[] tradeItems = {new Item(ItemID.OPAL, 1)};
         when(tradeContainer.getItems()).thenReturn(tradeItems);
-        when(client.getItemContainer(InventoryID.TRADE)).thenReturn(tradeContainer);
+        when(client.getItemContainer(InventoryID.TRADEOFFER)).thenReturn(tradeContainer);
 
         ItemContainer otherContainer = mock(ItemContainer.class);
         Item[] otherItems = {new Item(ItemID.RUBY, 1)};
         when(otherContainer.getItems()).thenReturn(otherItems);
-        when(client.getItemContainer(InventoryID.TRADEOTHER)).thenReturn(otherContainer);
+        when(client.getItemContainer(TradeNotifier.INV_TRADE_OTHER)).thenReturn(otherContainer);
 
         // fire event
         notifier.onTradeMessage(TradeNotifier.TRADE_ACCEPTED_MESSAGE);
@@ -123,12 +123,12 @@ public class TradeNotifierTest extends MockedNotifierTest {
         ItemContainer tradeContainer = mock(ItemContainer.class);
         Item[] tradeItems = {new Item(ItemID.OPAL, 2)};
         when(tradeContainer.getItems()).thenReturn(tradeItems);
-        when(client.getItemContainer(InventoryID.TRADE)).thenReturn(tradeContainer);
+        when(client.getItemContainer(InventoryID.TRADEOFFER)).thenReturn(tradeContainer);
 
         ItemContainer otherContainer = mock(ItemContainer.class);
         Item[] otherItems = {new Item(ItemID.RUBY, 1)};
         when(otherContainer.getItems()).thenReturn(otherItems);
-        when(client.getItemContainer(InventoryID.TRADEOTHER)).thenReturn(otherContainer);
+        when(client.getItemContainer(TradeNotifier.INV_TRADE_OTHER)).thenReturn(otherContainer);
 
         // fire event
         notifier.onTradeMessage(TradeNotifier.TRADE_ACCEPTED_MESSAGE);

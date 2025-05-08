@@ -11,11 +11,11 @@ import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.MathUtils;
-import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
-import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.NpcID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.events.NpcLootReceived;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -104,15 +104,15 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyCollection() {
         String petName = "TzRek-Jad";
-        int itemId = ItemID.TZREKJAD;
+        int itemId = ItemID.JAD_PET;
 
         // prepare mocks
         when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);
-        when(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION)).thenReturn(1);
+        when(client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM)).thenReturn(1);
         String npcName = "TzTok-Jad";
         NPC npc = mock(NPC.class);
         when(npc.getName()).thenReturn(npcName);
-        when(npc.getId()).thenReturn(NpcID.TZTOKJAD);
+        when(npc.getId()).thenReturn(NpcID.TZHAAR_FIGHTCAVE_SWARM_BOSS);
         int kc = 100;
         double rarity = 1.0 / 200;
         double luck = MathUtils.cumulativeGeometric(rarity, kc);
@@ -140,11 +140,11 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyLostExistingCollection() {
         String petName = "TzRek-Jad";
-        int itemId = ItemID.TZREKJAD;
+        int itemId = ItemID.JAD_PET;
 
         // prepare mocks
         when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);
-        when(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION)).thenReturn(1);
+        when(client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM)).thenReturn(1);
 
         // send fake message
         notifier.onChatMessage("You have a funny feeling like you're being followed.");
@@ -167,7 +167,7 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyUntradeable() {
         String petName = "TzRek-Jad";
-        int itemId = ItemID.TZREKJAD;
+        int itemId = ItemID.JAD_PET;
 
         // prepare mocks
         when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);
@@ -193,7 +193,7 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyUntradeableDuplicate() {
         String petName = "TzRek-Jad";
-        int itemId = ItemID.TZREKJAD;
+        int itemId = ItemID.JAD_PET;
 
         // prepare mocks
         when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);
@@ -219,7 +219,7 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyUntradeableNotARealPet() {
         String petName = "Forsen";
-        int itemId = ItemID.TZREKJAD;
+        int itemId = ItemID.JAD_PET;
 
         // send fake message
         notifier.onChatMessage("You have a funny feeling like you're being followed.");
@@ -242,7 +242,7 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyMultipleSameName() {
         String petName = "TzRek-Jad";
-        int itemId = ItemID.TZREKJAD;
+        int itemId = ItemID.JAD_PET;
 
         // prepare mocks
         when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);
@@ -281,7 +281,7 @@ class PetNotifierTest extends MockedNotifierTest {
     @Test
     void testNotifyClan() {
         String petName = "TzRek-Jad";
-        int itemId = ItemID.TZREKJAD;
+        int itemId = ItemID.JAD_PET;
 
         // prepare mocks
         when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);

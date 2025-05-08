@@ -14,8 +14,8 @@ import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.StructComposition;
 import net.runelite.api.WorldType;
-import net.runelite.api.annotations.Varbit;
-import net.runelite.api.annotations.Varp;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -39,37 +39,11 @@ public class LeaguesNotifier extends BaseNotifier {
     private static final Pattern TASK_REGEX = Pattern.compile("Congratulations, you've completed an? (?<tier>\\w+) task: (?<task>.+)\\.");
     private static final Pattern MASTERY_REGEX = Pattern.compile("Congratulations, you've unlocked a new .+ Combat Mastery: (?<type>\\w+) (?<tier>\\w+)\\.");
 
-    /**
-     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cleague_areas_progress_bar%5D.cs2#L177">CS2 Reference</a>
-     */
-    @VisibleForTesting
-    static final @Varbit int TASKS_COMPLETED_ID = 10046; // TODO: is this still correct for V? (was used in II, III, IV)
-
-    /**
-     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cscript730%5D.cs2#L86">CS2 Reference</a>
-     */
-    @VisibleForTesting
-    static final @Varp int POINTS_EARNED_ID = 2614; // TODO: is this still correct for V? (was used in III, IV)
-
-    /**
-     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cleague_areas_draw_interface%5D.cs2#L28-L55">CS2 Reference</a>
-     */
-    @VisibleForTesting
-    static final @Varbit int FIVE_AREAS = 10666, FOUR_AREAS = 10665, THREE_AREAS = 10664, TWO_AREAS = 10663; // TODO: are these still correct?
-
     @VisibleForTesting
     static final int FIRST_AREA_TASKS = 90, SECOND_AREA_TASKS = 200, THIRD_AREA_TASKS = 400;
 
     /**
-     * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/[proc%2Cscript2451].cs2#L3-L6">CS2 Reference</a>
-     * @see <a href="https://abextm.github.io/cache2/#/viewer/enum/2670">Enum Reference</a>
-     * @see <a href="https://abextm.github.io/cache2/#/viewer/struct/4699">Struct Reference</a>
-     */
-    @VisibleForTesting
-    static final @Varbit int LEAGUES_VERSION = 10032; // TODO: ensure this changed to 5 for Leagues V
-
-    /**
-     * Value associated with {@link #LEAGUES_VERSION} for the current league.
+     * Value associated with {@link VarbitID#LEAGUE_TYPE} for the current league.
      */
     @VisibleForTesting
     static final int CURRENT_LEAGUE_VERSION = 5;
@@ -115,7 +89,7 @@ public class LeaguesNotifier extends BaseNotifier {
     @Override
     public boolean isEnabled() {
         return config.notifyLeagues() &&
-            client.getVarbitValue(LEAGUES_VERSION) == CURRENT_LEAGUE_VERSION &&
+            client.getVarbitValue(VarbitID.LEAGUE_TYPE) == CURRENT_LEAGUE_VERSION &&
             client.getWorldType().contains(WorldType.SEASONAL) &&
             accountPassesConfig();
     }
@@ -188,7 +162,7 @@ public class LeaguesNotifier extends BaseNotifier {
     private void notifyAreaUnlock(String area) {
         Map.Entry<Integer, String> unlocked = numAreasUnlocked();
 
-        int tasksCompleted = client.getVarbitValue(TASKS_COMPLETED_ID);
+        int tasksCompleted = client.getVarbitValue(VarbitID.LEAGUE_TOTAL_TASKS_COMPLETED);
         Integer tasksForNextArea = AREA_BY_TASKS.ceilingKey(tasksCompleted + 1);
         Integer tasksUntilNextArea = tasksForNextArea != null ? tasksForNextArea - tasksCompleted : null;
 
@@ -215,7 +189,7 @@ public class LeaguesNotifier extends BaseNotifier {
     }
 
     private void notifyRelicUnlock(String relic) {
-        int points = client.getVarpValue(POINTS_EARNED_ID);
+        int points = client.getVarpValue(VarPlayerID.LEAGUE_POINTS_COMPLETED);
         Integer pointsOfNextTier = TIER_BY_POINTS.ceilingKey(points + 1);
         Integer pointsUntilNextTier = pointsOfNextTier != null ? pointsOfNextTier - points : null;
 
@@ -242,8 +216,8 @@ public class LeaguesNotifier extends BaseNotifier {
 
     private void notifyTaskCompletion(LeagueTaskDifficulty tier, String task) {
         int taskPoints = tier.getPoints();
-        int totalPoints = client.getVarpValue(POINTS_EARNED_ID);
-        int tasksCompleted = client.getVarbitValue(TASKS_COMPLETED_ID);
+        int totalPoints = client.getVarpValue(VarPlayerID.LEAGUE_POINTS_COMPLETED);
+        int tasksCompleted = client.getVarbitValue(VarbitID.LEAGUE_TOTAL_TASKS_COMPLETED);
         String playerName = Utils.getPlayerName(client);
 
         Integer nextAreaTasks = AREA_BY_TASKS.ceilingKey(tasksCompleted + 1);
@@ -293,16 +267,16 @@ public class LeaguesNotifier extends BaseNotifier {
         // most players think just in terms of the 3 discretionary areas,
         // so we disregard Misthalin and consider Karamja as the zeroth area.
         // Thus, the number of unlocked areas is bounded by 3 (instead of 5).
-        if (client.getVarbitValue(FIVE_AREAS) > 0) {
+        if (client.getVarbitValue(VarbitID.LEAGUE_AREA_SELECTION_4) > 0) {
             return Map.entry(3, ith(3));
         }
-        if (client.getVarbitValue(FOUR_AREAS) > 0) {
+        if (client.getVarbitValue(VarbitID.LEAGUE_AREA_SELECTION_3) > 0) {
             return Map.entry(2, ith(2));
         }
-        if (client.getVarbitValue(THREE_AREAS) > 0) {
+        if (client.getVarbitValue(VarbitID.LEAGUE_AREA_SELECTION_2) > 0) {
             return Map.entry(1, ith(1));
         }
-        if (client.getVarbitValue(TWO_AREAS) > 0) {
+        if (client.getVarbitValue(VarbitID.LEAGUE_AREA_SELECTION_1) > 0) {
             return Map.entry(0, ith(0)); // Karamja
         }
         return null;

@@ -9,7 +9,7 @@ import dinkplugin.notifiers.KillCountNotifier;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
+import net.runelite.api.gameval.NpcID;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
@@ -52,8 +52,8 @@ public class KillCountService {
     private static final String HERBIBOAR_PREFIX = "Your herbiboar harvest count is: ";
 
     public static final Set<Integer> SPECIAL_LOOT_NPC_IDS = Set.of(
-        NpcID.THE_WHISPERER, NpcID.THE_WHISPERER_12205, NpcID.THE_WHISPERER_12206, NpcID.THE_WHISPERER_12207,
-        NpcID.ARAXXOR, NpcID.ARAXXOR_13669, NpcID.BRANDA_THE_FIRE_QUEEN_14148, NpcID.ELDRIC_THE_ICE_KING_14149
+        NpcID.WHISPERER, NpcID.WHISPERER_MELEE, NpcID.WHISPERER_QUEST, NpcID.WHISPERER_MELEE_QUEST,
+        NpcID.ARAXXOR, NpcID.ARAXXOR_DEAD, NpcID.RT_FIRE_QUEEN_INACTIVE, NpcID.RT_ICE_KING_INACTIVE
     );
     public static final Set<String> SPECIAL_LOOT_NPC_NAMES = Set.of("The Whisperer", "Araxxor", "Branda the Fire Queen", "Eldric the Ice King");
 

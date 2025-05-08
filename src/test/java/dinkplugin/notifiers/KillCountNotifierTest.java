@@ -9,10 +9,9 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.notifiers.data.BossNotificationData;
 import dinkplugin.util.Utils;
 import net.runelite.api.NPC;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.ComponentID;
-import net.runelite.api.widgets.InterfaceID;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.http.api.RuneLiteAPI;
 import org.junit.jupiter.api.BeforeEach;
@@ -511,14 +510,14 @@ class KillCountNotifierTest extends MockedNotifierTest {
         String boss = "Penance Queen";
         when(config.killCountPenanceQueen()).thenReturn(true);
         when(config.killCountSendImage()).thenReturn(false);
-        when(client.getVarbitValue(Varbits.BA_GC)).thenReturn(count);
+        when(client.getVarbitValue(VarbitID.BARBASSAULT_GAMBLECOUNT)).thenReturn(count);
         Widget widget = mock(Widget.class);
         when(widget.getText()).thenReturn("Reward:<br>80 Healer points<br>5 Defender points<br>5 Collector points<br>5 Attacker points");
-        when(client.getWidget(ComponentID.BA_REWARD_REWARD_TEXT)).thenReturn(widget);
+        when(client.getWidget(InterfaceID.BarbassaultWavecomplete.BARBASSAULT_COMPL_QUEENREWARDS)).thenReturn(widget);
 
         // fire event
         WidgetLoaded event = new WidgetLoaded();
-        event.setGroupId(InterfaceID.BA_REWARD);
+        event.setGroupId(InterfaceID.BARBASSAULT_WAVECOMPLETE);
         notifier.onWidget(event);
         notifier.onTick();
 
@@ -544,14 +543,14 @@ class KillCountNotifierTest extends MockedNotifierTest {
     void testIgnoreBarbarianAssault() {
         // update mocks
         when(config.killCountPenanceQueen()).thenReturn(false);
-        when(client.getVarbitValue(Varbits.BA_GC)).thenReturn(420);
+        when(client.getVarbitValue(VarbitID.BARBASSAULT_GAMBLECOUNT)).thenReturn(420);
         Widget widget = mock(Widget.class);
         when(widget.getText()).thenReturn("Reward:<br>80 Healer points<br>5 Defender points<br>5 Collector points<br>5 Attacker points");
-        when(client.getWidget(ComponentID.BA_REWARD_REWARD_TEXT)).thenReturn(widget);
+        when(client.getWidget(InterfaceID.BarbassaultWavecomplete.BARBASSAULT_COMPL_QUEENREWARDS)).thenReturn(widget);
 
         // fire event
         WidgetLoaded event = new WidgetLoaded();
-        event.setGroupId(InterfaceID.BA_REWARD);
+        event.setGroupId(InterfaceID.BARBASSAULT_WAVECOMPLETE);
         notifier.onWidget(event);
         notifier.onTick();
 

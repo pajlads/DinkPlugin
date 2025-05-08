@@ -8,11 +8,10 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.game.ItemVariationMapping;
@@ -33,26 +32,28 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static net.runelite.api.ItemID.*;
+import static net.runelite.api.gameval.ItemID.*;
 
 @UtilityClass
 public class ItemUtils {
 
     final String ITEM_CACHE_BASE_URL = "https://static.runelite.net/cache/item/";
 
-    public final Collection<Integer> COIN_VARIATIONS = new HashSet<>(ItemVariationMapping.getVariations(ItemID.COINS));
+    public final Collection<Integer> COIN_VARIATIONS = new HashSet<>(ItemVariationMapping.getVariations(FAKE_COINS));
 
     private final Set<Integer> NEVER_KEPT_ITEMS = ImmutableSet.of(
-        CLUE_BOX, LOOTING_BAG, FLAMTAER_BAG, JAR_GENERATOR,
-        AMULET_OF_THE_DAMNED, RING_OF_CHAROS, RING_OF_CHAROSA,
-        BRACELET_OF_ETHEREUM, BRACELET_OF_ETHEREUM_UNCHARGED,
-        AVAS_ACCUMULATOR, AVAS_ATTRACTOR, MAGIC_SECATEURS, MAGIC_BUTTERFLY_NET,
-        COOKING_GAUNTLETS, GOLDSMITH_GAUNTLETS, CHAOS_GAUNTLETS, STEEL_GAUNTLETS,
-        SILLY_JESTER_HAT, SILLY_JESTER_TOP, SILLY_JESTER_TIGHTS, SILLY_JESTER_BOOTS,
-        LUNAR_HELM, LUNAR_TORSO, LUNAR_LEGS, LUNAR_GLOVES, LUNAR_BOOTS,
-        LUNAR_CAPE, LUNAR_AMULET, LUNAR_RING, LUNAR_STAFF,
-        SHATTERED_RELICS_ADAMANT_TROPHY, SHATTERED_RELICS_BRONZE_TROPHY, SHATTERED_RELICS_DRAGON_TROPHY,
-        SHATTERED_RELICS_IRON_TROPHY, SHATTERED_RELICS_MITHRIL_TROPHY, SHATTERED_RELICS_RUNE_TROPHY, SHATTERED_RELICS_STEEL_TROPHY,
+        BH_CLUE_BOX, LOOTING_BAG, FLAMTAER_BAG, II_JAR_GENERATOR,
+        DAMNED_AMULET_DEGRADED, RING_OF_CHAROS, RING_OF_CHAROS_UNLOCKED,
+        WILD_CAVE_BRACELET_CHARGED, WILD_CAVE_BRACELET_UNCHARGED,
+        ANMA_50_REWARD, ANMA_30_REWARD, FAIRY_ENCHANTED_SECATEURS, II_MAGIC_BUTTERFLY_NET,
+        GAUNTLETS_OF_COOKING, GAUNTLETS_OF_GOLDSMITHING, GAUNTLETS_OF_CHAOS, STEEL_GAUNTLETS,
+        FRISD_JESTER_HAT, FRISD_JESTER_TOP, FRISD_JESTER_LEGS, FRISD_JESTER_BOOTS,
+        LUNAR_HELMET, LUNAR_TORSO, LUNAR_LEGS, LUNAR_GLOVES, LUNAR_BOOTS,
+        LUNAR_CAPE, LUNAR_AMULET, LUNAR_RING, LUNAR_MOONCLAN_LIMINAL_STAFF,
+        LEAGUE_3_ADAMANT_TROPHY, LEAGUE_3_BRONZE_TROPHY, LEAGUE_3_DRAGON_TROPHY,
+        LEAGUE_3_IRON_TROPHY, LEAGUE_3_MITHRIL_TROPHY, LEAGUE_3_RUNE_TROPHY, LEAGUE_3_STEEL_TROPHY,
+        LEAGUE_5_ADAMANT_TROPHY, LEAGUE_5_BRONZE_TROPHY, LEAGUE_5_DRAGON_TROPHY,
+        LEAGUE_5_IRON_TROPHY, LEAGUE_5_MITHRIL_TROPHY, LEAGUE_5_RUNE_TROPHY, LEAGUE_5_STEEL_TROPHY,
         TRAILBLAZER_ADAMANT_TROPHY, TRAILBLAZER_BRONZE_TROPHY, TRAILBLAZER_DRAGON_TROPHY, TRAILBLAZER_IRON_TROPHY,
         TRAILBLAZER_MITHRIL_TROPHY, TRAILBLAZER_RUNE_TROPHY, TRAILBLAZER_STEEL_TROPHY,
         TWISTED_ADAMANT_TROPHY, TWISTED_BRONZE_TROPHY, TWISTED_DRAGON_TROPHY, TWISTED_IRON_TROPHY,
@@ -92,7 +93,7 @@ public class ItemUtils {
     }
 
     public Collection<Item> getItems(Client client) {
-        return Stream.of(InventoryID.INVENTORY, InventoryID.EQUIPMENT)
+        return Stream.of(InventoryID.INV, InventoryID.WORN)
             .map(client::getItemContainer)
             .filter(Objects::nonNull)
             .map(ItemContainer::getItems)

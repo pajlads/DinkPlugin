@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import lombok.Data;
 import lombok.Value;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.util.Text;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -96,6 +97,11 @@ class RarityCalculator {
 
     @Data
     static class Drop {
+        private static final Set<Integer> COINS = Set.of(
+            ItemID.COINS, ItemID.COINS_2, ItemID.COINS_3, ItemID.COINS_4, ItemID.COINS_5, ItemID.COINS_25,
+            ItemID.COINS_100, ItemID.COINS_250, ItemID.COINS_1000, ItemID.COINS_10000
+        );
+
         private String name;
         private String quantity;
         private String rarity;
@@ -108,13 +114,13 @@ class RarityCalculator {
             }
             if ("Tooth half of key (moon key)".equalsIgnoreCase(name)) {
                 // Workaround for https://discord.com/channels/790429747364626452/954397870889529385/1294355009798017044
-                this.itemId = ItemID.TOOTH_HALF_OF_KEY_30105;
+                this.itemId = ItemID.VARLAMORE_KEY_HALF_1;
             }
             if (itemId == null || rarity == null || quantity == null) return null;
             if (rarity.equals("Always") || rarity.equals("Varies") || rarity.equals("Random") || rarity.equals("Once") || rarity.equals("Unknown")) return null;
             if (quantity.equals("Unknown") || quantity.equals("N/A")) return null;
 
-            int item = itemId == ItemID.COINS_995 || itemId == ItemID.COINS_6964 || itemId == ItemID.COINS_8890 ? ItemID.COINS : itemId;
+            int item = COINS.contains(itemId) ? ItemID.FAKE_COINS : itemId;
 
             String cleanQuantity = StringUtils.removeEnd(quantity, "\u00A0");
             Integer q, min, max;

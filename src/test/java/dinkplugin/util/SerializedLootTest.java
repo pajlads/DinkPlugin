@@ -1,7 +1,7 @@
 package dinkplugin.util;
 
 import com.google.gson.Gson;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

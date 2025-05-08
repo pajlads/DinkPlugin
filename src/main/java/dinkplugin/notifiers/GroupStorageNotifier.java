@@ -7,16 +7,15 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GroupStorageNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemUtils;
-import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
-import net.runelite.api.annotations.Interface;
 import net.runelite.api.clan.ClanChannel;
 import net.runelite.api.clan.ClanID;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.InterfaceID;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
@@ -48,17 +47,6 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class GroupStorageNotifier extends BaseNotifier {
-
-    /**
-     * The Group ID for tracking when GIM shared storage is opened.
-     */
-    static final @VisibleForTesting int GROUP_STORAGE_WIDGET_GROUP = InterfaceID.GROUP_STORAGE;
-
-    /**
-     * The Group ID of the widget that appears over the chat box
-     * when the storage transaction is saved/committed.
-     */
-    static final @VisibleForTesting @Interface int GROUP_STORAGE_SAVING_WIDGET_ID = 293;
 
     /**
      * The message to indicate that a list of deposits or withdrawals is empty.
@@ -98,7 +86,7 @@ public class GroupStorageNotifier extends BaseNotifier {
     }
 
     public void onWidgetLoad(WidgetLoaded event) {
-        if (event.getGroupId() != GROUP_STORAGE_WIDGET_GROUP)
+        if (event.getGroupId() != InterfaceID.SHARED_BANK)
             return;
 
         clientThread.invokeLater(() -> {
@@ -112,10 +100,10 @@ public class GroupStorageNotifier extends BaseNotifier {
     }
 
     public void onWidgetClose(WidgetClosed event) {
-        if (event.getGroupId() != GROUP_STORAGE_SAVING_WIDGET_ID)
+        if (event.getGroupId() != InterfaceID.LOADING_ICON_MODAL)
             return;
 
-        Widget widget = client.getWidget(GROUP_STORAGE_SAVING_WIDGET_ID, 1);
+        Widget widget = client.getWidget(InterfaceID.LoadingIconModal.TEXT);
         if (widget == null)
             return;
 
@@ -214,7 +202,7 @@ public class GroupStorageNotifier extends BaseNotifier {
 
     /**
      * Upon opening the group's shared storage, the inventory is replaced
-     * by a temporary container ({@link InventoryID#GROUP_STORAGE_INV}),
+     * by a temporary container ({@link InventoryID#INV_PLAYER_TEMP}),
      * which reflects intermediate changes before the transaction is committed.
      * We prefer reading from this "fake" inventory when available.
      * On storage open, it is a server-validated copy of the local inventory.
@@ -223,8 +211,8 @@ public class GroupStorageNotifier extends BaseNotifier {
      * @return the player's inventory
      */
     private ItemContainer getInventory() {
-        ItemContainer inv = client.getItemContainer(InventoryID.GROUP_STORAGE_INV);
-        return inv != null ? inv : client.getItemContainer(InventoryID.INVENTORY);
+        ItemContainer inv = client.getItemContainer(InventoryID.INV_PLAYER_TEMP);
+        return inv != null ? inv : client.getItemContainer(InventoryID.INV);
     }
 
     /**
@@ -246,7 +234,7 @@ public class GroupStorageNotifier extends BaseNotifier {
     private int getItemId(Item item) {
         int id = item.getId();
         if (ItemUtils.COIN_VARIATIONS.contains(id))
-            return ItemID.COINS; // use single ID for all coins
+            return ItemID.FAKE_COINS; // use single ID for all coins
         return itemManager.canonicalize(id); // un-noted, un-placeholdered, un-worn
     }
 

@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Migrate to GameVal constants defined by Jagex. (#705)
+
 ## 1.11.6
 
 - Minor: Add RuneProfile as an available player lookup service. (#720)

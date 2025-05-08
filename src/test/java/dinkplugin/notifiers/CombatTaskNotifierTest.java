@@ -7,6 +7,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.CombatAchievementData;
+import net.runelite.api.gameval.VarbitID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -56,7 +57,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
     @Test
     void testNotify() {
         // update mock
-        when(client.getVarbitValue(CombatTaskNotifier.TOTAL_POINTS_ID)).thenReturn(200);
+        when(client.getVarbitValue(VarbitID.CA_POINTS)).thenReturn(200);
 
         // send fake message
         notifier.onTick();
@@ -89,7 +90,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         int oldPoints = 1460;
         CombatAchievementTier taskTier = CombatAchievementTier.GRANDMASTER;
         int newPoints = oldPoints + taskTier.getPoints();
-        when(client.getVarbitValue(CombatTaskNotifier.TOTAL_POINTS_ID)).thenReturn(newPoints);
+        when(client.getVarbitValue(VarbitID.CA_POINTS)).thenReturn(newPoints);
 
         // fire completion message
         notifier.onGameMessage("Congratulations, you've completed a grandmaster combat task: No Pressure (6 points).");
@@ -116,7 +117,7 @@ class CombatTaskNotifierTest extends MockedNotifierTest {
         int oldPoints = 1999;
         CombatAchievementTier taskTier = CombatAchievementTier.GRANDMASTER;
         int newPoints = oldPoints + taskTier.getPoints();
-        when(client.getVarbitValue(CombatTaskNotifier.TOTAL_POINTS_ID)).thenReturn(newPoints);
+        when(client.getVarbitValue(VarbitID.CA_POINTS)).thenReturn(newPoints);
 
         // fire completion message
         notifier.onGameMessage("Congratulations, you've completed a grandmaster combat task: No Pressure (6 points).");

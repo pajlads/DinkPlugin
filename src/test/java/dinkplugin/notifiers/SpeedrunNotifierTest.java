@@ -9,6 +9,7 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.SpeedrunNotificationData;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,10 +18,6 @@ import org.mockito.InjectMocks;
 import java.time.Duration;
 import java.util.EnumSet;
 
-import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_DURATION_CHILD_ID;
-import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_GROUP_ID;
-import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_PB_CHILD_ID;
-import static dinkplugin.notifiers.SpeedrunNotifier.SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
@@ -65,11 +62,11 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
 
         // init common widget mocks
         Widget quest = mock(Widget.class);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_QUEST_NAME_CHILD_ID)).thenReturn(quest);
+        when(client.getWidget(InterfaceID.QuestscrollSpeedrun.QUEST_TITLE)).thenReturn(quest);
         when(quest.getText()).thenReturn("You have completed " + QUEST_NAME + "!");
 
         Widget pb = mock(Widget.class);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_PB_CHILD_ID)).thenReturn(pb);
+        when(client.getWidget(InterfaceID.QuestscrollSpeedrun.BEST_TEXT)).thenReturn(pb);
         when(pb.getText()).thenReturn(PERSONAL_BEST);
     }
 
@@ -79,7 +76,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
 
         // mock widget
         Widget time = mock(Widget.class);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(client.getWidget(InterfaceID.QuestscrollSpeedrun.TIME_TEXT)).thenReturn(time);
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
@@ -105,7 +102,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         // mock widget
         Widget time = mock(Widget.class);
         when(config.speedrunPBOnly()).thenReturn(false);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(client.getWidget(InterfaceID.QuestscrollSpeedrun.TIME_TEXT)).thenReturn(time);
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
@@ -130,7 +127,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
 
         // mock widget
         Widget time = mock(Widget.class);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(client.getWidget(InterfaceID.QuestscrollSpeedrun.TIME_TEXT)).thenReturn(time);
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
@@ -149,7 +146,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         // mock widget
         String latest = "1:15.30";
         Widget time = mock(Widget.class);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(client.getWidget(InterfaceID.QuestscrollSpeedrun.TIME_TEXT)).thenReturn(time);
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
@@ -169,7 +166,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         // mock widget
         String latest = "1:15.30";
         Widget time = mock(Widget.class);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(client.getWidget(InterfaceID.QuestscrollSpeedrun.TIME_TEXT)).thenReturn(time);
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
@@ -198,7 +195,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
 
         // mock widget
         Widget time = mock(Widget.class);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(client.getWidget(InterfaceID.QuestscrollSpeedrun.TIME_TEXT)).thenReturn(time);
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
@@ -220,7 +217,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         // mock widget
         String latest = "1:15.30";
         Widget time = mock(Widget.class);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(client.getWidget(InterfaceID.QuestscrollSpeedrun.TIME_TEXT)).thenReturn(time);
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
@@ -249,7 +246,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         // mock widget
         String latest = "1:15.30";
         Widget time = mock(Widget.class);
-        when(client.getWidget(SPEEDRUN_COMPLETED_GROUP_ID, SPEEDRUN_COMPLETED_DURATION_CHILD_ID)).thenReturn(time);
+        when(client.getWidget(InterfaceID.QuestscrollSpeedrun.TIME_TEXT)).thenReturn(time);
         when(time.getText()).thenReturn(latest);
 
         // fire fake event
@@ -262,7 +259,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
 
     private WidgetLoaded event() {
         WidgetLoaded event = new WidgetLoaded();
-        event.setGroupId(SPEEDRUN_COMPLETED_GROUP_ID);
+        event.setGroupId(InterfaceID.QUESTSCROLL_SPEEDRUN);
         return event;
     }
 }

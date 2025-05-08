@@ -8,7 +8,7 @@ import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.GambleNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ItemSearcher;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -50,10 +50,10 @@ public class GambleNotifierTest extends MockedNotifierTest {
 
         mockItem(ItemID.GRANITE_HELM, GRANITE_HELM_PRICE, "Granite helm");
         mockItem(ItemID.DRAGON_CHAINBODY, DRAGON_CHAINBODY_PRICE, "Dragon chainbody");
-        mockItem(ItemID.CLUE_SCROLL_ELITE, ELITE_CLUE_PRICE, "Clue scroll (elite)");
+        mockItem(ItemID.TRAIL_ELITE_EMOTE_EXP1, ELITE_CLUE_PRICE, "Clue scroll (elite)");
         when(itemSearcher.findItemId("Granite helm")).thenReturn(ItemID.GRANITE_HELM);
         when(itemSearcher.findItemId("Dragon chainbody")).thenReturn(ItemID.DRAGON_CHAINBODY);
-        when(itemSearcher.findItemId("Clue scroll (elite)")).thenReturn(ItemID.CLUE_SCROLL_ELITE);
+        when(itemSearcher.findItemId("Clue scroll (elite)")).thenReturn(ItemID.TRAIL_ELITE_EMOTE_EXP1);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class GambleNotifierTest extends MockedNotifierTest {
                 .text(buildTemplate(PLAYER_NAME + " has reached 10 high gambles"))
                 .extra(new GambleNotificationData(10, Arrays.asList(
                     new SerializedItemStack(ItemID.GRANITE_HELM, 1, GRANITE_HELM_PRICE, "Granite helm"),
-                    new SerializedItemStack(ItemID.CLUE_SCROLL_ELITE, 1, ELITE_CLUE_PRICE, "Clue scroll (elite)")
+                    new SerializedItemStack(ItemID.TRAIL_ELITE_EMOTE_EXP1, 1, ELITE_CLUE_PRICE, "Clue scroll (elite)")
                 )))
                 .type(NotificationType.BARBARIAN_ASSAULT_GAMBLE)
                 .build()
