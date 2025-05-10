@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Parse slayer kill log for more accurate kill count reporting. (#718)
+
 ## 1.11.7
 
 - Dev: Migrate to GameVal constants defined by Jagex. (#705)
