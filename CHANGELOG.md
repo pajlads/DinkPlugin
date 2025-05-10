@@ -1,6 +1,17 @@
 ## Unreleased
 
+## 1.11.7
+
+- Dev: Migrate to GameVal constants defined by Jagex. (#705)
+
+## 1.11.6
+
+- Minor: Add RuneProfile as an available player lookup service. (#720)
+- Minor: Migrate CollectionLog.net player lookup service to HiScores. (#674)
+- Minor: Apply cleaner formatting to value lost reported in death notifications. (#719)
 - Minor: Allow configuration of account types that should not trigger notifications. (#701)
+- Bugfix: Update drop rate for pet kraken and other items. (#703, #711, #722)
+- Dev: Update plugin name for hub searchability. (#717)
 
 ## 1.11.5
 

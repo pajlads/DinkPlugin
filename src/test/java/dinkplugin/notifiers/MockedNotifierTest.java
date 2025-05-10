@@ -24,10 +24,10 @@ import net.runelite.api.IndexedObjectSet;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
-import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
 import net.runelite.api.WorldView;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.config.ConfigDescriptor;
@@ -119,7 +119,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
 
         // init client mocks
         when(client.getWorldType()).thenReturn(EnumSet.noneOf(WorldType.class));
-        when(client.getVarbitValue(Varbits.ACCOUNT_TYPE)).thenReturn(AccountType.GROUP_IRONMAN.ordinal());
+        when(client.getVarbitValue(VarbitID.IRONMAN)).thenReturn(AccountType.GROUP_IRONMAN.ordinal());
         when(client.isPrayerActive(any())).thenReturn(false);
         when(client.getTopLevelWorldView()).thenReturn(worldView);
         when(client.getLocalPlayer()).thenReturn(localPlayer);

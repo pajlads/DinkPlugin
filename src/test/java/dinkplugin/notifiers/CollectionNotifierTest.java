@@ -10,14 +10,15 @@ import dinkplugin.notifiers.data.CollectionNotificationData;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.KillCountService;
 import net.runelite.api.GameState;
-import net.runelite.api.ItemID;
 import net.runelite.api.NPC;
-import net.runelite.api.NpcID;
 import net.runelite.api.ScriptID;
 import net.runelite.api.StructComposition;
 import net.runelite.api.VarClientStr;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.NpcID;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.game.ItemStack;
 import net.runelite.http.api.loottracker.LootRecordType;
@@ -61,8 +62,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
         Thread thread = Thread.currentThread();
         Mockito.doAnswer(invocation -> Thread.currentThread() == thread).when(client).isClientThread();
 
-        when(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION)).thenReturn(1);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
+        when(client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM)).thenReturn(1);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX)).thenReturn(TOTAL_ENTRIES);
         when(client.getGameState()).thenReturn(GameState.LOGGED_IN);
         setCompleted(0);
 
@@ -86,8 +87,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
     void testNotify() {
         String item = "Seercull";
         int price = 23_000;
-        when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
-        mockItem(ItemID.SEERCULL, price, item);
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW);
+        mockItem(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, price, item);
 
         // prepare kc
         int kc = 150;
@@ -95,9 +96,9 @@ class CollectionNotifierTest extends MockedNotifierTest {
         String source = "Dagannoth Supreme";
         NPC npc = mock(NPC.class);
         when(npc.getName()).thenReturn(source);
-        when(npc.getId()).thenReturn(NpcID.DAGANNOTH_SUPREME);
+        when(npc.getId()).thenReturn(NpcID.DAGCAVE_RANGED_BOSS);
         when(configManager.getRSProfileConfiguration("killcount", source.toLowerCase(), int.class)).thenReturn(kc);
-        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SEERCULL, 1))));
+        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, 1))));
 
         // send fake message
         notifier.onChatMessage("New item added to your collection log: " + item);
@@ -113,7 +114,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 1, 99, CollectionLogRank.BRONZE, null, source, LootRecordType.NPC, kc, rarity))
+                .extra(new CollectionNotificationData(item, ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 1, 99, CollectionLogRank.BRONZE, null, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -125,8 +126,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
         String item = "Seercull";
         int price = 23_000;
-        when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
-        mockItem(ItemID.SEERCULL, price, item);
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW);
+        mockItem(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, price, item);
 
         // prepare kc
         int kc = 150;
@@ -134,9 +135,9 @@ class CollectionNotifierTest extends MockedNotifierTest {
         String source = "Dagannoth Supreme";
         NPC npc = mock(NPC.class);
         when(npc.getName()).thenReturn(source);
-        when(npc.getId()).thenReturn(NpcID.DAGANNOTH_SUPREME);
+        when(npc.getId()).thenReturn(NpcID.DAGCAVE_RANGED_BOSS);
         when(configManager.getRSProfileConfiguration("killcount", source.toLowerCase(), int.class)).thenReturn(kc);
-        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SEERCULL, 1))));
+        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, 1))));
 
         // send fake message
         notifier.onChatMessage("New item added to your collection log: " + item);
@@ -152,7 +153,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 300, TOTAL_ENTRIES, CollectionLogRank.IRON, 0, 200, CollectionLogRank.STEEL, CollectionLogRank.BRONZE, source, LootRecordType.NPC, kc, rarity))
+                .extra(new CollectionNotificationData(item, ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, (long) price, 300, TOTAL_ENTRIES, CollectionLogRank.IRON, 0, 200, CollectionLogRank.STEEL, CollectionLogRank.BRONZE, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -164,8 +165,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
         String item = "Seercull";
         int price = 23_000;
-        when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
-        mockItem(ItemID.SEERCULL, price, item);
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW);
+        mockItem(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, price, item);
 
         // prepare kc
         int kc = 150;
@@ -173,9 +174,9 @@ class CollectionNotifierTest extends MockedNotifierTest {
         String source = "Dagannoth Supreme";
         NPC npc = mock(NPC.class);
         when(npc.getName()).thenReturn(source);
-        when(npc.getId()).thenReturn(NpcID.DAGANNOTH_SUPREME);
+        when(npc.getId()).thenReturn(NpcID.DAGCAVE_RANGED_BOSS);
         when(configManager.getRSProfileConfiguration("killcount", source.toLowerCase(), int.class)).thenReturn(kc);
-        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SEERCULL, 1))));
+        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, 1))));
 
         // send fake message
         notifier.onChatMessage("New item added to your collection log: " + item);
@@ -191,7 +192,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1400, TOTAL_ENTRIES, CollectionLogRank.GILDED, 0, null, null, CollectionLogRank.DRAGON, source, LootRecordType.NPC, kc, rarity))
+                .extra(new CollectionNotificationData(item, ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, (long) price, 1400, TOTAL_ENTRIES, CollectionLogRank.GILDED, 0, null, null, CollectionLogRank.DRAGON, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -203,8 +204,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
         String item = "Seercull";
         int price = 23_000;
-        when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
-        mockItem(ItemID.SEERCULL, price, item);
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW);
+        mockItem(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, price, item);
 
         // prepare kc
         int kc = 150;
@@ -212,9 +213,9 @@ class CollectionNotifierTest extends MockedNotifierTest {
         String source = "Dagannoth Supreme";
         NPC npc = mock(NPC.class);
         when(npc.getName()).thenReturn(source);
-        when(npc.getId()).thenReturn(NpcID.DAGANNOTH_SUPREME);
+        when(npc.getId()).thenReturn(NpcID.DAGCAVE_RANGED_BOSS);
         when(configManager.getRSProfileConfiguration("killcount", source.toLowerCase(), int.class)).thenReturn(kc);
-        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.SEERCULL, 1))));
+        killCountService.onNpcKill(new NpcLootReceived(npc, List.of(new ItemStack(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, 1))));
 
         // send fake message
         notifier.onChatMessage("New item added to your collection log: " + item);
@@ -230,7 +231,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 1, 99, CollectionLogRank.BRONZE, null, source, LootRecordType.NPC, kc, rarity))
+                .extra(new CollectionNotificationData(item, ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 1, 99, CollectionLogRank.BRONZE, null, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -241,11 +242,11 @@ class CollectionNotifierTest extends MockedNotifierTest {
         // prepare item
         String item = "Seercull";
         int price = 23_000;
-        when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
-        when(itemManager.getItemPrice(ItemID.SEERCULL)).thenReturn(price);
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW);
+        when(itemManager.getItemPrice(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW)).thenReturn(price);
 
         // update mocks
-        when(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION)).thenReturn(3);
+        when(client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM)).thenReturn(3);
         when(client.getVarcStrValue(VarClientStr.NOTIFICATION_TOP_TEXT)).thenReturn("Collection log");
         when(client.getVarcStrValue(VarClientStr.NOTIFICATION_BOTTOM_TEXT)).thenReturn("New item:<br>" + item);
 
@@ -270,7 +271,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 1, 99, CollectionLogRank.BRONZE, null, null,null, null, null))
+                .extra(new CollectionNotificationData(item, ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 1, 99, CollectionLogRank.BRONZE, null, null,null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -283,13 +284,13 @@ class CollectionNotifierTest extends MockedNotifierTest {
         /*
          * first notification: no varbit data
          */
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(0);
-        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(0);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(0);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX)).thenReturn(0);
 
         String item = "Seercull";
         int price = 23_000;
-        when(itemSearcher.findItemId(item)).thenReturn(ItemID.SEERCULL);
-        when(itemManager.getItemPrice(ItemID.SEERCULL)).thenReturn(price);
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW);
+        when(itemManager.getItemPrice(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW)).thenReturn(price);
 
         // send fake message
         notifier.onChatMessage("New item added to your collection log: " + item);
@@ -305,7 +306,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.SEERCULL, (long) price, null, null, null, null, null, null, null, null,null, null, null))
+                .extra(new CollectionNotificationData(item, ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, (long) price, null, null, null, null, null, null, null, null,null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -320,14 +321,14 @@ class CollectionNotifierTest extends MockedNotifierTest {
             return e;
         };
 
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(1);
-        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.COMPLETED_VARP, 1));
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(1);
+        notifier.onVarPlayer(varpEvent.apply(VarPlayerID.COLLECTION_COUNT, 1));
 
-        when(client.getVarpValue(CollectionNotifier.TOTAL_VARP)).thenReturn(TOTAL_ENTRIES);
-        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.TOTAL_VARP, TOTAL_ENTRIES));
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX)).thenReturn(TOTAL_ENTRIES);
+        notifier.onVarPlayer(varpEvent.apply(VarPlayerID.COLLECTION_COUNT_MAX, TOTAL_ENTRIES));
 
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(100);
-        notifier.onVarPlayer(varpEvent.apply(CollectionNotifier.COMPLETED_VARP, 100));
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(100);
+        notifier.onVarPlayer(varpEvent.apply(VarPlayerID.COLLECTION_COUNT, 100));
 
         notifier.onTick();
 
@@ -336,8 +337,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
          */
         String item2 = "Seers ring";
         int price2 = 420_000;
-        when(itemSearcher.findItemId(item2)).thenReturn(ItemID.SEERS_RING);
-        when(itemManager.getItemPrice(ItemID.SEERS_RING)).thenReturn(price2);
+        when(itemSearcher.findItemId(item2)).thenReturn(ItemID.SEER_RING);
+        when(itemManager.getItemPrice(ItemID.SEER_RING)).thenReturn(price2);
 
         // send fake message
         notifier.onChatMessage("New item added to your collection log: " + item2);
@@ -353,7 +354,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item2))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item2, ItemID.SEERS_RING, (long) price2, 101, TOTAL_ENTRIES, CollectionLogRank.BRONZE, 1, 199, CollectionLogRank.IRON, null, null,null, null, null))
+                .extra(new CollectionNotificationData(item2, ItemID.SEER_RING, (long) price2, 101, TOTAL_ENTRIES, CollectionLogRank.BRONZE, 1, 199, CollectionLogRank.IRON, null, null,null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
@@ -382,10 +383,10 @@ class CollectionNotifierTest extends MockedNotifierTest {
     }
 
     private void setCompleted(int clogCount) {
-        when(client.getVarpValue(CollectionNotifier.COMPLETED_VARP)).thenReturn(clogCount);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(clogCount);
         when(config.notifyCollectionLog()).thenReturn(false);
         VarbitChanged initCompleted = new VarbitChanged();
-        initCompleted.setVarpId(CollectionNotifier.COMPLETED_VARP);
+        initCompleted.setVarpId(VarPlayerID.COLLECTION_COUNT);
         initCompleted.setValue(clogCount);
         notifier.onVarPlayer(initCompleted);
         when(config.notifyCollectionLog()).thenReturn(true);

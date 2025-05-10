@@ -3,7 +3,7 @@ package dinkplugin.util;
 import com.google.gson.Gson;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
-import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.config.RuneLiteConfig;
@@ -122,7 +122,7 @@ public class ConfigUtil {
     }
 
     public boolean isSettingsOpen(@NotNull Client client) {
-        Widget widget = client.getWidget(ComponentID.SETTINGS_INIT);
+        Widget widget = client.getWidget(InterfaceID.Settings.UNIVERSE);
         return widget != null && !widget.isHidden();
     }
 

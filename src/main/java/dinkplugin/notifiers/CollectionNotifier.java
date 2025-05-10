@@ -17,9 +17,9 @@ import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ScriptID;
 import net.runelite.api.VarClientStr;
-import net.runelite.api.Varbits;
-import net.runelite.api.annotations.Varp;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
@@ -44,12 +44,7 @@ public class CollectionNotifier extends BaseNotifier {
     public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
     private static final int POPUP_PREFIX_LENGTH = "New item:".length();
 
-    /*
-     * https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,collection_init_frame%5D.cs2#L3
-     */
-    public static final @Varp int COMPLETED_VARP = 2943, TOTAL_VARP = 2944;
-
-    static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if TOTAL_VARP is not populated
+    static final @VisibleForTesting int TOTAL_ENTRIES = 1_568; // fallback if COLLECTION_COUNT_MAX is not populated
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
     /**
@@ -60,7 +55,7 @@ public class CollectionNotifier extends BaseNotifier {
     private final NavigableMap<Integer, CollectionLogRank> rankByThreshold = new TreeMap<>();
 
     /**
-     * The number of completed entries in the collection log, as implied by {@link #COMPLETED_VARP}.
+     * The number of completed entries in the collection log, as implied by {@link VarPlayerID#COLLECTION_COUNT}.
      */
     private final AtomicInteger completed = new AtomicInteger(-1);
 
@@ -118,14 +113,14 @@ public class CollectionNotifier extends BaseNotifier {
             completed.set(-1);
         } else if (completed.get() < 0) {
             // initialize collection log entry completion count
-            int varpValue = client.getVarpValue(COMPLETED_VARP);
+            int varpValue = client.getVarpValue(VarPlayerID.COLLECTION_COUNT);
             if (varpValue > 0)
                 completed.set(varpValue);
         }
     }
 
     public void onVarPlayer(VarbitChanged event) {
-        if (event.getVarpId() != COMPLETED_VARP)
+        if (event.getVarpId() != VarPlayerID.COLLECTION_COUNT)
             return;
 
         // we only care about this event when the notifier is disabled
@@ -136,7 +131,7 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     public void onChatMessage(String chatMessage) {
-        if (!isEnabled() || client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) != 1) {
+        if (!isEnabled() || client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM) != 1) {
             // require notifier enabled without popup mode to use chat event
             return;
         }
@@ -182,7 +177,7 @@ public class CollectionNotifier extends BaseNotifier {
         // this approach also has the benefit of yielding incrementing values even when
         // multiple collection log entries are completed within a single tick.
         int completed = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
-        int total = client.getVarpValue(TOTAL_VARP); // unique; doesn't over-count duplicates
+        int total = client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed > 0;
         var nextRankEntry = rankByThreshold.higherEntry(completed);
         var prevRankEntry = rankByThreshold.floorEntry(completed);

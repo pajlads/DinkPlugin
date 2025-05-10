@@ -14,8 +14,7 @@ import dinkplugin.notifiers.data.ClueNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.ComponentID;
-import net.runelite.api.widgets.InterfaceID;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.util.QuantityFormatter;
@@ -66,8 +65,8 @@ public class ClueNotifier extends BaseNotifier {
     }
 
     public void onWidgetLoaded(WidgetLoaded event) {
-        if (event.getGroupId() == InterfaceID.CLUESCROLL_REWARD && isEnabled()) {
-            Widget clue = client.getWidget(ComponentID.CLUESCROLL_REWARD_ITEM_CONTAINER);
+        if (event.getGroupId() == InterfaceID.TRAIL_REWARDSCREEN && isEnabled()) {
+            Widget clue = client.getWidget(InterfaceID.TrailRewardscreen.ITEMS);
             if (clue != null && !clueType.isEmpty()) {
                 Widget[] children = clue.getChildren();
                 if (children == null) return;

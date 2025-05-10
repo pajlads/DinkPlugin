@@ -1,7 +1,7 @@
 package dinkplugin.notifiers;
 
 import net.runelite.api.Item;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
 
@@ -89,16 +89,16 @@ class DeathNotifierItemTest {
     static {
         Function<Integer, Pair<Item, Long>> item = id -> Pair.of(new Item(id, 1), 0L);
 
-        BOND = item.apply(ItemID.OLD_SCHOOL_BOND);
+        BOND = item.apply(ItemID.OSRS_BOND);
         EGG = item.apply(ItemID.EGG);
         GRAIN = item.apply(ItemID.GRAIN);
-        POT = item.apply(ItemID.POT);
+        POT = item.apply(ItemID.POT_EMPTY);
         SALMON = item.apply(ItemID.SALMON);
         TUNA = item.apply(ItemID.TUNA);
         BAG = item.apply(ItemID.LOOTING_BAG);
-        CLUE = item.apply(ItemID.CLUE_BOX);
-        JESTER = item.apply(ItemID.SILLY_JESTER_HAT);
+        CLUE = item.apply(ItemID.BH_CLUE_BOX);
+        JESTER = item.apply(ItemID.FRISD_JESTER_HAT);
         TROPHY = item.apply(ItemID.TRAILBLAZER_DRAGON_TROPHY);
-        AVA = item.apply(ItemID.AVAS_ACCUMULATOR);
+        AVA = item.apply(ItemID.ANMA_50_REWARD);
     }
 }

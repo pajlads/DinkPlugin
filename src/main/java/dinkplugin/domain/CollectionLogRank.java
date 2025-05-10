@@ -1,10 +1,10 @@
 package dinkplugin.domain;
 
-import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.util.Utils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.runelite.api.Client;
+import net.runelite.api.gameval.VarPlayerID;
 import org.jetbrains.annotations.VisibleForTesting;
 
 @RequiredArgsConstructor
@@ -44,7 +44,7 @@ public enum CollectionLogRank {
 
             case GILDED:
                 // https://oldschool.runescape.wiki/w/Gilded_staff_of_collection
-                return 25 * (int) (0.9 * client.getVarpValue(CollectionNotifier.TOTAL_VARP) / 25);
+                return 25 * (int) (0.9 * client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX) / 25);
 
             default:
                 return client.getStructComposition(this.structId).getIntValue(THRESHOLD_PARAM);

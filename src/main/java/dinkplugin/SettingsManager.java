@@ -20,9 +20,9 @@ import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.Varbits;
 import net.runelite.api.events.CommandExecuted;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.ConfigChanged;
@@ -252,7 +252,7 @@ public class SettingsManager {
         if (client.getGameState() == GameState.LOGGED_IN) {
             if ("killCountEnabled".equals(key) && "true".equals(value)) {
                 clientThread.invokeLater(() -> {
-                    if (isKillCountFilterInvalid(client.getVarbitValue(KillCountNotifier.KILL_COUNT_SPAM_FILTER))) {
+                    if (isKillCountFilterInvalid(client.getVarbitValue(VarbitID.BOSS_KILLCOUNT_FILTERED))) {
                         plugin.addChatWarning(KillCountNotifier.SPAM_WARNING);
                     }
                 });
@@ -261,7 +261,7 @@ public class SettingsManager {
 
             if ("combatTaskEnabled".equals(key) && "true".equals(value)) {
                 clientThread.invokeLater(() -> {
-                    if (isRepeatPopupInvalid(client.getVarbitValue(CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP))) {
+                    if (isRepeatPopupInvalid(client.getVarbitValue(VarbitID.CA_TASK_RECOMPLETION_NOTIFICATIONS))) {
                         plugin.addChatWarning(CombatTaskNotifier.REPEAT_WARNING);
                     }
                 });
@@ -270,7 +270,7 @@ public class SettingsManager {
 
             if ("collectionLogEnabled".equals(key) && "true".equals(value)) {
                 clientThread.invokeLater(() -> {
-                    if (isCollectionLogInvalid(client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION))) {
+                    if (isCollectionLogInvalid(client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM))) {
                         plugin.addChatWarning(CollectionNotifier.ADDITION_WARNING);
                     }
                 });
@@ -279,7 +279,7 @@ public class SettingsManager {
 
             if ("petEnabled".equals(key) && "true".equals(value)) {
                 clientThread.invokeLater(() -> {
-                    if (isPetLootInvalid(client.getVarbitValue(PetNotifier.UNTRADEABLE_LOOT_DROPS)) || isPetLootInvalid(client.getVarbitValue(PetNotifier.LOOT_DROP_NOTIFICATIONS))) {
+                    if (isPetLootInvalid(client.getVarbitValue(VarbitID.OPTION_LOOTNOTIFICATION_UNTRADEABLES)) || isPetLootInvalid(client.getVarbitValue(VarbitID.OPTION_LOOTNOTIFICATION_ON))) {
                         plugin.addChatWarning(PetNotifier.UNTRADEABLE_WARNING);
                     }
                 });
@@ -307,11 +307,11 @@ public class SettingsManager {
             if (justLoggedIn.get())
                 return false; // try again on next tick
 
-            if (config.notifyCollectionLog() && client.getVarbitValue(Varbits.COLLECTION_LOG_NOTIFICATION) == 0) {
+            if (config.notifyCollectionLog() && client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM) == 0) {
                 warnForGameSetting(CollectionNotifier.ADDITION_WARNING);
             }
 
-            if (config.notifyPet() && (client.getVarbitValue(PetNotifier.UNTRADEABLE_LOOT_DROPS) == 0 || client.getVarbitValue(PetNotifier.LOOT_DROP_NOTIFICATIONS) == 0)) {
+            if (config.notifyPet() && (client.getVarbitValue(VarbitID.OPTION_LOOTNOTIFICATION_UNTRADEABLES) == 0 || client.getVarbitValue(VarbitID.OPTION_LOOTNOTIFICATION_ON) == 0)) {
                 warnForGameSetting(PetNotifier.UNTRADEABLE_WARNING);
             }
 
@@ -358,19 +358,19 @@ public class SettingsManager {
         if (justLoggedIn.get())
             return value == 0; // try again next tick, unless would already be handled by invokeLater above
 
-        if (id == KillCountNotifier.KILL_COUNT_SPAM_FILTER && isKillCountFilterInvalid(value) && config.notifyKillCount()) {
+        if (id == VarbitID.BOSS_KILLCOUNT_FILTERED && isKillCountFilterInvalid(value) && config.notifyKillCount()) {
             warnForGameSetting(KillCountNotifier.SPAM_WARNING);
         }
 
-        if (id == CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP && isRepeatPopupInvalid(value) && config.notifyCombatTask()) {
+        if (id == VarbitID.CA_TASK_RECOMPLETION_NOTIFICATIONS && isRepeatPopupInvalid(value) && config.notifyCombatTask()) {
             warnForGameSetting(CombatTaskNotifier.REPEAT_WARNING);
         }
 
-        if (id == Varbits.COLLECTION_LOG_NOTIFICATION && isCollectionLogInvalid(value) && config.notifyCollectionLog()) {
+        if (id == VarbitID.OPTION_COLLECTION_NEW_ITEM && isCollectionLogInvalid(value) && config.notifyCollectionLog()) {
             warnForGameSetting(CollectionNotifier.ADDITION_WARNING);
         }
 
-        if ((id == PetNotifier.LOOT_DROP_NOTIFICATIONS || id == PetNotifier.UNTRADEABLE_LOOT_DROPS) && isPetLootInvalid(value) && config.notifyPet()) {
+        if ((id == VarbitID.OPTION_LOOTNOTIFICATION_ON || id == VarbitID.OPTION_LOOTNOTIFICATION_UNTRADEABLES) && isPetLootInvalid(value) && config.notifyPet()) {
             warnForGameSetting(PetNotifier.UNTRADEABLE_WARNING);
         }
 
@@ -618,11 +618,11 @@ public class SettingsManager {
 
     static {
         PROBLEMATIC_VARBITS = ImmutableSet.of(
-            KillCountNotifier.KILL_COUNT_SPAM_FILTER,
-            CombatTaskNotifier.COMBAT_TASK_REPEAT_POPUP,
-            Varbits.COLLECTION_LOG_NOTIFICATION,
-            PetNotifier.LOOT_DROP_NOTIFICATIONS,
-            PetNotifier.UNTRADEABLE_LOOT_DROPS
+            VarbitID.BOSS_KILLCOUNT_FILTERED,
+            VarbitID.CA_TASK_RECOMPLETION_NOTIFICATIONS,
+            VarbitID.OPTION_COLLECTION_NEW_ITEM,
+            VarbitID.OPTION_LOOTNOTIFICATION_ON,
+            VarbitID.OPTION_LOOTNOTIFICATION_UNTRADEABLES
         );
     }
 }

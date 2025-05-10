@@ -2,7 +2,7 @@ package dinkplugin.util;
 
 import com.google.inject.testing.fieldbinder.Bind;
 import lombok.Getter;
-import net.runelite.api.ItemID;
+import net.runelite.api.gameval.ItemID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,17 +22,17 @@ class ThievingServiceTest extends AbstractRarityServiceTest {
 
         // item mocks
         mockItem(ItemID.BLOOD_SHARD, "Blood shard");
-        mockItem(ItemID.ENHANCED_CRYSTAL_TELEPORT_SEED, "Enhanced crystal teleport seed");
+        mockItem(ItemID.PRIF_TELEPORT_SEED, "Enhanced crystal teleport seed");
         mockItem(ItemID.UNCUT_DIAMOND, "Uncut diamond");
-        mockItem(ItemID.CLUE_SCROLL_EASY, "Clue scroll (easy)");
-        mockItem(ItemID.CLUE_SCROLL_EASY_2711, "Clue scroll (easy)");
-        mockItem(ItemID.CLUE_SCROLL_MEDIUM, "Clue scroll (medium)");
-        mockItem(ItemID.CLUE_SCROLL_MEDIUM_2809, "Clue scroll (medium)");
-        mockItem(ItemID.CLUE_SCROLL_HARD, "Clue scroll (hard)");
-        mockItem(ItemID.CLUE_SCROLL_HARD_3560, "Clue scroll (hard)");
-        mockItem(ItemID.CLUE_SCROLL_ELITE, "Clue scroll (elite)");
-        mockItem(ItemID.CLUE_SCROLL_ELITE_12157, "Clue scroll (elite)");
-        mockItem(ItemID.CLUE_SCROLL_ELITE_12075, "Clue scroll (elite)");
+        mockItem(ItemID.TRAIL_CLUE_EASY_SIMPLE001, "Clue scroll (easy)");
+        mockItem(ItemID.TRAIL_CLUE_EASY_VAGUE004, "Clue scroll (easy)");
+        mockItem(ItemID.TRAIL_CLUE_MEDIUM_SEXTANT001, "Clue scroll (medium)");
+        mockItem(ItemID.TRAIL_CLUE_MEDIUM_SEXTANT005, "Clue scroll (medium)");
+        mockItem(ItemID.TRAIL_CLUE_HARD_MAP001, "Clue scroll (hard)");
+        mockItem(ItemID.TRAIL_CLUE_HARD_SEXTANT031, "Clue scroll (hard)");
+        mockItem(ItemID.TRAIL_ELITE_EMOTE_EXP1, "Clue scroll (elite)");
+        mockItem(ItemID.TRAIL_ELITE_RIDDLE_EXP18, "Clue scroll (elite)");
+        mockItem(ItemID.TRAIL_ELITE_EMOTE_EXP3, "Clue scroll (elite)");
         mockItem(ItemID.HAM_CLOAK, "Ham cloak");
         mockItem(ItemID.HAM_BOOTS, "Ham boots");
         mockItem(ItemID.SNAPE_GRASS_SEED, "Snape grass seed");
@@ -57,26 +57,26 @@ class ThievingServiceTest extends AbstractRarityServiceTest {
 
     @Test
     void testCitizen() {
-        test("Wealthy citizen", ItemID.CLUE_SCROLL_EASY, 1, 1.0 / 85);
+        test("Wealthy citizen", ItemID.TRAIL_CLUE_EASY_SIMPLE001, 1, 1.0 / 85);
 
-        assertFalse(service.getRarity("Wealthy citizen", ItemID.CLUE_SCROLL_HARD, 1).isPresent());
+        assertFalse(service.getRarity("Wealthy citizen", ItemID.TRAIL_CLUE_HARD_MAP001, 1).isPresent());
     }
 
     @Test
     void testPaladin() {
-        test("Paladin", ItemID.CLUE_SCROLL_HARD, 1, 1.0 / 1000);
+        test("Paladin", ItemID.TRAIL_CLUE_HARD_MAP001, 1, 1.0 / 1000);
     }
 
     @Test
     void testGnome() {
-        test("Gnome", ItemID.CLUE_SCROLL_MEDIUM, 1, 1.0 / 150);
+        test("Gnome", ItemID.TRAIL_CLUE_MEDIUM_SEXTANT001, 1, 1.0 / 150);
     }
 
     @Test
     void testHero() {
-        test("Hero", ItemID.CLUE_SCROLL_ELITE, 1, 1.0 / 1400);
-        test("Hero", ItemID.CLUE_SCROLL_ELITE_12075, 1, 1.0 / 1400);
-        test("Hero", ItemID.CLUE_SCROLL_ELITE_12157, 1, 1.0 / 1400);
+        test("Hero", ItemID.TRAIL_ELITE_EMOTE_EXP1, 1, 1.0 / 1400);
+        test("Hero", ItemID.TRAIL_ELITE_EMOTE_EXP3, 1, 1.0 / 1400);
+        test("Hero", ItemID.TRAIL_ELITE_RIDDLE_EXP18, 1, 1.0 / 1400);
     }
 
     @Test
@@ -88,8 +88,8 @@ class ThievingServiceTest extends AbstractRarityServiceTest {
 
     @Test
     void testElf() {
-        test("Arvel", ItemID.ENHANCED_CRYSTAL_TELEPORT_SEED, 1, 1.0 / 1024);
-        test("Indis", ItemID.ENHANCED_CRYSTAL_TELEPORT_SEED, 1, 1.0 / 1024);
+        test("Arvel", ItemID.PRIF_TELEPORT_SEED, 1, 1.0 / 1024);
+        test("Indis", ItemID.PRIF_TELEPORT_SEED, 1, 1.0 / 1024);
     }
 
     @Test

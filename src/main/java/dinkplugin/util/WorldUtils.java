@@ -7,13 +7,12 @@ import dinkplugin.domain.ExceptionalDeath;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Actor;
 import net.runelite.api.Client;
-import net.runelite.api.Varbits;
 import net.runelite.api.WorldType;
 import net.runelite.api.WorldView;
-import net.runelite.api.annotations.Varbit;
-import net.runelite.api.annotations.Varp;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.widgets.ComponentID;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -46,19 +45,6 @@ public class WorldUtils {
     public final @VisibleForTesting int TZHAAR_PIT = 9552;
     public final int FORTIS_REGION = 7216;
 
-    private final @Varbit int KARAMJA_RESURRECTION_USED = 4557;
-    private final @Varbit int WESTERN_RESURRECTION_USED = 4565;
-
-    /**
-     * @see <a href="https://oldschool.runescape.wiki/w/RuneScape:Varbit/6104">Wiki</a>
-     */
-    private final @Varbit int DRAGON_SLAYER_II_PROGRESS = 6104;
-
-    /**
-     * @see <a href="https://oldschool.runescape.wiki/w/RuneScape:Varplayer/2926">Wiki</a>
-     */
-    private final @Varp int INSIDE_RAID_OR_CHALLENGE = 2926;
-
     /**
      * @see <a href="https://chisel.weirdgloop.org/varbs/display?varbit=6104#ChangeFrequencyTitle">Chisel</a>
      */
@@ -90,7 +76,7 @@ public class WorldUtils {
     }
 
     public boolean isPvpSafeZone(Client client) {
-        Widget widget = client.getWidget(ComponentID.PVP_SAFE_ZONE);
+        Widget widget = client.getWidget(InterfaceID.PvpIcons.PVPW_SAFE);
         return widget != null && !widget.isHidden();
     }
 
@@ -111,7 +97,7 @@ public class WorldUtils {
     }
 
     public boolean isGalvekRematch(Client client, int regionId) {
-        return GALVEK_REGIONS.contains(regionId) && client.getVarbitValue(DRAGON_SLAYER_II_PROGRESS) >= DRAGON_SLAYER_II_COMPLETED;
+        return GALVEK_REGIONS.contains(regionId) && client.getVarbitValue(VarbitID.DS2) >= DRAGON_SLAYER_II_COMPLETED;
     }
 
     public boolean isGauntlet(int regionId) {
@@ -119,7 +105,7 @@ public class WorldUtils {
     }
 
     public boolean isInferno(Client client, int regionId) {
-        return regionId == INFERNO_REGION && client.getVarpValue(INSIDE_RAID_OR_CHALLENGE) == 0;
+        return regionId == INFERNO_REGION && client.getVarpValue(VarPlayerID.SA_ENERGY_STORED) == 0;
     }
 
     /**
@@ -127,14 +113,14 @@ public class WorldUtils {
      * The in-game region is the same as the inferno, but a varp value is different
      */
     public boolean isJadChallenges(Client client, int regionId) {
-        return regionId == INFERNO_REGION && client.getVarpValue(INSIDE_RAID_OR_CHALLENGE) > 0;
+        return regionId == INFERNO_REGION && client.getVarpValue(VarPlayerID.SA_ENERGY_STORED) > 0;
     }
 
     public boolean isLastManStanding(Client client) {
         if (LMS_REGIONS.contains(getLocation(client).getRegionID()))
             return true;
 
-        Widget widget = client.getWidget(ComponentID.LMS_INGAME_INFO);
+        Widget widget = client.getWidget(InterfaceID.BrOverlay.CONTENT);
         return widget != null && !widget.isHidden();
     }
 
@@ -147,7 +133,7 @@ public class WorldUtils {
     }
 
     public boolean isPestControl(Client client) {
-        Widget widget = client.getWidget(ComponentID.PEST_CONTROL_BLUE_SHIELD);
+        Widget widget = client.getWidget(InterfaceID.PestStatusOverlay.PEST_STATUS_PORT2);
         return widget != null && !widget.isHidden();
     }
 
@@ -223,14 +209,14 @@ public class WorldUtils {
             if (exceptions.contains(ExceptionalDeath.FIGHT_CAVE)) {
                 return Danger.EXCEPTIONAL;
             }
-            if (client.getVarbitValue(KARAMJA_RESURRECTION_USED) == 0 && exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) && client.getVarbitValue(Varbits.DIARY_KARAMJA_ELITE) > 0) {
+            if (client.getVarbitValue(VarbitID.KARAMJA_FIGHTCAVE_RESSURECTION) == 0 && exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) && client.getVarbitValue(VarbitID.KARAMJA_DIARY_ELITE_COMPLETE) > 0) {
                 // Karamja Elite diary completion allows 1 free daily resurrection: https://github.com/pajlads/DinkPlugin/issues/548
                 return Danger.EXCEPTIONAL;
             }
             return Danger.SAFE;
         }
 
-        if (isZulrah(regionId) && client.getVarbitValue(WESTERN_RESURRECTION_USED) == 0 && client.getVarbitValue(Varbits.DIARY_WESTERN_ELITE) > 0) {
+        if (isZulrah(regionId) && client.getVarbitValue(VarbitID.ZULRAH_REVIVE) == 0 && client.getVarbitValue(VarbitID.WESTERN_DIARY_ELITE_COMPLETE) > 0) {
             // Western Provinces Elite diary completion allows 1 free daily resurrection: https://github.com/pajlads/DinkPlugin/issues/548
             return exceptions.contains(ExceptionalDeath.DIARY_RESURRECTION) ? Danger.EXCEPTIONAL : Danger.SAFE;
         }

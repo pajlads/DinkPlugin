@@ -16,8 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
 import net.runelite.api.Skill;
-import net.runelite.api.VarPlayer;
-import net.runelite.api.Varbits;
+import net.runelite.api.gameval.VarPlayerID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
@@ -81,11 +81,11 @@ public class MetaNotifier extends BaseNotifier {
         // Gather data points
         int world = client.getWorld();
 
-        int collectionCompleted = client.getVarpValue(CollectionNotifier.COMPLETED_VARP);
-        int collectionTotal = client.getVarpValue(CollectionNotifier.TOTAL_VARP);
+        int collectionCompleted = client.getVarpValue(VarPlayerID.COLLECTION_COUNT);
+        int collectionTotal = client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX);
 
-        int combatAchievementPoints = client.getVarbitValue(CombatTaskNotifier.TOTAL_POINTS_ID);
-        int combatAchievementPointsTotal = client.getVarbitValue(CombatTaskNotifier.GRANDMASTER_TOTAL_POINTS_ID);
+        int combatAchievementPoints = client.getVarbitValue(VarbitID.CA_POINTS);
+        int combatAchievementPointsTotal = client.getVarbitValue(VarbitID.CA_THRESHOLD_GRANDMASTER);
 
         int diaryCompleted = AchievementDiary.DIARIES.keySet()
             .stream()
@@ -97,7 +97,7 @@ public class MetaNotifier extends BaseNotifier {
         client.runScript(DiaryNotifier.TOTAL_TASKS_SCRIPT_ID);
         int diaryTaskTotal = client.getIntStack()[0];
 
-        int gambleCount = client.getVarbitValue(Varbits.BA_GC);
+        int gambleCount = client.getVarbitValue(VarbitID.BARBASSAULT_GAMBLECOUNT);
 
         long experienceTotal = client.getOverallExperience();
         int levelTotal = client.getTotalLevel();
@@ -111,13 +111,13 @@ public class MetaNotifier extends BaseNotifier {
             skillLevels.put(skill.getName(), virtualLevel);
         }
 
-        int questsCompleted = client.getVarbitValue(QuestNotifier.COMPLETED_ID);
-        int questsTotal = client.getVarbitValue(QuestNotifier.TOTAL_ID);
-        int questPoints = client.getVarpValue(VarPlayer.QUEST_POINTS);
-        int questPointsTotal = client.getVarbitValue(QuestNotifier.QP_TOTAL_ID);
+        int questsCompleted = client.getVarbitValue(VarbitID.QUESTS_COMPLETED_COUNT);
+        int questsTotal = client.getVarbitValue(VarbitID.QUESTS_TOTAL_COUNT);
+        int questPoints = client.getVarpValue(VarPlayerID.QP);
+        int questPointsTotal = client.getVarbitValue(VarbitID.QP_MAX);
 
-        int slayerPoints = client.getVarbitValue(Varbits.SLAYER_POINTS);
-        int slayerStreak = client.getVarbitValue(Varbits.SLAYER_TASK_STREAK);
+        int slayerPoints = client.getVarbitValue(VarbitID.SLAYER_POINTS);
+        int slayerStreak = client.getVarbitValue(VarbitID.SLAYER_TASKS_COMPLETED);
 
         // Fire notification
         String playerName = Utils.getPlayerName(client);
