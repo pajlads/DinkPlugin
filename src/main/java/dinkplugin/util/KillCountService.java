@@ -353,6 +353,12 @@ public class KillCountService {
             } catch (NumberFormatException e) {
                 if (count.startsWith("Lots")) {
                     kc = 65_535;
+
+                    // avoid overwriting a higher kc
+                    Integer oldKc = getSlayerKc(mob);
+                    if (oldKc != null && oldKc >= kc) {
+                        continue;
+                    }
                 } else {
                     log.debug("Failed to parse slayer log entry for mob '{}' with kc '{}'", mob, count);
                     continue;
