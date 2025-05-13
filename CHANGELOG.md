@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add Hueycoatl pet data to PetNotifier. (#719)
+
 ## 1.11.7
 
 - Dev: Migrate to GameVal constants defined by Jagex. (#705)
