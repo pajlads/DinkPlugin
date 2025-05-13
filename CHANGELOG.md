@@ -1,4 +1,5 @@
 ## Unreleased
+
 - Minor: Add Hueycoatl pet data to PetNotifier. (#719)
 
 ## 1.11.7
