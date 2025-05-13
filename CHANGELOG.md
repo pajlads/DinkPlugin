@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Parse slayer kill log for more accurate kill count reporting. (#718)
+- Minor: Add Hueycoatl pet data to PetNotifier. (#719)
 
 ## 1.11.7
 
