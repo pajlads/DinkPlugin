@@ -304,6 +304,7 @@ public class KillCountService {
         if ("The Gauntlet".equalsIgnoreCase(boss)) return "gauntlet";
         if ("The Leviathan".equalsIgnoreCase(boss)) return "leviathan";
         if ("The Whisperer".equalsIgnoreCase(boss)) return "whisperer";
+        if ("The Hueycoatl".equalsIgnoreCase(boss) return "hueycoatl";
         if (boss.startsWith("Barrows")) return "barrows chests";
         if (boss.endsWith("Hallowed Sepulchre)")) return "hallowed sepulchre";
         if (boss.endsWith("Tempoross)")) return "tempoross";
