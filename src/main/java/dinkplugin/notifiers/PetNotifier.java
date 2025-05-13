@@ -380,7 +380,6 @@ public class PetNotifier extends BaseNotifier {
             entry("Baby mole", new KcSource("Giant Mole", 1.0 / 3_000)),
             entry("Baron", new KcSource("Duke Sucellus", 1.0 / 2_500)),
             entry("Bran", new MultiKcSource("Branda the Fire Queen", 1.0 / 3_000, "Eldric the Ice King", 1.0 / 3_000)), // assume loot not sacrificed
-            entry("Huberte", new KcSource("The Hueycoatl", 1.0 / 400)),
             entry("Butch", new KcSource("Vardorvis", 1.0 / 3_000)),
             entry("Beaver", new SkillSource(Skill.WOODCUTTING, 264_336, 85)), // teaks
             entry("Bloodhound", new KcSource("Clue Scroll (master)", 1.0 / 1_000)),
@@ -444,6 +443,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Hellpuppy", new KcSource("Cerberus", 1.0 / 3_000)),
             entry("Herbi", new KcSource("Herbiboar", 1.0 / 6_500)),
             entry("Heron", new SkillSource(Skill.FISHING, 257_770, 100)), // swordfish
+            entry("Huberte", new KcSource("The Hueycoatl", 1.0 / 400)),
             entry("Ikkle hydra", new KcSource("Alchemical Hydra", 1.0 / 3_000)),
             entry("Jal-nib-rek", new KcSource("TzKal-Zuk", 1.0 / 100)),
             entry("Kalphite princess", new KcSource("Kalphite Queen", 1.0 / 3_000)),
