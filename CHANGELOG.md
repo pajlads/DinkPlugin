@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include Yami pet name in pet notifications. (#730)
 - Minor: Add Hueycoatl pet data to PetNotifier. (#719)
 - Minor: Update Kill Count Notifier to respect Yama "success" message. (#728)
 
