@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.8
+
 - Minor: Add Hueycoatl pet data to PetNotifier. (#719)
 - Minor: Update Kill Count Notifier to respect Yama "success" message. (#728)
 
