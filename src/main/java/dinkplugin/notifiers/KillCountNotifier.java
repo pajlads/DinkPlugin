@@ -36,7 +36,7 @@ public class KillCountNotifier extends BaseNotifier {
 
     public static final String SPAM_WARNING = "Kill Count Notifier requires disabling the in-game setting: Filter out boss kill-count with spam-filter";
 
-    private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion|harvest)\\s?count is: ?(?<value>[\\d,]+)\\b", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion|harvest|success)\\s?count is: ?(?<value>[\\d,]+)\\b", Pattern.CASE_INSENSITIVE);
     private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>[\\d,]+)\\b");
     private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(?:.\\d+)?)\\.?(?: Personal best: (?<pbtime>[\\d:+]+(?:.\\d+)?))?", Pattern.CASE_INSENSITIVE);
 
@@ -262,6 +262,7 @@ public class KillCountNotifier extends BaseNotifier {
                     return KillCountService.HERBIBOAR;
 
             case "kill":
+            case "success":
                 return boss;
 
             default:
