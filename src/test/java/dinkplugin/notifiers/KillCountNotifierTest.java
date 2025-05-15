@@ -504,6 +504,30 @@ class KillCountNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyYama() {
+        // update config mocks
+        when(config.killCountInterval()).thenReturn(1);
+
+        // fire events
+        String gameMessage = "Your Yama success count is: 4.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onGameMessage("Fight duration: 6:50. Personal best: 6:41");
+        notifier.onTick();
+
+        // check notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .text(buildTemplate("Yama", 4))
+                .extra(new BossNotificationData("Yama", 4, gameMessage, Duration.ofMinutes(6).plusSeconds(50), false, Duration.ofMinutes(6).plusSeconds(41), null))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyBarbarianAssault() {
         // update mocks
         int count = 420;
