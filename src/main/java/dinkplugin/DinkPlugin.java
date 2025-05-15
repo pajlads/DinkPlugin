@@ -47,6 +47,7 @@ import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.events.ServerNpcLoot;
 import net.runelite.client.events.NotificationFired;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
@@ -305,6 +306,11 @@ public class DinkPlugin extends Plugin {
     public void onScriptPreFired(ScriptPreFired event) {
         collectionNotifier.onScript(event.getScriptId());
         deathNotifier.onScript(event);
+    }
+
+    @Subscribe
+    public void onServerNpcLoot(ServerNpcLoot event) {
+        lootNotifier.onServerNpcLoot(event);
     }
 
     @Subscribe(priority = 1) // run before the base loot tracker plugin

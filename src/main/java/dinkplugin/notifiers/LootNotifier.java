@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
+import net.runelite.client.events.ServerNpcLoot;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.loottracker.LootReceived;
@@ -115,7 +116,7 @@ public class LootNotifier extends BaseNotifier {
             return;
         }
 
-        this.handleNotify(event.getItems(), npc.getName(), LootRecordType.NPC, id);
+        this.handleNotify(event.getItems(), npc.getName(), LootRecordType.NPC, id, "onNpcLootReceived");
     }
 
     public void onPlayerLootReceived(PlayerLootReceived event) {
@@ -123,7 +124,16 @@ public class LootNotifier extends BaseNotifier {
             return;
 
         if (config.includePlayerLoot() && isEnabled())
-            this.handleNotify(event.getItems(), event.getPlayer().getName(), LootRecordType.PLAYER, null);
+            this.handleNotify(event.getItems(), event.getPlayer().getName(), LootRecordType.PLAYER, null, "onPlayerLootReceived");
+    }
+
+    public void onServerNpcLoot(ServerNpcLoot event) {
+        if (!isEnabled()) return;
+
+        var npc = event.getComposition();
+        int id = npc.getId();
+
+        this.handleNotify(event.getItems(), npc.getName(), LootRecordType.NPC, id, "onServerNpcLoot");
     }
 
     public void onLootReceived(LootReceived lootReceived) {
@@ -142,14 +152,14 @@ public class LootNotifier extends BaseNotifier {
             }
 
             String source = killCountService.getStandardizedSource(lootReceived);
-            this.handleNotify(lootReceived.getItems(), source, lootReceived.getType(), null);
+            this.handleNotify(lootReceived.getItems(), source, lootReceived.getType(), null, "onLootReceived1");
         } else if (lootReceived.getType() == LootRecordType.NPC && KillCountService.SPECIAL_LOOT_NPC_NAMES.contains(lootReceived.getName())) {
             // Special case: upstream fires LootReceived for certain NPCs, but not NpcLootReceived
-            this.handleNotify(lootReceived.getItems(), lootReceived.getName(), lootReceived.getType(), null);
+            this.handleNotify(lootReceived.getItems(), lootReceived.getName(), lootReceived.getType(), null, "onLootReceived1");
         }
     }
 
-    private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type, Integer npcId) {
+    private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type, Integer npcId, String eventName) {
         final Integer kc = killCountService.getKillCount(type, dropper);
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
@@ -269,6 +279,7 @@ public class LootNotifier extends BaseNotifier {
                 .replacementBoundary("%")
                 .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
                 .replacement("%LOOT%", lootMsg)
+                .replacement("%EVENT_NAME%", Replacements.ofText(eventName))
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))
                 .replacement("%SOURCE%", source)
                 .build();
