@@ -41,6 +41,7 @@ import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.NpcID;
 import net.runelite.client.RuneLite;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
@@ -52,6 +53,7 @@ import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.events.PluginMessage;
 import net.runelite.client.events.ProfileChanged;
+import net.runelite.client.events.ServerNpcLoot;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.loottracker.LootReceived;
@@ -308,7 +310,23 @@ public class DinkPlugin extends Plugin {
     }
 
     @Subscribe(priority = 1) // run before the base loot tracker plugin
+    public void onServerNpcLoot(ServerNpcLoot event) {
+        // temporarily only use new event when needed
+        if (event.getComposition().getId() != NpcID.YAMA) {
+            return;
+        }
+
+        killCountService.onServerNpcLoot(event);
+        lootNotifier.onServerNpcLoot(event);
+    }
+
+    @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
+        if (npcLootReceived.getNpc().getId() == NpcID.YAMA) {
+            // handled by ServerNpcLoot, but return just in case
+            return;
+        }
+
         killCountService.onNpcKill(npcLootReceived);
         lootNotifier.onNpcLootReceived(npcLootReceived);
     }

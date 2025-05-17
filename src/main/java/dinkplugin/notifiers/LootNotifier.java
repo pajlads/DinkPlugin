@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
+import net.runelite.client.events.ServerNpcLoot;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.loottracker.LootReceived;
@@ -103,6 +104,13 @@ public class LootNotifier extends BaseNotifier {
                 .map(Utils::regexify)
                 .collect(Collectors.toList())
         );
+    }
+
+    public void onServerNpcLoot(ServerNpcLoot event) {
+        if (!isEnabled()) return;
+
+        var comp = event.getComposition();
+        this.handleNotify(event.getItems(), comp.getName(), LootRecordType.NPC, comp.getId());
     }
 
     public void onNpcLootReceived(NpcLootReceived event) {
