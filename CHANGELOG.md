@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Fire loot notifications for Yama. (#734)
+
 ## 1.11.8
 
 - Minor: Add Hueycoatl pet data to PetNotifier. (#719)
