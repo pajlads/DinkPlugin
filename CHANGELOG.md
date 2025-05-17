@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Parse slayer kill log for more accurate kill count reporting. (#718)
+- Bugfix: Fire loot notifications for Yama. (#734)
 
 ## 1.11.8
 

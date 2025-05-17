@@ -18,6 +18,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
+import net.runelite.client.events.ServerNpcLoot;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
 import net.runelite.client.plugins.loottracker.LootReceived;
@@ -92,6 +93,10 @@ public class KillCountService {
     public void reset() {
         this.lastDrop = null;
         this.killCounts.invalidateAll();
+    }
+
+    public void onServerNpcLoot(ServerNpcLoot event) {
+        this.incrementKills(LootRecordType.NPC, event.getComposition().getName(), event.getItems());
     }
 
     public void onNpcKill(NpcLootReceived event) {
