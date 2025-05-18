@@ -4,6 +4,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import dinkplugin.DinkPluginConfig;
 import dinkplugin.SettingsManager;
 import dinkplugin.notifiers.ClueNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
@@ -65,6 +66,9 @@ public class KillCountService {
 
     @Inject
     private ConfigManager configManager;
+
+    @Inject
+    private DinkPluginConfig config;
 
     @Inject
     private Client client;
@@ -198,7 +202,7 @@ public class KillCountService {
     }
 
     public void onWidget(WidgetLoaded event) {
-        if (event.getGroupId() == InterfaceID.KILL_LOG) {
+        if (event.getGroupId() == InterfaceID.KILL_LOG && config.useSlayerWidgetKc()) {
             clientThread.invokeAtTickEnd(this::handleSlayerLog);
         }
     }
@@ -380,6 +384,7 @@ public class KillCountService {
     }
 
     private Integer getSlayerKc(String mob) {
+        if (!config.useSlayerWidgetKc()) return null;
         return configManager.getRSProfileConfiguration(SettingsManager.CONFIG_GROUP, "kc_" + mob.toLowerCase(), int.class);
     }
 

@@ -514,6 +514,18 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "useSlayerWidgetKc",
+        name = "Use Slayer Log KC",
+        description = "Whether to parse and utilize kill counts from the slayer kill log interface.<br/>" +
+            "For more accurate kc reporting, have this setting enabled and open the slayer kill log",
+        position = 1022,
+        section = advancedSection
+    )
+    default boolean useSlayerWidgetKc() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
