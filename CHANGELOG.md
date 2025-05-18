@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add drop rate of Yami pet for luck calculations. (#736)
 - Minor: Parse slayer kill log for more accurate kill count reporting. (#718)
 - Bugfix: Fire loot notifications for Yama. (#734)
 

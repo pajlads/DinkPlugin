@@ -550,7 +550,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Vet'ion jr.", new MultiKcSource("Vet'ion", 1.0 / 1_500, "Calvar'ion", 1.0 / 2_800)),
             entry("Vorki", new KcSource("Vorkath", 1.0 / 3_000)),
             entry("Wisp", new KcSource("The Whisperer", 1.0 / 2_000)),
-            entry("Yami", new KcSource("Yama", null)), // unknown drop rate
+            entry("Yami", new KcSource("Yama", 1.0 / 2_500)),
             entry("Youngllef", new MultiKcSource("Gauntlet", 1.0 / 2_000, "Corrupted Gauntlet", 1.0 / 800))
         );
     }
