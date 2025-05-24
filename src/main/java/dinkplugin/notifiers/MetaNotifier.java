@@ -7,6 +7,7 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
+import dinkplugin.notifiers.data.AmascutPurpleNotificationData;
 import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
 import dinkplugin.util.ConfigUtil;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
 import net.runelite.api.Skill;
+import net.runelite.api.annotations.Varbit;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
@@ -37,6 +40,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MetaNotifier extends BaseNotifier {
     static final @VisibleForTesting String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
     static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
+
+    private static final int[] TOA_CHEST_VARBS;
 
     private final AtomicInteger loginTicks = new AtomicInteger(-1);
 
@@ -75,6 +80,49 @@ public class MetaNotifier extends BaseNotifier {
         if (loginTicks.getAndUpdate(i -> Math.max(-1, i - 1)) == 0 && isEnabled()) {
             clientThread.invokeLater(this::notifyLogin); // just 20ms later to be able to run client scripts cleanly
         }
+    }
+
+    public void onVarbit(VarbitChanged event) {
+        if (event.getVarbitId() == VarbitID.TOA_VAULT_SARCOPHAGUS && event.getValue() % 2 == 1) {
+            clientThread.invokeAtTickEnd(this::notifyPurpleAmascut);
+        }
+    }
+
+    private void notifyPurpleAmascut() {
+        // inspect multiloc to ensure local player is the recipient of the purple drop (s/o @rdutta)
+        for (@Varbit int varbitId : TOA_CHEST_VARBS) {
+            if (client.getVarbitValue(varbitId) == 2) {
+                // someone else in the party received the purple drop
+                return;
+            }
+        }
+
+        // Gather relevant data
+        var party = Utils.getAmascutTombsParty(client);
+        int rewardPoints = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSCORE);
+        int raidLevels = client.getVarbitValue(VarbitID.TOA_CLIENT_RAID_LEVEL);
+
+        // Calculate probability based on https://oldschool.runescape.wiki/w/Chest_(Tombs_of_Amascut)#Uniques
+        int x = Math.min(raidLevels, 400);
+        int y = Math.max(Math.min(raidLevels, 550) - 400, 0);
+        int partySize = Math.max(party.size(), 1);
+        double probability = Math.min(0.01 * rewardPoints / (10_500 - 20 * (x + y / 3.0)), 0.55) / partySize;
+
+        // Fire notification
+        String playerName = Utils.getPlayerName(client);
+        Template message = Template.builder()
+            .replacementBoundary("%")
+            .template("%USERNAME% rolled a purple (unique) drop from Tombs of Amascut!")
+            .replacement("%USERNAME%", Replacements.ofText(playerName))
+            .build();
+        var extra = new AmascutPurpleNotificationData(party, rewardPoints, raidLevels, probability);
+        createMessage(false, NotificationBody.builder()
+            .type(NotificationType.TOA_UNIQUE)
+            .text(message)
+            .extra(extra)
+            .playerName(playerName)
+            .build()
+        );
     }
 
     private void notifyLogin() {
@@ -189,4 +237,10 @@ public class MetaNotifier extends BaseNotifier {
         return pets;
     }
 
+    static {
+        TOA_CHEST_VARBS = new int[] {
+            VarbitID.TOA_VAULT_CHEST_0, VarbitID.TOA_VAULT_CHEST_1, VarbitID.TOA_VAULT_CHEST_2, VarbitID.TOA_VAULT_CHEST_3,
+            VarbitID.TOA_VAULT_CHEST_4, VarbitID.TOA_VAULT_CHEST_5, VarbitID.TOA_VAULT_CHEST_6, VarbitID.TOA_VAULT_CHEST_7
+        };
+    }
 }
