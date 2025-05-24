@@ -532,7 +532,7 @@ public class PetNotifier extends BaseNotifier {
                     int raidLevels = Math.min(client.getVarbitValue(VarbitID.TOA_CLIENT_RAID_LEVEL), 550);
                     int x = Math.min(raidLevels, 400);
                     int y = Math.max(raidLevels - 400, 0);
-                    return 0.01 * rewardPoints / (350_000 - 700 * (x + y / 3)); // assume latest is representative
+                    return 0.01 * rewardPoints / (350_000 - 700 * (x + y / 3.0)); // assume latest is representative
                 }
 
                 @Override
