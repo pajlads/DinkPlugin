@@ -22,6 +22,7 @@ import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.events.ServerNpcLoot;
@@ -154,6 +155,12 @@ public class LootNotifier extends BaseNotifier {
         } else if (lootReceived.getType() == LootRecordType.NPC && KillCountService.SPECIAL_LOOT_NPC_NAMES.contains(lootReceived.getName())) {
             // Special case: upstream fires LootReceived for certain NPCs, but not NpcLootReceived
             this.handleNotify(lootReceived.getItems(), lootReceived.getName(), lootReceived.getType(), null);
+        }
+    }
+
+    public void onGameMessage(String message) {
+        if ("You have found a Pharaoh's sceptre! It fell on the floor.".equals(message)) {
+            this.handleNotify(List.of(new ItemStack(ItemID.PHARAOHS_SCEPTRE, 1)), "Pyramid Plunder", LootRecordType.EVENT, null);
         }
     }
 
