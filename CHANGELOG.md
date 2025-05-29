@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add loot notification for Pharaoh's sceptre. (#742)
+
 ## 1.11.9
 
 - Minor: Add drop rate of Yami pet for luck calculations. (#736)
