@@ -45,6 +45,7 @@ import static org.mockito.Mockito.when;
 class LootNotifierTest extends MockedNotifierTest {
 
     private static final int SHARD_PRICE = 10_000_000;
+    private static final int SCEPTRE_PRICE = 5_000_000;
     private static final int LARRAN_PRICE = 150_000;
     private static final int RUBY_PRICE = 900;
     private static final int OPAL_PRICE = 600;
@@ -79,6 +80,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
         // init item mocks
         mockItem(ItemID.BLOOD_SHARD, SHARD_PRICE, "Blood shard");
+        mockItem(ItemID.PHARAOHS_SCEPTRE, SCEPTRE_PRICE, "Pharaoh's sceptre");
         mockItem(ItemID.SLAYER_WILDERNESS_KEY, LARRAN_PRICE, "Larran's key");
         mockItem(ItemID.RUBY, RUBY_PRICE, "Ruby");
         mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
@@ -801,6 +803,33 @@ class LootNotifierTest extends MockedNotifierTest {
                         .build()
                 )
                 .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, null, null))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyPharaohSceptre() {
+        // prepare data
+        String total = QuantityFormatter.quantityToStackSize(SCEPTRE_PRICE);
+        String source = "Pyramid Plunder";
+
+        // fire chat event
+        notifier.onGameMessage("You have found a Pharaoh's sceptre! It fell on the floor.");
+
+        // verify notification message
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: 1 x {{sceptre}} (%s) from {{source}} for %s gp", PLAYER_NAME, total, total))
+                        .replacement("{{sceptre}}", Replacements.ofWiki("Pharaoh's sceptre"))
+                        .replacement("{{source}}", Replacements.ofWiki(source))
+                        .build()
+                )
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.PHARAOHS_SCEPTRE, 1, SCEPTRE_PRICE, "Pharaoh's sceptre", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, null, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
