@@ -66,7 +66,7 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         notifier.onOfferChange(1, offer);
 
         // verify notification
-        verifyNotification(1, offer, "sold", "Opal", OPAL_PRICE, 10 * 7L);
+        verifyNotification(1, offer, "sold", "Opal", OPAL_PRICE, 10 * 14L);
     }
 
     @Test

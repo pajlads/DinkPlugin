@@ -302,6 +302,10 @@ public class KillCountService {
 
     @Nullable
     public SerializedLoot getLootTrackerRecord(@NotNull LootRecordType type, @NotNull String sourceName) {
+        if (type == LootRecordType.EVENT && "Pyramid Plunder".equals(sourceName)) {
+            // ignore events that are not recorded by the base loot tracker
+            return null;
+        }
         if (ConfigUtil.isPluginDisabled(configManager, RL_LOOT_PLUGIN_NAME)) {
             // assume stored kc is useless if loot tracker plugin is disabled
             return null;
