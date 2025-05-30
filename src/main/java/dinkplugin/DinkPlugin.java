@@ -247,6 +247,7 @@ public class DinkPlugin extends Plugin {
                 }
 
                 collectionNotifier.onChatMessage(chatMessage);
+                lootNotifier.onGameMessage(chatMessage);
                 petNotifier.onChatMessage(chatMessage);
                 killCountService.onGameMessage(chatMessage);
                 slayerNotifier.onChatMessage(chatMessage);

@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add loot notification for Pharaoh's sceptre. (#742)
 - Minor: Update formula for Grand Exchange tax after Jagex change. (#743)
 
 ## 1.11.9
