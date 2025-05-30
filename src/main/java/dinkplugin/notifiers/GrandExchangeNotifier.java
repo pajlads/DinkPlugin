@@ -252,8 +252,8 @@ public class GrandExchangeNotifier extends BaseNotifier {
         if (unitPrice < 100 || TAX_EXEMPT_ITEMS.contains(itemId)) {
             return 0L;
         }
-        int price = Math.min(unitPrice, 500_000_000);
-        int unitTax = (int) Math.floor(price * 0.01);
+        int price = Math.min(unitPrice, 250_000_000);
+        int unitTax = (int) Math.floor(price * 0.02);
         return (long) unitTax * quantity;
     }
 
