@@ -248,7 +248,7 @@ public class Utils {
         return names;
     }
 
-    private Collection<String> getAmascutTombsParty(@NotNull Client client) {
+    public Collection<String> getAmascutTombsParty(@NotNull Client client) {
         return getVarcStrings(client, TOA_MEMBER_NAME, TOA_PARTY_MAX_SIZE);
     }
 
