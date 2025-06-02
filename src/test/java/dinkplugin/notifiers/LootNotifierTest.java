@@ -741,7 +741,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(realSource))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), realSource, LootRecordType.NPC, kc, null, null, null))
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), realSource, LootRecordType.EVENT, kc, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
