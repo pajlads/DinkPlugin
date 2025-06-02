@@ -46,7 +46,7 @@ import java.util.function.Predicate;
 @Singleton
 public class KillCountService {
 
-    public static final String GAUNTLET_NAME = "Gauntlet", GAUNTLET_BOSS = "Crystalline Hunllef";
+    public static final String GAUNTLET_NAME = "Gauntlet", GAUNTLET_BOSS = "Crystalline Hunllef", THE_GAUNTLET = "The Gauntlet";
     public static final String CG_NAME = "Corrupted Gauntlet", CG_BOSS = "Corrupted Hunllef";
     public static final String HERBIBOAR = "Herbiboar";
     public static final String TOA = "Tombs of Amascut";
@@ -210,7 +210,7 @@ public class KillCountService {
 
     public String getStandardizedSource(LootReceived event) {
         if (GAUNTLET_BOSS.equals(event.getName())) {
-            return GAUNTLET_NAME;
+            return THE_GAUNTLET;
         } else if (CG_BOSS.equals(event.getName())) {
             return CG_NAME;
         } else if (lastDrop != null && shouldUseChatName(event)) {
@@ -390,7 +390,7 @@ public class KillCountService {
      * @return lowercase boss name that {@link ChatCommandsPlugin} uses during serialization
      */
     private static String cleanBossName(String boss) {
-        if ("The Gauntlet".equalsIgnoreCase(boss) || GAUNTLET_BOSS.equals(boss)) return "gauntlet";
+        if (THE_GAUNTLET.equalsIgnoreCase(boss) || GAUNTLET_BOSS.equals(boss)) return "gauntlet";
         if (CG_BOSS.equals(boss)) return "corrupted gauntlet";
         if ("The Leviathan".equalsIgnoreCase(boss)) return "leviathan";
         if ("The Whisperer".equalsIgnoreCase(boss)) return "whisperer";
@@ -411,7 +411,7 @@ public class KillCountService {
             default:
                 // exceptions where boss name in chat message differs from npc name
                 if ("Whisperer".equals(sourceName)) return "The Whisperer";
-                if ("The Gauntlet".equals(sourceName)) return GAUNTLET_BOSS;
+                if (THE_GAUNTLET.equals(sourceName)) return GAUNTLET_BOSS;
                 if (CG_NAME.equals(sourceName)) return CG_BOSS;
 
                 return sourceName;
