@@ -63,7 +63,7 @@ public class KillCountService {
         NpcID.ARAXXOR, NpcID.ARAXXOR_DEAD, NpcID.RT_FIRE_QUEEN_INACTIVE, NpcID.RT_ICE_KING_INACTIVE
     );
     public static final Set<String> SPECIAL_LOOT_NPC_NAMES = Set.of("The Whisperer", "Araxxor",
-        "Branda the Fire Queen", "Eldric the Ice King", "Corrupted Hunllef");
+        "Branda the Fire Queen", "Eldric the Ice King", "Crystalline Hunllef", "Corrupted Hunllef");
 
     @Inject
     private ConfigManager configManager;
