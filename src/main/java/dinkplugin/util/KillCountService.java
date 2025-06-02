@@ -221,6 +221,7 @@ public class KillCountService {
 
     private boolean shouldUseChatName(LootReceived event) {
         assert lastDrop != null;
+        if (event.getType() != LootRecordType.EVENT) return false;
         String lastSource = lastDrop.getSource();
         Predicate<String> coincides = source -> source.equals(event.getName()) && lastSource.startsWith(source);
         return coincides.test(TOA) || coincides.test(TOB) || coincides.test(COX);
