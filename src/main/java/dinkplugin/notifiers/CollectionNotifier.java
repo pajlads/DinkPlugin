@@ -156,6 +156,11 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     private void init() {
+        if (client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX) <= 0) {
+            // underlying data not yet initialized; retry later
+            return;
+        }
+
         for (CollectionLogRank rank : CollectionLogRank.values()) {
             try {
                 rankByThreshold.put(rank.getClogRankThreshold(client), rank);
