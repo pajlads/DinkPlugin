@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.10
+
 - Minor: Add loot notification for Pharaoh's sceptre. (#742)
 - Minor: Update formula for Grand Exchange tax after Jagex change. (#743)
 - Bugfix: Ensure Gilded collection log rank threshold is not set to zero. (#750)
