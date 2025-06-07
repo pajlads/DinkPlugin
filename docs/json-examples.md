@@ -912,3 +912,18 @@ JSON for Logout Notifications:
   "content": "%USERNAME% logged out"
 }
 ```
+
+JSON for Tombs of Amascut Purple Chest Notifications:
+
+```json5
+{
+  "type": "TOA_UNIQUE",
+  "content": "%USERNAME% rolled a purple (unique) drop from Tombs of Amascut!",
+  "extra": {
+    "party": ["%USERNAME%", "another RSN", "yet another RSN"],
+    "rewardPoints": 30000,
+    "raidLevels": 550,
+    "probability": 0.2
+  }
+}
+```
