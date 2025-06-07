@@ -2,6 +2,8 @@
 
 - Minor: Add loot notification for Pharaoh's sceptre. (#742)
 - Minor: Update formula for Grand Exchange tax after Jagex change. (#743)
+- Bugfix: Ensure Gilded collection log rank threshold is not set to zero. (#750)
+- Bugfix: Fire loot notifications for (Corrupted) Gauntlet after loot tracker change. (#746)
 - Dev: Notify metadata handler upon rolling a TOA purple chest. (#740)
 
 ## 1.11.9
