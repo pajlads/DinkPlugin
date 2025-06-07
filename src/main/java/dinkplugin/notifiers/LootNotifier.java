@@ -154,7 +154,9 @@ public class LootNotifier extends BaseNotifier {
             this.handleNotify(lootReceived.getItems(), source, lootReceived.getType(), null);
         } else if (lootReceived.getType() == LootRecordType.NPC && KillCountService.SPECIAL_LOOT_NPC_NAMES.contains(lootReceived.getName())) {
             // Special case: upstream fires LootReceived for certain NPCs, but not NpcLootReceived
-            this.handleNotify(lootReceived.getItems(), lootReceived.getName(), lootReceived.getType(), null);
+            String source = killCountService.getStandardizedSource(lootReceived);
+            var type = KillCountService.THE_GAUNTLET.equals(source) || KillCountService.CG_NAME.equals(source) ? LootRecordType.EVENT : lootReceived.getType();
+            this.handleNotify(lootReceived.getItems(), source, type, null);
         }
     }
 

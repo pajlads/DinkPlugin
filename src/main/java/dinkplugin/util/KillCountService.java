@@ -46,7 +46,7 @@ import java.util.function.Predicate;
 @Singleton
 public class KillCountService {
 
-    public static final String GAUNTLET_NAME = "Gauntlet", GAUNTLET_BOSS = "Crystalline Hunllef";
+    public static final String GAUNTLET_NAME = "Gauntlet", GAUNTLET_BOSS = "Crystalline Hunllef", THE_GAUNTLET = "The Gauntlet";
     public static final String CG_NAME = "Corrupted Gauntlet", CG_BOSS = "Corrupted Hunllef";
     public static final String HERBIBOAR = "Herbiboar";
     public static final String TOA = "Tombs of Amascut";
@@ -62,7 +62,8 @@ public class KillCountService {
         NpcID.WHISPERER, NpcID.WHISPERER_MELEE, NpcID.WHISPERER_QUEST, NpcID.WHISPERER_MELEE_QUEST,
         NpcID.ARAXXOR, NpcID.ARAXXOR_DEAD, NpcID.RT_FIRE_QUEEN_INACTIVE, NpcID.RT_ICE_KING_INACTIVE
     );
-    public static final Set<String> SPECIAL_LOOT_NPC_NAMES = Set.of("The Whisperer", "Araxxor", "Branda the Fire Queen", "Eldric the Ice King");
+    public static final Set<String> SPECIAL_LOOT_NPC_NAMES = Set.of("The Whisperer", "Araxxor",
+        "Branda the Fire Queen", "Eldric the Ice King", GAUNTLET_BOSS, CG_BOSS);
 
     @Inject
     private ConfigManager configManager;
@@ -208,8 +209,10 @@ public class KillCountService {
     }
 
     public String getStandardizedSource(LootReceived event) {
-        if (isCorruptedGauntlet(event)) {
-            return KillCountService.CG_NAME;
+        if (GAUNTLET_BOSS.equals(event.getName())) {
+            return THE_GAUNTLET;
+        } else if (CG_BOSS.equals(event.getName())) {
+            return CG_NAME;
         } else if (lastDrop != null && shouldUseChatName(event)) {
             return lastDrop.getSource(); // distinguish entry/expert/challenge modes
         }
@@ -218,20 +221,10 @@ public class KillCountService {
 
     private boolean shouldUseChatName(LootReceived event) {
         assert lastDrop != null;
+        if (event.getType() != LootRecordType.EVENT) return false;
         String lastSource = lastDrop.getSource();
         Predicate<String> coincides = source -> source.equals(event.getName()) && lastSource.startsWith(source);
         return coincides.test(TOA) || coincides.test(TOB) || coincides.test(COX);
-    }
-
-    /**
-     * @param event a loot received event that was just fired
-     * @return whether the event represents corrupted gauntlet
-     * @apiNote Useful to distinguish normal vs. corrupted gauntlet since the base loot tracker plugin does not,
-     * which was <a href="https://github.com/pajlads/DinkPlugin/issues/469">reported</a> to our issue tracker.
-     */
-    private boolean isCorruptedGauntlet(LootReceived event) {
-        return event.getType() == LootRecordType.EVENT && lastDrop != null && "The Gauntlet".equals(event.getName())
-            && (CG_NAME.equals(lastDrop.getSource()) || CG_BOSS.equals(lastDrop.getSource()));
     }
 
     @Nullable
@@ -397,7 +390,8 @@ public class KillCountService {
      * @return lowercase boss name that {@link ChatCommandsPlugin} uses during serialization
      */
     private static String cleanBossName(String boss) {
-        if ("The Gauntlet".equalsIgnoreCase(boss)) return "gauntlet";
+        if (THE_GAUNTLET.equalsIgnoreCase(boss) || GAUNTLET_BOSS.equals(boss)) return "gauntlet";
+        if (CG_BOSS.equals(boss)) return "corrupted gauntlet";
         if ("The Leviathan".equalsIgnoreCase(boss)) return "leviathan";
         if ("The Whisperer".equalsIgnoreCase(boss)) return "whisperer";
         if ("The Hueycoatl".equalsIgnoreCase(boss)) return "hueycoatl";
@@ -417,7 +411,7 @@ public class KillCountService {
             default:
                 // exceptions where boss name in chat message differs from npc name
                 if ("Whisperer".equals(sourceName)) return "The Whisperer";
-                if ("The Gauntlet".equals(sourceName)) return GAUNTLET_BOSS;
+                if (THE_GAUNTLET.equals(sourceName)) return GAUNTLET_BOSS;
                 if (CG_NAME.equals(sourceName)) return CG_BOSS;
 
                 return sourceName;

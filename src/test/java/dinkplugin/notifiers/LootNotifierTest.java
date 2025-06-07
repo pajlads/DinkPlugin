@@ -689,12 +689,14 @@ class LootNotifierTest extends MockedNotifierTest {
         int kc = 123;
         int quantity = 24;
         String total = QuantityFormatter.quantityToStackSize(quantity * RUBY_PRICE);
-        String source = "The Gauntlet";
+        String source = "Crystalline Hunllef";
+        String realSource = "The Gauntlet";
         List<ItemStack> items = List.of(new ItemStack(ItemID.RUBY, quantity));
+        mockNpcs(new NPC[0]);
 
         // fire events
         killCountService.onGameMessage(String.format("Your Gauntlet completion count is: %d.", kc));
-        plugin.onLootReceived(new LootReceived(source, -1, LootRecordType.EVENT, items, 1));
+        plugin.onLootReceived(new LootReceived(source, 674, LootRecordType.NPC, items, 1));
 
         // verify notification message
         verifyCreateMessage(
@@ -705,10 +707,10 @@ class LootNotifierTest extends MockedNotifierTest {
                     Template.builder()
                         .template(String.format("%s has looted: %d x {{ruby}} (%s) from {{source}} for %s gp", PLAYER_NAME, quantity, total, total))
                         .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
-                        .replacement("{{source}}", Replacements.ofWiki(source))
+                        .replacement("{{source}}", Replacements.ofWiki(realSource))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, null, null))
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), realSource, LootRecordType.EVENT, kc, null, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -720,13 +722,14 @@ class LootNotifierTest extends MockedNotifierTest {
         int kc = 123;
         int quantity = 24;
         String total = QuantityFormatter.quantityToStackSize(quantity * RUBY_PRICE);
-        String source = "The Gauntlet";
+        String source = "Corrupted Hunllef";
         String realSource = "Corrupted Gauntlet";
         List<ItemStack> items = List.of(new ItemStack(ItemID.RUBY, quantity));
+        mockNpcs(new NPC[0]);
 
         // fire events
         killCountService.onGameMessage(String.format("Your Corrupted Gauntlet completion count is: %d.", kc));
-        plugin.onLootReceived(new LootReceived(source, -1, LootRecordType.EVENT, items, 1));
+        plugin.onLootReceived(new LootReceived(source, 894, LootRecordType.NPC, items, 1));
 
         // verify notification message
         verifyCreateMessage(
