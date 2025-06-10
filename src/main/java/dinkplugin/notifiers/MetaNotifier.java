@@ -83,7 +83,7 @@ public class MetaNotifier extends BaseNotifier {
     }
 
     public void onVarbit(VarbitChanged event) {
-        if (event.getVarbitId() == VarbitID.TOA_VAULT_SARCOPHAGUS && event.getValue() % 2 == 1) {
+        if (event.getVarbitId() == VarbitID.TOA_VAULT_SARCOPHAGUS && event.getValue() % 2 == 1 && isEnabled()) {
             clientThread.invokeAtTickEnd(this::notifyPurpleAmascut);
         }
     }
