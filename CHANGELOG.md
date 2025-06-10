@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Bugfix: Avoid sending TOA unique message to primary webhook when metadata webhook is absent. (#755)
+- Bugfix: Avoid sending TOA unique message to primary webhook when metadata webhook is absent. (#756)
 
 ## 1.11.10
 
