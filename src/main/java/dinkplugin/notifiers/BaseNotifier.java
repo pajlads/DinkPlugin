@@ -5,14 +5,13 @@ import dinkplugin.domain.SeasonalPolicy;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.util.AccountTypeTracker;
-import dinkplugin.util.WorldUtils;
+import dinkplugin.util.WorldTypeTracker;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.WorldType;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
-import java.util.Set;
 
 @Slf4j
 public abstract class BaseNotifier {
@@ -24,20 +23,16 @@ public abstract class BaseNotifier {
     protected AccountTypeTracker accountTracker;
 
     @Inject
+    protected WorldTypeTracker worldTracker;
+
+    @Inject
     protected Client client;
 
     @Inject
     private DiscordMessageHandler messageHandler;
 
     public boolean isEnabled() {
-        Set<WorldType> world = client.getWorldType();
-        if (config.seasonalPolicy() == SeasonalPolicy.REJECT && world.contains(WorldType.SEASONAL)) {
-            return false;
-        }
-        if (WorldUtils.isIgnoredWorld(world)) {
-            return false;
-        }
-        return accountTracker.accountPassesConfig();
+        return worldTracker.worldPassesConfig() && accountTracker.accountPassesConfig();
     }
 
     protected abstract String getWebhookUrl();

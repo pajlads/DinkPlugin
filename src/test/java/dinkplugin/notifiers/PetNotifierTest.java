@@ -390,6 +390,7 @@ class PetNotifierTest extends MockedNotifierTest {
         // update mocks
         when(config.seasonalPolicy()).thenReturn(SeasonalPolicy.REJECT);
         when(client.getWorldType()).thenReturn(EnumSet.of(WorldType.SEASONAL));
+        worldTracker.onWorldChange();
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");

@@ -55,10 +55,17 @@ public class PlayerKillNotifier extends BaseNotifier {
         if (!config.notifyPk())
             return false;
 
-        // duplicated logic from super class but allow Duel Arena
-        EnumSet<WorldType> world = client.getWorldType().clone(); // fast on RegularEnumSet
-        world.remove(WorldType.PVP_ARENA);
-        return !WorldUtils.isIgnoredWorld(world) && accountTracker.accountPassesConfig();
+        if (!worldTracker.worldPassesConfig()) {
+            // duplicated logic from super class but allow Duel Arena
+            EnumSet<WorldType> world = client.getWorldType().clone(); // fast on RegularEnumSet
+            world.remove(WorldType.PVP_ARENA);
+
+            if (WorldUtils.isIgnoredWorld(world)) {
+                return false;
+            }
+        }
+
+        return accountTracker.accountPassesConfig();
     }
 
     @Override
