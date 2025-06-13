@@ -91,7 +91,7 @@ public class LeaguesNotifier extends BaseNotifier {
         return config.notifyLeagues() &&
             client.getVarbitValue(VarbitID.LEAGUE_TYPE) == CURRENT_LEAGUE_VERSION &&
             client.getWorldType().contains(WorldType.SEASONAL) &&
-            accountPassesConfig();
+            accountTracker.accountPassesConfig();
     }
 
     @Override

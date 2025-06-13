@@ -12,6 +12,7 @@ import dinkplugin.domain.PlayerLookupService;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.templating.Template;
+import dinkplugin.util.AccountTypeTracker;
 import dinkplugin.util.BlockingClientThread;
 import dinkplugin.util.BlockingExecutor;
 import dinkplugin.util.IndexedArray;
@@ -108,6 +109,9 @@ abstract class MockedNotifierTest extends MockedTestBase {
     protected ConfigManager configManager = Mockito.mock(ConfigManager.class);
 
     @Bind
+    protected AccountTypeTracker accountTracker = Mockito.spy(AccountTypeTracker.class);
+
+    @Bind
     protected SettingsManager settingsManager = Mockito.spy(new SettingsManager(gson, client, clientThread, plugin, config, configManager, httpClient));
 
     @Bind
@@ -153,6 +157,8 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.nameFilterMode()).thenReturn(FilterMode.DENY);
         when(config.embedColor()).thenReturn(Utils.PINK);
         when(config.deniedAccountTypes()).thenReturn(EnumSet.noneOf(AccountType.class));
+
+        accountTracker.init();
     }
 
     protected void mockItem(int id, int price, String name) {

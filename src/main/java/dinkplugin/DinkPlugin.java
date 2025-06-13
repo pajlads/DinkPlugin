@@ -21,6 +21,7 @@ import dinkplugin.notifiers.QuestNotifier;
 import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
 import dinkplugin.notifiers.TradeNotifier;
+import dinkplugin.util.AccountTypeTracker;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
@@ -78,6 +79,7 @@ public class DinkPlugin extends Plugin {
 
     private @Inject SettingsManager settingsManager;
     private @Inject VersionManager versionManager;
+    private @Inject AccountTypeTracker accountTracker;
 
     private @Inject KillCountService killCountService;
 
@@ -123,6 +125,7 @@ public class DinkPlugin extends Plugin {
         log.debug("Started up Dink");
         settingsManager.init();
         versionManager.onStart();
+        accountTracker.init();
         lootNotifier.init();
         deathNotifier.init();
         chatNotifier.init();
@@ -134,6 +137,7 @@ public class DinkPlugin extends Plugin {
         log.debug("Shutting down Dink");
         this.resetNotifiers();
         gameState.lazySet(null);
+        accountTracker.clear();
     }
 
     void resetNotifiers() {
@@ -357,6 +361,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onVarbitChanged(VarbitChanged event) {
         settingsManager.onVarbitChanged(event);
+        accountTracker.onVarbit(event);
         metaNotifier.onVarbit(event);
         collectionNotifier.onVarPlayer(event);
         diaryNotifier.onVarbitChanged(event);

@@ -1,16 +1,13 @@
 package dinkplugin.notifiers;
 
 import dinkplugin.DinkPluginConfig;
-import dinkplugin.SettingsManager;
-import dinkplugin.domain.FilterMode;
 import dinkplugin.domain.SeasonalPolicy;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
-import dinkplugin.util.Utils;
+import dinkplugin.util.AccountTypeTracker;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.Player;
 import net.runelite.api.WorldType;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,7 +21,7 @@ public abstract class BaseNotifier {
     protected DinkPluginConfig config;
 
     @Inject
-    protected SettingsManager settingsManager;
+    protected AccountTypeTracker accountTracker;
 
     @Inject
     protected Client client;
@@ -40,22 +37,7 @@ public abstract class BaseNotifier {
         if (WorldUtils.isIgnoredWorld(world)) {
             return false;
         }
-        return accountPassesConfig();
-    }
-
-    /**
-     * @return whether the player name passes the configured filtered RSNs and the account type is permitted
-     */
-    protected boolean accountPassesConfig() {
-        Player player = client.getLocalPlayer();
-        if (player == null) {
-            return false;
-        }
-        if (config.nameFilterMode() != FilterMode.ALLOW && config.deniedAccountTypes().contains(Utils.getAccountType(client))) {
-            log.info("Skipping notification from {} due to denied account type", getClass().getSimpleName());
-            return false;
-        }
-        return settingsManager.isNamePermitted(player.getName());
+        return accountTracker.accountPassesConfig();
     }
 
     protected abstract String getWebhookUrl();
