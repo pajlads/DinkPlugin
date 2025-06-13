@@ -4,7 +4,6 @@ import dinkplugin.DinkPluginConfig;
 import dinkplugin.domain.SeasonalPolicy;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.GameState;
 import net.runelite.api.WorldType;
 import net.runelite.client.callback.ClientThread;
 
@@ -14,7 +13,7 @@ import java.util.Set;
 
 @Slf4j
 @Singleton
-public class WorldTypeTracker {
+public class WorldTypeTracker extends AbstractStateTracker<Boolean> {
 
     @Inject
     protected DinkPluginConfig config;
@@ -25,47 +24,33 @@ public class WorldTypeTracker {
     @Inject
     protected ClientThread clientThread;
 
-    private volatile Boolean validWorld = null;
-
-    public void init() {
-        clientThread.invoke(() -> {
-            if (client.getGameState() == GameState.LOGGED_IN) {
-                this.checkValidity();
-            }
-        });
-    }
-
-    public void clear() {
-        this.validWorld = null;
+    @Override
+    protected void populateState() {
+        Set<WorldType> world = client.getWorldType();
+        if (config.seasonalPolicy() == SeasonalPolicy.REJECT && world.contains(WorldType.SEASONAL)) {
+            this.state = false;
+        } else {
+            this.state = !WorldUtils.isIgnoredWorld(world);
+        }
     }
 
     public void onWorldChange() {
-        this.checkValidity();
+        this.populateState();
     }
 
     public void onConfig(String configKey) {
         if ("seasonalPolicy".equals(configKey)) {
-            this.clear();
-            this.init();
+            this.refresh();
         }
     }
 
     public boolean worldPassesConfig() {
-        var valid = this.validWorld;
+        var valid = this.state;
         if (valid == null) {
-            checkValidity();
-            return this.validWorld;
+            populateState();
+            return this.state;
         }
         return valid;
-    }
-
-    private void checkValidity() {
-        Set<WorldType> world = client.getWorldType();
-        if (config.seasonalPolicy() == SeasonalPolicy.REJECT && world.contains(WorldType.SEASONAL)) {
-            this.validWorld = false;
-        } else {
-            this.validWorld = !WorldUtils.isIgnoredWorld(world);
-        }
     }
 
 }
