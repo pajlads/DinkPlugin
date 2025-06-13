@@ -51,6 +51,18 @@ public class AccountTypeTracker {
         }
     }
 
+    public void onAccountChange() {
+        this.clear();
+        this.init();
+    }
+
+    public void onConfig(String configKey) {
+        if ("nameFilterMode".equals(configKey) || "deniedAccountTypes".equals(configKey) || "ignoredNames".equals(configKey)) {
+            this.clear();
+            this.init();
+        }
+    }
+
     /**
      * @return whether the player name passes the configured filtered RSNs and the account type is permitted
      */

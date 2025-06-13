@@ -162,6 +162,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onAccountHashChanged(AccountHashChanged event) {
+        accountTracker.onAccountChange();
         grandExchangeNotifier.onAccountChange();
     }
 
@@ -178,6 +179,7 @@ public class DinkPlugin extends Plugin {
         }
 
         settingsManager.onConfigChanged(event);
+        accountTracker.onConfig(event.getKey());
         lootNotifier.onConfigChanged(event.getKey(), event.getNewValue());
         deathNotifier.onConfigChanged(event.getKey(), event.getNewValue());
         chatNotifier.onConfig(event.getKey(), event.getNewValue());
