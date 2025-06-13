@@ -55,7 +55,7 @@ public class PlayerKillNotifier extends BaseNotifier {
         if (!config.notifyPk())
             return false;
 
-        if (!worldTracker.worldPassesConfig()) {
+        if (!worldTracker.hasValidState()) {
             // duplicated logic from super class but allow Duel Arena
             EnumSet<WorldType> world = client.getWorldType().clone(); // fast on RegularEnumSet
             world.remove(WorldType.PVP_ARENA);
@@ -65,7 +65,7 @@ public class PlayerKillNotifier extends BaseNotifier {
             }
         }
 
-        return accountTracker.accountPassesConfig();
+        return accountTracker.hasValidState();
     }
 
     @Override

@@ -13,19 +13,27 @@ import javax.inject.Singleton;
 
 @Slf4j
 @Singleton
-public class AccountTypeTracker extends AbstractStateTracker<AccountType> {
+public class AccountTypeTracker extends AbstractBoolTracker {
 
     @Inject
     private SettingsManager settingsManager;
 
     @Override
     protected void populateState() {
-        this.state = AccountType.get(client.getVarbitValue(VarbitID.IRONMAN));
+        Player player = client.getLocalPlayer();
+        var accountType = AccountType.get(client.getVarbitValue(VarbitID.IRONMAN));
+        if (player == null || accountType == null) {
+            this.state = null;
+        } else if (config.nameFilterMode() != FilterMode.ALLOW && config.deniedAccountTypes().contains(accountType)) {
+            this.state = false;
+        } else {
+            this.state = settingsManager.isNamePermitted(player.getName());
+        }
     }
 
     public void onVarbit(VarbitChanged event) {
         if (event.getVarbitId() == VarbitID.IRONMAN) {
-            this.state = AccountType.get(event.getVarbitId());
+            this.refresh();
         }
     }
 
@@ -37,26 +45,6 @@ public class AccountTypeTracker extends AbstractStateTracker<AccountType> {
         if ("nameFilterMode".equals(configKey) || "deniedAccountTypes".equals(configKey) || "ignoredNames".equals(configKey)) {
             this.refresh();
         }
-    }
-
-    /**
-     * @return whether the player name passes the configured filtered RSNs and the account type is permitted
-     */
-    public boolean accountPassesConfig() {
-        Player player = client.getLocalPlayer();
-        if (player == null) {
-            return false;
-        }
-        var accountType = this.state;
-        if (accountType == null) {
-            log.warn("Encountered null account type for non-null player!");
-            return false;
-        }
-        if (config.nameFilterMode() != FilterMode.ALLOW && config.deniedAccountTypes().contains(accountType)) {
-            log.info("Skipping notification due to denied account type");
-            return false;
-        }
-        return settingsManager.isNamePermitted(player.getName());
     }
 
 }

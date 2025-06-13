@@ -32,7 +32,7 @@ public abstract class BaseNotifier {
     private DiscordMessageHandler messageHandler;
 
     public boolean isEnabled() {
-        return worldTracker.worldPassesConfig() && accountTracker.accountPassesConfig();
+        return worldTracker.hasValidState() && accountTracker.hasValidState();
     }
 
     protected abstract String getWebhookUrl();

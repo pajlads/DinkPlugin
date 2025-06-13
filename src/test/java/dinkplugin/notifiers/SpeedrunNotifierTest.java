@@ -192,6 +192,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         // configure deny list
         when(config.filteredNames()).thenReturn(PLAYER_NAME);
         settingsManager.init();
+        accountTracker.init();
 
         // mock widget
         Widget time = mock(Widget.class);
@@ -242,6 +243,7 @@ class SpeedrunNotifierTest extends MockedNotifierTest {
         // update config mocks
         when(config.deniedAccountTypes()).thenReturn(EnumSet.of(AccountType.GROUP_IRONMAN));
         settingsManager.init();
+        accountTracker.init();
 
         // mock widget
         String latest = "1:15.30";

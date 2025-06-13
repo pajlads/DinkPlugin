@@ -233,6 +233,8 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick event) {
         settingsManager.onTick();
+        accountTracker.onTick();
+        worldTracker.onTick();
         collectionNotifier.onTick();
         petNotifier.onTick();
         clueNotifier.onTick();

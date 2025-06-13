@@ -451,6 +451,7 @@ class PetNotifierTest extends MockedNotifierTest {
         when(config.nameFilterMode()).thenReturn(FilterMode.DENY);
         when(config.deniedAccountTypes()).thenReturn(EnumSet.of(AccountType.GROUP_IRONMAN));
         settingsManager.init();
+        accountTracker.init();
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
@@ -466,6 +467,7 @@ class PetNotifierTest extends MockedNotifierTest {
         when(config.nameFilterMode()).thenReturn(FilterMode.ALLOW);
         when(config.filteredNames()).thenReturn("xqc");
         settingsManager.init();
+        accountTracker.init();
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
@@ -480,6 +482,7 @@ class PetNotifierTest extends MockedNotifierTest {
         // ignore notifications for our player name
         when(config.filteredNames()).thenReturn(PLAYER_NAME);
         settingsManager.init();
+        accountTracker.init();
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");

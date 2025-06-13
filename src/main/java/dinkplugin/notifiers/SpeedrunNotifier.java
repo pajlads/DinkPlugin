@@ -22,7 +22,7 @@ public class SpeedrunNotifier extends BaseNotifier {
     @Override
     public boolean isEnabled() {
         // intentionally doesn't call super as WorldUtils.isIgnoredWorld includes speedrunning
-        return config.notifySpeedrun() && accountTracker.accountPassesConfig();
+        return config.notifySpeedrun() && accountTracker.hasValidState();
     }
 
     @Override
