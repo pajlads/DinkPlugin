@@ -25,7 +25,7 @@ public class AccountTypeTracker extends BooleanStateTracker {
         } else {
             this.state = settingsManager.isNamePermitted(player.getName());
         }
-        log.debug("Initialized account tracker for {} {}: {}", accountType, player.getName(), state);
+        log.debug("Initialized account tracker for {} {}: {}", accountType, player.getName(), this.state);
     }
 
     public void onVarbit(VarbitChanged event) {

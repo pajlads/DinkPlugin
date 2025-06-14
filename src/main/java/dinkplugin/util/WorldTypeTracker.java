@@ -16,8 +16,10 @@ public class WorldTypeTracker extends BooleanStateTracker {
         Set<WorldType> world = client.getWorldType();
         if (config.seasonalPolicy() == SeasonalPolicy.REJECT && world.contains(WorldType.SEASONAL)) {
             this.state = false;
+        } else if (WorldUtils.isIgnoredWorld(world)) {
+            this.state = false;
         } else {
-            this.state = !WorldUtils.isIgnoredWorld(world);
+            this.state = true;
         }
         log.debug("Initialized world tracker for {}: {}", world, state);
     }
