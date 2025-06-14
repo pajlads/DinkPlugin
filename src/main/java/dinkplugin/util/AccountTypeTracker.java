@@ -17,13 +17,15 @@ public class AccountTypeTracker extends AbstractBoolTracker {
     protected void populateState() {
         Player player = client.getLocalPlayer();
         var accountType = AccountType.get(client.getVarbitValue(VarbitID.IRONMAN));
-        if (player == null || accountType == null) {
+        if (player == null || player.getName() == null || accountType == null) {
             this.state = null;
+            return;
         } else if (config.nameFilterMode() != FilterMode.ALLOW && config.deniedAccountTypes().contains(accountType)) {
             this.state = false;
         } else {
             this.state = settingsManager.isNamePermitted(player.getName());
         }
+        log.debug("Initialized account tracker for {} {}: {}", accountType, player.getName(), state);
     }
 
     public void onVarbit(VarbitChanged event) {

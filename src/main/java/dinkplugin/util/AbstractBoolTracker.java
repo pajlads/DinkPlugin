@@ -28,7 +28,7 @@ public abstract class AbstractBoolTracker {
 
     public void init() {
         clientThread.invoke(() -> {
-            if (client.getGameState() == GameState.LOGGED_IN) {
+            if (client.getGameState() == GameState.LOGGED_IN && !settingsManager.justLoggedIn()) {
                 this.populateState();
             }
         });
@@ -39,15 +39,8 @@ public abstract class AbstractBoolTracker {
     }
 
     public boolean hasValidState() {
-        var valid = this.state;
-        if (valid == null) {
-            this.init();
-            if ((valid = this.state) == null) {
-                log.warn("{} was not initialized before notification attempt", getClass().getSimpleName());
-                return false;
-            }
-        }
-        return valid;
+        Boolean valid = this.state;
+        return valid != null && valid;
     }
 
     public void onTick() {

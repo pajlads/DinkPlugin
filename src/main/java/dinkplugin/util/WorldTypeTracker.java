@@ -19,6 +19,7 @@ public class WorldTypeTracker extends AbstractBoolTracker {
         } else {
             this.state = !WorldUtils.isIgnoredWorld(world);
         }
+        log.debug("Initialized world tracker for {}: {}", world, state);
     }
 
     public void onWorldChange() {
