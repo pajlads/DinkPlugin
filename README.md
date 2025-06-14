@@ -341,7 +341,8 @@ Each of these events can be independently enabled or disabled in the notifier se
 
 The chat notifier enables notifications for messages that are otherwise not covered by our other notifiers.
 
-You can customize the message patterns to your liking (`*` is a wildcard), and specify which types of messages to check (e.g., game, trade, clan notification, user chat).
+You can customize the message patterns to your liking (`*` is a wildcard, and each message pattern should be on a separate line within the config input box),
+and specify which types of messages to check (e.g., game, trade, clan notification, user chat).
 
 `%MESSAGE%` will be replaced with the chat message the matched one of the patterns.
 

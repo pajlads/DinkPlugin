@@ -6,7 +6,6 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.ChatNotificationData;
-import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.Utils;
 import lombok.Synchronized;
 import net.runelite.api.ChatMessageType;
@@ -118,7 +117,9 @@ public class ChatNotifier extends BaseNotifier {
     private void loadPatterns(String configValue) {
         regexps.clear();
         regexps.addAll(
-            ConfigUtil.readDelimited(configValue)
+            configValue.lines()
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
                 .map(Utils::regexify)
                 .collect(Collectors.toList())
         );
