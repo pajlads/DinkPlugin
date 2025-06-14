@@ -11,7 +11,7 @@ import javax.inject.Singleton;
 
 @Slf4j
 @Singleton
-public class AccountTypeTracker extends AbstractBoolTracker {
+public class AccountTypeTracker extends BooleanStateTracker {
 
     @Override
     protected void populateState() {

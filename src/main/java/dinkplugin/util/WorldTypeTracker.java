@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Slf4j
 @Singleton
-public class WorldTypeTracker extends AbstractBoolTracker {
+public class WorldTypeTracker extends BooleanStateTracker {
 
     @Override
     protected void populateState() {
@@ -23,7 +23,7 @@ public class WorldTypeTracker extends AbstractBoolTracker {
     }
 
     public void onWorldChange() {
-        this.init();
+        this.refresh();
     }
 
     public void onConfig(String configKey) {

@@ -10,7 +10,7 @@ import net.runelite.client.callback.ClientThread;
 import javax.inject.Inject;
 
 @Slf4j
-public abstract class AbstractBoolTracker {
+public abstract class BooleanStateTracker {
 
     @Inject
     protected DinkPluginConfig config;
