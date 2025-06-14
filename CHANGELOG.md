@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Allow external plugins to trigger notifications off of the client thread again. (#759)
 - Bugfix: Avoid sending TOA unique message to primary webhook when metadata webhook is absent. (#756)
 
 ## 1.11.10

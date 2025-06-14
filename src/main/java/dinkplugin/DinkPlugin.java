@@ -21,8 +21,10 @@ import dinkplugin.notifiers.QuestNotifier;
 import dinkplugin.notifiers.SlayerNotifier;
 import dinkplugin.notifiers.SpeedrunNotifier;
 import dinkplugin.notifiers.TradeNotifier;
+import dinkplugin.util.AccountTypeTracker;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.Utils;
+import dinkplugin.util.WorldTypeTracker;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameState;
@@ -41,6 +43,7 @@ import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.events.WorldChanged;
 import net.runelite.api.gameval.NpcID;
 import net.runelite.client.RuneLite;
 import net.runelite.client.chat.ChatMessageManager;
@@ -78,6 +81,8 @@ public class DinkPlugin extends Plugin {
 
     private @Inject SettingsManager settingsManager;
     private @Inject VersionManager versionManager;
+    private @Inject AccountTypeTracker accountTracker;
+    private @Inject WorldTypeTracker worldTracker;
 
     private @Inject KillCountService killCountService;
 
@@ -123,6 +128,8 @@ public class DinkPlugin extends Plugin {
         log.debug("Started up Dink");
         settingsManager.init();
         versionManager.onStart();
+        accountTracker.init();
+        worldTracker.init();
         lootNotifier.init();
         deathNotifier.init();
         chatNotifier.init();
@@ -134,6 +141,8 @@ public class DinkPlugin extends Plugin {
         log.debug("Shutting down Dink");
         this.resetNotifiers();
         gameState.lazySet(null);
+        accountTracker.clear();
+        worldTracker.clear();
     }
 
     void resetNotifiers() {
@@ -158,6 +167,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onAccountHashChanged(AccountHashChanged event) {
+        accountTracker.onAccountChange();
         grandExchangeNotifier.onAccountChange();
     }
 
@@ -174,6 +184,8 @@ public class DinkPlugin extends Plugin {
         }
 
         settingsManager.onConfigChanged(event);
+        accountTracker.onConfig(event.getKey());
+        worldTracker.onConfig(event.getKey());
         lootNotifier.onConfigChanged(event.getKey(), event.getNewValue());
         deathNotifier.onConfigChanged(event.getKey(), event.getNewValue());
         chatNotifier.onConfig(event.getKey(), event.getNewValue());
@@ -221,6 +233,8 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onGameTick(GameTick event) {
         settingsManager.onTick();
+        accountTracker.onTick();
+        worldTracker.onTick();
         collectionNotifier.onTick();
         petNotifier.onTick();
         clueNotifier.onTick();
@@ -357,6 +371,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onVarbitChanged(VarbitChanged event) {
         settingsManager.onVarbitChanged(event);
+        accountTracker.onVarbit(event);
         metaNotifier.onVarbit(event);
         collectionNotifier.onVarPlayer(event);
         diaryNotifier.onVarbitChanged(event);
@@ -377,6 +392,11 @@ public class DinkPlugin extends Plugin {
     public void onWidgetClosed(WidgetClosed event) {
         groupStorageNotifier.onWidgetClose(event);
         tradeNotifier.onWidgetClose(event);
+    }
+
+    @Subscribe
+    public void onWorldChanged(WorldChanged event) {
+        worldTracker.onWorldChange();
     }
 
     @Subscribe
