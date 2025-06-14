@@ -1,6 +1,7 @@
 package dinkplugin.util;
 
 import dinkplugin.DinkPluginConfig;
+import dinkplugin.SettingsManager;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -13,6 +14,9 @@ public abstract class AbstractBoolTracker {
 
     @Inject
     protected DinkPluginConfig config;
+
+    @Inject
+    protected SettingsManager settingsManager;
 
     @Inject
     protected Client client;
@@ -47,7 +51,7 @@ public abstract class AbstractBoolTracker {
     }
 
     public void onTick() {
-        if (this.state == null) {
+        if (this.state == null && !settingsManager.justLoggedIn()) {
             populateState();
         }
     }

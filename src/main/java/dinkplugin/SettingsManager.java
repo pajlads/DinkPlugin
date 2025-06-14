@@ -157,6 +157,10 @@ public class SettingsManager {
         importDynamicConfig(config.dynamicConfigUrl());
     }
 
+    public boolean justLoggedIn() {
+        return justLoggedIn.get();
+    }
+
     void onCommand(CommandExecuted event) {
         String cmd = event.getCommand();
         String[] args = event.getArguments();

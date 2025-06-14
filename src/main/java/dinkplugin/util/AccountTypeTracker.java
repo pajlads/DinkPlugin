@@ -1,6 +1,5 @@
 package dinkplugin.util;
 
-import dinkplugin.SettingsManager;
 import dinkplugin.domain.AccountType;
 import dinkplugin.domain.FilterMode;
 import lombok.extern.slf4j.Slf4j;
@@ -8,15 +7,11 @@ import net.runelite.api.Player;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.VarbitID;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Slf4j
 @Singleton
 public class AccountTypeTracker extends AbstractBoolTracker {
-
-    @Inject
-    private SettingsManager settingsManager;
 
     @Override
     protected void populateState() {
