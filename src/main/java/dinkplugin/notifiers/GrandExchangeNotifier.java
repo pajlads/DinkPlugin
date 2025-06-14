@@ -22,7 +22,9 @@ import net.runelite.api.GrandExchangeOffer;
 import net.runelite.api.GrandExchangeOfferState;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.ItemID;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.grandexchange.GrandExchangePlugin;
@@ -45,6 +47,9 @@ public class GrandExchangeNotifier extends BaseNotifier {
     private static final String RL_GE_PLUGIN_NAME = GrandExchangePlugin.class.getSimpleName().toLowerCase();
     private final AtomicInteger initTicks = new AtomicInteger();
     private final Map<Integer, Instant> progressNotificationTimeBySlot = new HashMap<>();
+
+    @Inject
+    private ClientThread clientThread;
 
     @Inject
     private Gson gson;
@@ -80,7 +85,23 @@ public class GrandExchangeNotifier extends BaseNotifier {
 
     public void onOfferChange(int slot, GrandExchangeOffer offer) {
         if (shouldNotify(slot, offer)) {
-            handleNotify(slot, offer);
+            clientThread.invoke(() -> {
+                if (initTicks.get() > 0) {
+                    return false; // retry later
+                }
+
+                if (!isEnabled()) {
+                    return true; // terminate execution since notifier is disabled
+                }
+
+                var welcome = client.getWidget(InterfaceID.WelcomeScreen.CONTENT);
+                if (welcome != null && !welcome.isHidden()) {
+                    return false; // wait until user has passed welcome screen
+                }
+
+                handleNotify(slot, offer);
+                return true;
+            });
         }
     }
 
@@ -122,7 +143,8 @@ public class GrandExchangeNotifier extends BaseNotifier {
     private boolean shouldNotify(int slot, GrandExchangeOffer offer) {
         // During login, we only care about offers that have been completed, and that were *not* observed by the RuneLite GE plugin
         // This makes sure we don't fire any duplicate notifications for offers that were finished while we were online
-        if (initTicks.get() > 0) {
+        boolean justLogged = initTicks.get() > 0;
+        if (justLogged) {
             // check if offer is a completion
             if (offer.getState() != GrandExchangeOfferState.BOUGHT && offer.getState() != GrandExchangeOfferState.SOLD)
                 return false;
@@ -137,7 +159,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
                 return false;
         }
 
-        if (!isEnabled())
+        if (!justLogged && !isEnabled())
             return false;
 
         boolean valuable = getTransactedValue(offer) >= config.grandExchangeMinValue();
