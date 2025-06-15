@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.11
+
 - Bugfix: Delay grand exchange notifications while welcome screen is visible. (#763)
 - Bugfix: Allow commas and semicolons in chat notifier message patterns. (#761)
 - Bugfix: Allow external plugins to trigger notifications off of the client thread again. (#759)
