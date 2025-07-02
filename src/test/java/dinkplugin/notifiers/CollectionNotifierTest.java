@@ -161,7 +161,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
     @Test
     void testGildedRank() {
-        setCompleted(1399);
+        setCompleted(1424);
 
         String item = "Seercull";
         int price = 23_000;
