@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Fix Grand Exchange taxes for items valued between 50 and 100 gp. (#775)
+
 ## 1.11.11
 
 - Bugfix: Delay grand exchange notifications while welcome screen is visible. (#763)
