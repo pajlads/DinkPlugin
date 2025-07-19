@@ -271,7 +271,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
 
     private static long calculateTax(int unitPrice, int quantity, int itemId) {
         // https://secure.runescape.com/m=news/grand-exchange-tax--item-sink?oldschool=1
-        if (unitPrice < 100 || TAX_EXEMPT_ITEMS.contains(itemId)) {
+        if (unitPrice < 50 || TAX_EXEMPT_ITEMS.contains(itemId)) {
             return 0L;
         }
         int price = Math.min(unitPrice, 250_000_000);
