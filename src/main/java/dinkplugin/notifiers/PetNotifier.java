@@ -17,7 +17,9 @@ import lombok.Setter;
 import lombok.Value;
 import net.runelite.api.Client;
 import net.runelite.api.Experience;
+import net.runelite.api.ScriptID;
 import net.runelite.api.Skill;
+import net.runelite.api.VarClientStr;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.http.api.loottracker.LootRecordType;
@@ -108,7 +110,7 @@ public class PetNotifier extends BaseNotifier {
                 }
             } else if (PRIMED_NAME.equals(petName) || !collection) {
                 parseItemFromGameMessage(chatMessage)
-                    .filter(item -> item.getItemName().startsWith("Pet ") || PET_NAMES_TO_SOURCE.containsKey(Utils.ucFirst(item.getItemName())))
+                    .filter(item -> isPetItem(item.getItemName()))
                     .ifPresent(parseResult -> {
                         setPetName(parseResult.getItemName());
                         if (parseResult.isCollectionLog()) {
@@ -133,6 +135,20 @@ public class PetNotifier extends BaseNotifier {
             if (user.equals(Utils.getPlayerName(client))) {
                 this.petName = matcher.group("pet");
                 this.milestone = StringUtils.removeEnd(matcher.group("milestone"), ".");
+            }
+        }
+    }
+
+    public void onScript(int id) {
+        if (id == ScriptID.NOTIFICATION_DELAY && PRIMED_NAME.equals(petName)) {
+            var topText = client.getVarcStrValue(VarClientStr.NOTIFICATION_TOP_TEXT);
+            if ("Collection log".equalsIgnoreCase(topText)) {
+                var bottomText = Utils.sanitize(client.getVarcStrValue(VarClientStr.NOTIFICATION_BOTTOM_TEXT));
+                var itemName = bottomText.substring(CollectionNotifier.POPUP_PREFIX_LENGTH).trim();
+                if (isPetItem(itemName)) {
+                    this.petName = itemName;
+                    this.collection = true;
+                }
             }
         }
     }
@@ -207,6 +223,10 @@ public class PetNotifier extends BaseNotifier {
             .thumbnailUrl(thumbnail)
             .type(NotificationType.PET)
             .build());
+    }
+
+    private boolean isPetItem(String itemName) {
+        return itemName.startsWith("Pet ") || PET_NAMES_TO_SOURCE.containsKey(Utils.ucFirst(itemName));
     }
 
     private static Optional<ParseResult> parseItemFromGameMessage(String message) {

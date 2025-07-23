@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 public class CollectionNotifier extends BaseNotifier {
     static final Pattern COLLECTION_LOG_REGEX = Pattern.compile("New item added to your collection log: (?<itemName>(.*))");
     public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
-    private static final int POPUP_PREFIX_LENGTH = "New item:".length();
+    public static final int POPUP_PREFIX_LENGTH = "New item:".length();
 
     static final @VisibleForTesting int TOTAL_ENTRIES = 1_594; // fallback if COLLECTION_COUNT_MAX is not populated
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
