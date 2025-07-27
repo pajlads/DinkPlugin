@@ -385,6 +385,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Bloodhound", new KcSource("Clue Scroll (master)", 1.0 / 1_000)),
             entry("Callisto cub", new MultiKcSource("Callisto", 1.0 / 1_500, "Artio", 1.0 / 2_800)),
             entry("Chompy chick", new KcSource("Chompy bird", 1.0 / 500)),
+            entry("Dom", new KcSource("Doom of Mokhaiotl", null)), // unknown drop rate
             entry("Giant squirrel", new MultiSource() {
                 private final Map<String, Integer> courses = Map.ofEntries(
                     entry("Gnome Stronghold Agility", 35_609),
