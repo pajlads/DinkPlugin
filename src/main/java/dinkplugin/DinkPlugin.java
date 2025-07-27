@@ -321,6 +321,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onScriptPreFired(ScriptPreFired event) {
         collectionNotifier.onScript(event.getScriptId());
+        petNotifier.onScript(event.getScriptId());
         deathNotifier.onScript(event);
     }
 
