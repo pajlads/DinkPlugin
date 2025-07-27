@@ -79,7 +79,7 @@ public class ConfigUtil {
                 return s;
 
             if (type == Color.class)
-                return ColorUtil.fromString(s);
+                return ColorUtil.fromHex(s);
 
             if (type instanceof Class && ((Class<?>) type).isEnum()) {
                 try {
