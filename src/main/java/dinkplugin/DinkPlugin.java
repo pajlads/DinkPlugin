@@ -327,7 +327,8 @@ public class DinkPlugin extends Plugin {
     @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onServerNpcLoot(ServerNpcLoot event) {
         // temporarily only use new event when needed
-        if (event.getComposition().getId() != NpcID.YAMA) {
+        int npcId = event.getComposition().getId();
+        if (npcId != NpcID.YAMA && npcId != NpcID.HESPORI) {
             return;
         }
 
