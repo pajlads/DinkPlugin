@@ -317,6 +317,40 @@ class PetNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyClanUnsired() {
+        String petName = "Abyssal orphan";
+        int itemId = ItemID.ABYSSALSIRE_PET;
+
+        // prepare mocks
+        when(itemSearcher.findItemId(petName)).thenReturn(itemId);
+
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you're being followed.");
+        notifier.onTick();
+
+        notifier.onClanNotification(
+            String.format(
+                "[ClanName] %s feels like she's acquired something special: %s",
+                PLAYER_NAME,
+                petName
+            )
+        );
+        IntStream.range(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // verify handled
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(petName, null, false, null, 1 / 25.6 / 100, null, null))
+                .text(buildTemplate(PLAYER_NAME + " got a pet"))
+                .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyOverride() {
         // update mocks
         when(config.petNotifyMessage()).thenReturn("%USERNAME% %GAME_MESSAGE%");
