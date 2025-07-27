@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Fire notifications for Hespori loot. (#780)
 - Bugfix: Fix Grand Exchange taxes for items valued between 50 and 100 gp. (#775)
 
 ## 1.11.11
