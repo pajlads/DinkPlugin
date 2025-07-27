@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.12
+
 - Minor: Include Dom pet name in pet notifications. (#783)
 - Bugfix: Obtain pet name from alternative clan message format. (#777)
 - Bugfix: Fire notifications for Hespori loot. (#780)
