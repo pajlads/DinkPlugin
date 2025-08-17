@@ -328,7 +328,8 @@ public class DinkPlugin extends Plugin {
     public void onServerNpcLoot(ServerNpcLoot event) {
         // temporarily only use new event when needed
         int npcId = event.getComposition().getId();
-        if (npcId != NpcID.YAMA && npcId != NpcID.HESPORI) {
+        var name = event.getComposition().getName();
+        if (npcId != NpcID.YAMA && npcId != NpcID.HESPORI && !name.startsWith("Hallowed Sepulchre")) {
             return;
         }
 

@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Fire loot notifications for Hallowed Sepulchre after loot tracker change. (#789)
+
 ## 1.11.12
 
 - Minor: Include Dom pet name in pet notifications. (#783)
