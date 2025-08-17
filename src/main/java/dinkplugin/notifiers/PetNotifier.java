@@ -49,7 +49,7 @@ public class PetNotifier extends BaseNotifier {
     static final Pattern PET_REGEX = Pattern.compile("You (?:have a funny feeling like you|feel something weird sneaking).*");
 
     @VisibleForTesting
-    static final Pattern CLAN_REGEX = Pattern.compile("\\b(?<user>[\\w\\s]+) (?:has a funny feeling like .+ followed|feels something weird sneaking into .+ backpack): (?<pet>.+) at (?<milestone>.+)");
+    static final Pattern CLAN_REGEX = Pattern.compile("\\b(?<user>[\\w\\s]+) (?:has a funny feeling like .+ followed|feels something weird sneaking into .+ backpack|feels like .+ acquired something special): (?:(?<pet>.+) at (?<milestone>.+)|(?<pet2>.+))");
 
     private static final Pattern UNTRADEABLE_REGEX = Pattern.compile("Untradeable drop: (.+)");
     private static final Map<String, Source> PET_NAMES_TO_SOURCE;
@@ -133,8 +133,13 @@ public class PetNotifier extends BaseNotifier {
         if (matcher.find()) {
             String user = matcher.group("user").trim();
             if (user.equals(Utils.getPlayerName(client))) {
-                this.petName = matcher.group("pet");
-                this.milestone = StringUtils.removeEnd(matcher.group("milestone"), ".");
+                var pet = matcher.group("pet");
+                if (pet != null) {
+                    this.petName = pet;
+                    this.milestone = StringUtils.removeEnd(matcher.group("milestone"), ".");
+                } else {
+                    this.petName = matcher.group("pet2");
+                }
             }
         }
     }
@@ -405,6 +410,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Bloodhound", new KcSource("Clue Scroll (master)", 1.0 / 1_000)),
             entry("Callisto cub", new MultiKcSource("Callisto", 1.0 / 1_500, "Artio", 1.0 / 2_800)),
             entry("Chompy chick", new KcSource("Chompy bird", 1.0 / 500)),
+            entry("Dom", new KcSource("Doom of Mokhaiotl", null)), // unknown drop rate
             entry("Giant squirrel", new MultiSource() {
                 private final Map<String, Integer> courses = Map.ofEntries(
                     entry("Gnome Stronghold Agility", 35_609),

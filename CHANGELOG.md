@@ -1,6 +1,14 @@
 ## Unreleased
 
+- Bugfix: Fire loot notifications for Hallowed Sepulchre after loot tracker change. (#789)
+
+## 1.11.12
+
+- Minor: Include Dom pet name in pet notifications. (#783)
+- Bugfix: Obtain pet name from alternative clan message format. (#777)
+- Bugfix: Fire notifications for Hespori loot. (#780)
 - Bugfix: Fix Grand Exchange taxes for items valued between 50 and 100 gp. (#775)
+- Dev: Allow updating embed color from Dink config import. (#782)
 
 ## 1.11.11
 
