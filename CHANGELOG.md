@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Capture pet name from collection widget in case chat message is disabled. (#778)
 - Bugfix: Fire loot notifications for Hallowed Sepulchre after loot tracker change. (#789)
 
 ## 1.11.12
