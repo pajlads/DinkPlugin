@@ -21,6 +21,7 @@ import net.runelite.api.ScriptID;
 import net.runelite.api.Skill;
 import net.runelite.api.VarClientStr;
 import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.http.api.loottracker.LootRecordType;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntToDoubleFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static dinkplugin.notifiers.CollectionNotifier.COLLECTION_LOG_REGEX;
@@ -410,7 +412,20 @@ public class PetNotifier extends BaseNotifier {
             entry("Bloodhound", new KcSource("Clue Scroll (master)", 1.0 / 1_000)),
             entry("Callisto cub", new MultiKcSource("Callisto", 1.0 / 1_500, "Artio", 1.0 / 2_800)),
             entry("Chompy chick", new KcSource("Chompy bird", 1.0 / 500)),
-            entry("Dom", new KcSource("Doom of Mokhaiotl", null)), // unknown drop rate
+            entry("Dom", new MultiSource() {
+                @Override
+                double[] getRates(Client client) {
+                    // https://oldschool.runescape.wiki/w/Doom_of_Mokhaiotl#Other
+                    return new double[] { 1.0 / 1000, 1.0 / 750, 1.0 / 500, 1.0 / 250 };
+                }
+
+                @Override
+                int[] getActions(Client client, KillCountService kcService) {
+                    return IntStream.of(VarPlayerID.DOM_LEVEL_6_COMPLETIONS, VarPlayerID.DOM_LEVEL_7_COMPLETIONS, VarPlayerID.DOM_LEVEL_8_COMPLETIONS, VarPlayerID.DOM_LEVEL_8_PLUS_COMPLETIONS)
+                        .map(client::getVarpValue)
+                        .toArray();
+                }
+            }),
             entry("Giant squirrel", new MultiSource() {
                 private final Map<String, Integer> courses = Map.ofEntries(
                     entry("Gnome Stronghold Agility", 35_609),
