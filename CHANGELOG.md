@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Report rarity and luck for Dom pet drops. (#795)
 - Bugfix: Fire loot notifications for Hallowed Sepulchre after loot tracker change. (#789)
 
 ## 1.11.12
