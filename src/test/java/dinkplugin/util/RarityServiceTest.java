@@ -142,8 +142,8 @@ class RarityServiceTest extends AbstractRarityServiceTest {
     @DisplayName("Ensure correct drop rate is calculated when multiple rolls are performed")
     void testMultipleRolls() {
         double p = 1.0 / 25;
-        test("Vorkath", ItemID.DEATHRUNE, 800, p * p);
-        test("Vorkath", ItemID.DEATHRUNE, 400, 2 * p * (1 - p));
+        test("Vorkath", ItemID.DEATHRUNE, 500, p * p);
+        test("Vorkath", ItemID.DEATHRUNE, 250, 2 * p * (1 - p));
     }
 
     @Test
