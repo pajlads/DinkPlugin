@@ -14,7 +14,7 @@ jobs:
           java-version: 11
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Build using latest runelite snapshot version
         run: ./gradlew --refresh-dependencies -Puse.snapshot clean build -x test
