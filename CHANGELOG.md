@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.15
+
 - Bugfix: Correctly identify Grid Master worlds. (#816)
 
 ## 1.11.14
