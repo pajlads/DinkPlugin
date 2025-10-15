@@ -69,8 +69,14 @@ public class WorldUtils {
 
     public boolean isGridMaster(Client client) {
         if (client.getWorldType().contains(WorldType.TOURNAMENT_WORLD)) {
-            String activity = client.getWorldList()[client.getWorld()].getActivity();
-            return activity != null && activity.startsWith("Grid Master");
+            int worldId = client.getWorld();
+            var worlds = client.getWorldList();
+            for (var world : worlds) {
+                if (world.getId() == worldId) {
+                    String activity = world.getActivity();
+                    return activity != null && activity.startsWith("Grid Master");
+                }
+            }
         }
         return false;
     }
