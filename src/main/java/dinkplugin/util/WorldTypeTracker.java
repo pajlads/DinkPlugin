@@ -14,7 +14,10 @@ public class WorldTypeTracker extends BooleanStateTracker {
     @Override
     protected void populateState() {
         Set<WorldType> world = client.getWorldType();
-        if (config.seasonalPolicy() == SeasonalPolicy.REJECT && world.contains(WorldType.SEASONAL)) {
+        var seasonalPolicy = config.seasonalPolicy();
+        if (WorldUtils.isGridMaster(client)) {
+            this.state = seasonalPolicy != SeasonalPolicy.REJECT;
+        } else if (seasonalPolicy == SeasonalPolicy.REJECT && world.contains(WorldType.SEASONAL)) {
             this.state = false;
         } else if (WorldUtils.isIgnoredWorld(world)) {
             this.state = false;
