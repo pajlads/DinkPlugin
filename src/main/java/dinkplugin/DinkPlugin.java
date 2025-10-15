@@ -1,26 +1,7 @@
 package dinkplugin;
 
 import com.google.inject.Provides;
-import dinkplugin.notifiers.ChatNotifier;
-import dinkplugin.notifiers.ClueNotifier;
-import dinkplugin.notifiers.CollectionNotifier;
-import dinkplugin.notifiers.CombatTaskNotifier;
-import dinkplugin.notifiers.DeathNotifier;
-import dinkplugin.notifiers.DiaryNotifier;
-import dinkplugin.notifiers.ExternalPluginNotifier;
-import dinkplugin.notifiers.GambleNotifier;
-import dinkplugin.notifiers.GrandExchangeNotifier;
-import dinkplugin.notifiers.GroupStorageNotifier;
-import dinkplugin.notifiers.KillCountNotifier;
-import dinkplugin.notifiers.LevelNotifier;
-import dinkplugin.notifiers.LootNotifier;
-import dinkplugin.notifiers.MetaNotifier;
-import dinkplugin.notifiers.PetNotifier;
-import dinkplugin.notifiers.PlayerKillNotifier;
-import dinkplugin.notifiers.QuestNotifier;
-import dinkplugin.notifiers.SlayerNotifier;
-import dinkplugin.notifiers.SpeedrunNotifier;
-import dinkplugin.notifiers.TradeNotifier;
+import dinkplugin.notifiers.*;
 import dinkplugin.util.AccountTypeTracker;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.Utils;
@@ -106,6 +87,7 @@ public class DinkPlugin extends Plugin {
     private @Inject MetaNotifier metaNotifier;
     private @Inject TradeNotifier tradeNotifier;
     private @Inject ChatNotifier chatNotifier;
+    private @Inject BingoNotifier bingoNotifier;
     private @Inject ExternalPluginNotifier externalNotifier;
 
     private final AtomicReference<GameState> gameState = new AtomicReference<>();
@@ -133,6 +115,7 @@ public class DinkPlugin extends Plugin {
         lootNotifier.init();
         deathNotifier.init();
         chatNotifier.init();
+        bingoNotifier.init();
         // leaguesNotifier.init();
     }
 
@@ -189,6 +172,7 @@ public class DinkPlugin extends Plugin {
         lootNotifier.onConfigChanged(event.getKey(), event.getNewValue());
         deathNotifier.onConfigChanged(event.getKey(), event.getNewValue());
         chatNotifier.onConfig(event.getKey(), event.getNewValue());
+        bingoNotifier.onConfigChanged(event.getKey(), event.getNewValue());
 
         if ("false".equals(event.getNewValue())) {
             Runnable task = configDisabledTasks.get(event.getKey());
@@ -270,6 +254,7 @@ public class DinkPlugin extends Plugin {
                 combatTaskNotifier.onGameMessage(chatMessage);
                 deathNotifier.onGameMessage(chatMessage);
                 speedrunNotifier.onGameMessage(chatMessage);
+                bingoNotifier.onGameMessage(chatMessage);
 //                leaguesNotifier.onGameMessage(chatMessage);
                 break;
 
@@ -336,6 +321,7 @@ public class DinkPlugin extends Plugin {
 
         killCountService.onServerNpcLoot(event);
         lootNotifier.onServerNpcLoot(event);
+        bingoNotifier.onServerNpcLoot(event);
     }
 
     @Subscribe(priority = 1) // run before the base loot tracker plugin
@@ -347,6 +333,7 @@ public class DinkPlugin extends Plugin {
 
         killCountService.onNpcKill(npcLootReceived);
         lootNotifier.onNpcLootReceived(npcLootReceived);
+        bingoNotifier.onNpcLootReceived(npcLootReceived);
     }
 
     @Subscribe
@@ -364,6 +351,7 @@ public class DinkPlugin extends Plugin {
     public void onLootReceived(LootReceived lootReceived) {
         killCountService.onLoot(lootReceived);
         lootNotifier.onLootReceived(lootReceived);
+        bingoNotifier.onLootReceived(lootReceived);
     }
 
     @Subscribe
