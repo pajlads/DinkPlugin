@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.14
+
 - Bugfix: Fire notifications from Grid Master worlds when seasonal policy is not set to `Off`. (#814)
 
 ## 1.11.13
