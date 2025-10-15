@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Fire notifications from Grid Master worlds when seasonal policy is not set to `Off`. (#814)
+
 ## 1.11.13
 
 - Minor: Report rarity and luck for Dom pet drops. (#795)
