@@ -67,6 +67,18 @@ public class WorldUtils {
         return actor.getWorldLocation();
     }
 
+    public boolean isGridMaster(Client client) {
+        if (client.getWorldType().contains(WorldType.TOURNAMENT_WORLD)) {
+            String activity = client.getWorldList()[client.getWorld()].getActivity();
+            return activity != null && activity.startsWith("Grid Master");
+        }
+        return false;
+    }
+
+    public boolean isSeasonal(Client client) {
+        return client.getWorldType().contains(WorldType.SEASONAL) || isGridMaster(client);
+    }
+
     public boolean isIgnoredWorld(Set<WorldType> worldType) {
         return !Collections.disjoint(IGNORED_WORLDS, worldType);
     }

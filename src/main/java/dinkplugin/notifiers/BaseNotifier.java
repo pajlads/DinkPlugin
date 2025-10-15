@@ -6,9 +6,9 @@ import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.util.AccountTypeTracker;
 import dinkplugin.util.WorldTypeTracker;
+import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
-import net.runelite.api.WorldType;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
@@ -43,7 +43,7 @@ public abstract class BaseNotifier {
 
     protected final void createMessage(String overrideUrl, boolean sendImage, NotificationBody<?> body) {
         String override;
-        if (StringUtils.isNotBlank(config.leaguesWebhook()) && config.seasonalPolicy() == SeasonalPolicy.FORWARD_TO_LEAGUES && client.getWorldType().contains(WorldType.SEASONAL)) {
+        if (StringUtils.isNotBlank(config.leaguesWebhook()) && config.seasonalPolicy() == SeasonalPolicy.FORWARD_TO_LEAGUES && WorldUtils.isSeasonal(client)) {
             override = config.leaguesWebhook();
         } else {
             override = overrideUrl;
