@@ -10,6 +10,7 @@ public enum ExceptionalDeath {
     COX("Chambers of Xeric"),
     DIARY_RESURRECTION("Diary Resurrection"),
     FIGHT_CAVE("Fight Caves"),
+    GAUNTLET("Gauntlet"),
     INFERNO("Inferno"),
     JAD_CHALLENGES("Jad challenges"),
     TOB("Theatre of Blood"),

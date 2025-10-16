@@ -191,7 +191,7 @@ public class WorldUtils {
         if (isGauntlet(regionId)) {
             // Players can't take items in or out of (Corrupted) Gauntlet, so these deaths are effectively safe
             // However: any Gauntlet death is still dangerous for hardcore (group) ironmen
-            return Utils.getAccountType(client).isHardcore() ? Danger.DANGEROUS : Danger.SAFE;
+            return checkException(Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.GAUNTLET);
         }
 
         if (isAmascutTombs(regionId)) {
