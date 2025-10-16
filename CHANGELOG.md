@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Fire kill count notifications for Obor and Bryophyta chest openings. (#820)
+
 ## 1.11.15
 
 - Bugfix: Correctly identify Grid Master worlds. (#816)
