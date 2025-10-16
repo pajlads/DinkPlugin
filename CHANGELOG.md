@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Fire kill count notifications for Obor and Bryophyta chest openings. (#820)
+- Dev: Designate Grid Master as a `seasonalWorld` in notification metadata. (#818)
 
 ## 1.11.15
 
