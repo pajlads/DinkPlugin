@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add (Corrupted) Gauntlet as a configurable safe death exception. (#819)
+
 ## 1.11.15
 
 - Bugfix: Correctly identify Grid Master worlds. (#816)
