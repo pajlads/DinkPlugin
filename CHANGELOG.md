@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.16
+
 - Minor: Add (Corrupted) Gauntlet as a configurable safe death exception. (#819)
 - Minor: Fire kill count notifications for Obor and Bryophyta chest openings. (#820)
 - Bugfix: Identify Grid Master worlds if world selector was not opened. (#822)
