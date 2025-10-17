@@ -26,7 +26,6 @@ import net.runelite.api.IndexedObjectSet;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
-import net.runelite.api.World;
 import net.runelite.api.WorldType;
 import net.runelite.api.WorldView;
 import net.runelite.api.coords.WorldPoint;
@@ -128,9 +127,6 @@ abstract class MockedNotifierTest extends MockedTestBase {
 
         // init client mocks
         when(client.getWorldType()).thenReturn(EnumSet.noneOf(WorldType.class));
-        when(client.getWorld()).thenReturn(0);
-        World world = mock(World.class);
-        when(client.getWorldList()).thenReturn(new World[] { world });
         when(client.getVarbitValue(VarbitID.IRONMAN)).thenReturn(AccountType.GROUP_IRONMAN.ordinal());
         when(client.isPrayerActive(any())).thenReturn(false);
         when(client.getTopLevelWorldView()).thenReturn(worldView);
