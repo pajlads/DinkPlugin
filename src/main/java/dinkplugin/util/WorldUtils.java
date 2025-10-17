@@ -69,14 +69,7 @@ public class WorldUtils {
 
     public boolean isGridMaster(Client client) {
         if (client.getWorldType().contains(WorldType.TOURNAMENT_WORLD)) {
-            int worldId = client.getWorld();
-            var worlds = client.getWorldList();
-            for (var world : worlds) {
-                if (world.getId() == worldId) {
-                    String activity = world.getActivity();
-                    return activity != null && activity.startsWith("Grid Master");
-                }
-            }
+            return client.getVarbitValue(VarbitID.BINGO_INITIAL_SETUP_DONE) > 0;
         }
         return false;
     }
