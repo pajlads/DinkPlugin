@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Identify Grid Master worlds if world selector was not opened. (#822)
 - Dev: Designate Grid Master as a `seasonalWorld` in notification metadata. (#818)
 
 ## 1.11.15
