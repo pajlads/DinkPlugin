@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Unhide the leagues webhook URL for seasonal usage. (#825)
+
 ## 1.11.16
 
 - Minor: Add (Corrupted) Gauntlet as a configurable safe death exception. (#819)
