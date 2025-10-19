@@ -751,8 +751,7 @@ public interface DinkPluginConfig extends Config {
         description = "If non-empty, Leagues messages are sent to this URL, instead of the primary URL.<br/>" +
             "Note: this only applies to the Leagues notifier, not every notifier in a seasonal world",
         position = 0,
-        section = webhookSection,
-        hidden = true
+        section = webhookSection
     )
     default String leaguesWebhook() {
         return "";
