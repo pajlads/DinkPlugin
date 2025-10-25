@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.17
+
 - Minor: Unhide the leagues webhook URL for seasonal usage. (#825)
 
 ## 1.11.16
