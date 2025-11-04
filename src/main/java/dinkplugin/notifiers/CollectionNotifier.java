@@ -6,6 +6,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.CollectionNotificationData;
+import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.Drop;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
@@ -16,8 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ScriptID;
-import net.runelite.api.VarClientStr;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.gameval.VarClientID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -147,9 +149,9 @@ public class CollectionNotifier extends BaseNotifier {
         if (scriptId == ScriptID.NOTIFICATION_START) {
             popupStarted.set(true);
         } else if (scriptId == ScriptID.NOTIFICATION_DELAY) {
-            String topText = client.getVarcStrValue(VarClientStr.NOTIFICATION_TOP_TEXT);
+            String topText = client.getVarcStrValue(VarClientID.NOTIFICATION_TITLE);
             if (popupStarted.getAndSet(false) && "Collection log".equalsIgnoreCase(topText) && isEnabled()) {
-                String bottomText = Utils.sanitize(client.getVarcStrValue(VarClientStr.NOTIFICATION_BOTTOM_TEXT));
+                String bottomText = Utils.sanitize(client.getVarcStrValue(VarClientID.NOTIFICATION_MAIN));
                 handleNotify(bottomText.substring(POPUP_PREFIX_LENGTH).trim());
             }
         }
@@ -178,6 +180,17 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     private void handleNotify(String itemName) {
+        // check denylist
+        boolean denylisted = ConfigUtil.readDelimited(config.collectionDenylist())
+            .map(Utils::regexify)
+            .filter(Objects::nonNull)
+            .map(pattern -> pattern.matcher(itemName))
+            .anyMatch(Matcher::find);
+        if (denylisted) {
+            log.debug("Skipping clog notif due to denylist: {}", itemName);
+            return;
+        }
+
         // varp isn't updated for a few ticks, so we increment the count locally.
         // this approach also has the benefit of yielding incrementing values even when
         // multiple collection log entries are completed within a single tick.

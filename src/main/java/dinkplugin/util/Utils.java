@@ -152,7 +152,12 @@ public class Utils {
             sb.append('$');
         }
 
-        return Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
+        try {
+            return Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
+        } catch (Exception e) {
+            log.warn("Failed to parse pattern: {}", pattern, e);
+            return null;
+        }
     }
 
     /**
