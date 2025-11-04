@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
@@ -78,6 +79,7 @@ public class LootNotifier extends BaseNotifier {
         itemNameAllowlist.addAll(
             ConfigUtil.readDelimited(config.lootItemAllowlist())
                 .map(Utils::regexify)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList())
         );
 
@@ -85,6 +87,7 @@ public class LootNotifier extends BaseNotifier {
         itemNameDenylist.addAll(
             ConfigUtil.readDelimited(config.lootItemDenylist())
                 .map(Utils::regexify)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList())
         );
     }
@@ -103,6 +106,7 @@ public class LootNotifier extends BaseNotifier {
         itemNames.addAll(
             ConfigUtil.readDelimited(value)
                 .map(Utils::regexify)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList())
         );
     }
