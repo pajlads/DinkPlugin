@@ -789,15 +789,7 @@ public interface DinkPluginConfig extends Config {
         section = collectionSection
     )
     default String collectionDenylist() {
-        return "Purple sweets\n" +
-            "* page 1\n" +
-            "* page 2\n" +
-            "* page 3\n" +
-            "* page 4\n" +
-            "Shayzien * (1)\n" +
-            "Shayzien * (2)\n" +
-            "Shayzien * (3)\n" +
-            "Shayzien * (4)\n";
+        return "Dwarf remains\n";
     }
 
     @ConfigItem(
