@@ -41,6 +41,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,7 @@ public class LootNotifier extends BaseNotifier {
 
     private final Collection<Pattern> itemNameAllowlist = new CopyOnWriteArrayList<>();
     private final Collection<Pattern> itemNameDenylist = new CopyOnWriteArrayList<>();
+    private final Collection<String> sourceDenylist = new CopyOnWriteArraySet<>();
 
     @Override
     public boolean isEnabled() {
@@ -87,9 +89,26 @@ public class LootNotifier extends BaseNotifier {
                 .map(Utils::regexify)
                 .collect(Collectors.toList())
         );
+
+        sourceDenylist.clear();
+        sourceDenylist.addAll(
+            ConfigUtil.readDelimited(config.lootSourceDenylist())
+                .map(String::toLowerCase)
+                .collect(Collectors.toList())
+        );
     }
 
     public void onConfigChanged(String key, String value) {
+        if ("lootSourceDenylist".equals(key)) {
+            sourceDenylist.clear();
+            sourceDenylist.addAll(
+                ConfigUtil.readDelimited(value)
+                    .map(String::toLowerCase)
+                    .collect(Collectors.toList())
+            );
+            return;
+        }
+
         Collection<Pattern> itemNames;
         if ("lootItemAllowlist".equals(key)) {
             itemNames = itemNameAllowlist;
@@ -167,6 +186,11 @@ public class LootNotifier extends BaseNotifier {
     }
 
     private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type, Integer npcId) {
+        if (type != LootRecordType.PLAYER && sourceDenylist.contains(dropper.toLowerCase())) {
+            log.debug("Skipping loot notif for denied loot source: {} ({})", dropper, type);
+            return;
+        }
+
         final Integer kc = killCountService.getKillCount(type, dropper);
         final int minValue = config.minLootValue();
         final boolean icons = config.lootIcons();
