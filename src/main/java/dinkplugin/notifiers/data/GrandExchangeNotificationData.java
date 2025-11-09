@@ -10,7 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -87,5 +89,18 @@ public class GrandExchangeNotificationData extends NotificationData {
         }
 
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("slot", slot);
+        m.put("status", status);
+        m.put("item", item.sanitized());
+        m.put("marketPrice", marketPrice);
+        m.put("targetPrice", targetPrice);
+        m.put("targetQuantity", targetQuantity);
+        if (sellerTax != null) m.put("sellerTax", sellerTax);
+        return m;
     }
 }

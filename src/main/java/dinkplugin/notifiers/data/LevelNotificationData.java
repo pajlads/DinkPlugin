@@ -1,11 +1,13 @@
 package dinkplugin.notifiers.data;
 
 import dinkplugin.message.Field;
+import dinkplugin.util.Sanitizable;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -44,6 +46,15 @@ public class LevelNotificationData extends NotificationData {
         return super.getFields();
     }
 
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("levelledSkills", levelledSkills);
+        m.put("allSkills", allSkills);
+        if (combatLevel != null) m.put("combatLevel", combatLevel.sanitized());
+        return m;
+    }
+
     private String collectMaxedSkills(int minLevel) {
         Collection<String> maxed = allSkills.entrySet().stream()
             .filter(e -> e.getValue() >= minLevel)
@@ -53,8 +64,16 @@ public class LevelNotificationData extends NotificationData {
     }
 
     @Value
-    public static class CombatLevel {
+    public static class CombatLevel implements Sanitizable {
         int value;
         Boolean increased;
+
+        @Override
+        public Map<String, Object> sanitized() {
+            var m = new HashMap<String, Object>();
+            m.put("value", value);
+            if (increased != null) m.put("increased", increased);
+            return m;
+        }
     }
 }

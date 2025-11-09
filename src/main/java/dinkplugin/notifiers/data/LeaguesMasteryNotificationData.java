@@ -3,6 +3,8 @@ package dinkplugin.notifiers.data;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+import java.util.Map;
+
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class LeaguesMasteryNotificationData extends NotificationData {
@@ -17,4 +19,8 @@ public class LeaguesMasteryNotificationData extends NotificationData {
      */
     int masteryTier;
 
+    @Override
+    public Map<String, Object> sanitized() {
+        return Map.of("masteryType", masteryType, "masterTier", masteryTier);
+    }
 }
