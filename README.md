@@ -362,14 +362,14 @@ On login, Dink can submit a character summary containing data that spans multipl
 
 Dink powers a variety of third-party projects including:
 
-* [Watchdog](https://github.com/adamk33n3r/runelite-watchdog): RuneLite hub plugin that can trigger custom Dink notifications
-* [Leppunen's Dink Handler](https://git.ivr.fi/Leppunen/runelite-dink-api): JS-based (Fastify) webhook handler that forwards Dink notifications to a Twitch chatbot
-* [Swap's Webhook Handler](https://github.com/jdanthdavis/custom-dink-webhook): Cloudflare Worker that applies custom logic before forwarding Dink notifications
-* [Danbot](https://github.com/DanbisDev/Danbot-Webserver): Python-based (Flask) Discord bot that parses Dink notifications
-* [stabiliserver](https://github.com/Fuzznip/stabiliserver): Python-based (FastAPI) Discord bot that parses Dink notifications
-* [RuneDiary](https://www.runediary.com/): Online adventure log powered by Dink
-* [OSRS Loot Tracker](https://osrsloottracker.com/): Discord bot that logs Dink notifications in a Google spreadsheet
-* [Cast OSRS](https://github.com/jgresham/cast-osrs): Forwards Dink notifications to a decentralized social media community on Farcaster
+- [Watchdog](https://github.com/adamk33n3r/runelite-watchdog): RuneLite hub plugin that can trigger custom Dink notifications
+- [Leppunen's Dink Handler](https://git.ivr.fi/Leppunen/runelite-dink-api): JS-based (Fastify) webhook handler that forwards Dink notifications to a Twitch chatbot
+- [Swap's Webhook Handler](https://github.com/jdanthdavis/custom-dink-webhook): Cloudflare Worker that applies custom logic before forwarding Dink notifications
+- [Danbot](https://github.com/DanbisDev/Danbot-Webserver): Python-based (Flask) Discord bot that parses Dink notifications
+- [stabiliserver](https://github.com/Fuzznip/stabiliserver): Python-based (FastAPI) Discord bot that parses Dink notifications
+- [RuneDiary](https://www.runediary.com/): Online adventure log powered by Dink
+- [OSRS Loot Tracker](https://osrsloottracker.com/): Discord bot that logs Dink notifications in a Google spreadsheet
+- [Cast OSRS](https://github.com/jgresham/cast-osrs): Forwards Dink notifications to a decentralized social media community on Farcaster
 
 _Want your project listed here? Feel free to open an [issue](https://github.com/pajlads/DinkPlugin/issues/new/choose)!_
 
