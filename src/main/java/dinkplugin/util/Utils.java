@@ -190,9 +190,13 @@ public class Utils {
     }
 
     @Nullable
-    public String getChatBadge(@NotNull AccountType type, boolean seasonal) {
+    public String getChatBadge(@NotNull AccountType type, boolean seasonal, DinkPluginConfig config) {
         if (seasonal) {
             return WIKI_IMG_BASE_URL + "Leagues_chat_badge.png";
+        }
+        String customBadge = config.customPlayerBadge();
+        if (!customBadge.isBlank()) {
+            return customBadge;
         }
         switch (type) {
             case IRONMAN:
