@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add configurable denylist for collection log notifier. (#832)
+
 ## 1.11.17
 
 - Minor: Unhide the leagues webhook URL for seasonal usage. (#825)

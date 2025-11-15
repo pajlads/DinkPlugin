@@ -58,6 +58,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 @Slf4j
 @UtilityClass
@@ -128,6 +129,7 @@ public class Utils {
      * @see DinkPluginConfig#lootItemAllowlist()
      * @see DinkPluginConfig#lootItemDenylist()
      */
+    @Nullable
     public Pattern regexify(@NotNull String pattern) {
         final int len = pattern.length();
         final StringBuilder sb = new StringBuilder(len + 2 + 4);
@@ -152,7 +154,12 @@ public class Utils {
             sb.append('$');
         }
 
-        return Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
+        try {
+            return Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
+        } catch (PatternSyntaxException e) {
+            log.warn("Failed to parse pattern: {}", pattern, e);
+            return null;
+        }
     }
 
     /**
