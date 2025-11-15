@@ -526,6 +526,19 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "customPlayerBadge",
+        name = "Custom Badge URL",
+        description = "Custom image URL to display next to player name in Discord rich embed headers.<br/>" +
+            "Leave blank to utilize the default chat badge logic.<br/>" +
+            "Warning: malformed URLs may break Discord notifications",
+        position = 1023,
+        section = advancedSection
+    )
+    default String customPlayerBadge() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
