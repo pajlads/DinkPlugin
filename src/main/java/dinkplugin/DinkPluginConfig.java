@@ -911,11 +911,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "levelMinScreenshotValue",
+        name = "Min Screenshot Level",
+        description = "Minimum level of the advanced skill to warrant a screenshot.<br/>" +
+            "Requires 'Send Image' to be enabled",
+        position = 26,
+        section = levelSection
+    )
+    @Range(min = 1, max = 99)
+    default int levelMinScreenshotValue() {
+        return 1;
+    }
+
+    @ConfigItem(
         keyName = "levelIntervalOverride",
         name = "Interval Override Level",
         description = "All level ups starting from this override level send a notification, disregarding the configured Notify Interval.<br/>" +
             "Disabled when set to 0",
-        position = 26,
+        position = 27,
         section = levelSection
     )
     default int levelIntervalOverride() {
