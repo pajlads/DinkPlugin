@@ -1082,6 +1082,19 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootSourceDenylist",
+        name = "Source Denylist",
+        description = "Never fire notifications for these loot sources, despite value or rarity settings.<br/>" +
+            "Place one NPC/source name per line (case-insensitive).<br/>" +
+            "Does <i>not</i> apply to player names for PK loot",
+        position = 37,
+        section = lootSection
+    )
+    default String lootSourceDenylist() {
+        return "Einar\n";
+    }
+
+    @ConfigItem(
         keyName = "lootRarityThreshold",
         name = "Rarity Override (1 in X)",
         description = "Fires notifications for sufficiently rare drops, despite the 'Min Loot value' threshold.<br/>" +

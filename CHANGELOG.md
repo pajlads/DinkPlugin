@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add drop source denylist for loot notifier. (#835)
 - Minor: Add configurable denylist for collection log notifier. (#832)
 
 ## 1.11.17
