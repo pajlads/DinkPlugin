@@ -12,4 +12,9 @@ public class XpNotificationData extends NotificationData {
     Map<String, Integer> xpData;
     Collection<String> milestoneAchieved;
     int interval;
+
+    @Override
+    public Map<String, Object> sanitized() {
+        return Map.of("xpData", xpData, "milestoneAchieved", milestoneAchieved, "interval", interval);
+    }
 }

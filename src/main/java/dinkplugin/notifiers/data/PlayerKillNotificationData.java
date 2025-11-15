@@ -8,8 +8,10 @@ import net.runelite.api.kit.KitType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -47,5 +49,21 @@ public class PlayerKillNotificationData extends NotificationData {
         );
 
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("victimName", victimName);
+        m.put("victimCombatLevel", victimCombatLevel);
+        m.put("myHitpoints", myHitpoints);
+        m.put("myLastDamage", myLastDamage);
+        m.put("victimEquipment", victimEquipment.entrySet()
+            .stream()
+            .map(e -> Map.entry(e.getKey(), e.getValue().sanitized()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+        if (world != null) m.put("world", world);
+        if (location != null) m.put("location", location);
+        return m;
     }
 }

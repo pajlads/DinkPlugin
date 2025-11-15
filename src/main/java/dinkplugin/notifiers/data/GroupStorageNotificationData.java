@@ -8,7 +8,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -28,5 +31,15 @@ public class GroupStorageNotificationData extends NotificationData {
             fields.add(new Field("Net Value (GE)", ItemUtils.formatGold(netValue)));
         }
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("deposits", deposits.stream().map(SerializedItemStack::sanitized).collect(Collectors.toList()));
+        m.put("withdrawals", withdrawals.stream().map(SerializedItemStack::sanitized).collect(Collectors.toList()));
+        m.put("netValue", netValue);
+        if (groupName != null) m.put("groupName", groupName);
+        return m;
     }
 }
