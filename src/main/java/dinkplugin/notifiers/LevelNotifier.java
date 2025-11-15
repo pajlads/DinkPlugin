@@ -283,6 +283,15 @@ public class LevelNotifier extends BaseNotifier {
             lSkills.put(skill, level);
         }
 
+        // Determine whether a screenshot should be included
+        boolean sendImage;
+        if (config.levelSendImage()) {
+            int imageThreshold = config.levelMinScreenshotValue();
+            sendImage = imageThreshold <= 1 || lSkills.values().stream().anyMatch(lvl -> lvl >= imageThreshold);
+        } else {
+            sendImage = false;
+        }
+
         // Separately check for combat level increase for extra data
         Boolean combatLevelUp = lSkills.remove(COMBAT_NAME) != null; // remove Combat from levelledSkills
         Integer combatLevel = currentLevels.remove(COMBAT_NAME); // remove Combat from allSkills
@@ -321,7 +330,7 @@ public class LevelNotifier extends BaseNotifier {
             .build();
 
         // Fire notification
-        createMessage(config.levelSendImage(), NotificationBody.builder()
+        createMessage(sendImage, NotificationBody.builder()
             .text(fullNotification)
             .extra(new LevelNotificationData(lSkills, currentLevels, combatData))
             .type(NotificationType.LEVEL)

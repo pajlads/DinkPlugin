@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Minor: Add configurable minimum level to warrant a screenshot for skill notifier. (#833)
+- Minor: Add drop source denylist for loot notifier. (#835)
+- Minor: Add configurable denylist for collection log notifier. (#832)
+
 ## 1.11.17
 
 - Minor: Unhide the leagues webhook URL for seasonal usage. (#825)

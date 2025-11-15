@@ -278,6 +278,19 @@ class LootNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnoreDenylistSource() {
+        // update config
+        notifier.onConfigChanged("lootSourceDenylist", LOOTED_NAME);
+
+        // fire event
+        LootReceived event = new LootReceived(LOOTED_NAME, 99, LootRecordType.PICKPOCKET, Collections.singletonList(new ItemStack(ItemID.RUBY, 1)), 1);
+        plugin.onLootReceived(event);
+
+        // ensure no notification
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testIgnoreDenylistWildcard() {
         // fire event
         notifier.onConfigChanged("lootItemDenylist", "Rub*");
