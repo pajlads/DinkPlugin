@@ -316,6 +316,7 @@ public class LootNotifier extends BaseNotifier {
                 .replacement("%LOOT%", lootMsg)
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalStackValue)))
                 .replacement("%SOURCE%", source)
+                .replacement("%COUNT%", Replacements.ofText(kc != null ? kc.toString() : "unknown"))
                 .build();
             createMessage(overrideUrl, screenshot,
                 NotificationBody.builder()
