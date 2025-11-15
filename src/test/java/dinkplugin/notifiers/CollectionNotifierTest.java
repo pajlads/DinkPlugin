@@ -13,10 +13,10 @@ import net.runelite.api.GameState;
 import net.runelite.api.NPC;
 import net.runelite.api.ScriptID;
 import net.runelite.api.StructComposition;
-import net.runelite.api.VarClientStr;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.NpcID;
+import net.runelite.api.gameval.VarClientID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.events.NpcLootReceived;
@@ -81,6 +81,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         when(config.notifyCollectionLog()).thenReturn(true);
         when(config.collectionSendImage()).thenReturn(false);
         when(config.collectionNotifyMessage()).thenReturn("%USERNAME% has added %ITEM% to their collection");
+        when(config.collectionDenylist()).thenReturn("Shayzien * (1)\nShayzien * (2)\n");
     }
 
     @Test
@@ -247,8 +248,8 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
         // update mocks
         when(client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM)).thenReturn(3);
-        when(client.getVarcStrValue(VarClientStr.NOTIFICATION_TOP_TEXT)).thenReturn("Collection log");
-        when(client.getVarcStrValue(VarClientStr.NOTIFICATION_BOTTOM_TEXT)).thenReturn("New item:<br>" + item);
+        when(client.getVarcStrValue(VarClientID.NOTIFICATION_TITLE)).thenReturn("Collection log");
+        when(client.getVarcStrValue(VarClientID.NOTIFICATION_MAIN)).thenReturn("New item:<br>" + item);
 
         // send chat event (to be ignored)
         notifier.onChatMessage("New item added to your collection log: " + item);
@@ -364,6 +365,15 @@ class CollectionNotifierTest extends MockedNotifierTest {
     void testIgnore() {
         // send unrelated message
         notifier.onChatMessage("New item added to your backpack: weed");
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreDenylist() {
+        String item = "Shayzien helm (1)";
+        notifier.onChatMessage("New item added to your collection log: " + item);
 
         // ensure no notification occurred
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());

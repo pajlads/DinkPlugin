@@ -19,8 +19,8 @@ import net.runelite.api.Client;
 import net.runelite.api.Experience;
 import net.runelite.api.ScriptID;
 import net.runelite.api.Skill;
-import net.runelite.api.VarClientStr;
 import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.VarClientID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.http.api.loottracker.LootRecordType;
@@ -148,9 +148,9 @@ public class PetNotifier extends BaseNotifier {
 
     public void onScript(int id) {
         if (id == ScriptID.NOTIFICATION_DELAY && PRIMED_NAME.equals(petName)) {
-            var topText = client.getVarcStrValue(VarClientStr.NOTIFICATION_TOP_TEXT);
+            var topText = client.getVarcStrValue(VarClientID.NOTIFICATION_TITLE);
             if ("Collection log".equalsIgnoreCase(topText)) {
-                var bottomText = Utils.sanitize(client.getVarcStrValue(VarClientStr.NOTIFICATION_BOTTOM_TEXT));
+                var bottomText = Utils.sanitize(client.getVarcStrValue(VarClientID.NOTIFICATION_MAIN));
                 var itemName = bottomText.substring(CollectionNotifier.POPUP_PREFIX_LENGTH).trim();
                 if (isPetItem(itemName)) {
                     this.petName = itemName;

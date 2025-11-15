@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -121,6 +122,7 @@ public class ChatNotifier extends BaseNotifier {
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
                 .map(Utils::regexify)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList())
         );
     }

@@ -781,6 +781,18 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "collectionDenylist",
+        name = "Item Denylist",
+        description = "Never fire notifications for these items.<br/>" +
+            "Place one item name per line (case-insensitive; asterisks are wildcards)",
+        position = 3,
+        section = collectionSection
+    )
+    default String collectionDenylist() {
+        return "Dwarf remains\n";
+    }
+
+    @ConfigItem(
         keyName = "collectionNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
@@ -788,7 +800,7 @@ public interface DinkPluginConfig extends Config {
             "Use %ITEM% to insert the item name<br/>" +
             "Use %COMPLETED% to insert the number of completed entries<br/>" +
             "Use %TOTAL_POSSIBLE% to insert the number of possible entries",
-        position = 3,
+        position = 4,
         section = collectionSection
     )
     default String collectionNotifyMessage() {
