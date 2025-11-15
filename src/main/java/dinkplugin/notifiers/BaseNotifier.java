@@ -6,6 +6,7 @@ import dinkplugin.domain.SeasonalPolicy;
 import dinkplugin.message.DiscordMessageHandler;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.util.AccountTypeTracker;
+import dinkplugin.util.Utils;
 import dinkplugin.util.WorldTypeTracker;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.inject.Inject;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -67,9 +69,14 @@ public abstract class BaseNotifier {
         messageHandler.createMessage(url, sendImage, body);
 
         // notify other hub plugins
+        var playerName = body.getPlayerName() != null ? body.getPlayerName() : Utils.getPlayerName(client);
+        var accountType = body.getAccountType() != null ? body.getAccountType() : Utils.getAccountType(client);
         executor.execute(() -> {
-            Map<String, Object> metadata = body.getExtra() != null ? body.getExtra().sanitized() : Collections.emptyMap();
-            var payload = new PluginMessage(SettingsManager.CONFIG_GROUP, body.getType().name(), metadata);
+            Map<String, Object> metadata = body.getExtra() != null ? new HashMap<>(body.getExtra().sanitized()) : new HashMap<>();
+            metadata.put("playerName", playerName);
+            metadata.put("accountType", String.valueOf(accountType));
+            metadata.put("plainText", body.getText().evaluate(false));
+            var payload = new PluginMessage(SettingsManager.CONFIG_GROUP, body.getType().name(), Collections.unmodifiableMap(metadata));
             eventBus.post(payload);
         });
     }
