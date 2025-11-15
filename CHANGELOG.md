@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Allow custom author badge image in Discord rich embeds. (#834)
 - Minor: Add configurable minimum level to warrant a screenshot for skill notifier. (#833)
 - Minor: Add drop source denylist for loot notifier. (#835)
 - Minor: Add configurable denylist for collection log notifier. (#832)
