@@ -1153,7 +1153,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %LOOT% to insert the loot<br/>" +
-            "Use %SOURCE% to show the source of the loot",
+            "Use %SOURCE% to show the source of the loot<br/>" +
+            "Use %COUNT% to insert the associated kill count (unnecessary if rich embeds are enabled)",
         position = 40,
         section = lootSection
     )

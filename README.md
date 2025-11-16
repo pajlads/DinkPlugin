@@ -230,6 +230,9 @@ Note: `%COMPLETED%` may not be populated if the [Character Summary](https://olds
 
 `%SOURCE%` will be replace with the source that dropped or gave the loot
 
+`%COUNT%` will be replaced with the source kill count, or `unknown` if it could not be determined.
+This field is already included as a rich embed field, so it is meant for users who disabled rich embeds.
+
 ### Slayer:
 
 `%TASK%` will be replaced with the task that you have completed. E.g. `50 monkeys`
