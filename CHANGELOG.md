@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.11.18
+
 - Minor: Add `%COUNT%` template variable for loot notifier to display killcount when rich embeds are disabled. (#840)
 - Minor: Allow custom author badge image in Discord rich embeds. (#834)
 - Minor: Add configurable minimum level to warrant a screenshot for skill notifier. (#833)
