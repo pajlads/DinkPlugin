@@ -31,6 +31,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Tag("generator")
 class RarityCalculator {
@@ -117,7 +118,7 @@ class RarityCalculator {
                 this.itemId = ItemID.VARLAMORE_KEY_HALF_1;
             }
             if (itemId == null || rarity == null || quantity == null) return null;
-            if (rarity.equals("Always") || rarity.equals("Varies") || rarity.equals("Random") || rarity.equals("Once") || rarity.equals("Unknown")) return null;
+            if (rarity.equals("Always") || rarity.equals("Varies") || rarity.equals("Random") || rarity.equals("Once") || rarity.equals("Unknown") || rarity.equals("?")) return null;
             if (quantity.equals("Unknown") || quantity.equals("N/A")) return null;
 
             int item = COINS.contains(itemId) ? ItemID.FAKE_COINS : itemId;
