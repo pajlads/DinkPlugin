@@ -85,11 +85,15 @@ class RarityCalculator {
         Collection<Transformed> getTransformed() {
             if (drops == null || drops.isEmpty()) return Collections.emptyList();
             SortedSet<Transformed> set = new TreeSet<>(COMPARATOR);
-            boolean hasAlways = drops.stream().anyMatch(d -> "Always".equals(d.getRarity()));
+            Set<Integer> alwaysDropped = drops.stream()
+                .filter(d -> "Always".equals(d.getRarity()))
+                .map(Drop::getItemId)
+                .collect(Collectors.toSet());
             for (Drop drop : drops) {
+                if (alwaysDropped.contains(drop.getItemId())) continue;
                 Transformed transformed = drop.transform();
                 if (transformed == null) continue;
-                if (hasAlways && transformed.getItemId() < 0) continue;
+                if (!alwaysDropped.isEmpty() && transformed.getItemId() < 0) continue;
                 set.add(transformed);
             }
             return set;
