@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Prevent always-dropped items from appearing as rare due to RDT overlap. (#843)
+
 ## 1.11.18
 
 - Minor: Add `%COUNT%` template variable for loot notifier to display killcount when rich embeds are disabled. (#840)
