@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include Soup pet name in pet notifications. (#844)
 - Bugfix: Prevent always-dropped items from appearing as rare due to RDT overlap. (#843)
 
 ## 1.11.18
