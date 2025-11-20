@@ -312,6 +312,7 @@ public class PetNotifier extends BaseNotifier {
 
         @Override
         double[] getRates(Client client) {
+            if (baseChance <= 0) return null;
             final int n = Experience.MAX_REAL_LEVEL;
             double[] rates = new double[n];
             for (int level = 1; level <= n; level++) {
@@ -322,6 +323,7 @@ public class PetNotifier extends BaseNotifier {
 
         @Override
         int[] getActions(Client client, KillCountService kcService) {
+            if (actionXp <= 0) return null;
             final int currentLevel = client.getRealSkillLevel(skill);
             final int currentXp = client.getSkillExperience(skill);
             final int[] actions = new int[currentLevel];
@@ -337,6 +339,7 @@ public class PetNotifier extends BaseNotifier {
 
         @Override
         Integer estimateActions(Client client, KillCountService kcService) {
+            if (actionXp <= 0) return null;
             return client.getSkillExperience(skill) / actionXp;
         }
     }
@@ -562,6 +565,7 @@ public class PetNotifier extends BaseNotifier {
                     return lootRecord != null ? lootRecord.getQuantity(ItemID.DIZANAS_QUIVER_UNCHARGED) : null;
                 }
             }),
+            entry("Soup", new SkillSource(Skill.SAILING, 0, 0)), // todo: determine drop rate
             entry("Sraracha", new KcSource("Sarachnis", 1.0 / 3_000)),
             entry("Tangleroot", new SkillSource(Skill.FARMING, 7_500, 119)), // mushrooms
             entry("Tiny tempor", new KcSource("Reward pool (Tempoross)", 1.0 / 8_000)),
