@@ -158,14 +158,20 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     private void init() {
-        if (client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX) <= 0) {
+        final int maxCount = client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX);
+        if (maxCount <= 0) {
             // underlying data not yet initialized; retry later
             return;
         }
 
+        populateThresholds(maxCount);
+        initialized = true;
+    }
+
+    private void populateThresholds(int maxCount) {
         for (CollectionLogRank rank : CollectionLogRank.values()) {
             try {
-                rankByThreshold.put(rank.getClogRankThreshold(client), rank);
+                rankByThreshold.put(rank.getClogRankThreshold(client, maxCount), rank);
             } catch (Exception e) {
                 String msg = "Could not find struct for {}";
                 if (log.isDebugEnabled()) {
@@ -176,10 +182,14 @@ public class CollectionNotifier extends BaseNotifier {
             }
         }
         log.debug("Rank Thresholds: {}", rankByThreshold);
-        initialized = true;
     }
 
     private void handleNotify(String itemName) {
+        if (!initialized) {
+            // initialize rankByThreshold based on the fallback total entry count
+            populateThresholds(TOTAL_ENTRIES);
+        }
+
         // check denylist
         boolean denylisted = ConfigUtil.readDelimited(config.collectionDenylist())
             .map(Utils::regexify)

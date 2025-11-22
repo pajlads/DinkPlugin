@@ -34,9 +34,10 @@ public enum CollectionLogRank {
 
     /**
      * @param client {@link Client}
+     * @param collectionCountMax varp value associated with {@link VarPlayerID#COLLECTION_COUNT_MAX}
      * @return the number of collection log entries needed to unlock this rank
      */
-    public int getClogRankThreshold(Client client) {
+    public int getClogRankThreshold(Client client, int collectionCountMax) {
         assert client.isClientThread();
         switch (this) {
             case NONE:
@@ -44,7 +45,7 @@ public enum CollectionLogRank {
 
             case GILDED:
                 // https://oldschool.runescape.wiki/w/Gilded_staff_of_collection
-                return 25 * (int) (0.9 * client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX) / 25);
+                return 25 * (int) (0.9 * collectionCountMax / 25);
 
             default:
                 return client.getStructComposition(this.structId).getIntValue(THRESHOLD_PARAM);
