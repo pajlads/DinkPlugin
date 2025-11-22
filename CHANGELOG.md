@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Update fallback number of collection log slots. (#849)
+
 ## 1.11.19
 
 - Minor: Include Soup pet name in pet notifications. (#844)
