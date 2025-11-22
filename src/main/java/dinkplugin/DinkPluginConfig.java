@@ -516,7 +516,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "screenshotFilenameTemplate",
         name = "Screenshot Filename Template",
-        description = "Format of the screenshot filename. todo validity comment eg spaces length<br/>" +
+        description = "Format of the screenshot filename. Discord may use this as the text in mobile notifications. " +
+                "Leave empty for default filenames.<br/>" +
                 "Use %USERNAME% to insert your username<br/>" +
                 "Use %TYPE% to insert the notification type<br/>" +
                 "Use %CLAN% to insert your clan name",
