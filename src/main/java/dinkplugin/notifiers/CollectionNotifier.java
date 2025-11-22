@@ -46,7 +46,7 @@ public class CollectionNotifier extends BaseNotifier {
     public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
     public static final int POPUP_PREFIX_LENGTH = "New item:".length();
 
-    static final @VisibleForTesting int TOTAL_ENTRIES = 1_594; // fallback if COLLECTION_COUNT_MAX is not populated
+    static final @VisibleForTesting int TOTAL_ENTRIES = 1_692; // fallback if COLLECTION_COUNT_MAX is not populated
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
     /**

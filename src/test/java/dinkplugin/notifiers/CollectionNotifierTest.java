@@ -162,7 +162,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
 
     @Test
     void testGildedRank() {
-        setCompleted(1424);
+        setCompleted(1499);
 
         String item = "Seercull";
         int price = 23_000;
@@ -193,7 +193,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .replacement("{{item}}", Replacements.ofWiki(item))
                         .build()
                 )
-                .extra(new CollectionNotificationData(item, ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, (long) price, 1425, TOTAL_ENTRIES, CollectionLogRank.GILDED, 0, null, null, CollectionLogRank.DRAGON, source, LootRecordType.NPC, kc, rarity))
+                .extra(new CollectionNotificationData(item, ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, (long) price, 1500, TOTAL_ENTRIES, CollectionLogRank.GILDED, 0, null, null, CollectionLogRank.DRAGON, source, LootRecordType.NPC, kc, rarity))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
