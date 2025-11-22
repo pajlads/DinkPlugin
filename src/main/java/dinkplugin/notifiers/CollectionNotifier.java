@@ -116,8 +116,10 @@ public class CollectionNotifier extends BaseNotifier {
         } else if (completed.get() < 0) {
             // initialize collection log entry completion count
             int varpValue = client.getVarpValue(VarPlayerID.COLLECTION_COUNT);
-            if (varpValue > 0)
+            if (varpValue > 0 || (varpValue == 0 && client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX) > 0)) {
                 completed.set(varpValue);
+                log.debug("Initialized entry count: {}", varpValue);
+            }
         }
     }
 
@@ -125,10 +127,11 @@ public class CollectionNotifier extends BaseNotifier {
         if (event.getVarpId() != VarPlayerID.COLLECTION_COUNT)
             return;
 
-        // we only care about this event when the notifier is disabled
-        // to keep `completed` updated when `handleNotify` is not being called
-        if (!config.notifyCollectionLog()) {
+        // keep `completed` updated when `handleNotify` is not being called OR state is not properly initialized
+        int prevLogs = completed.get();
+        if (!config.notifyCollectionLog() || (prevLogs < 0 && event.getValue() > 0) || (prevLogs == 0 && event.getValue() > 1)) {
             completed.set(event.getValue());
+            log.debug("Updated entry count to: {}", event.getValue());
         }
     }
 
@@ -207,8 +210,8 @@ public class CollectionNotifier extends BaseNotifier {
         int completed = this.completed.updateAndGet(i -> i >= 0 ? i + 1 : i);
         int total = client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX); // unique; doesn't over-count duplicates
         boolean varpValid = total > 0 && completed > 0;
-        var nextRankEntry = rankByThreshold.higherEntry(completed);
-        var prevRankEntry = rankByThreshold.floorEntry(completed);
+        var nextRankEntry = completed >= 0 ? rankByThreshold.higherEntry(completed) : null;
+        var prevRankEntry = completed >= 0 ? rankByThreshold.floorEntry(completed) : null;
         CollectionLogRank rank = prevRankEntry != null ? prevRankEntry.getValue() : null;
         CollectionLogRank nextRank = completed > 0 && nextRankEntry != null ? nextRankEntry.getValue() : null;
         Integer rankProgress = prevRankEntry != null ? completed - prevRankEntry.getKey() : null;

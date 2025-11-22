@@ -322,9 +322,6 @@ class CollectionNotifierTest extends MockedNotifierTest {
             return e;
         };
 
-        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(1);
-        notifier.onVarPlayer(varpEvent.apply(VarPlayerID.COLLECTION_COUNT, 1));
-
         when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX)).thenReturn(TOTAL_ENTRIES);
         notifier.onVarPlayer(varpEvent.apply(VarPlayerID.COLLECTION_COUNT_MAX, TOTAL_ENTRIES));
 
@@ -356,6 +353,40 @@ class CollectionNotifierTest extends MockedNotifierTest {
                         .build()
                 )
                 .extra(new CollectionNotificationData(item2, ItemID.SEER_RING, (long) price2, 101, TOTAL_ENTRIES, CollectionLogRank.BRONZE, 1, 199, CollectionLogRank.IRON, null, null,null, null, null))
+                .type(NotificationType.COLLECTION)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyZero() {
+        // establish clog state
+        notifier.reset();
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT)).thenReturn(0);
+        when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX)).thenReturn(TOTAL_ENTRIES);
+        notifier.onTick();
+
+        // prepare item mock
+        String item = "Seercull";
+        int price = 23_000;
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW);
+        when(itemManager.getItemPrice(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW)).thenReturn(price);
+
+        // send fake message
+        notifier.onChatMessage("New item added to your collection log: " + item);
+
+        // verify handled
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has added {{item}} to their collection", PLAYER_NAME))
+                        .replacement("{{item}}", Replacements.ofWiki(item))
+                        .build()
+                )
+                .extra(new CollectionNotificationData(item, ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 1, 99, CollectionLogRank.BRONZE, null, null,null, null, null))
                 .type(NotificationType.COLLECTION)
                 .build()
         );
