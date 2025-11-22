@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Fire a `PluginMessage` whenever a Dink notification is triggered. (#836)
+
 ## 1.11.19
 
 - Minor: Include Soup pet name in pet notifications. (#844)
