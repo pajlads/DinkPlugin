@@ -353,9 +353,23 @@ and specify which types of messages to check (e.g., game, trade, clan notificati
 
 ### External Plugins:
 
+#### Inbound
+
 Other external plugins can request Dink fire webhook notifications.
 
 You can enable this functionality via `External Plugin Requests > Enable External Plugin Notifications`.
+
+#### Outbound
+
+Dink fires a `PluginMessage` whenever a notification is triggered, which allows other hub plugins to react to our event logic.
+
+Note: These outbound notifications are dependent on the user's Dink configuration
+(e.g., a 1 gp loot drop won't trigger a `PluginMessage` if the user has set the `Loot > Min Loot Value` to a higher threshold).
+
+Warning: this feature is *experimental*, so its behavior may change at any time.
+For example, our long-term goal is to provide a custom side-panel where users can configure endpoint-specific notifier settings,
+but this will complicate our logic for alerting other hub plugins upon notifications
+(since varying settings of the same notifier may only trigger a subset of URLs).
 
 ### Metadata:
 

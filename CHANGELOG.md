@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Dev: Fire a `PluginMessage` whenever a Dink notification is triggered. (#836)
+- Dev: Fire a `PluginMessage` whenever a Dink notification is triggered (experimental). (#836)
 
 ## 1.11.19
 
