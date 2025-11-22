@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Fire collection log notifications even if character summary tab was never selected to initialize rank thresholds. (#850)
 - Bugfix: Update fallback number of collection log slots. (#849)
 
 ## 1.11.19
