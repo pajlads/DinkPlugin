@@ -7,6 +7,7 @@ import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -64,5 +65,18 @@ public class DiaryNotificationData extends NotificationData {
         }
 
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        return Map.of(
+            "area", area,
+            "difficulty", difficulty.toString(),
+            "total", total,
+            "tasksCompleted", tasksCompleted,
+            "tasksTotal", tasksTotal,
+            "areaTasksCompleted", areaTasksCompleted,
+            "areaTasksTotal", areaTasksTotal
+        );
     }
 }

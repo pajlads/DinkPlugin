@@ -7,7 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -35,5 +37,15 @@ public class LeaguesAreaNotificationData extends NotificationData {
             );
         }
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("area", area);
+        m.put("index", index);
+        m.put("tasksCompleted", tasksCompleted);
+        if (tasksUntilNextArea != null) m.put("tasksUntilNextArea", tasksUntilNextArea);
+        return m;
     }
 }

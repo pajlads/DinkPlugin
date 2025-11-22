@@ -8,6 +8,9 @@ import net.runelite.api.events.ChatMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class ChatNotificationData extends NotificationData {
@@ -34,4 +37,13 @@ public class ChatNotificationData extends NotificationData {
     @NotNull
     String message;
 
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("type", type);
+        m.put("message", message);
+        if (source != null) m.put("source", source);
+        if (clanTitle != null) m.put("clanTitle", clanTitle);
+        return m;
+    }
 }
