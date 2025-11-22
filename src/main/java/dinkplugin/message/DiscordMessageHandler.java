@@ -386,7 +386,7 @@ public class DiscordMessageHandler {
         Author author = Author.builder()
             .name(body.getPlayerName())
             .url(playerLookupService.getPlayerUrl(body.getPlayerName()))
-            .iconUrl(Utils.getChatBadge(body.getAccountType(), body.isSeasonalWorld()))
+            .iconUrl(Utils.getChatBadge(body.getAccountType(), body.isSeasonalWorld(), config))
             .build();
         Footer footer = StringUtils.isBlank(footerText) ? null : Footer.builder()
             .text(Utils.truncate(footerText, Embed.MAX_FOOTER_LENGTH))

@@ -214,6 +214,13 @@ class RarityServiceTest extends AbstractRarityServiceTest {
     }
 
     @Test
+    @DisplayName("Ignore RDT drop rate if an 'Always' rate exists for the same item")
+    void testAlwaysRDT() {
+        OptionalDouble rarity = service.getRarity("Rune dragon", ItemID.RUNITE_BAR, 1);
+        assertFalse(rarity.isPresent());
+    }
+
+    @Test
     @DisplayName("Ensure accurate drop rate for 'Nothing'")
     void testNothing() {
         test("Air elemental", -1, 0, 1 / 128.2);

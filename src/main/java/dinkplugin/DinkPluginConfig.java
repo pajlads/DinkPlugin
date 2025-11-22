@@ -526,6 +526,19 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "customPlayerBadge",
+        name = "Custom Badge URL",
+        description = "Custom image URL to display next to player name in Discord rich embed headers.<br/>" +
+            "Leave blank to utilize the default chat badge logic.<br/>" +
+            "Warning: malformed URLs may break Discord notifications",
+        position = 1023,
+        section = advancedSection
+    )
+    default String customPlayerBadge() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
@@ -781,6 +794,18 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "collectionDenylist",
+        name = "Item Denylist",
+        description = "Never fire notifications for these items.<br/>" +
+            "Place one item name per line (case-insensitive; asterisks are wildcards)",
+        position = 3,
+        section = collectionSection
+    )
+    default String collectionDenylist() {
+        return "Dwarf remains\n";
+    }
+
+    @ConfigItem(
         keyName = "collectionNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
@@ -788,7 +813,7 @@ public interface DinkPluginConfig extends Config {
             "Use %ITEM% to insert the item name<br/>" +
             "Use %COMPLETED% to insert the number of completed entries<br/>" +
             "Use %TOTAL_POSSIBLE% to insert the number of possible entries",
-        position = 3,
+        position = 4,
         section = collectionSection
     )
     default String collectionNotifyMessage() {
@@ -899,11 +924,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "levelMinScreenshotValue",
+        name = "Min Screenshot Level",
+        description = "Minimum level of the advanced skill to warrant a screenshot.<br/>" +
+            "Requires 'Send Image' to be enabled",
+        position = 26,
+        section = levelSection
+    )
+    @Range(min = 1, max = 99)
+    default int levelMinScreenshotValue() {
+        return 1;
+    }
+
+    @ConfigItem(
         keyName = "levelIntervalOverride",
         name = "Interval Override Level",
         description = "All level ups starting from this override level send a notification, disregarding the configured Notify Interval.<br/>" +
             "Disabled when set to 0",
-        position = 26,
+        position = 27,
         section = levelSection
     )
     default int levelIntervalOverride() {
@@ -1070,6 +1108,19 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootSourceDenylist",
+        name = "Source Denylist",
+        description = "Never fire notifications for these loot sources, despite value or rarity settings.<br/>" +
+            "Place one NPC/source name per line (case-insensitive).<br/>" +
+            "Does <i>not</i> apply to player names for PK loot",
+        position = 37,
+        section = lootSection
+    )
+    default String lootSourceDenylist() {
+        return "Einar\n";
+    }
+
+    @ConfigItem(
         keyName = "lootRarityThreshold",
         name = "Rarity Override (1 in X)",
         description = "Fires notifications for sufficiently rare drops, despite the 'Min Loot value' threshold.<br/>" +
@@ -1102,7 +1153,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %LOOT% to insert the loot<br/>" +
-            "Use %SOURCE% to show the source of the loot",
+            "Use %SOURCE% to show the source of the loot<br/>" +
+            "Use %COUNT% to insert the associated kill count (unnecessary if rich embeds are enabled)",
         position = 40,
         section = lootSection
     )
