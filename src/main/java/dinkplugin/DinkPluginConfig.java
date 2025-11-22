@@ -183,9 +183,17 @@ public interface DinkPluginConfig extends Config {
     String chatSection = "Custom Chat Messages";
 
     @ConfigSection(
+        name = "Bingo",
+        description = "Settings for notifying when bingo items are dropped",
+        position = 180,
+        closedByDefault = true
+    )
+    String bingoSection = "Bingo";
+
+    @ConfigSection(
         name = "External Plugin Requests",
         description = "Settings for notifying when other plugins request Dink notifications to be fired",
-        position = 180,
+        position = 190,
         closedByDefault = true
     )
     String externalSection = "External Plugin Requests";
@@ -543,7 +551,7 @@ public interface DinkPluginConfig extends Config {
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
             "You can target multiple webhooks by specifying their URLs on separate lines",
-        position = -20
+        position = -21
     )
     default String primaryWebhook() {
         return "";
@@ -553,7 +561,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "collectionWebhook",
         name = "Collection Webhook Override",
         description = "If non-empty, collection messages are sent to this URL, instead of the primary URL",
-        position = -19,
+        position = -20,
         section = webhookSection
     )
     default String collectionWebhook() {
@@ -564,7 +572,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "petWebhook",
         name = "Pet Webhook Override",
         description = "If non-empty, pet messages are sent to this URL, instead of the primary URL",
-        position = -18,
+        position = -19,
         section = webhookSection
     )
     default String petWebhook() {
@@ -575,7 +583,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "levelWebhook",
         name = "Level Webhook Override",
         description = "If non-empty, level up messages are sent to this URL, instead of the primary URL",
-        position = -17,
+        position = -18,
         section = webhookSection
     )
     default String levelWebhook() {
@@ -586,7 +594,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "lootWebhook",
         name = "Loot Webhook Override",
         description = "If non-empty, loot messages are sent to this URL, instead of the primary URL",
-        position = -16,
+        position = -17,
         section = webhookSection
     )
     default String lootWebhook() {
@@ -597,7 +605,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathWebhook",
         name = "Death Webhook Override",
         description = "If non-empty, death messages are sent to this URL, instead of the primary URL",
-        position = -15,
+        position = -16,
         section = webhookSection
     )
     default String deathWebhook() {
@@ -608,7 +616,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "slayerWebhook",
         name = "Slayer Webhook Override",
         description = "If non-empty, slayer messages are sent to this URL, instead of the primary URL",
-        position = -14,
+        position = -15,
         section = webhookSection
     )
     default String slayerWebhook() {
@@ -619,7 +627,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "questWebhook",
         name = "Quest Webhook Override",
         description = "If non-empty, quest messages are sent to this URL, instead of the primary URL",
-        position = -13,
+        position = -14,
         section = webhookSection
     )
     default String questWebhook() {
@@ -630,7 +638,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "clueWebhook",
         name = "Clue Webhook Override",
         description = "If non-empty, clue messages are sent to this URL, instead of the primary URL",
-        position = -12,
+        position = -13,
         section = webhookSection
     )
     default String clueWebhook() {
@@ -641,7 +649,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "speedrunWebhook",
         name = "Speedrun Webhook Override",
         description = "If non-empty, speedrun messages are sent to this URL, instead of the primary URL",
-        position = -11,
+        position = -12,
         section = webhookSection
     )
     default String speedrunWebhook() {
@@ -652,7 +660,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "killCountWebhook",
         name = "Kill Count Webhook Override",
         description = "If non-empty, kill count messages are sent to this URL, instead of the primary URL",
-        position = -10,
+        position = -11,
         section = webhookSection
     )
     default String killCountWebhook() {
@@ -663,7 +671,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "combatTaskWebhook",
         name = "Combat Task Webhook Override",
         description = "If non-empty, combat task messages are sent to this URL, instead of the primary URL",
-        position = -9,
+        position = -10,
         section = webhookSection
     )
     default String combatTaskWebhook() {
@@ -674,7 +682,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "diaryWebhook",
         name = "Diary Webhook Override",
         description = "If non-empty, achievement diary messages are sent to this URL, instead of the primary URL",
-        position = -8,
+        position = -9,
         section = webhookSection
     )
     default String diaryWebhook() {
@@ -685,7 +693,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "gambleWebhook",
         name = "BA Gamble Webhook Override",
         description = "If non-empty, BA gamble messages are sent to this URL, instead of the primary URL",
-        position = -7,
+        position = -8,
         section = webhookSection
     )
     default String gambleWebhook() {
@@ -696,7 +704,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "pkWebhook",
         name = "Player Kill Webhook Override",
         description = "If non-empty, PK messages are sent to this URL, instead of the primary URL",
-        position = -6,
+        position = -7,
         section = webhookSection
     )
     default String pkWebhook() {
@@ -707,7 +715,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "groupStorageWebhook",
         name = "Group Storage Webhook Override",
         description = "If non-empty, Group Storage messages are sent to this URL, instead of the primary URL",
-        position = -5,
+        position = -6,
         section = webhookSection
     )
     default String groupStorageWebhook() {
@@ -718,7 +726,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "grandExchangeWebhook",
         name = "Grand Exchange Webhook Override",
         description = "If non-empty, Grand Exchange messages are sent to this URL, instead of the primary URL",
-        position = -4,
+        position = -5,
         section = webhookSection
     )
     default String grandExchangeWebhook() {
@@ -729,7 +737,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "tradeWebhook",
         name = "Trade Webhook Override",
         description = "If non-empty, Trading messages are sent to this URL, instead of the primary URL",
-        position = -3,
+        position = -4,
         section = webhookSection
     )
     default String tradeWebhook() {
@@ -740,10 +748,21 @@ public interface DinkPluginConfig extends Config {
         keyName = "chatWebhook",
         name = "Chat Webhook Override",
         description = "If non-empty, filtered chat messages are sent to this URL, instead of the primary URL",
-        position = -2,
+        position = -3,
         section = webhookSection
     )
     default String chatWebhook() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "bingoWebhook",
+        name = "Bingo Webhook Override",
+        description = "If non-empty, Bingo messages are sent to this URL, instead of the primary URL",
+        position = -2,
+        section = webhookSection
+    )
+    default String bingoWebhook() {
         return "";
     }
 
@@ -2134,10 +2153,57 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "notifyBingo",
+        name = "Enable Bingo",
+        description = "Enable notifications for obtaining Bingo items",
+        position = 180,
+        section = bingoSection
+    )
+    default boolean notifyBingo() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "bingoSendImage",
+        name = "Send Image",
+        description = "Send image with the notification",
+        position = 181,
+        section = bingoSection
+    )
+    default boolean bingoSendImage() {
+        return false;
+    }
+
+    @ConfigItem(
+        keyName = "bingoItemAllowlist",
+        name = "Bingo Item Allowlist",
+        description = "Only notify for these items if Bingo is enabled (One item name per line; asterisks are wildcards)",
+        position = 182,
+        section = bingoSection
+    )
+    default String bingoItemAllowlist() {
+        return "";
+    }
+
+    @ConfigItem(
+        keyName = "bingoNotifyMessage",
+        name = "Bingo Notification Message",
+        description = "The message to be sent through the webhook.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %LOOT% to insert the loot<br/>" +
+            "Use %SOURCE% to show the source of the loot",
+        position = 183,
+        section = bingoSection
+    )
+    default String bingoNotifyMessage() {
+        return "%USERNAME% has looted bingo item: \n\n%LOOT%\nFrom: %SOURCE%";
+    }
+
+    @ConfigItem(
         keyName = "notifyExternal",
         name = "Enable External Plugin Notifications",
         description = "Enable notifications upon requests by other plugins",
-        position = 180,
+        position = 190,
         section = externalSection
     )
     default boolean notifyExternal() {
@@ -2148,7 +2214,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "externalSendImage",
         name = "Send Image",
         description = "Controls whether screenshots should be included with the notification",
-        position = 181,
+        position = 191,
         section = externalSection
     )
     default ExternalScreenshotPolicy externalSendImage() {
