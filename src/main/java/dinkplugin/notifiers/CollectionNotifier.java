@@ -199,7 +199,7 @@ public class CollectionNotifier extends BaseNotifier {
         boolean varpValid = total > 0 && completed > 0;
         var nextRankEntry = rankByThreshold.higherEntry(completed);
         var prevRankEntry = rankByThreshold.floorEntry(completed);
-        CollectionLogRank rank = completed > 0 ? prevRankEntry.getValue() : null;
+        CollectionLogRank rank = prevRankEntry != null ? prevRankEntry.getValue() : null;
         CollectionLogRank nextRank = completed > 0 && nextRankEntry != null ? nextRankEntry.getValue() : null;
         Integer rankProgress = prevRankEntry != null ? completed - prevRankEntry.getKey() : null;
         var justCompletedEntry = prevRankEntry != null && rankProgress == 0 ? rankByThreshold.lowerEntry(prevRankEntry.getKey()) : null;
