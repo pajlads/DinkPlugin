@@ -514,6 +514,20 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "screenshotFilenameTemplate",
+        name = "Screenshot Filename Template",
+        description = "Format of the screenshot filename. todo validity comment eg spaces length<br/>" +
+                "Use %USERNAME% to insert your username<br/>" +
+                "Use %TYPE% to insert the notification type<br/>" +
+                "Use %CLAN% to insert your clan name",
+        position = 1023,
+        section = advancedSection
+    )
+    default String screenshotFilenameTemplate() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "useSlayerWidgetKc",
         name = "Use Slayer Log KC",
         description = "Whether to parse and utilize kill counts from the slayer kill log interface.<br/>" +
