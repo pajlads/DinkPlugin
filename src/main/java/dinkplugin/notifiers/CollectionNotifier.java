@@ -6,6 +6,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.CollectionNotificationData;
+import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.Drop;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
@@ -16,8 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ScriptID;
-import net.runelite.api.VarClientStr;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.gameval.VarClientID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
@@ -31,6 +32,7 @@ import javax.inject.Inject;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.NavigableMap;
+import java.util.Objects;
 import java.util.OptionalDouble;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,7 +46,7 @@ public class CollectionNotifier extends BaseNotifier {
     public static final String ADDITION_WARNING = "Collection notifier will not fire unless you enable the game setting: Collection log - New addition notification";
     public static final int POPUP_PREFIX_LENGTH = "New item:".length();
 
-    static final @VisibleForTesting int TOTAL_ENTRIES = 1_594; // fallback if COLLECTION_COUNT_MAX is not populated
+    static final @VisibleForTesting int TOTAL_ENTRIES = 1_692; // fallback if COLLECTION_COUNT_MAX is not populated
     private static final Duration RECENT_DROP = Duration.ofSeconds(30L);
 
     /**
@@ -147,23 +149,29 @@ public class CollectionNotifier extends BaseNotifier {
         if (scriptId == ScriptID.NOTIFICATION_START) {
             popupStarted.set(true);
         } else if (scriptId == ScriptID.NOTIFICATION_DELAY) {
-            String topText = client.getVarcStrValue(VarClientStr.NOTIFICATION_TOP_TEXT);
+            String topText = client.getVarcStrValue(VarClientID.NOTIFICATION_TITLE);
             if (popupStarted.getAndSet(false) && "Collection log".equalsIgnoreCase(topText) && isEnabled()) {
-                String bottomText = Utils.sanitize(client.getVarcStrValue(VarClientStr.NOTIFICATION_BOTTOM_TEXT));
+                String bottomText = Utils.sanitize(client.getVarcStrValue(VarClientID.NOTIFICATION_MAIN));
                 handleNotify(bottomText.substring(POPUP_PREFIX_LENGTH).trim());
             }
         }
     }
 
     private void init() {
-        if (client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX) <= 0) {
+        final int maxCount = client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX);
+        if (maxCount <= 0) {
             // underlying data not yet initialized; retry later
             return;
         }
 
+        populateThresholds(maxCount);
+        initialized = true;
+    }
+
+    private void populateThresholds(int maxCount) {
         for (CollectionLogRank rank : CollectionLogRank.values()) {
             try {
-                rankByThreshold.put(rank.getClogRankThreshold(client), rank);
+                rankByThreshold.put(rank.getClogRankThreshold(client, maxCount), rank);
             } catch (Exception e) {
                 String msg = "Could not find struct for {}";
                 if (log.isDebugEnabled()) {
@@ -174,10 +182,25 @@ public class CollectionNotifier extends BaseNotifier {
             }
         }
         log.debug("Rank Thresholds: {}", rankByThreshold);
-        initialized = true;
     }
 
     private void handleNotify(String itemName) {
+        if (!initialized) {
+            // initialize rankByThreshold based on the fallback total entry count
+            populateThresholds(TOTAL_ENTRIES);
+        }
+
+        // check denylist
+        boolean denylisted = ConfigUtil.readDelimited(config.collectionDenylist())
+            .map(Utils::regexify)
+            .filter(Objects::nonNull)
+            .map(pattern -> pattern.matcher(itemName))
+            .anyMatch(Matcher::find);
+        if (denylisted) {
+            log.debug("Skipping clog notif due to denylist: {}", itemName);
+            return;
+        }
+
         // varp isn't updated for a few ticks, so we increment the count locally.
         // this approach also has the benefit of yielding incrementing values even when
         // multiple collection log entries are completed within a single tick.
@@ -186,7 +209,7 @@ public class CollectionNotifier extends BaseNotifier {
         boolean varpValid = total > 0 && completed > 0;
         var nextRankEntry = rankByThreshold.higherEntry(completed);
         var prevRankEntry = rankByThreshold.floorEntry(completed);
-        CollectionLogRank rank = completed > 0 ? prevRankEntry.getValue() : null;
+        CollectionLogRank rank = prevRankEntry != null ? prevRankEntry.getValue() : null;
         CollectionLogRank nextRank = completed > 0 && nextRankEntry != null ? nextRankEntry.getValue() : null;
         Integer rankProgress = prevRankEntry != null ? completed - prevRankEntry.getKey() : null;
         var justCompletedEntry = prevRankEntry != null && rankProgress == 0 ? rankByThreshold.lowerEntry(prevRankEntry.getKey()) : null;

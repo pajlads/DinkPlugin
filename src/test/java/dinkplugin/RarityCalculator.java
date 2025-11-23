@@ -31,6 +31,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Tag("generator")
 class RarityCalculator {
@@ -84,11 +85,15 @@ class RarityCalculator {
         Collection<Transformed> getTransformed() {
             if (drops == null || drops.isEmpty()) return Collections.emptyList();
             SortedSet<Transformed> set = new TreeSet<>(COMPARATOR);
-            boolean hasAlways = drops.stream().anyMatch(d -> "Always".equals(d.getRarity()));
+            Set<Integer> alwaysDropped = drops.stream()
+                .filter(d -> "Always".equals(d.getRarity()))
+                .map(Drop::getItemId)
+                .collect(Collectors.toSet());
             for (Drop drop : drops) {
+                if (alwaysDropped.contains(drop.getItemId())) continue;
                 Transformed transformed = drop.transform();
                 if (transformed == null) continue;
-                if (hasAlways && transformed.getItemId() < 0) continue;
+                if (!alwaysDropped.isEmpty() && transformed.getItemId() < 0) continue;
                 set.add(transformed);
             }
             return set;
@@ -117,7 +122,7 @@ class RarityCalculator {
                 this.itemId = ItemID.VARLAMORE_KEY_HALF_1;
             }
             if (itemId == null || rarity == null || quantity == null) return null;
-            if (rarity.equals("Always") || rarity.equals("Varies") || rarity.equals("Random") || rarity.equals("Once") || rarity.equals("Unknown")) return null;
+            if (rarity.equals("Always") || rarity.equals("Varies") || rarity.equals("Random") || rarity.equals("Once") || rarity.equals("Unknown") || rarity.equals("?")) return null;
             if (quantity.equals("Unknown") || quantity.equals("N/A")) return null;
 
             int item = COINS.contains(itemId) ? ItemID.FAKE_COINS : itemId;
