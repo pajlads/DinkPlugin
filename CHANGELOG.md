@@ -2,6 +2,11 @@
 
 - Dev: Fire a `PluginMessage` whenever a Dink notification is triggered (experimental). (#836)
 
+## 1.11.20
+
+- Bugfix: Fire collection log notifications even if character summary tab was never selected to initialize rank thresholds. (#850)
+- Bugfix: Update fallback number of collection log slots. (#849)
+
 ## 1.11.19
 
 - Minor: Include Soup pet name in pet notifications. (#844)
