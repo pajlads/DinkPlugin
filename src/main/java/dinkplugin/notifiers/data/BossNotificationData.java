@@ -11,7 +11,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @With
 @Value
@@ -36,5 +38,18 @@ public class BossNotificationData extends NotificationData {
             return List.of(new Field("Party Size", Field.formatBlock("", String.valueOf(party.size()))));
         }
         return super.getFields();
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("boss", boss);
+        m.put("count", count);
+        if (gameMessage != null) m.put("gameMessage", gameMessage);
+        if (time != null) m.put("time", time);
+        if (isPersonalBest != null) m.put("isPersonalBest", isPersonalBest);
+        if (personalBest != null) m.put("personalBest", personalBest);
+        if (party != null) m.put("party", party);
+        return m;
     }
 }

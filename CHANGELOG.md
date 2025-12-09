@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Fire a `PluginMessage` whenever a Dink notification is triggered (experimental). (#836)
+
 ## 1.11.21
 
 - Minor: Christmas. (#855)

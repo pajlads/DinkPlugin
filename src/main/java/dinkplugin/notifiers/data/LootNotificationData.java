@@ -10,8 +10,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Value
 public class LootNotificationData extends NotificationData {
@@ -55,6 +58,19 @@ public class LootNotificationData extends NotificationData {
             fields.add(new Field("Party Size", Field.formatBlock("", String.valueOf(party.size()))));
         }
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("items", items.stream().map(SerializedItemStack::sanitized).collect(Collectors.toList()));
+        m.put("source", source);
+        m.put("category", category);
+        if (killCount != null) m.put("killCount", killCount);
+        if (rarestProbability != null) m.put("rarestProbability", rarestProbability);
+        if (party != null) m.put("party", party);
+        if (npcId != null) m.put("npcId", npcId);
+        return m;
     }
 
     @Override

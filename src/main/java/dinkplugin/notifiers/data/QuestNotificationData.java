@@ -7,7 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -39,5 +41,16 @@ public class QuestNotificationData extends NotificationData {
             fields.add(new Field("Quest Points", Field.formatProgress(questPoints, totalQuestPoints)));
 
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("questName", questName);
+        if (completedQuests != null) m.put("completedQuests", completedQuests);
+        if (totalQuests != null) m.put("totalQuests", totalQuests);
+        if (questPoints != null) m.put("questPoints", questPoints);
+        if (totalQuestPoints != null) m.put("totalQuestPoints", totalQuestPoints);
+        return m;
     }
 }

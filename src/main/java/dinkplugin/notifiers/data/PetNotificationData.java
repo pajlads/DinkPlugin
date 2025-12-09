@@ -6,7 +6,9 @@ import lombok.Value;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -77,6 +79,18 @@ public class PetNotificationData extends NotificationData {
         if (luck != null)
             fields.add(Field.ofLuck(luck));
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        if (petName != null) m.put("petName", petName);
+        if (milestone != null) m.put("milestone", milestone);
+        m.put("duplicate", duplicate);
+        if (previouslyOwned != null) m.put("previouslyOwned", previouslyOwned);
+        if (rarity != null) m.put("rarity", rarity);
+        if (estimatedActions != null) m.put("estimatedActions", estimatedActions);
+        return m;
     }
 
     private String getStatus() {

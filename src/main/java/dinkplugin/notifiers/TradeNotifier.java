@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -56,9 +55,6 @@ public class TradeNotifier extends BaseNotifier {
 
     @Inject
     private ImageCapture imageCapture;
-
-    @Inject
-    private ScheduledExecutorService executor;
 
     @Inject
     private ItemManager itemManager;

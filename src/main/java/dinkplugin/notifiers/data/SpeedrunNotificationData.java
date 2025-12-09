@@ -4,6 +4,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class SpeedrunNotificationData extends NotificationData {
@@ -30,4 +32,14 @@ public class SpeedrunNotificationData extends NotificationData {
      * If the player ties with their previous personal best, this will be set to false.
      */
     boolean isPersonalBest;
+
+    @Override
+    public Map<String, Object> sanitized() {
+        return Map.of(
+            "questName", questName,
+            "personalBest", personalBest,
+            "currentTime", currentTime,
+            "isPersonalBest", isPersonalBest
+        );
+    }
 }

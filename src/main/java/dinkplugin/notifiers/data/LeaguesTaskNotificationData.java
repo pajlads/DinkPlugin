@@ -8,7 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -49,5 +51,20 @@ public class LeaguesTaskNotificationData extends NotificationData {
             fields.add(new Field("Points until next Trophy", Field.formatBlock("", String.valueOf(pointsUntilNextTrophy))));
         }
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("taskName", taskName);
+        m.put("difficulty", difficulty.toString());
+        m.put("taskPoints", taskPoints);
+        m.put("totalPoints", totalPoints);
+        m.put("tasksCompleted", tasksCompleted);
+        if (tasksUntilNextArea != null) m.put("tasksUntilNextArea", tasksUntilNextArea);
+        if (pointsUntilNextRelic != null) m.put("pointsUntilNextRelic", pointsUntilNextRelic);
+        if (pointsUntilNextTrophy != null) m.put("pointsUntilNextTrophy", pointsUntilNextTrophy);
+        if (earnedTrophy != null) m.put("earnedTrophy", earnedTrophy);
+        return m;
     }
 }
