@@ -460,7 +460,7 @@ public class DeathNotifier extends BaseNotifier {
     }
 
     static {
-        INTERACTING = (localPlayer, a) -> a != null && !a.isDead() && a.getInteracting() == localPlayer;
+        INTERACTING = (localPlayer, a) -> a != null && a != localPlayer && !a.isDead() && a.getInteracting() == localPlayer;
 
         NPC_VALID = comp -> comp != null && comp.isInteractible() && !comp.isFollower() && comp.getCombatLevel() > 0;
 
