@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Ensure local player is not reported as the PKer for death notifications. (#857)
 - Dev: Fire a `PluginMessage` whenever a Dink notification is triggered (experimental). (#836)
 
 ## 1.11.21
