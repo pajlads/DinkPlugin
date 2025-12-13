@@ -329,20 +329,20 @@ public class DiscordMessageHandler {
         return requestBody.build();
     }
 
-    static String computeScreenshotName(String template, NotificationBody<?> mBody) {
+    private static String computeScreenshotName(String template, NotificationBody<?> mBody) {
         String screenshotFileName = mBody.getType().getScreenshot();
         if (StringUtils.isBlank(template)) {
             return screenshotFileName;
         }
 
         String evaluated = Template.builder()
-            .template(template)
+            .template(template.trim())
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
             .replacement("%TYPE%", Replacements.ofText(mBody.getType().getTitle()))
             .replacement("%CLAN%", Replacements.ofText(mBody.getClanName()))
             .build()
-            .evaluate(true);
+            .evaluate(false);
 
         screenshotFileName = Utils.sanitize(evaluated).replaceAll("[^a-zA-Z0-9._-]+", "_");
 

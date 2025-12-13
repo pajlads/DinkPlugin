@@ -410,6 +410,21 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "screenshotFilenameTemplate",
+        name = "Screenshot Filename Template",
+        description = "Format of the screenshot filename. Discord may use this as the text in mobile notifications. " +
+            "Leave empty for default filenames.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %TYPE% to insert the notification type<br/>" +
+            "Use %CLAN% to insert your clan name",
+        position = 1013,
+        section = advancedSection
+    )
+    default String screenshotFilenameTemplate() {
+        return "";
+    }
+
+    @ConfigItem(
         keyName = "metadataWebhook",
         name = "Custom Metadata Handler",
         description = "Webhook URL for custom handlers to receive regular information about the player.<br/>" +
@@ -511,21 +526,6 @@ public interface DinkPluginConfig extends Config {
     )
     default Set<AccountType> deniedAccountTypes() {
         return EnumSet.noneOf(AccountType.class);
-    }
-
-    @ConfigItem(
-        keyName = "screenshotFilenameTemplate",
-        name = "Screenshot Filename Template",
-        description = "Format of the screenshot filename. Discord may use this as the text in mobile notifications. " +
-                "Leave empty for default filenames.<br/>" +
-                "Use %USERNAME% to insert your username<br/>" +
-                "Use %TYPE% to insert the notification type<br/>" +
-                "Use %CLAN% to insert your clan name",
-        position = 1023,
-        section = advancedSection
-    )
-    default String screenshotFilenameTemplate() {
-        return "";
     }
 
     @ConfigItem(
