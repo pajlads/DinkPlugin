@@ -26,7 +26,7 @@ jobs:
         run: echo "date=$(date +'%Y-%m')" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           title: "chore: update rarity data from ${{ steps.date.outputs.date }} wiki"
           commit-message: "chore: update rarity data from ${{ steps.date.outputs.date }} wiki"
