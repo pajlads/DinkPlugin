@@ -149,7 +149,7 @@ class RarityServiceTest extends AbstractRarityServiceTest {
     @Test
     @DisplayName("Ensure accurate drop rate for rare seed table")
     void testSeeds() {
-        test("Sarachnis", ItemID.SNAPE_GRASS_SEED, 5, 1.0 / 2_950);
+        test("Sarachnis", ItemID.SNAPE_GRASS_SEED, 9, 1.0 / 2_725);
     }
 
     @Test

@@ -7,6 +7,8 @@ import lombok.Value;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -23,5 +25,16 @@ public class TradeNotificationData extends NotificationData {
         fields.add(new Field("Received Value", ItemUtils.formatGold(receivedValue)));
         fields.add(new Field("Given Value", ItemUtils.formatGold(givenValue)));
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        return Map.of(
+            "counterparty", counterparty,
+            "receivedItems", receivedItems.stream().map(SerializedItemStack::sanitized).collect(Collectors.toList()),
+            "givenItems", givenItems.stream().map(SerializedItemStack::sanitized).collect(Collectors.toList()),
+            "receivedValue", receivedValue,
+            "givenValue", givenValue
+        );
     }
 }

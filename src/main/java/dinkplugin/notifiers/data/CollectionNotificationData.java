@@ -11,7 +11,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -106,5 +108,25 @@ public class CollectionNotificationData extends NotificationData {
             fields.add(Field.ofLuck(dropRate, dropperKillCount));
         }
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("itemName", itemName);
+        if (itemId != null) m.put("itemId", itemId);
+        if (price != null) m.put("price", price);
+        if (completedEntries != null) m.put("completedEntries", completedEntries);
+        if (totalEntries != null) m.put("totalEntries", totalEntries);
+        if (currentRank != null) m.put("currentRank", currentRank.toString());
+        if (rankProgress != null) m.put("rankProgress", rankProgress);
+        if (logsNeededForNextRank != null) m.put("logsNeededForNextRank", logsNeededForNextRank);
+        if (nextRank != null) m.put("nextRank", nextRank.toString());
+        if (justCompletedRank != null) m.put("justCompletedRank", justCompletedRank.toString());
+        if (dropperName != null) m.put("dropperName", dropperName);
+        if (dropperType != null) m.put("dropperType", dropperType);
+        if (dropperKillCount != null) m.put("killCount", dropperKillCount);
+        if (dropRate != null) m.put("dropRate", dropRate);
+        return m;
     }
 }

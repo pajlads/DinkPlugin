@@ -7,7 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
@@ -40,5 +42,16 @@ public class LeaguesRelicNotificationData extends NotificationData {
             );
         }
         return fields;
+    }
+
+    @Override
+    public Map<String, Object> sanitized() {
+        var m = new HashMap<String, Object>();
+        m.put("relic", relic);
+        m.put("tier", tier);
+        m.put("requiredPoints", requiredPoints);
+        m.put("totalPoints", totalPoints);
+        if (pointsUntilNextTier != null) m.put("pointsUntilNextTier", pointsUntilNextTier);
+        return m;
     }
 }

@@ -1,5 +1,16 @@
 ## Unreleased
 
+## 1.11.22
+
+- Bugfix: Ensure local player is not reported as the PKer for death notifications. (#857)
+- Dev: Fire a `PluginMessage` whenever a Dink notification is triggered (experimental). (#836)
+
+## 1.11.21
+
+- Minor: Christmas. (#855)
+
+## 1.11.20
+
 - Bugfix: Fire collection log notifications even if character summary tab was never selected to initialize rank thresholds. (#850)
 - Bugfix: Update fallback number of collection log slots. (#849)
 
