@@ -323,10 +323,34 @@ public class DiscordMessageHandler {
             .setType(MultipartBody.FORM)
             .addFormDataPart("payload_json", gson.toJson(mBody));
         if (image != null) {
-            String screenshotFileName = mBody.getType().getScreenshot();
+            String screenshotFileName = computeScreenshotName(config.screenshotFilenameTemplate(), mBody);
             requestBody.addFormDataPart("file", screenshotFileName, image);
         }
         return requestBody.build();
+    }
+
+    private static String computeScreenshotName(String template, NotificationBody<?> mBody) {
+        String screenshotFileName = mBody.getType().getScreenshot();
+        if (StringUtils.isBlank(template)) {
+            return screenshotFileName;
+        }
+
+        String evaluated = Template.builder()
+            .template(template.trim())
+            .replacementBoundary("%")
+            .replacement("%USERNAME%", Replacements.ofText(mBody.getPlayerName()))
+            .replacement("%TYPE%", Replacements.ofText(mBody.getType().getTitle()))
+            .replacement("%CLAN%", Replacements.ofText(mBody.getClanName()))
+            .build()
+            .evaluate(false);
+
+        screenshotFileName = Utils.sanitize(evaluated).replaceAll("[^a-zA-Z0-9._-]+", "_");
+
+        if (!screenshotFileName.endsWith(".png")) {
+            screenshotFileName += ".png";
+        }
+
+        return screenshotFileName;
     }
 
     /**
@@ -404,7 +428,7 @@ public class DiscordMessageHandler {
                 .color(config.embedColor())
                 .title(Utils.truncate(body.isSeasonalWorld() ? "[Seasonal] " + title : title, Embed.MAX_TITLE_LENGTH))
                 .description(Utils.truncate(body.getText().evaluate(config.discordRichEmbeds()), Embed.MAX_DESCRIPTION_LENGTH))
-                .image(screenshot ? new Embed.UrlEmbed("attachment://" + type.getScreenshot()) : null)
+                .image(screenshot ? new Embed.UrlEmbed("attachment://" + computeScreenshotName(config.screenshotFilenameTemplate(), body)) : null)
                 .thumbnail(new Embed.UrlEmbed(thumbnail))
                 .fields(extra != null ? extra.getFields() : Collections.emptyList())
                 .footer(footer)
