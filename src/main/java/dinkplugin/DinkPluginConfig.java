@@ -554,6 +554,30 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "proxyServer",
+        name = "Proxy Server",
+        description = "HTTPS proxy server for posting notifications; must be in host:port format.<br/>" +
+            "You may need to restart the client for changes to this setting to take effect",
+        position = 1024,
+        section = advancedSection
+    )
+    default String proxyServer() {
+        return ""; // host:port
+    }
+
+    @ConfigItem(
+        keyName = "proxyAuth",
+        name = "Proxy Auth",
+        description = "Authentication for the above proxy server in user:pass format.<br/>" +
+            "You may need to restart the client for changes to this setting to take effect",
+        position = 1025,
+        section = advancedSection
+    )
+    default String proxyAuth() {
+        return ""; // user:pass
+    }
+
+    @ConfigItem(
         keyName = "discordWebhook", // do not rename; would break old configs
         name = "Primary Webhook URLs",
         description = "The default webhook URL to send notifications to, if no override is specified.<br/>" +
