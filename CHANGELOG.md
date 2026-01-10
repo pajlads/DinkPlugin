@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Allow customizing screenshot filenames so Discord mobile alerts are more informative. (#847)
+
 ## 1.11.22
 
 - Bugfix: Ensure local player is not reported as the PKer for death notifications. (#857)
