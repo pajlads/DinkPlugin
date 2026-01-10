@@ -541,7 +541,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "proxyServer",
         name = "Proxy Server",
-        description = "HTTPS proxy server for posting notifications; must be in host:port format",
+        description = "HTTPS proxy server for posting notifications; must be in host:port format.<br/>" +
+            "You may need to restart the client for changes to this setting to take effect",
         position = 1024,
         section = advancedSection
     )
@@ -552,7 +553,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "proxyAuth",
         name = "Proxy Auth",
-        description = "Authentication for the above proxy server in user:pass format",
+        description = "Authentication for the above proxy server in user:pass format.<br/>" +
+            "You may need to restart the client for changes to this setting to take effect",
         position = 1025,
         section = advancedSection
     )
