@@ -8,6 +8,8 @@ import dinkplugin.domain.SeasonalPolicy;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.NotificationData;
+import dinkplugin.util.ConfigProxyAuth;
+import dinkplugin.util.ConfigProxyServer;
 import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.DiscordProfile;
 import dinkplugin.util.Utils;
@@ -117,6 +119,8 @@ public class DiscordMessageHandler {
                 }
                 return response;
             })
+            .proxySelector(new ConfigProxyServer(config))
+            .proxyAuthenticator(new ConfigProxyAuth(config))
             .build();
     }
 

@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Allow routing Dink notifications through a HTTPS proxy server. (#859)
 - Minor: Allow customizing screenshot filenames so Discord mobile alerts are more informative. (#847)
 
 ## 1.11.22
