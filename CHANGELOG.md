@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Allow customizing screenshot filenames so Discord mobile alerts are more informative. (#847)
+- Bugfix: Fire notifications from Deadman: Annihilation when seasonal policy is not set to `Off`. (#872)
 
 ## 1.11.22
 
