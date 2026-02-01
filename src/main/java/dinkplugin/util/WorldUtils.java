@@ -74,8 +74,13 @@ public class WorldUtils {
         return false;
     }
 
+    public boolean isSeasonalDeadman(Set<WorldType> worldTypes) {
+        return worldTypes.contains(WorldType.TOURNAMENT_WORLD) && worldTypes.contains(WorldType.DEADMAN);
+    }
+
     public boolean isSeasonal(Client client) {
-        return client.getWorldType().contains(WorldType.SEASONAL) || isGridMaster(client);
+        EnumSet<WorldType> worldTypes = client.getWorldType();
+        return worldTypes.contains(WorldType.SEASONAL) || isSeasonalDeadman(worldTypes) || isGridMaster(client);
     }
 
     public boolean isIgnoredWorld(Set<WorldType> worldType) {
