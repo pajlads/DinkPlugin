@@ -1,8 +1,19 @@
 # Making a release
 
-1. Update the changelog - Make a new section for all previously unreleased changes
-1. Update the version in `build.gradle.kts`
-1. Consider adding an entry to `VersionManager` for particularly noteworthy changes
-1. Make a tag on the main branch commit
-1. Make a GitHub release
-1. Optionally update the plugin in the [RuneLite plugin hub](https://github.com/runelite/plugin-hub)
+## Prepare your pull request
+
+- [ ] Update the changelog - Make a new section for all previously unreleased changes
+- [ ] Update the version in `build.gradle.kts`
+- [ ] Consider adding an entry to `VersionManager` for particularly noteworthy changes
+- [ ] Make the pull request
+
+## Get your pull requested reviewed/merged
+
+- [ ] Request feedback from at least one other person
+- [ ] Squash & merge it in
+
+## Fix the tag/release
+
+- [ ] Make a tag on the main branch commit
+- [ ] Make a GitHub release
+- [ ] Optionally update the plugin in the [RuneLite plugin hub](https://github.com/runelite/plugin-hub)
