@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Fix missing Soup pet notifications due to faulty rarity logic. (#876)
+
 ## 1.11.23
 
 - Minor: Allow customizing screenshot filenames so Discord mobile alerts are more informative. (#847)
