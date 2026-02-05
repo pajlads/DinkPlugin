@@ -280,6 +280,7 @@ public class PetNotifier extends BaseNotifier {
         @Override
         Double getProbability(Client client, KillCountService kcService) {
             final int[] actions = getActions(client, kcService);
+            if (actions == null) return null;
             final int totalActions = MathUtils.sum(actions);
             if (totalActions <= 0) return null;
 
