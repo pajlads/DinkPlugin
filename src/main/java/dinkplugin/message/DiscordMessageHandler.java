@@ -65,6 +65,8 @@ import java.util.stream.Collectors;
 @Singleton
 public class DiscordMessageHandler {
 
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
     private final Gson gson;
     private final Client client;
     private final DrawManager drawManager;
@@ -318,15 +320,19 @@ public class DiscordMessageHandler {
         return mBody;
     }
 
-    private MultipartBody createBody(NotificationBody<?> mBody, @Nullable RequestBody image) {
-        MultipartBody.Builder requestBody = new MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("payload_json", gson.toJson(mBody));
+    private RequestBody createBody(NotificationBody<?> mBody, @Nullable RequestBody image) {
+        String payload = gson.toJson(mBody);
+
         if (image != null) {
             String screenshotFileName = computeScreenshotName(config.screenshotFilenameTemplate(), mBody);
-            requestBody.addFormDataPart("file", screenshotFileName, image);
+            return new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("payload_json", payload)
+                .addFormDataPart("file", screenshotFileName, image)
+                .build();
         }
-        return requestBody.build();
+
+        return RequestBody.create(JSON, payload);
     }
 
     private static String computeScreenshotName(String template, NotificationBody<?> mBody) {
