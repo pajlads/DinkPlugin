@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include loot screenshots for allowlisted items under the min value threshold. (#882)
+
 ## 1.11.24
 
 - Bugfix: Fix missing Soup pet notifications due to faulty rarity logic. (#876)
