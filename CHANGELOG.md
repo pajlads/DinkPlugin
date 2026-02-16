@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Include loot screenshots for allowlisted items under the min value threshold. (#882)
 - Dev: Mock initialize `config.customPlayerBadge` in tests. (#884)
 
 ## 1.11.24
