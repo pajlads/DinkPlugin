@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -64,6 +65,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class DiscordMessageHandler {
+
+    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final Collection<String> NO_IMAGE_ENDPOINTS = Set.of(
+        "revolt.chat", "api.revolt.chat", "local.revolt.chat",
+        "stoat.chat", "api.stoat.chat", "local.stoat.chat"
+    );
 
     private final Gson gson;
     private final Client client;
@@ -149,7 +156,10 @@ public class DiscordMessageHandler {
     }
 
     private void sendToMultiple(Collection<HttpUrl> urls, NotificationBody<?> body, @Nullable RequestBody image) {
-        urls.forEach(url -> executor.execute(() -> sendMessage(url, injectThreadName(url, body, false), image, 0)));
+        urls.forEach(url -> {
+            RequestBody img = image == null || NO_IMAGE_ENDPOINTS.contains(url.host()) ? null : image;
+            executor.execute(() -> sendMessage(url, injectThreadName(url, body, false), img, 0));
+        });
     }
 
     private void sendMessage(HttpUrl url, NotificationBody<?> mBody, @Nullable RequestBody image, int attempt) {
@@ -318,15 +328,19 @@ public class DiscordMessageHandler {
         return mBody;
     }
 
-    private MultipartBody createBody(NotificationBody<?> mBody, @Nullable RequestBody image) {
-        MultipartBody.Builder requestBody = new MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("payload_json", gson.toJson(mBody));
+    private RequestBody createBody(NotificationBody<?> mBody, @Nullable RequestBody image) {
+        String payload = gson.toJson(mBody);
+
         if (image != null) {
             String screenshotFileName = computeScreenshotName(config.screenshotFilenameTemplate(), mBody);
-            requestBody.addFormDataPart("file", screenshotFileName, image);
+            return new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("payload_json", payload)
+                .addFormDataPart("file", screenshotFileName, image)
+                .build();
         }
-        return requestBody.build();
+
+        return RequestBody.create(JSON, payload);
     }
 
     private static String computeScreenshotName(String template, NotificationBody<?> mBody) {
