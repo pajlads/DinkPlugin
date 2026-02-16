@@ -1,8 +1,12 @@
 ### Structure
 
-Every Dink `POST` request is a [multipart](https://datatracker.ietf.org/doc/html/rfc2046#section-5.1) body.
+If a Dink notification does not have an image attached, the type of the request body is `application/json`. Otherwise, Dink `POST`s [multipart](https://datatracker.ietf.org/doc/html/rfc2046#section-5.1) bodies.
 
-In particular, the `Content-Type` is [`multipart/form-data`](https://datatracker.ietf.org/doc/html/rfc7578) to accomodate the below JSON and optional screenshots in accordance with the [Discord API specification](https://discord.com/developers/docs/reference#uploading-files).
+In the examples below, `content` is populated instead of `embeds` for simplicity; this would correspond to the advanced setting 'Use Rich Embeds' being disabled. Third-party integrations should rely on the `extra` object instead of `content`/`embeds`.
+
+#### Multipart Bodies
+
+In particular, the `Content-Type` is [`multipart/form-data`](https://datatracker.ietf.org/doc/html/rfc7578) to accomodate the below JSON and screenshots in accordance with the [Discord API specification](https://discord.com/developers/docs/reference#uploading-files).
 
 Thus, any third-party consumer should utilize the body entity named `payload_json` to access the relevant JSON object. The optional body entity for the screenshot is named `file`, and the underlying data stream (which should not exceed 8MB) can be `image/png` or `image/jpeg` (less common).
 
@@ -18,8 +22,6 @@ For Jooby, utilize the [`form`](https://javadoc.io/static/io.jooby/jooby/3.0.9/i
 For Vert.x-Web, utilize the [`formAttributes`](https://vertx.io/docs/apidocs/io/vertx/core/http/HttpServerRequest.html#formAttributes--) method.  
 For Quarkus, utilize the [`@RestForm`](https://quarkus.io/guides/rest#multipart) annotation.  
 For Spring, utilize the [`@RequestPart`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestPart.html) annotation.
-
-In the examples below, `content` is populated instead of `embeds` for simplicity; this would correspond to the advanced setting 'Use Rich Embeds' being disabled. Third-party integrations should rely on the `extra` object instead of `content`/`embeds`.
 
 ### All
 
