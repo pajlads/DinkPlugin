@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -66,6 +67,10 @@ import java.util.stream.Collectors;
 public class DiscordMessageHandler {
 
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final Collection<String> NO_IMAGE_ENDPOINTS = Set.of(
+        "revolt.chat", "api.revolt.chat", "local.revolt.chat",
+        "stoat.chat", "api.stoat.chat", "local.stoat.chat"
+    );
 
     private final Gson gson;
     private final Client client;
@@ -151,7 +156,10 @@ public class DiscordMessageHandler {
     }
 
     private void sendToMultiple(Collection<HttpUrl> urls, NotificationBody<?> body, @Nullable RequestBody image) {
-        urls.forEach(url -> executor.execute(() -> sendMessage(url, injectThreadName(url, body, false), image, 0)));
+        urls.forEach(url -> {
+            RequestBody img = image == null || NO_IMAGE_ENDPOINTS.contains(url.host()) ? null : image;
+            executor.execute(() -> sendMessage(url, injectThreadName(url, body, false), img, 0));
+        });
     }
 
     private void sendMessage(HttpUrl url, NotificationBody<?> mBody, @Nullable RequestBody image, int attempt) {
