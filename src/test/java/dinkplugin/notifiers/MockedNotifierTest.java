@@ -161,6 +161,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.nameFilterMode()).thenReturn(FilterMode.DENY);
         when(config.embedColor()).thenReturn(Utils.PINK);
         when(config.deniedAccountTypes()).thenReturn(EnumSet.noneOf(AccountType.class));
+        when(config.customPlayerBadge()).thenReturn("");
 
         accountTracker.init();
         worldTracker.init();
