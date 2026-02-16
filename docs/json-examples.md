@@ -1,6 +1,7 @@
 ### Structure
 
 If a Dink notification does not have an image attached, the type of the request body is `application/json`. Otherwise, Dink `POST`s [multipart](https://datatracker.ietf.org/doc/html/rfc2046#section-5.1) bodies.
+Note: `Content-Type` headers can also contain `charset` (UTF-8).
 
 In the examples below, `content` is populated instead of `embeds` for simplicity; this would correspond to the advanced setting 'Use Rich Embeds' being disabled. Third-party integrations should rely on the `extra` object instead of `content`/`embeds`.
 
