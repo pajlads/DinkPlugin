@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Bugfix: Add basic support for Stoat webhooks. (#883)
+- Dev: Request bodies without a screenshot are now sent as `application/json` instead of `multipart/form-data`. (#883)
+
 ## 1.11.24
 
 - Bugfix: Fix missing Soup pet notifications due to faulty rarity logic. (#876)
