@@ -7,7 +7,6 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.ChatNotificationData;
 import dinkplugin.util.Utils;
-import lombok.Synchronized;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameState;
 import net.runelite.api.clan.ClanChannel;
@@ -16,15 +15,17 @@ import net.runelite.api.clan.ClanID;
 import net.runelite.api.clan.ClanSettings;
 import net.runelite.api.clan.ClanTitle;
 import net.runelite.api.events.CommandExecuted;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.events.NotificationFired;
 import net.runelite.client.util.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,11 @@ import static dinkplugin.domain.ChatNotificationType.*;
 public class ChatNotifier extends BaseNotifier {
     public static final String PATTERNS_CONFIG_KEY = "chatPatterns";
 
-    private final Collection<Pattern> regexps = new CopyOnWriteArrayList<>();
+    @Inject
+    private ClientThread clientThread;
+
+    private final Collection<Pattern> regexps = new ArrayList<>();
+    private volatile boolean dirty;
 
     @Override
     public boolean isEnabled() {
@@ -47,17 +52,28 @@ public class ChatNotifier extends BaseNotifier {
     }
 
     public void init() {
-        this.loadPatterns(config.chatPatterns());
+        this.dirty = true;
     }
 
-    @Synchronized
     public void reset() {
-        regexps.clear();
+        this.dirty = true;
+        clientThread.invoke(regexps::clear);
     }
 
-    public void onConfig(String key, String value) {
+    public void onConfig(String key) {
         if (PATTERNS_CONFIG_KEY.equals(key)) {
-            this.loadPatterns(value);
+            this.dirty = true;
+        }
+    }
+
+    public void onTick() {
+        if (this.dirty) {
+            var username = Utils.getPlayerName(client);
+            if (username == null || username.isEmpty()) {
+                return;
+            }
+            this.dirty = false;
+            this.loadPatterns(username);
         }
     }
 
@@ -114,13 +130,13 @@ public class ChatNotifier extends BaseNotifier {
         return false;
     }
 
-    @Synchronized
-    private void loadPatterns(String configValue) {
+    private void loadPatterns(String username) {
         regexps.clear();
         regexps.addAll(
-            configValue.lines()
+            config.chatPatterns().lines()
                 .map(String::trim)
                 .filter(s -> !s.isEmpty())
+                .map(s -> s.replace("%USERNAME%", username))
                 .map(Utils::regexify)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList())
