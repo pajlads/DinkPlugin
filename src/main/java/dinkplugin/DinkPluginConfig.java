@@ -1217,10 +1217,9 @@ public interface DinkPluginConfig extends Config {
             "instead of firing upon the player reaching 0 hp.<br/>" +
             "This prevents false positives in rare cases in which the player reaches 0 hp but doesn't die, <br/>" +
             "at the cost of a slightly delayed notification and screenshot.",
-        position = 43,
+        position = 42,
         section = deathSection
     )
-
     default boolean notifyOnAnim() {
         return false;
     }
@@ -1230,10 +1229,9 @@ public interface DinkPluginConfig extends Config {
         name = "Ignore Safe Deaths",
         description = "Whether deaths in safe areas should be ignored.<br/>" +
             "Exceptions to this rule can be configured below",
-        position = 44,
+        position = 43,
         section = deathSection
     )
-
     default boolean deathIgnoreSafe() {
         return true;
     }
@@ -1243,7 +1241,7 @@ public interface DinkPluginConfig extends Config {
         name = "Safe Exceptions",
         description = "Safe deaths that should trigger notifications even when 'Ignore Safe Deaths' is enabled.<br/>" +
             "Hold Control while clicking on the options to select multiple exceptions",
-        position = 45,
+        position = 44,
         section = deathSection
     )
     default Set<ExceptionalDeath> deathSafeExceptions() {
@@ -1256,7 +1254,7 @@ public interface DinkPluginConfig extends Config {
         description = "User-specified, comma-separated Region IDs where deaths should be ignored.<br/>" +
             "Use the '::dinkregion' chat command or an online map to obtain the region IDs.<br/>" +
             "For example, Prifddinas spans 12894, 12895, 13150, 13151",
-        position = 46,
+        position = 45,
         section = deathSection
     )
     default String deathIgnoredRegions() {
@@ -1268,7 +1266,7 @@ public interface DinkPluginConfig extends Config {
         name = "Min Lost Value",
         description = "The minimum value of the lost items for a notification to be sent.<br/>" +
             "This setting does not apply for safe deaths",
-        position = 47,
+        position = 46,
         section = deathSection
     )
     default int deathMinValue() {
@@ -1281,7 +1279,7 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 48,
+        position = 47,
         section = deathSection
     )
     default String deathNotifyMessage() {
@@ -1292,7 +1290,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "deathNotifPvpEnabled",
         name = "Distinguish PvP deaths",
         description = "Should the plugin use a different message for dying in PvP?",
-        position = 49,
+        position = 48,
         section = deathSection
     )
     default boolean deathNotifPvpEnabled() {
@@ -1306,7 +1304,7 @@ public interface DinkPluginConfig extends Config {
             "Use %PKER% to insert the killer<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %VALUELOST% to insert the GE value of the stuff you lost",
-        position = 50,
+        position = 49,
         section = deathSection
     )
     default String deathNotifPvpMessage() {
@@ -1317,7 +1315,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "slayerEnabled",
         name = "Enable Slayer",
         description = "Enable notifications for when you complete a slayer task",
-        position = 51,
+        position = 50,
         section = slayerSection
     )
     default boolean notifySlayer() {
@@ -1328,7 +1326,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "slayerSendImage",
         name = "Send Image",
         description = "Send image with the notification",
-        position = 52,
+        position = 51,
         section = slayerSection
     )
     default boolean slayerSendImage() {
@@ -1339,7 +1337,7 @@ public interface DinkPluginConfig extends Config {
         keyName = "slayerPointThreshold",
         name = "Min Slayer Points",
         description = "The minimum slayer task points to warrant a notification",
-        position = 53,
+        position = 52,
         section = slayerSection
     )
     default int slayerPointThreshold() {
@@ -1354,7 +1352,7 @@ public interface DinkPluginConfig extends Config {
             "Use %TASK% to insert your task<br/>" +
             "Use %POINTS% to show how many points you obtained<br/>" +
             "Use %TASKCOUNT% to show how many tasks you have completed",
-        position = 54,
+        position = 53,
         section = slayerSection
     )
     default String slayerNotifyMessage() {

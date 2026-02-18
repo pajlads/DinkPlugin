@@ -34,6 +34,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
 import net.runelite.client.util.QuantityFormatter;
+import net.runelite.api.gameval.AnimationID;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -58,7 +59,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-
 @Slf4j
 @Singleton
 public class DeathNotifier extends BaseNotifier {
@@ -71,13 +71,11 @@ public class DeathNotifier extends BaseNotifier {
 
     private static final String FORTIS_DOOM_MSG = "You have been doomed!";
 
-    private static final Integer DEFAULT_DEATH_ANIM_ID = 836;
-
-    private static final Integer TRAILBLAZER_RELOADED_DEATH_ANIM_ID = 10629;
-
-    private static final Integer RAGING_ECHOES_DEATH_ANIM_ID = 11902;
-
-    private static final Set<Integer> DEATH_ANIM_IDS = Set.of(DEFAULT_DEATH_ANIM_ID, TRAILBLAZER_RELOADED_DEATH_ANIM_ID, RAGING_ECHOES_DEATH_ANIM_ID);
+    private static final Set<Integer> DEATH_ANIM_IDS = Set.of(
+        AnimationID.HUMAN_DEATH,
+        AnimationID.TRAILBLAZER_DEATH_PLAYER_01,
+        AnimationID.LEAGUE_5_DEATH_PLAYER_01
+    );
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,tob_hud_portal%5D.cs2">CS2 Reference</a>
@@ -160,7 +158,7 @@ public class DeathNotifier extends BaseNotifier {
         if (self && isEnabled() && !config.notifyOnAnim())
             handleNotify(null);
 
-        if (self || actor.getActor() == lastTarget.get())
+        if ((self && !config.notifyOnAnim()) || actor.getActor() == lastTarget.get())
             lastTarget = new WeakReference<>(null);
     }
 
@@ -171,6 +169,10 @@ public class DeathNotifier extends BaseNotifier {
 
         if(self && isDeath && isEnabled() && config.notifyOnAnim()) {
             handleNotify(null);
+        }
+
+        if(self && isDeath && config.notifyOnAnim()) {
+            lastTarget = new WeakReference<>(null);
         }
     }
 
