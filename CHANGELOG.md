@@ -1,5 +1,11 @@
 ## Unreleased
 
+- Minor: Add `[Seasonal]` prefix for notifications without rich embeds on seasonal worlds. (#886)
+- Minor: Add basic support for Stoat webhooks. (#883)
+- Minor: Include loot screenshots for allowlisted items under the min value threshold. (#882)
+- Dev: Request bodies without a screenshot are now sent as `application/json` instead of `multipart/form-data`. (#883)
+- Dev: Mock initialize `config.customPlayerBadge` in tests. (#884)
+
 ## 1.11.24
 
 - Bugfix: Fix missing Soup pet notifications due to faulty rarity logic. (#876)
