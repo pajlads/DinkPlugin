@@ -292,7 +292,8 @@ public class DiscordMessageHandler {
         if (config.discordRichEmbeds()) {
             builder.embeds(computeEmbeds(mBody, sendImage, config));
         } else {
-            builder.computedDiscordContent(mBody.getText().evaluate(false));
+            var prefix = mBody.isSeasonalWorld() ? "[Seasonal] " : "";
+            builder.computedDiscordContent(prefix + mBody.getText().evaluate(false));
         }
 
         return builder.build();
