@@ -57,7 +57,11 @@ public class ChatNotifier extends BaseNotifier {
 
     public void reset() {
         this.dirty = true;
-        clientThread.invoke(regexps::clear);
+        clientThread.invoke(() -> {
+            if (dirty) {
+                regexps.clear();
+            }
+        });
     }
 
     public void onConfig(String key) {
