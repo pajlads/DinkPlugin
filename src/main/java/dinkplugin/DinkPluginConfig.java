@@ -2121,7 +2121,8 @@ public interface DinkPluginConfig extends Config {
         keyName = ChatNotifier.PATTERNS_CONFIG_KEY,
         name = "Message Filters",
         description = "The chat message patterns that should trigger notifications.<br/>" +
-            "Place one pattern per line (case-insensitive; asterisks are wildcards)",
+            "Place one pattern per line (case-insensitive; asterisks are wildcards).<br/>" +
+            "Use %USERNAME% to dynamically insert your username",
         position = 173,
         section = chatSection
     )
@@ -2131,6 +2132,9 @@ public interface DinkPluginConfig extends Config {
             "You have accepted * into *.\n" + // for clan recruitment
             "You will be logged out in approximately 30 minutes.*\n" +
             "You will be logged out in approximately 10 minutes.*\n" +
+            "%USERNAME% has deposited * coin* into the coffer.\n" +
+            "%USERNAME% has withdrawn * coin* from the coffer.\n" +
+            "*%USERNAME% has unlocked * more group storage slots!\n" +
             "::TriggerDink\n";
     }
 

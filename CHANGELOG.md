@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Allow `%USERNAME%` placeholder in user-configurable patterns for the chat notifier. (#887)
 - Minor: Add `[Seasonal]` prefix for notifications without rich embeds on seasonal worlds. (#886)
 - Minor: Add basic support for Stoat webhooks. (#883)
 - Minor: Include loot screenshots for allowlisted items under the min value threshold. (#882)

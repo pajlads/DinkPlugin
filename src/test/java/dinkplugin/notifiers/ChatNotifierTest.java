@@ -48,6 +48,7 @@ public class ChatNotifierTest extends MockedNotifierTest {
             "You will be logged out in approximately 5 minutes.*\n" +
             "Dragon impling is in the area\n" +
             "::TriggerDink\n" +
+            "%USERNAME% has deposited * coin* into the coffer.\n" +
             "* has joined.");
     }
 
@@ -55,6 +56,29 @@ public class ChatNotifierTest extends MockedNotifierTest {
     void testNotify() {
         // fire event
         String message = "You will be logged out in approximately 10 minutes.";
+        notifier.onMessage(ChatMessageType.GAMEMESSAGE, null, message);
+
+        // verify notification message
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template("[Game Engine]: " + PLAYER_NAME + " received a chat message:\n\n```\n" + message + "\n```")
+                        .build()
+                )
+                .extra(new ChatNotificationData(ChatMessageType.GAMEMESSAGE, null, null, message))
+                .type(NotificationType.CHAT)
+                .playerName(PLAYER_NAME)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyUsername() {
+        // fire event
+        String message = PLAYER_NAME + " has deposited one coin into the coffer.";
         notifier.onMessage(ChatMessageType.GAMEMESSAGE, null, message);
 
         // verify notification message
@@ -215,7 +239,8 @@ public class ChatNotifierTest extends MockedNotifierTest {
 
     private void setPatterns(String configValue) {
         when(config.chatPatterns()).thenReturn(configValue);
-        notifier.onConfig(ChatNotifier.PATTERNS_CONFIG_KEY, configValue);
+        notifier.onConfig(ChatNotifier.PATTERNS_CONFIG_KEY);
+        notifier.onTick();
     }
 
 }
