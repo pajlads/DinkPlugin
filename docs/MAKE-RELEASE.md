@@ -7,7 +7,7 @@
 - [ ] Consider adding an entry to `VersionManager` for particularly noteworthy changes
 - [ ] Make the pull request
 
-## Get your pull requested reviewed/merged
+## Get your pull request reviewed/merged
 
 - [ ] Request feedback from at least one other person
 - [ ] Squash & merge it in

@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.12.0
+
 - Minor: Allow `%USERNAME%` placeholder in user-configurable patterns for the chat notifier. (#887)
 - Minor: Add `[Seasonal]` prefix for notifications without rich embeds on seasonal worlds. (#886)
 - Minor: Add basic support for Stoat webhooks. (#883)
