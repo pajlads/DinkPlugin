@@ -83,18 +83,32 @@ public class ChatNotifier extends BaseNotifier {
 
     public void onMessage(@NotNull ChatMessageType messageType, @Nullable String source, @NotNull String message) {
         ChatNotificationType type = ChatNotificationType.MAPPINGS.get(messageType);
-        if (type != null && config.chatMessageTypes().contains(type) && isEnabled() && hasMatch(message)) {
-            String cleanSource = source != null ? Text.sanitize(source) : null;
-            this.handleNotify(type, messageType, cleanSource, message);
+        if (type != null && config.chatMessageTypes().contains(type) && isEnabled()) {
+            clientThread.invoke(() -> {
+                if (dirty)
+                    return false; // try later
+
+                if (hasMatch(message)) {
+                    String cleanSource = source != null ? Text.sanitize(source) : null;
+                    this.handleNotify(type, messageType, cleanSource, message);
+                }
+                return true;
+            });
         }
     }
 
     public void onCommand(CommandExecuted event) {
         if (config.chatMessageTypes().contains(COMMAND) && isEnabled()) {
             String fullMessage = join(event);
-            if (hasMatch(fullMessage)) {
-                this.handleNotify(COMMAND, ChatMessageType.UNKNOWN, "CommandExecuted", fullMessage);
-            }
+            clientThread.invoke(() -> {
+                if (dirty)
+                    return false; // try later
+
+                if (hasMatch(fullMessage)) {
+                    this.handleNotify(COMMAND, ChatMessageType.UNKNOWN, "CommandExecuted", fullMessage);
+                }
+                return true;
+            });
         }
     }
 
@@ -103,8 +117,16 @@ public class ChatNotifier extends BaseNotifier {
         if (event.getNotification().isGameMessage() && client.getGameState() == GameState.LOGGED_IN && types.contains(GAME)) {
             return; // avoid duplicate notification (since runelite will also post to chat)
         }
-        if (types.contains(RUNELITE) && isEnabled() && hasMatch(event.getMessage())) {
-            this.handleNotify(RUNELITE, ChatMessageType.UNKNOWN, "NotificationFired", event.getMessage());
+        if (types.contains(RUNELITE) && isEnabled()) {
+            clientThread.invoke(() -> {
+                if (dirty)
+                    return false; // try later
+
+                if (hasMatch(event.getMessage())) {
+                    this.handleNotify(RUNELITE, ChatMessageType.UNKNOWN, "NotificationFired", event.getMessage());
+                }
+                return true;
+            });
         }
     }
 
