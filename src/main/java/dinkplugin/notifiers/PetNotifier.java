@@ -410,6 +410,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Baby chinchompa", new SkillSource(Skill.HUNTER, 82_758, 315)), // black chinchompas
             entry("Baby mole", new KcSource("Giant Mole", 1.0 / 3_000)),
             entry("Baron", new KcSource("Duke Sucellus", 1.0 / 2_500)),
+            entry("Beef", new KcSource("Brutus", 1.0 / 1_000)),
             entry("Bran", new MultiKcSource("Branda the Fire Queen", 1.0 / 3_000, "Eldric the Ice King", 1.0 / 3_000)), // assume loot not sacrificed
             entry("Butch", new KcSource("Vardorvis", 1.0 / 3_000)),
             entry("Beaver", new SkillSource(Skill.WOODCUTTING, 264_336, 85)), // teaks
