@@ -25,6 +25,7 @@ import net.runelite.api.Player;
 import net.runelite.api.Prayer;
 import net.runelite.api.SkullIcon;
 import net.runelite.api.events.ActorDeath;
+import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.events.InteractingChanged;
 import net.runelite.api.events.ScriptPreFired;
 import net.runelite.api.gameval.ItemID;
@@ -33,6 +34,7 @@ import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
 import net.runelite.client.util.QuantityFormatter;
+import net.runelite.api.gameval.AnimationID;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -46,6 +48,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -67,6 +70,12 @@ public class DeathNotifier extends BaseNotifier {
     private static final String TOB_DEATH_MSG = "Your party has failed";
 
     private static final String FORTIS_DOOM_MSG = "You have been doomed!";
+
+    private static final Set<Integer> DEATH_ANIM_IDS = Set.of(
+        AnimationID.HUMAN_DEATH,
+        AnimationID.TRAILBLAZER_DEATH_PLAYER_01,
+        AnimationID.LEAGUE_5_DEATH_PLAYER_01
+    );
 
     /**
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/master/scripts/%5Bclientscript,tob_hud_portal%5D.cs2">CS2 Reference</a>
@@ -146,11 +155,25 @@ public class DeathNotifier extends BaseNotifier {
     public void onActorDeath(ActorDeath actor) {
         boolean self = client.getLocalPlayer() == actor.getActor();
 
-        if (self && isEnabled())
+        if (self && isEnabled() && !config.notifyOnAnim())
             handleNotify(null);
 
-        if (self || actor.getActor() == lastTarget.get())
+        if ((self && !config.notifyOnAnim()) || actor.getActor() == lastTarget.get())
             lastTarget = new WeakReference<>(null);
+    }
+
+    public void onAnimationChanged(AnimationChanged animationChanged) {
+        Actor actor = animationChanged.getActor();
+        boolean self = actor == client.getLocalPlayer();
+        boolean isDeath = DEATH_ANIM_IDS.contains(actor.getAnimation());
+
+        if(self && isDeath && isEnabled() && config.notifyOnAnim()) {
+            handleNotify(null);
+        }
+
+        if(self && isDeath && config.notifyOnAnim()) {
+            lastTarget = new WeakReference<>(null);
+        }
     }
 
     public void onGameMessage(String message) {

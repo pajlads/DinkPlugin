@@ -44,6 +44,7 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.events.WorldChanged;
+import net.runelite.api.events.AnimationChanged;
 import net.runelite.api.gameval.NpcID;
 import net.runelite.client.RuneLite;
 import net.runelite.client.chat.ChatMessageManager;
@@ -317,6 +318,11 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onInteractingChanged(InteractingChanged event) {
         deathNotifier.onInteraction(event);
+    }
+
+    @Subscribe
+    public void onAnimationChanged(AnimationChanged event) {
+        deathNotifier.onAnimationChanged(event);
     }
 
     @Subscribe

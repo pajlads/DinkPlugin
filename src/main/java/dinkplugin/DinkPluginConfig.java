@@ -1211,6 +1211,20 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "notifyOnAnim",
+        name = "Notify on Death Animation",
+        description = "When enabled, the death notifier fires when the player performs a death animation, <br/>" +
+            "instead of firing upon the player reaching 0 hp.<br/>" +
+            "This prevents false positives in rare cases in which the player reaches 0 hp but doesn't die, <br/>" +
+            "at the cost of a slightly delayed notification and screenshot.",
+        position = 42,
+        section = deathSection
+    )
+    default boolean notifyOnAnim() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "deathIgnoreSafe",
         name = "Ignore Safe Deaths",
         description = "Whether deaths in safe areas should be ignored.<br/>" +
