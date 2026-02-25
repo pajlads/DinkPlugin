@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Include Beef pet name in pet notifications. (#891)
+
 ## 1.12.0
 
 - Minor: Allow `%USERNAME%` placeholder in user-configurable patterns for the chat notifier. (#887)
