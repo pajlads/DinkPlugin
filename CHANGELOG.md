@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add basic support for Fluxer webhooks. (#896)
 - Dev: Send GIM shared bank contents to the custom metadata webhook upon opening the storage interface. (#895)
 
 ## 1.12.1
