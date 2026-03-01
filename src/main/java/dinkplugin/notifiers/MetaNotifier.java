@@ -115,7 +115,7 @@ public class MetaNotifier extends BaseNotifier {
         List<SerializedItemStack> items = new ArrayList<>(slots);
         long totalValue = 0;
         for (Widget widget : itemWidgets) {
-            if (widget.getItemId() == ItemID.BLANKOBJECT) continue;
+            if (widget == null || widget.getItemId() == ItemID.BLANKOBJECT) continue;
 
             SerializedItemStack item = ItemUtils.stackFromItem(itemManager, widget.getItemId(), widget.getItemQuantity());
             items.add(item);
