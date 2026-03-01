@@ -69,7 +69,8 @@ public class DiscordMessageHandler {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private static final Collection<String> NO_IMAGE_ENDPOINTS = Set.of(
         "revolt.chat", "api.revolt.chat", "local.revolt.chat",
-        "stoat.chat", "api.stoat.chat", "local.stoat.chat"
+        "stoat.chat", "api.stoat.chat", "local.stoat.chat",
+        "api.fluxer.app"
     );
 
     private final Gson gson;

@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add basic support for Fluxer webhooks. (#896)
+
 ## 1.12.1
 
 - Minor: Include Beef pet name in pet notifications. (#891)
