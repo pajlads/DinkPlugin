@@ -930,3 +930,29 @@ JSON for Tombs of Amascut Purple Chest Notifications:
   }
 }
 ```
+
+JSON for opening GIM Shared Bank:
+
+```json5
+{
+  "type": "GROUP_BANK_CONTENTS",
+  "content": "%USERNAME% opened the GIM shared bank containing %ITEM_COUNT% items worth %TOTAL_VALUE% with %SLOT_COUNT% slots unlocked",
+  "extra": {
+    "slots": 80,
+    "items": [
+      {
+        "id": 315,
+        "name": "Shrimps",
+        "quantity": 2,
+        "priceEach": 56
+      },
+      {
+        "id": 1205,
+        "name": "Bronze dagger",
+        "quantity": 1,
+        "priceEach": 53
+      }
+    ]
+  }
+}
+```
