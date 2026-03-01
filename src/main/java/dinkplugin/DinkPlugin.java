@@ -383,6 +383,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe
     public void onWidgetLoaded(WidgetLoaded event) {
+        metaNotifier.onWidget(event);
         killCountService.onWidget(event);
         questNotifier.onWidgetLoaded(event);
         clueNotifier.onWidgetLoaded(event);

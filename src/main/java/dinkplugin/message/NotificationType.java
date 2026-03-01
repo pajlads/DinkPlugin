@@ -34,7 +34,9 @@ public enum NotificationType {
     TRADE("Player Trade", "trade.png", WIKI_IMG_BASE_URL + "Inventory.png"),
     CHAT("Chat Notification", "chat.png", WIKI_IMG_BASE_URL + "Toggle_Chat_effects.png"),
     XP_MILESTONE("XP Milestone", "xpImage.png", WIKI_IMG_BASE_URL + "Lamp.png"),
-    EXTERNAL_PLUGIN("External Plugin", "externalImage.png", "https://raw.githubusercontent.com/runelite/runelite/refs/heads/master/runelite-client/src/main/resources/net/runelite/client/plugins/config/plugin_hub_icon.png");
+    EXTERNAL_PLUGIN("External Plugin", "externalImage.png", "https://raw.githubusercontent.com/runelite/runelite/refs/heads/master/runelite-client/src/main/resources/net/runelite/client/plugins/config/plugin_hub_icon.png"),
+    GROUP_BANK_CONTENTS("Group Bank Contents", "groupBankContents.png", WIKI_IMG_BASE_URL + "Group_storage_(Grand_Exchange).png"),
+    ;
 
     private final String title;
 
