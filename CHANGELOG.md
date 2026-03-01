@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Send GIM shared bank contents to the custom metadata webhook upon opening the storage interface. (#895)
+
 ## 1.12.1
 
 - Minor: Include Beef pet name in pet notifications. (#891)
