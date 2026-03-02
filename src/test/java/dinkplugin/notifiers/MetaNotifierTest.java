@@ -10,13 +10,15 @@ import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.SerializedPet;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.Skill;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
-import net.runelite.api.widgets.Widget;
 import net.runelite.client.config.RuneLiteConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -224,23 +226,17 @@ class MetaNotifierTest extends MockedNotifierTest {
 
     @Test
     void testNotifyGroupStorage() {
-        // mock shared bank widget
-        Widget parent = mock(Widget.class);
-        when(client.getWidget(InterfaceID.SharedBank.ITEMS)).thenReturn(parent);
+        // update client mocks
+        when(client.getVarpValue(VarPlayerID.IF3)).thenReturn(80);
 
         // mock item widgets
-        Widget item1 = mock(Widget.class);
-        when(item1.getItemId()).thenReturn(ItemID.RUNE_2H_SWORD);
-        when(item1.getItemQuantity()).thenReturn(1);
+        Item[] array = new Item[2];
+        array[0] = new Item(ItemID.RUNE_2H_SWORD, 1);
+        array[1] = new Item(ItemID.MITHRIL_BAR, 10);
 
-        Widget item2 = mock(Widget.class);
-        when(item2.getItemId()).thenReturn(ItemID.MITHRIL_BAR);
-        when(item2.getItemQuantity()).thenReturn(10);
-
-        Widget[] itemWidgets = new Widget[80];
-        itemWidgets[0] = item1;
-        itemWidgets[1] = item2;
-        when(parent.getDynamicChildren()).thenReturn(itemWidgets);
+        ItemContainer bank = mock(ItemContainer.class);
+        when(bank.getItems()).thenReturn(array);
+        when(client.getItemContainer(InventoryID.INV_GROUP_TEMP)).thenReturn(bank);
 
         // mock item prices
         mockItem(ItemID.RUNE_2H_SWORD, 32000, "Rune 2h sword");
