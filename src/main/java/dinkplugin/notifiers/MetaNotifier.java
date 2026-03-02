@@ -19,15 +19,16 @@ import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.Skill;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
-import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
-import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.game.ItemManager;
@@ -107,22 +108,22 @@ public class MetaNotifier extends BaseNotifier {
     }
 
     private void notifyGroupStorage() {
-        Widget parent = client.getWidget(InterfaceID.SharedBank.ITEMS);
-        if (parent == null || parent.isHidden()) return;
+        ItemContainer bank = client.getItemContainer(InventoryID.INV_GROUP_TEMP);
+        if (bank == null) return;
 
-        Widget[] itemWidgets = parent.getDynamicChildren();
-        final int slots = itemWidgets.length;
-        List<SerializedItemStack> items = new ArrayList<>(slots);
+        Item[] array = bank.getItems();
+        List<SerializedItemStack> items = new ArrayList<>(array.length);
         long totalValue = 0;
-        for (Widget widget : itemWidgets) {
-            if (widget == null || widget.getItemId() == ItemID.BLANKOBJECT) continue;
+        for (Item i : array) {
+            if (i == null || i.getId() < 0) continue;
 
-            SerializedItemStack item = ItemUtils.stackFromItem(itemManager, widget.getItemId(), widget.getItemQuantity());
+            SerializedItemStack item = ItemUtils.stackFromItem(itemManager, i.getId(), i.getQuantity());
             items.add(item);
             totalValue += item.getTotalPrice();
         }
 
         // Fire notification
+        int slots = client.getVarpValue(VarPlayerID.IF3);
         String playerName = Utils.getPlayerName(client);
         Template message = Template.builder()
             .replacementBoundary("%")
