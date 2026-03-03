@@ -12,6 +12,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemComposition;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.gameval.InventoryID;
+import net.runelite.api.gameval.ItemID;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.ItemStack;
 import net.runelite.client.game.ItemVariationMapping;
@@ -67,6 +68,12 @@ public class ItemUtils {
         // https://oldschool.runescape.wiki/w/Items_Kept_on_Death#Items_that_are_never_kept
         // https://oldschoolrunescape.fandom.com/wiki/Items_Kept_on_Death#Items_that_are_never_kept
         return NEVER_KEPT_ITEMS.contains(itemId);
+    }
+
+    public int canonicalizeItem(@NotNull ItemManager itemManager, int itemId) {
+        if (COIN_VARIATIONS.contains(itemId))
+            return ItemID.FAKE_COINS; // use single ID for all coins
+        return itemManager.canonicalize(itemId); // un-noted, un-placeholdered, un-worn
     }
 
     public long getPrice(@NotNull ItemManager itemManager, int itemId) {

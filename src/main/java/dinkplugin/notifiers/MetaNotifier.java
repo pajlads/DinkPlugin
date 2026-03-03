@@ -117,7 +117,8 @@ public class MetaNotifier extends BaseNotifier {
         for (Item i : array) {
             if (i == null || i.getId() < 0) continue;
 
-            SerializedItemStack item = ItemUtils.stackFromItem(itemManager, i.getId(), i.getQuantity());
+            int itemId = ItemUtils.canonicalizeItem(itemManager, i.getId());
+            SerializedItemStack item = ItemUtils.stackFromItem(itemManager, itemId, i.getQuantity());
             items.add(item);
             totalValue += item.getTotalPrice();
         }
