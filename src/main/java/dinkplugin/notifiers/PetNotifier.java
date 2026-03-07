@@ -211,7 +211,6 @@ public class PetNotifier extends BaseNotifier {
             .build();
 
         String pet = petName != null ? Utils.ucFirst(petName) : null;
-
         String thumbnail = Optional.ofNullable(pet)
             .filter(s -> !s.isEmpty())
             .map(itemSearcher::findItemId)
