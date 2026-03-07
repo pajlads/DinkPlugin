@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Add basic support for Fluxer webhooks. (#896)
+- Minor: Add Demonic Brutus as a drop source to Beef for luck calculation. (#897)
 
 ## 1.12.1
 
