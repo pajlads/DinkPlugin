@@ -158,7 +158,7 @@ class PetNotifierTest extends MockedNotifierTest {
             false,
             NotificationBody.builder()
                 .extra(new PetNotificationData(petName, null, false, false, 1.0 / 200, null, null))
-                .text(buildTemplate(PLAYER_NAME + " got Tzrek-jad"))
+                .text(buildTemplate(PLAYER_NAME + " got TzRek-Jad"))
                 .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
                 .type(NotificationType.PET)
                 .build()
