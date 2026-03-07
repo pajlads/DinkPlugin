@@ -138,6 +138,34 @@ class PetNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyPetTemplate() {
+        String petName = "TzRek-Jad";
+        int itemId = ItemID.JAD_PET;
+
+        // prepare mocks
+        when(config.petNotifyMessage()).thenReturn("%USERNAME% got %PET%");
+        when(itemSearcher.findItemId("Tzrek-jad")).thenReturn(itemId);
+        when(client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM)).thenReturn(1);
+
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you're being followed.");
+        notifier.onChatMessage("New item added to your collection log: " + petName);
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // verify handled with pet name in template
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .extra(new PetNotificationData(petName, null, false, false, 1.0 / 200, null, null))
+                .text(buildTemplate(PLAYER_NAME + " got Tzrek-jad"))
+                .thumbnailUrl(ItemUtils.getItemImageUrl(itemId))
+                .type(NotificationType.PET)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyLostExistingCollection() {
         String petName = "TzRek-Jad";
         int itemId = ItemID.JAD_PET;

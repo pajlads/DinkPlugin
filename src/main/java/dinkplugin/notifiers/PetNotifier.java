@@ -202,14 +202,15 @@ public class PetNotifier extends BaseNotifier {
             gameMessage = "has a funny feeling like they're being followed";
         }
 
+        String pet = petName != null ? Utils.ucFirst(petName) : null;
+
         Template notifyMessage = Template.builder()
             .template(config.petNotifyMessage())
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%GAME_MESSAGE%", Replacements.ofText(gameMessage))
+            .replacement("%PET%", Replacements.ofText(pet != null ? pet : ""))
             .build();
-
-        String pet = petName != null ? Utils.ucFirst(petName) : null;
         String thumbnail = Optional.ofNullable(pet)
             .filter(s -> !s.isEmpty())
             .map(itemSearcher::findItemId)

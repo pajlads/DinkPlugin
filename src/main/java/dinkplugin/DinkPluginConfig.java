@@ -862,7 +862,8 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %GAME_MESSAGE% to insert the game message associated with this type of pet drop",
+            "Use %GAME_MESSAGE% to insert the game message associated with this type of pet drop<br/>" +
+            "Use %PET% to insert the pet name (if known)",
         position = 12,
         section = petSection
     )
