@@ -209,7 +209,7 @@ public class PetNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%GAME_MESSAGE%", Replacements.ofText(gameMessage))
-            .replacement("%PET%", Replacements.ofText(pet != null ? pet : ""))
+            .replacement("%PET%", Replacements.ofText(petName != null && !petName.isEmpty() ? petName : "Unknown"))
             .build();
         String thumbnail = Optional.ofNullable(pet)
             .filter(s -> !s.isEmpty())
