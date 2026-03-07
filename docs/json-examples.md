@@ -440,8 +440,6 @@ JSON for Pet Notifications:
 `petName` is only included if the game sent it to the users chat via untradeable drop, collection log, or clan notifications.  
 `milestone` is only included if a clan notification was triggered.
 
-Supported template variables: `%USERNAME%`, `%GAME_MESSAGE%`, `%PET%`
-
 ### Speedrunning
 
 JSON for Personal Best Speedrun Notifications:
