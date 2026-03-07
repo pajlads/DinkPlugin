@@ -291,9 +291,9 @@ If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replac
 
 ### Pet:
 
-Supported template variables: `%USERNAME%`, `%GAME_MESSAGE%`, `%PET%`
-
 `%GAME_MESSAGE%` will be replaced with the game message associated with this type of pet drop
+
+`%PET%` will be replaced with the pet name if available
 
 ### Speedrunning:
 
