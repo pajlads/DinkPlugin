@@ -242,6 +242,18 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "networkTimeout",
+        name = "Base Network Timeout",
+        description = "The maximum number of seconds permitted to connect/read the webhook URL upon notifications",
+        position = 1002,
+        section = advancedSection
+    )
+    @Units(Units.SECONDS)
+    default int networkTimeout() {
+        return 15; // elevated from okhttp default of 10
+    }
+
+    @ConfigItem(
         keyName = "imageWriteTimeout",
         name = "Image Upload Timeout",
         description = "The maximum number of seconds that uploading a screenshot can take before timing out",

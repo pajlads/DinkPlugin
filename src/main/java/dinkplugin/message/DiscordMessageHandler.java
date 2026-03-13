@@ -99,7 +99,9 @@ public class DiscordMessageHandler {
                 Request request = chain.request().newBuilder()
                     .header("User-Agent", DinkPlugin.USER_AGENT)
                     .build();
-                Interceptor.Chain updatedChain = chain;
+                Interceptor.Chain updatedChain = chain
+                    .withConnectTimeout(config.networkTimeout(), TimeUnit.SECONDS)
+                    .withReadTimeout(config.networkTimeout(), TimeUnit.SECONDS);
                 // Allow longer timeout when writing a screenshot file to overcome slow internet speeds
                 if (request.body() instanceof MultipartBody && Utils.hasImage((MultipartBody) request.body())) {
                     updatedChain = chain.withWriteTimeout(Math.max(config.imageWriteTimeout(), 0), TimeUnit.SECONDS);
