@@ -15,7 +15,6 @@ import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.InventoryID;
-import net.runelite.api.gameval.ItemID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.game.ItemManager;
@@ -224,18 +223,7 @@ public class GroupStorageNotifier extends BaseNotifier {
             .filter(Objects::nonNull)
             .filter(item -> item.getId() >= 0)
             .filter(item -> item.getQuantity() > 0)
-            .collect(Collectors.toMap(this::getItemId, Item::getQuantity, Integer::sum));
-    }
-
-    /**
-     * @param item the item whose ID to query
-     * @return the canonical item ID
-     */
-    private int getItemId(Item item) {
-        int id = item.getId();
-        if (ItemUtils.COIN_VARIATIONS.contains(id))
-            return ItemID.FAKE_COINS; // use single ID for all coins
-        return itemManager.canonicalize(id); // un-noted, un-placeholdered, un-worn
+            .collect(Collectors.toMap(i -> ItemUtils.canonicalizeItem(itemManager, i.getId()), Item::getQuantity, Integer::sum));
     }
 
     /**

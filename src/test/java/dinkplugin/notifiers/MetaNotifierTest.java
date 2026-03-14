@@ -3,12 +3,19 @@ package dinkplugin.notifiers;
 import com.google.inject.testing.fieldbinder.Bind;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
+import dinkplugin.notifiers.data.GroupBankContentsNotificationData;
 import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
+import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.SerializedPet;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.Skill;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
@@ -27,6 +34,7 @@ import java.util.stream.IntStream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -215,4 +223,45 @@ class MetaNotifierTest extends MockedNotifierTest {
         // ensure no notification
         verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
     }
+
+    @Test
+    void testNotifyGroupStorage() {
+        // update client mocks
+        when(client.getVarpValue(VarPlayerID.IF3)).thenReturn(80);
+
+        // mock item widgets
+        Item[] array = new Item[2];
+        array[0] = new Item(ItemID.RUNE_2H_SWORD, 1);
+        array[1] = new Item(ItemID.MITHRIL_BAR, 10);
+
+        ItemContainer bank = mock(ItemContainer.class);
+        when(bank.getItems()).thenReturn(array);
+        when(client.getItemContainer(InventoryID.INV_GROUP_TEMP)).thenReturn(bank);
+
+        // mock item prices
+        mockItem(ItemID.RUNE_2H_SWORD, 32000, "Rune 2h sword");
+        mockItem(ItemID.MITHRIL_BAR, 300, "Mithril bar");
+
+        // fire widget event
+        WidgetLoaded event = new WidgetLoaded();
+        event.setGroupId(InterfaceID.SHARED_BANK);
+        notifier.onWidget(event);
+
+        // verify notification
+        List<SerializedItemStack> items = Arrays.asList(
+            new SerializedItemStack(ItemID.RUNE_2H_SWORD, 1, 32000, "Rune 2h sword"),
+            new SerializedItemStack(ItemID.MITHRIL_BAR, 10, 300, "Mithril bar")
+        );
+        verifyCreateMessage(
+            url,
+            false,
+            NotificationBody.builder()
+                .text(buildTemplate(PLAYER_NAME + " opened the GIM shared bank containing 2 items worth 35K with 80 slots unlocked"))
+                .type(NotificationType.GROUP_BANK_CONTENTS)
+                .extra(new GroupBankContentsNotificationData(items, 80))
+                .playerName(PLAYER_NAME)
+                .build()
+        );
+    }
+
 }

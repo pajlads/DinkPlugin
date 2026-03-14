@@ -8,22 +8,32 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.AmascutPurpleNotificationData;
+import dinkplugin.notifiers.data.GroupBankContentsNotificationData;
 import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
+import dinkplugin.notifiers.data.SerializedItemStack;
 import dinkplugin.util.ConfigUtil;
+import dinkplugin.util.ItemUtils;
 import dinkplugin.util.SerializedPet;
 import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.Skill;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.gameval.InterfaceID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
+import net.runelite.client.util.QuantityFormatter;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -50,6 +60,9 @@ public class MetaNotifier extends BaseNotifier {
 
     @Inject
     private ConfigManager configManager;
+
+    @Inject
+    private ItemManager itemManager;
 
     @Inject
     private Gson gson;
@@ -86,6 +99,49 @@ public class MetaNotifier extends BaseNotifier {
         if (event.getVarbitId() == VarbitID.TOA_VAULT_SARCOPHAGUS && event.getValue() % 2 == 1 && isEnabled()) {
             clientThread.invokeAtTickEnd(this::notifyPurpleAmascut);
         }
+    }
+
+    public void onWidget(WidgetLoaded event) {
+        if (event.getGroupId() == InterfaceID.SHARED_BANK) {
+            clientThread.invokeLater(this::notifyGroupStorage);
+        }
+    }
+
+    private void notifyGroupStorage() {
+        ItemContainer bank = client.getItemContainer(InventoryID.INV_GROUP_TEMP);
+        if (bank == null) return;
+
+        Item[] array = bank.getItems();
+        List<SerializedItemStack> items = new ArrayList<>(array.length);
+        long totalValue = 0;
+        for (Item i : array) {
+            if (i == null || i.getId() < 0) continue;
+
+            int itemId = ItemUtils.canonicalizeItem(itemManager, i.getId());
+            SerializedItemStack item = ItemUtils.stackFromItem(itemManager, itemId, i.getQuantity());
+            items.add(item);
+            totalValue += item.getTotalPrice();
+        }
+
+        // Fire notification
+        int slots = client.getVarpValue(VarPlayerID.IF3);
+        String playerName = Utils.getPlayerName(client);
+        Template message = Template.builder()
+            .replacementBoundary("%")
+            .template("%USERNAME% opened the GIM shared bank containing %ITEM_COUNT% items worth %TOTAL_VALUE% with %SLOT_COUNT% slots unlocked")
+            .replacement("%USERNAME%", Replacements.ofText(playerName))
+            .replacement("%ITEM_COUNT%", Replacements.ofText(String.valueOf(items.size())))
+            .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalValue)))
+            .replacement("%SLOT_COUNT%", Replacements.ofText(String.valueOf(slots)))
+            .build();
+        var extra = new GroupBankContentsNotificationData(items, slots);
+        createMessage(false, NotificationBody.builder()
+            .type(NotificationType.GROUP_BANK_CONTENTS)
+            .text(message)
+            .extra(extra)
+            .playerName(playerName)
+            .build()
+        );
     }
 
     private void notifyPurpleAmascut() {
