@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.13.0
+
 - Minor: Add basic support for Fluxer webhooks. (#896)
 - Minor: Add Demonic Brutus as a drop source to Beef for luck calculation. (#897)
 - Minor: Add `%PET%` template variable to inject the obtained pet name if known. (#899)
