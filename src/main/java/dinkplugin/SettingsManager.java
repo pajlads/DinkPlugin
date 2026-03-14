@@ -12,10 +12,11 @@ import dinkplugin.notifiers.CollectionNotifier;
 import dinkplugin.notifiers.CombatTaskNotifier;
 import dinkplugin.notifiers.KillCountNotifier;
 import dinkplugin.notifiers.PetNotifier;
+import dinkplugin.util.ConfigProxyAuth;
+import dinkplugin.util.ConfigProxyServer;
 import dinkplugin.util.MigrationUtil;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
-import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -67,7 +68,6 @@ import static dinkplugin.util.ConfigUtil.*;
 
 @Slf4j
 @Singleton
-@RequiredArgsConstructor(onConstructor_ = { @Inject })
 public class SettingsManager {
     public static final String CONFIG_GROUP = "dinkplugin";
     public static final String DYNAMIC_IMPORT_CONFIG_KEY = "dynamicConfigUrl";
@@ -112,6 +112,21 @@ public class SettingsManager {
     private final OkHttpClient httpClient;
 
     private volatile Instant lastDynamicImport = null;
+
+    @Inject
+    @VisibleForTesting
+    public SettingsManager(Gson gson, Client client, ClientThread clientThread, DinkPlugin plugin, DinkPluginConfig config, ConfigManager configManager, OkHttpClient httpClient) {
+        this.gson = gson;
+        this.client = client;
+        this.clientThread = clientThread;
+        this.plugin = plugin;
+        this.config = config;
+        this.configManager = configManager;
+        this.httpClient = httpClient.newBuilder()
+            .proxySelector(new ConfigProxyServer(config))
+            .proxyAuthenticator(new ConfigProxyAuth(config))
+            .build();
+    }
 
     /**
      * Check whether a username complies with the configured RSN filter list.
