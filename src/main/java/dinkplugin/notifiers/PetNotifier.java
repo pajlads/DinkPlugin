@@ -207,6 +207,7 @@ public class PetNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%GAME_MESSAGE%", Replacements.ofText(gameMessage))
+            .replacement("%PET%", Replacements.ofText(StringUtils.defaultIfEmpty(petName, "Unknown")))
             .build();
 
         String pet = petName != null ? Utils.ucFirst(petName) : null;
@@ -280,6 +281,7 @@ public class PetNotifier extends BaseNotifier {
         @Override
         Double getProbability(Client client, KillCountService kcService) {
             final int[] actions = getActions(client, kcService);
+            if (actions == null) return null;
             final int totalActions = MathUtils.sum(actions);
             if (totalActions <= 0) return null;
 
@@ -409,6 +411,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Baby chinchompa", new SkillSource(Skill.HUNTER, 82_758, 315)), // black chinchompas
             entry("Baby mole", new KcSource("Giant Mole", 1.0 / 3_000)),
             entry("Baron", new KcSource("Duke Sucellus", 1.0 / 2_500)),
+            entry("Beef", new MultiKcSource("Brutus", 1.0 / 1_000, "Demonic Brutus", 1.0 / 400)),
             entry("Bran", new MultiKcSource("Branda the Fire Queen", 1.0 / 3_000, "Eldric the Ice King", 1.0 / 3_000)), // assume loot not sacrificed
             entry("Butch", new KcSource("Vardorvis", 1.0 / 3_000)),
             entry("Beaver", new SkillSource(Skill.WOODCUTTING, 264_336, 85)), // teaks

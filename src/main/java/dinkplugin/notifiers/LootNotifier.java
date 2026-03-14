@@ -206,6 +206,7 @@ public class LootNotifier extends BaseNotifier {
         JoiningReplacement.JoiningReplacementBuilder lootMessage = JoiningReplacement.builder().delimiter("\n");
         long totalStackValue = 0;
         boolean sendMessage = false;
+        boolean onAllowList = false;
         SerializedItemStack max = null;
         RareItemStack rarest = null;
 
@@ -245,6 +246,7 @@ public class LootNotifier extends BaseNotifier {
             } else {
                 if (matches(itemNameAllowlist, stack.getName())) {
                     shouldSend = true;
+                    onAllowList = true;
                     criteria.add(LootCriteria.ALLOWLIST);
                 }
                 if (max == null || totalPrice > max.getTotalPrice()) {
@@ -304,7 +306,7 @@ public class LootNotifier extends BaseNotifier {
                 }
             }
             Double rarity = rarest != null ? rarest.getRarity() : null;
-            boolean screenshot = config.lootSendImage() && totalStackValue >= config.lootImageMinValue();
+            boolean screenshot = config.lootSendImage() && (totalStackValue >= config.lootImageMinValue() || onAllowList);
             Collection<String> party = type == LootRecordType.EVENT ? Utils.getBossParty(client, dropper) : null;
             Evaluable source = type == LootRecordType.PLAYER
                 ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))

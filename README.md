@@ -293,6 +293,8 @@ If the task completion unlocked rewards for a tier, `%COMPLETED%` will be replac
 
 `%GAME_MESSAGE%` will be replaced with the game message associated with this type of pet drop
 
+`%PET%` will be replaced with the pet name if available
+
 ### Speedrunning:
 
 `%QUEST%` will be replaced with the name of the quest (e.g., Cook's Assistant)

@@ -33,7 +33,7 @@ public class WorldUtils {
     private final Set<Integer> GALVEK_REGIONS = ImmutableSet.of(6486, 6487, 6488, 6489, 6742, 6743, 6744, 6745);
     private final Set<Integer> GAUNTLET_REGIONS = ImmutableSet.of(7512, 7768, 12127); // includes CG
     private final Set<Integer> LMS_REGIONS = ImmutableSet.of(13658, 13659, 13660, 13914, 13915, 13916, 13918, 13919, 13920, 14174, 14175, 14176, 14430, 14431, 14432);
-    private final Set<Integer> POH_REGIONS = ImmutableSet.of(7257, 7513, 7514, 7769, 7770, 8025, 8026);
+    private final Set<Integer> POH_REGIONS = ImmutableSet.of(7257, 7534, 7535, 7790, 7791, 8046, 8047, 8302, 8303);
     private final Set<Integer> SOUL_REGIONS = ImmutableSet.of(8493, 8748, 8749, 9005);
     private final Set<Integer> TOA_REGIONS = ImmutableSet.of(14160, 14162, 14164, 14674, 14676, 15184, 15186, 15188, 15696, 15698, 15700);
     private final Set<Integer> TOB_REGIONS = ImmutableSet.of(12611, 12612, 12613, 12867, 12869, 13122, 13123, 13125, 13379);
@@ -74,8 +74,13 @@ public class WorldUtils {
         return false;
     }
 
+    public boolean isSeasonalDeadman(Set<WorldType> worldTypes) {
+        return worldTypes.contains(WorldType.TOURNAMENT_WORLD) && worldTypes.contains(WorldType.DEADMAN);
+    }
+
     public boolean isSeasonal(Client client) {
-        return client.getWorldType().contains(WorldType.SEASONAL) || isGridMaster(client);
+        EnumSet<WorldType> worldTypes = client.getWorldType();
+        return worldTypes.contains(WorldType.SEASONAL) || isSeasonalDeadman(worldTypes) || isGridMaster(client);
     }
 
     public boolean isIgnoredWorld(Set<WorldType> worldType) {

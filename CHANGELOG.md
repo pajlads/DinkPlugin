@@ -1,7 +1,33 @@
 ## Unreleased
 
+- Minor: Add basic support for Fluxer webhooks. (#896)
+- Minor: Add Demonic Brutus as a drop source to Beef for luck calculation. (#897)
+- Minor: Add `%PET%` template variable to inject the obtained pet name if known. (#899)
+- Minor: Add setting to adjust the base network timeout seconds. (#904)
 - Minor: Allow routing Dink notifications through a HTTPS proxy server. (#859)
+- Bugfix: Updated PoH regions after their locations were moved in-game. (#903)
+
+## 1.12.1
+
+- Minor: Include Beef pet name in pet notifications. (#891)
+
+## 1.12.0
+
+- Minor: Allow `%USERNAME%` placeholder in user-configurable patterns for the chat notifier. (#887)
+- Minor: Add `[Seasonal]` prefix for notifications without rich embeds on seasonal worlds. (#886)
+- Minor: Add basic support for Stoat webhooks. (#883)
+- Minor: Include loot screenshots for allowlisted items under the min value threshold. (#882)
+- Dev: Request bodies without a screenshot are now sent as `application/json` instead of `multipart/form-data`. (#883)
+- Dev: Mock initialize `config.customPlayerBadge` in tests. (#884)
+
+## 1.11.24
+
+- Bugfix: Fix missing Soup pet notifications due to faulty rarity logic. (#876)
+
+## 1.11.23
+
 - Minor: Allow customizing screenshot filenames so Discord mobile alerts are more informative. (#847)
+- Bugfix: Fire notifications from Deadman: Annihilation when seasonal policy is not set to `Off`. (#872)
 
 ## 1.11.22
 

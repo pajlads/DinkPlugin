@@ -151,6 +151,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.primaryWebhook()).thenReturn(PRIMARY_WEBHOOK_URL);
         when(config.maxRetries()).thenReturn(0);
         when(config.baseRetryDelay()).thenReturn(2000);
+        when(config.networkTimeout()).thenReturn(15_000);
         when(config.imageWriteTimeout()).thenReturn(30_000);
         when(config.screenshotScale()).thenReturn(95);
         when(config.discordRichEmbeds()).thenReturn(!"false".equalsIgnoreCase(System.getenv("TEST_WEBHOOK_RICH")));
@@ -161,6 +162,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
         when(config.nameFilterMode()).thenReturn(FilterMode.DENY);
         when(config.embedColor()).thenReturn(Utils.PINK);
         when(config.deniedAccountTypes()).thenReturn(EnumSet.noneOf(AccountType.class));
+        when(config.customPlayerBadge()).thenReturn("");
 
         accountTracker.init();
         worldTracker.init();

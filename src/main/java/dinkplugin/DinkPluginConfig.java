@@ -242,6 +242,18 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "networkTimeout",
+        name = "Base Network Timeout",
+        description = "The maximum number of seconds permitted to connect/read the webhook URL upon notifications",
+        position = 1002,
+        section = advancedSection
+    )
+    @Units(Units.SECONDS)
+    default int networkTimeout() {
+        return 15; // elevated from okhttp default of 10
+    }
+
+    @ConfigItem(
         keyName = "imageWriteTimeout",
         name = "Image Upload Timeout",
         description = "The maximum number of seconds that uploading a screenshot can take before timing out",
@@ -886,7 +898,8 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %GAME_MESSAGE% to insert the game message associated with this type of pet drop",
+            "Use %GAME_MESSAGE% to insert the game message associated with this type of pet drop<br/>" +
+            "Use %PET% to insert the pet name (if known)",
         position = 12,
         section = petSection
     )
@@ -2145,7 +2158,8 @@ public interface DinkPluginConfig extends Config {
         keyName = ChatNotifier.PATTERNS_CONFIG_KEY,
         name = "Message Filters",
         description = "The chat message patterns that should trigger notifications.<br/>" +
-            "Place one pattern per line (case-insensitive; asterisks are wildcards)",
+            "Place one pattern per line (case-insensitive; asterisks are wildcards).<br/>" +
+            "Use %USERNAME% to dynamically insert your username",
         position = 173,
         section = chatSection
     )
@@ -2155,6 +2169,9 @@ public interface DinkPluginConfig extends Config {
             "You have accepted * into *.\n" + // for clan recruitment
             "You will be logged out in approximately 30 minutes.*\n" +
             "You will be logged out in approximately 10 minutes.*\n" +
+            "%USERNAME% has deposited * coin* into the coffer.\n" +
+            "%USERNAME% has withdrawn * coin* from the coffer.\n" +
+            "*%USERNAME% has unlocked * more group storage slots!\n" +
             "::TriggerDink\n";
     }
 

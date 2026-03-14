@@ -188,7 +188,7 @@ public class DinkPlugin extends Plugin {
         worldTracker.onConfig(event.getKey());
         lootNotifier.onConfigChanged(event.getKey(), event.getNewValue());
         deathNotifier.onConfigChanged(event.getKey(), event.getNewValue());
-        chatNotifier.onConfig(event.getKey(), event.getNewValue());
+        chatNotifier.onConfig(event.getKey());
 
         if ("false".equals(event.getNewValue())) {
             Runnable task = configDisabledTasks.get(event.getKey());
@@ -245,6 +245,7 @@ public class DinkPlugin extends Plugin {
         killCountNotifier.onTick();
         pkNotifier.onTick();
         grandExchangeNotifier.onTick();
+        chatNotifier.onTick();
         metaNotifier.onTick();
     }
 
