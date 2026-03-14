@@ -3,6 +3,7 @@
 - Minor: Add basic support for Fluxer webhooks. (#896)
 - Minor: Add Demonic Brutus as a drop source to Beef for luck calculation. (#897)
 - Minor: Add `%PET%` template variable to inject the obtained pet name if known. (#899)
+- Minor: Add setting to adjust the base network timeout seconds. (#904)
 - Bugfix: Updated PoH regions after their locations were moved in-game. (#903)
 
 ## 1.12.1
