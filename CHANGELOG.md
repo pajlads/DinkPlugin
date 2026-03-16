@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.13.1
+
 - Bugfix: Avoid sending shared bank metadata notifications to the primary webhook URL. (#907)
 
 ## 1.13.0
