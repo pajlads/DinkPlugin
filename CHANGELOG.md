@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Avoid sending shared bank metadata notifications to the primary webhook URL. (#907)
+
 ## 1.13.0
 
 - Minor: Add basic support for Fluxer webhooks. (#896)
