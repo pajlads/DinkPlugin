@@ -102,7 +102,7 @@ public class MetaNotifier extends BaseNotifier {
     }
 
     public void onWidget(WidgetLoaded event) {
-        if (event.getGroupId() == InterfaceID.SHARED_BANK) {
+        if (event.getGroupId() == InterfaceID.SHARED_BANK && isEnabled()) {
             clientThread.invokeLater(this::notifyGroupStorage);
         }
     }
