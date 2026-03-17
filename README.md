@@ -383,6 +383,7 @@ Dink powers a variety of third-party projects including:
 
 - [Watchdog](https://github.com/adamk33n3r/runelite-watchdog): RuneLite hub plugin that can trigger custom Dink notifications
 - [Leppunen's Dink Handler](https://git.ivr.fi/Leppunen/runelite-dink-api): JS-based (Fastify) webhook handler that forwards Dink notifications to a Twitch chatbot
+- [Zneix's Dink filter](https://github.com/zneix/dink-filter): Golang-based application that applies custom logic before forwarding Dink notifications
 - [Swap's Webhook Handler](https://github.com/jdanthdavis/custom-dink-webhook): Cloudflare Worker that applies custom logic before forwarding Dink notifications
 - [Danbot](https://github.com/DanbisDev/Danbot-Webserver): Python-based (Flask) Discord bot that parses Dink notifications
 - [stabiliserver](https://github.com/Fuzznip/stabiliserver): Python-based (FastAPI) Discord bot that parses Dink notifications
