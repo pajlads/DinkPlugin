@@ -8,9 +8,9 @@ import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.PlayerKillNotificationData;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.HitsplatImpl;
 import dinkplugin.util.WorldUtils;
 import net.runelite.api.Actor;
-import net.runelite.api.Hitsplat;
 import net.runelite.api.HitsplatID;
 import net.runelite.api.Player;
 import net.runelite.api.PlayerComposition;
@@ -138,7 +138,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         notifier.onHitsplat(event(target, damage));
         HitsplatApplied eventOther = new HitsplatApplied();
         eventOther.setActor(target);
-        eventOther.setHitsplat(new Hitsplat(DAMAGE_OTHER, 13, 1));
+        eventOther.setHitsplat(new HitsplatImpl(DAMAGE_OTHER, 13, 1));
         notifier.onHitsplat(eventOther);
         notifier.onTick();
 
@@ -236,7 +236,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         // fire event
         HitsplatApplied event = new HitsplatApplied();
         event.setActor(target);
-        event.setHitsplat(new Hitsplat(DAMAGE_OTHER, 17, 1));
+        event.setHitsplat(new HitsplatImpl(DAMAGE_OTHER, 17, 1));
         notifier.onHitsplat(event);
         notifier.onTick();
 
@@ -249,7 +249,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
         // fire event
         HitsplatApplied event = new HitsplatApplied();
         event.setActor(localPlayer);
-        event.setHitsplat(new Hitsplat(HitsplatID.DAMAGE_ME, 18, 1));
+        event.setHitsplat(new HitsplatImpl(HitsplatID.DAMAGE_ME, 18, 1));
         notifier.onHitsplat(event);
         notifier.onTick();
 
@@ -275,7 +275,7 @@ public class PlayerKillNotifierTest extends MockedNotifierTest {
     private static HitsplatApplied event(Actor actor, int amount) {
         HitsplatApplied e = new HitsplatApplied();
         e.setActor(actor);
-        e.setHitsplat(new Hitsplat(HitsplatID.DAMAGE_ME, amount, 1));
+        e.setHitsplat(new HitsplatImpl(HitsplatID.DAMAGE_ME, amount, 1));
         return e;
     }
 
