@@ -55,6 +55,8 @@ public class MetaNotifier extends BaseNotifier {
 
     private final AtomicInteger loginTicks = new AtomicInteger(-1);
 
+    private String cachedPlayerName;
+
     @Inject
     private ClientThread clientThread;
 
@@ -225,6 +227,8 @@ public class MetaNotifier extends BaseNotifier {
 
         // Fire notification
         String playerName = Utils.getPlayerName(client);
+        cachedPlayerName = playerName;
+        
         Template message = Template.builder()
             .replacementBoundary("%")
             .template("%USERNAME% logged into World %WORLD%")
@@ -255,6 +259,12 @@ public class MetaNotifier extends BaseNotifier {
 
     private void notifyLogout() {
         String playerName = Utils.getPlayerName(client);
+        // Fallback if playerName is null.
+        // It will use a cached player name which is set in notifyLogin.
+        if (playerName == null) {
+            playerName = cachedPlayerName;
+        }
+
         Template message = Template.builder()
             .replacementBoundary("%")
             .template("%USERNAME% logged out")
