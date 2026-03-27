@@ -92,9 +92,16 @@ public class MetaNotifier extends BaseNotifier {
     }
 
     public void onTick() {
+        if (cachedPlayerName == null) {
+            cachedPlayerName = Utils.getPlayerName(client);
+        }
         if (loginTicks.getAndUpdate(i -> Math.max(-1, i - 1)) == 0 && isEnabled()) {
             clientThread.invokeLater(this::notifyLogin); // just 20ms later to be able to run client scripts cleanly
         }
+    }
+
+    public void reset() {
+        cachedPlayerName = null;
     }
 
     public void onVarbit(VarbitChanged event) {
@@ -277,6 +284,7 @@ public class MetaNotifier extends BaseNotifier {
             .playerName(playerName)
             .build()
         );
+        cachedPlayerName = null;
     }
 
     @VisibleForTesting
