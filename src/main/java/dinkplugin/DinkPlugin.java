@@ -142,6 +142,7 @@ public class DinkPlugin extends Plugin {
         gameState.lazySet(null);
         accountTracker.clear();
         worldTracker.clear();
+        metaNotifier.reset();
     }
 
     void resetNotifiers() {
