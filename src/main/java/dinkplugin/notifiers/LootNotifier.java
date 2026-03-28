@@ -23,6 +23,7 @@ import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.NPC;
 import net.runelite.api.gameval.ItemID;
+import net.runelite.api.gameval.NpcID;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.events.ServerNpcLoot;
@@ -41,6 +42,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.OptionalDouble;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.regex.Pattern;
@@ -49,6 +51,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @Singleton
 public class LootNotifier extends BaseNotifier {
+
+    public static final Set<Integer> SERVER_LOOT_NPC_IDS;
 
     @Inject
     private ItemManager itemManager;
@@ -340,4 +344,31 @@ public class LootNotifier extends BaseNotifier {
         return false;
     }
 
+    static {
+        SERVER_LOOT_NPC_IDS = Set.of(
+            NpcID.YAMA,
+            NpcID.HESPORI,
+            NpcID.SAILING_BULL_SHARK_DEAD,
+            NpcID.SAILING_HAMMERHEAD_SHARK_DEAD,
+            NpcID.SAILING_TIGER_SHARK_DEAD,
+            NpcID.SAILING_GREAT_WHITE_SHARK_DEAD,
+            NpcID.SAILING_NARWHAL_DEAD,
+            NpcID.SAILING_ORCA_DEAD,
+            NpcID.SAILING_PYGMY_KRAKEN_DEAD,
+            NpcID.SAILING_SPINED_KRAKEN_DEAD,
+            NpcID.SAILING_ARMOURED_KRAKEN_DEAD,
+            NpcID.SAILING_VAMPYRE_KRAKEN_DEAD,
+            NpcID.SAILING_EAGLE_RAY_DEAD,
+            NpcID.SAILING_BUTTERFLY_RAY_DEAD,
+            NpcID.SAILING_STINGRAY_DEAD,
+            NpcID.SAILING_MANTA_RAY_DEAD,
+            NpcID.SAILING_OSPREY_DEAD,
+            NpcID.SAILING_ALBATROSS_DEAD,
+            NpcID.SAILING_FRIGATEBIRD_DEAD,
+            NpcID.SAILING_TERN_DEAD,
+            NpcID.SAILING_SEA_MOGRE_DEAD,
+            NpcID.SAILING_DOLPHIN_DEAD,
+            NpcID.SAILING_VEILED_KRAKEN_DEAD
+        );
+    }
 }

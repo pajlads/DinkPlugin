@@ -44,7 +44,6 @@ import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.events.WorldChanged;
-import net.runelite.api.gameval.NpcID;
 import net.runelite.client.RuneLite;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
@@ -332,7 +331,7 @@ public class DinkPlugin extends Plugin {
         // temporarily only use new event when needed
         int npcId = event.getComposition().getId();
         var name = event.getComposition().getName();
-        if (npcId != NpcID.YAMA && npcId != NpcID.HESPORI && !name.startsWith("Hallowed Sepulchre")) {
+        if (!LootNotifier.SERVER_LOOT_NPC_IDS.contains(npcId) && !name.startsWith("Hallowed Sepulchre")) {
             return;
         }
 
@@ -342,7 +341,7 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
-        if (npcLootReceived.getNpc().getId() == NpcID.YAMA) {
+        if (LootNotifier.SERVER_LOOT_NPC_IDS.contains(npcLootReceived.getNpc().getId())) {
             // handled by ServerNpcLoot, but return just in case
             return;
         }
