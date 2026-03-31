@@ -25,6 +25,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.Skill;
 import net.runelite.api.annotations.Varbit;
+import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
@@ -59,8 +60,6 @@ public class MetaNotifier extends BaseNotifier {
 
     private final AtomicInteger loginTicks = new AtomicInteger(-1);
 
-    private final DinkPlugin plugin;
-
     @Inject
     private ClientThread clientThread;
 
@@ -72,12 +71,6 @@ public class MetaNotifier extends BaseNotifier {
 
     @Inject
     private Gson gson;
-
-    @Inject
-    @VisibleForTesting
-    public MetaNotifier(DinkPlugin plugin) {
-        this.plugin = plugin;
-    }
 
     @Override
     public boolean isEnabled() {
@@ -102,7 +95,6 @@ public class MetaNotifier extends BaseNotifier {
     }
 
     public void onTick() {
-        plugin.addChatSuccess("TICK");
         if (loginTicks.getAndUpdate(i -> Math.max(-1, i - 1)) == 0 && isEnabled()) {
             clientThread.invokeLater(this::notifyLogin); // just 20ms later to be able to run client scripts cleanly
         }
@@ -110,8 +102,6 @@ public class MetaNotifier extends BaseNotifier {
 
     public void onVarbit(VarbitChanged event) {
         if (event.getVarbitId() == VarbitID.TOA_VAULT_SARCOPHAGUS && event.getValue() % 2 == 1 && isEnabled()) {
-            plugin.addChatSuccess("TOA_VAULT_SARCOPHAUS VARBIT CHANGE DETECTED. Value: " + event.getValue() + ", " + (event.getValue() % 2 == 1));
-            System.out.println("TOA_VAULT_SARCOPHAUS VARBIT CHANGE DETECTED. Value: " + event.getValue() + ", " + (event.getValue() % 2 == 1));
             clientThread.invokeAtTickEnd(this::notifyPurpleAmascut);
         }
     }
@@ -169,11 +159,7 @@ public class MetaNotifier extends BaseNotifier {
         }
 
         // Only fire notification if local player region is equal to the TOA reward chamber.
-        plugin.addChatSuccess("REWARD CHAMBER REGION ID IS " + TOA_REWARD_CHAMBER_REGIONID);
-        System.out.print("REWARD CHAMBER REGION ID IS " + TOA_REWARD_CHAMBER_REGIONID);
-        int playerRegion = client.getLocalPlayer().getWorldLocation().getRegionID();
-        plugin.addChatSuccess("LOCAL PLAYER REGION IS " + playerRegion);
-        System.out.print("LOCAL PLAYER REGION IS " + playerRegion);
+        int playerRegion = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID();
         if ( playerRegion != TOA_REWARD_CHAMBER_REGIONID ) {
             return;
         }
