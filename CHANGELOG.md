@@ -1,5 +1,8 @@
 ## Unreleased
 
+## 1.13.2
+
+- Bugfix: Fire loot notifications from sailing NPCs. (#921)
 - Bugfix: Restore logout notifications for metadata endpoint. (#919)
 
 ## 1.13.1
