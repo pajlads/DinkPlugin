@@ -58,6 +58,8 @@ public class MetaNotifier extends BaseNotifier {
 
     private final AtomicInteger loginTicks = new AtomicInteger(-1);
 
+    private String cachedPlayerName;
+
     @Inject
     private ClientThread clientThread;
 
@@ -93,9 +95,16 @@ public class MetaNotifier extends BaseNotifier {
     }
 
     public void onTick() {
+        if (cachedPlayerName == null) {
+            cachedPlayerName = Utils.getPlayerName(client);
+        }
         if (loginTicks.getAndUpdate(i -> Math.max(-1, i - 1)) == 0 && isEnabled()) {
             clientThread.invokeLater(this::notifyLogin); // just 20ms later to be able to run client scripts cleanly
         }
+    }
+
+    public void reset() {
+        cachedPlayerName = null;
     }
 
     public void onVarbit(VarbitChanged event) {
@@ -234,6 +243,8 @@ public class MetaNotifier extends BaseNotifier {
 
         // Fire notification
         String playerName = Utils.getPlayerName(client);
+        cachedPlayerName = playerName;
+        
         Template message = Template.builder()
             .replacementBoundary("%")
             .template("%USERNAME% logged into World %WORLD%")
@@ -264,6 +275,12 @@ public class MetaNotifier extends BaseNotifier {
 
     private void notifyLogout() {
         String playerName = Utils.getPlayerName(client);
+        // Fallback if playerName is null.
+        // It will use a cached player name which is set in notifyLogin.
+        if (playerName == null) {
+            playerName = cachedPlayerName;
+        }
+
         Template message = Template.builder()
             .replacementBoundary("%")
             .template("%USERNAME% logged out")
@@ -276,6 +293,7 @@ public class MetaNotifier extends BaseNotifier {
             .playerName(playerName)
             .build()
         );
+        cachedPlayerName = null;
     }
 
     @VisibleForTesting
