@@ -2,8 +2,6 @@ package dinkplugin.notifiers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-
-import dinkplugin.DinkPlugin;
 import dinkplugin.domain.AchievementDiary;
 import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
