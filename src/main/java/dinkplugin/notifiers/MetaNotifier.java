@@ -284,8 +284,6 @@ public class MetaNotifier extends BaseNotifier {
             .template("%USERNAME% logged out")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .build();
-        cachedPlayerName = null;
-
 
         createMessage(false, NotificationBody.builder()
             .type(NotificationType.LOGOUT)
