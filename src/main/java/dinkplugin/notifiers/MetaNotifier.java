@@ -16,6 +16,7 @@ import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.SerializedPet;
 import dinkplugin.util.Utils;
+import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
@@ -23,7 +24,6 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.Skill;
 import net.runelite.api.annotations.Varbit;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
@@ -51,8 +51,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MetaNotifier extends BaseNotifier {
     static final @VisibleForTesting String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
     static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
-
-    private static final int TOA_REWARD_CHAMBER_REGIONID = 14672;
 
     private static final int[] TOA_CHEST_VARBS;
 
@@ -166,8 +164,8 @@ public class MetaNotifier extends BaseNotifier {
         }
 
         // Only fire notification if local player region is equal to the TOA reward chamber.
-        int playerRegion = WorldPoint.fromLocalInstance(client, client.getLocalPlayer().getLocalLocation()).getRegionID();
-        if ( playerRegion != TOA_REWARD_CHAMBER_REGIONID ) {
+        int playerRegion = WorldUtils.getLocation(client).getRegionID();
+        if (playerRegion != WorldUtils.TOA_REWARD_CHAMBER_REGIONID) {
             return;
         }
 
@@ -244,7 +242,7 @@ public class MetaNotifier extends BaseNotifier {
         // Fire notification
         String playerName = Utils.getPlayerName(client);
         cachedPlayerName = playerName;
-        
+
         Template message = Template.builder()
             .replacementBoundary("%")
             .template("%USERNAME% logged into World %WORLD%")
@@ -286,6 +284,8 @@ public class MetaNotifier extends BaseNotifier {
             .template("%USERNAME% logged out")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .build();
+        cachedPlayerName = null;
+
 
         createMessage(false, NotificationBody.builder()
             .type(NotificationType.LOGOUT)
