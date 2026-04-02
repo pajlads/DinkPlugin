@@ -165,7 +165,7 @@ public class MetaNotifier extends BaseNotifier {
 
         // Only fire notification if local player region is equal to the TOA reward chamber.
         int playerRegion = WorldUtils.getLocation(client).getRegionID();
-        if (playerRegion != WorldUtils.TOA_REWARD_CHAMBER_REGIONID) {
+        if (playerRegion != WorldUtils.TOA_REWARD_CHAMBER_REGION) {
             return;
         }
 

@@ -44,7 +44,7 @@ public class WorldUtils {
     private final int TZHAAR_CAVE = 9551;
     public final @VisibleForTesting int TZHAAR_PIT = 9552;
     public final int FORTIS_REGION = 7216;
-    public static final int TOA_REWARD_CHAMBER_REGIONID = 14672;
+    public final int TOA_REWARD_CHAMBER_REGION = 14672;
 
 
     /**
