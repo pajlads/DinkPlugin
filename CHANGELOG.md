@@ -1,5 +1,9 @@
 ## Unreleased
 
+## 1.13.3
+
+- Bugfix: Stop duplicate TOA unique notifcations (#914)
+
 ## 1.13.2
 
 - Bugfix: Fire loot notifications from sailing NPCs. (#921)
