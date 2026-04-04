@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Bugfix: Stop duplicate TOA unique notifcations (#914)
+- Bugfix: Prevent duplicate TOA unique notifications for the metadata handler. (#924)
 
 ## 1.13.2
 

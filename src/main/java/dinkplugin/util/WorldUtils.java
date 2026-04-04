@@ -46,7 +46,6 @@ public class WorldUtils {
     public final int FORTIS_REGION = 7216;
     public final int TOA_REWARD_CHAMBER_REGION = 14672;
 
-
     /**
      * @see <a href="https://chisel.weirdgloop.org/varbs/display?varbit=6104#ChangeFrequencyTitle">Chisel</a>
      */
