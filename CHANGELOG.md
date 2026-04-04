@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Prevent duplicate TOA unique notifications for the metadata handler. (#924)
+
 ## 1.13.2
 
 - Bugfix: Fire loot notifications from sailing NPCs. (#921)

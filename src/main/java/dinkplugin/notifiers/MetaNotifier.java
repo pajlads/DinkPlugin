@@ -16,6 +16,7 @@ import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.SerializedPet;
 import dinkplugin.util.Utils;
+import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Experience;
 import net.runelite.api.GameState;
@@ -162,6 +163,12 @@ public class MetaNotifier extends BaseNotifier {
             }
         }
 
+        // Only fire notification if local player region is equal to the TOA reward chamber.
+        int playerRegion = WorldUtils.getLocation(client).getRegionID();
+        if (playerRegion != WorldUtils.TOA_REWARD_CHAMBER_REGION) {
+            return;
+        }
+
         // Gather relevant data
         var party = Utils.getAmascutTombsParty(client);
         int rewardPoints = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSCORE);
@@ -235,7 +242,7 @@ public class MetaNotifier extends BaseNotifier {
         // Fire notification
         String playerName = Utils.getPlayerName(client);
         cachedPlayerName = playerName;
-        
+
         Template message = Template.builder()
             .replacementBoundary("%")
             .template("%USERNAME% logged into World %WORLD%")
