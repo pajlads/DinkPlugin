@@ -223,7 +223,7 @@ class RarityServiceTest extends AbstractRarityServiceTest {
     @Test
     @DisplayName("Ensure accurate drop rate for 'Nothing'")
     void testNothing() {
-        test("Air elemental", -1, 0, 1 / 128.2);
+        test("Air elemental", -1, 0, 1 / 4.4127);
     }
 
     @Test
