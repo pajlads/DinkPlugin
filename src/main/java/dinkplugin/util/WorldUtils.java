@@ -44,7 +44,6 @@ public class WorldUtils {
     private final int TZHAAR_CAVE = 9551;
     public final @VisibleForTesting int TZHAAR_PIT = 9552;
     public final int FORTIS_REGION = 7216;
-    public final int TOA_REWARD_CHAMBER_REGION = 14672;
 
     /**
      * @see <a href="https://chisel.weirdgloop.org/varbs/display?varbit=6104#ChangeFrequencyTitle">Chisel</a>
