@@ -28,22 +28,8 @@ import dinkplugin.util.WorldTypeTracker;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.GameState;
-import net.runelite.api.events.AccountHashChanged;
-import net.runelite.api.events.ActorDeath;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.CommandExecuted;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.GrandExchangeOfferChanged;
-import net.runelite.api.events.HitsplatApplied;
-import net.runelite.api.events.InteractingChanged;
-import net.runelite.api.events.ScriptPreFired;
-import net.runelite.api.events.StatChanged;
-import net.runelite.api.events.UsernameChanged;
-import net.runelite.api.events.VarbitChanged;
-import net.runelite.api.events.WidgetClosed;
-import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.events.WorldChanged;
+import net.runelite.api.WallObject;
+import net.runelite.api.events.*;
 import net.runelite.client.RuneLite;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
@@ -132,7 +118,6 @@ public class DinkPlugin extends Plugin {
         lootNotifier.init();
         deathNotifier.init();
         chatNotifier.init();
-        metaNotifier.startUp();
         // leaguesNotifier.init();
     }
 
@@ -144,7 +129,6 @@ public class DinkPlugin extends Plugin {
         accountTracker.clear();
         worldTracker.clear();
         metaNotifier.reset();
-        metaNotifier.shutDown();
     }
 
     void resetNotifiers() {
@@ -411,6 +395,11 @@ public class DinkPlugin extends Plugin {
         if ("dink".equalsIgnoreCase(event.getNamespace()) && "notify".equalsIgnoreCase(event.getName())) {
             externalNotifier.onNotify(event.getData());
         }
+    }
+
+    @Subscribe
+    public void onWallObjectSpawned(WallObjectSpawned event) {
+        metaNotifier.onWallObjectSpawned(event);
     }
 
     public void addChatSuccess(String message) {

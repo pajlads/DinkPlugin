@@ -85,14 +85,6 @@ public class MetaNotifier extends BaseNotifier {
         return config.metadataWebhook();
     }
 
-    public void startUp() {
-        eventBus.register(this);
-    }
-
-    public void shutDown() {
-        eventBus.unregister(this);
-    }
-
     public void onGameState(GameState oldState, GameState newState) {
         // inspect oldState because we don't want a notification on each world hop
         if (oldState == GameState.LOGGING_IN && newState == GameState.LOGGED_IN) {
@@ -104,7 +96,7 @@ public class MetaNotifier extends BaseNotifier {
             notifyLogout();
         }
     }
-    @Subscribe
+
     public void onWallObjectSpawned(WallObjectSpawned event) {
         final WallObject wallObject = event.getWallObject();
 
@@ -113,18 +105,8 @@ public class MetaNotifier extends BaseNotifier {
         }
 
         if (isToaPurple && isEnabled()) {
-            clientThread.invokeAtTickEnd(this::notifyPurpleAmascut);
-        }
-    }
-
-    @Subscribe
-    public void onWallObjectDespawned(final WallObjectDespawned event)
-    {
-        final WallObject wallObject = event.getWallObject();
-
-        if (wallObject.getId() == SARCOPHAGUS_WALL_ID && isToaPurple)
-        {
             isToaPurple = false;
+            clientThread.invokeAtTickEnd(this::notifyPurpleAmascut);
         }
     }
 
@@ -142,8 +124,8 @@ public class MetaNotifier extends BaseNotifier {
     }
 
     public void onVarbit(VarbitChanged event) {
-        if (event.getVarbitId() == VarbitID.TOA_VAULT_SARCOPHAGUS && event.getValue() % 2 == 1) {
-            isToaPurple = true;
+        if (event.getVarbitId() == VarbitID.TOA_VAULT_SARCOPHAGUS) {
+            isToaPurple = event.getValue() % 2 == 1;
         }
     }
 
