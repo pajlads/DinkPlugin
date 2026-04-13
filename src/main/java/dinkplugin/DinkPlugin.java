@@ -132,6 +132,7 @@ public class DinkPlugin extends Plugin {
         lootNotifier.init();
         deathNotifier.init();
         chatNotifier.init();
+        metaNotifier.startUp();
         // leaguesNotifier.init();
     }
 
@@ -143,6 +144,7 @@ public class DinkPlugin extends Plugin {
         accountTracker.clear();
         worldTracker.clear();
         metaNotifier.reset();
+        metaNotifier.shutDown();
     }
 
     void resetNotifiers() {

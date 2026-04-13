@@ -22,15 +22,19 @@ import net.runelite.api.GameState;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.Skill;
+import net.runelite.api.WallObject;
 import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.events.WallObjectDespawned;
+import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.VarPlayerID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
+import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
 import net.runelite.client.util.QuantityFormatter;
@@ -50,6 +54,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MetaNotifier extends BaseNotifier {
     static final @VisibleForTesting String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
     static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
+    private static final int SARCOPHAGUS_WALL_ID = 46221;
+    private boolean isToaPurple = false;
 
     private static final int[] TOA_CHEST_VARBS;
 
@@ -79,6 +85,14 @@ public class MetaNotifier extends BaseNotifier {
         return config.metadataWebhook();
     }
 
+    public void startUp() {
+        eventBus.register(this);
+    }
+
+    public void shutDown() {
+        eventBus.unregister(this);
+    }
+
     public void onGameState(GameState oldState, GameState newState) {
         // inspect oldState because we don't want a notification on each world hop
         if (oldState == GameState.LOGGING_IN && newState == GameState.LOGGED_IN) {
@@ -88,6 +102,29 @@ public class MetaNotifier extends BaseNotifier {
         if ((oldState == GameState.LOGGED_IN || oldState == GameState.CONNECTION_LOST || oldState == GameState.HOPPING)
             && newState == GameState.LOGIN_SCREEN && isEnabled()) {
             notifyLogout();
+        }
+    }
+    @Subscribe
+    public void onWallObjectSpawned(WallObjectSpawned event) {
+        final WallObject wallObject = event.getWallObject();
+
+        if (wallObject.getId() != SARCOPHAGUS_WALL_ID) {
+            return;
+        }
+
+        if (isToaPurple && isEnabled()) {
+            clientThread.invokeAtTickEnd(this::notifyPurpleAmascut);
+        }
+    }
+
+    @Subscribe
+    public void onWallObjectDespawned(final WallObjectDespawned event)
+    {
+        final WallObject wallObject = event.getWallObject();
+
+        if (wallObject.getId() == SARCOPHAGUS_WALL_ID && isToaPurple)
+        {
+            isToaPurple = false;
         }
     }
 
@@ -105,8 +142,8 @@ public class MetaNotifier extends BaseNotifier {
     }
 
     public void onVarbit(VarbitChanged event) {
-        if (event.getVarbitId() == VarbitID.TOA_VAULT_SARCOPHAGUS && event.getValue() % 2 == 1 && isEnabled()) {
-            clientThread.invokeAtTickEnd(this::notifyPurpleAmascut);
+        if (event.getVarbitId() == VarbitID.TOA_VAULT_SARCOPHAGUS && event.getValue() % 2 == 1) {
+            isToaPurple = true;
         }
     }
 
@@ -235,7 +272,7 @@ public class MetaNotifier extends BaseNotifier {
         // Fire notification
         String playerName = Utils.getPlayerName(client);
         cachedPlayerName = playerName;
-        
+
         Template message = Template.builder()
             .replacementBoundary("%")
             .template("%USERNAME% logged into World %WORLD%")
