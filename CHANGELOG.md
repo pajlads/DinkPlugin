@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Prevent double notifications to metadata webhook upon TOA Purple Loot. (#930)
+
 ## 1.13.2
 
 - Bugfix: Fire loot notifications from sailing NPCs. (#921)
