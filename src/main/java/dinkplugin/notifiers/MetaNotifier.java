@@ -27,10 +27,7 @@ import net.runelite.api.annotations.Varbit;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.events.WallObjectSpawned;
-import net.runelite.api.gameval.InterfaceID;
-import net.runelite.api.gameval.InventoryID;
-import net.runelite.api.gameval.VarPlayerID;
-import net.runelite.api.gameval.VarbitID;
+import net.runelite.api.gameval.*;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
@@ -53,7 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MetaNotifier extends BaseNotifier {
     static final @VisibleForTesting String RL_CHAT_CMD_PLUGIN_NAME = ChatCommandsPlugin.class.getSimpleName().toLowerCase();
     static final @VisibleForTesting int INIT_TICKS = 10; // 6 seconds after login
-    private static final int SARCOPHAGUS_WALL_ID = 46221;
+    private static final int SARCOPHAGUS_WALL_ID = ObjectID.TOA_VAULT_BARRIER_PARENT;
     private boolean isToaPurple = false;
 
     private static final int[] TOA_CHEST_VARBS;
