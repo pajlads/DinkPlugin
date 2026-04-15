@@ -43,7 +43,7 @@ public class LeaguesNotifier extends BaseNotifier {
      * @see <a href="https://oldschool.runescape.wiki/w/Demonic_Pacts_League#Areas">Wiki Reference</a>
      */
     @VisibleForTesting
-    static final int FIRST_AREA_TASKS = 200, SECOND_AREA_TASKS = 350, THIRD_AREA_TASKS = 450;
+    static final int ZEROTH_AREA_TASKS = 80, FIRST_AREA_TASKS = 200, SECOND_AREA_TASKS = 350, THIRD_AREA_TASKS = 450;
 
     /**
      * Value associated with {@link VarbitID#LEAGUE_TYPE} for the current league.
@@ -366,7 +366,7 @@ public class LeaguesNotifier extends BaseNotifier {
         ROMAN_NUMERALS = Map.of("I", 1, "II", 2, "III", 3, "IV", 4, "V", 5, "VI", 6);
 
         AREA_BY_TASKS = Collections.unmodifiableNavigableMap(
-            new TreeMap<>(Map.of(0, 0, FIRST_AREA_TASKS, 1, SECOND_AREA_TASKS, 2, THIRD_AREA_TASKS, 3))
+            new TreeMap<>(Map.of(0, 0, ZEROTH_AREA_TASKS, 0, FIRST_AREA_TASKS, 1, SECOND_AREA_TASKS, 2, THIRD_AREA_TASKS, 3))
         );
 
         NavigableMap<Integer, String> thresholds = new TreeMap<>();

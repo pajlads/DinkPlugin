@@ -116,8 +116,8 @@ public class LeaguesNotifierTest extends MockedNotifierTest {
     @Test
     void notifyAreaKaramja() {
         // update client mocks
-        int tasksCompleted = 2;
-        int totalPoints = 2 * 10;
+        int tasksCompleted = 80;
+        int totalPoints = 80 * 10;
         when(client.getVarbitValue(VarbitID.LEAGUE_TOTAL_TASKS_COMPLETED)).thenReturn(tasksCompleted);
         when(client.getVarpValue(VarPlayerID.LEAGUE_POINTS_COMPLETED)).thenReturn(totalPoints);
         when(client.getVarbitValue(VarbitID.LEAGUE_AREA_SELECTION_1)).thenReturn(2);
