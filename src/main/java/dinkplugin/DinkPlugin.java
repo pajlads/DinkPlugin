@@ -43,6 +43,7 @@ import net.runelite.api.events.UsernameChanged;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.events.WidgetClosed;
 import net.runelite.api.events.WidgetLoaded;
+import net.runelite.api.events.WallObjectSpawned;
 import net.runelite.api.events.WorldChanged;
 import net.runelite.client.RuneLite;
 import net.runelite.client.chat.ChatMessageManager;
@@ -409,6 +410,11 @@ public class DinkPlugin extends Plugin {
         if ("dink".equalsIgnoreCase(event.getNamespace()) && "notify".equalsIgnoreCase(event.getName())) {
             externalNotifier.onNotify(event.getData());
         }
+    }
+
+    @Subscribe
+    public void onWallObjectSpawned(WallObjectSpawned event) {
+        metaNotifier.onWallObjectSpawned(event);
     }
 
     public void addChatSuccess(String message) {
