@@ -34,7 +34,6 @@ import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.gameval.ObjectID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
-import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.chatcommands.ChatCommandsPlugin;
 import net.runelite.client.util.QuantityFormatter;
@@ -104,8 +103,7 @@ public class MetaNotifier extends BaseNotifier {
             return;
         }
 
-        if (isToaPurple && isEnabled()) {
-            isToaPurple = false;
+        if (isEnabled()) {
             clientThread.invokeAtTickEnd(this::notifyPurpleAmascut);
         }
     }
@@ -173,6 +171,12 @@ public class MetaNotifier extends BaseNotifier {
     }
 
     private void notifyPurpleAmascut() {
+        if (isToaPurple) {
+            isToaPurple = false; // prevent multiple notifications
+        } else {
+            return; // not notification worthy
+        }
+
         // inspect multiloc to ensure local player is the recipient of the purple drop (s/o @rdutta)
         for (@Varbit int varbitId : TOA_CHEST_VARBS) {
             if (client.getVarbitValue(varbitId) == 2) {
