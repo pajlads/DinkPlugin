@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Enable the leagues notifier for Demonic Pacts. (#932, #933)
 - Bugfix: Prevent double notifications to metadata webhook upon TOA Purple Loot. (#930)
 
 ## 1.13.2

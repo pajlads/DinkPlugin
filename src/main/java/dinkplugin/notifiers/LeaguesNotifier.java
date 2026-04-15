@@ -39,8 +39,11 @@ public class LeaguesNotifier extends BaseNotifier {
     private static final Pattern TASK_REGEX = Pattern.compile("Congratulations, you've completed an? (?<tier>\\w+) task: (?<task>.+)\\.");
     private static final Pattern MASTERY_REGEX = Pattern.compile("Congratulations, you've unlocked a new .+ Combat Mastery: (?<type>\\w+) (?<tier>\\w+)\\.");
 
+    /**
+     * @see <a href="https://oldschool.runescape.wiki/w/Demonic_Pacts_League#Areas">Wiki Reference</a>
+     */
     @VisibleForTesting
-    static final int FIRST_AREA_TASKS = 90, SECOND_AREA_TASKS = 200, THIRD_AREA_TASKS = 400;
+    static final int ZEROTH_AREA_TASKS = 80, FIRST_AREA_TASKS = 200, SECOND_AREA_TASKS = 350, THIRD_AREA_TASKS = 450;
 
     /**
      * Value associated with {@link VarbitID#LEAGUE_TYPE} for the current league.
@@ -57,7 +60,7 @@ public class LeaguesNotifier extends BaseNotifier {
     /**
      * Trophy name by the required points, in a binary search tree.
      *
-     * @see <a href="https://oldschool.runescape.wiki/w/Trailblazer_Reloaded_League#Trophies">Wiki Reference</a>
+     * @see <a href="https://oldschool.runescape.wiki/w/Demonic_Pacts_League#Trophies">Wiki Reference</a>
      * @see <a href="https://github.com/Joshua-F/cs2-scripts/blob/fa31b06ec5a9f6636bf9b9d5cbffbb71df022d06/scripts/%5Bproc%2Cscript731%5D.cs2#L3">CS2 Reference</a>
      */
     private static final NavigableMap<Integer, String> TROPHY_BY_POINTS;
@@ -265,7 +268,7 @@ public class LeaguesNotifier extends BaseNotifier {
     private Map.Entry<Integer, String> numAreasUnlocked() {
         // While Jagex's code has 5 areas (2 default, 3 discretionary),
         // most players think just in terms of the 3 discretionary areas,
-        // so we disregard Misthalin and consider Karamja as the zeroth area.
+        // so we disregard Varlamore and consider Karamja as the zeroth area.
         // Thus, the number of unlocked areas is bounded by 3 (instead of 5).
         if (client.getVarbitValue(VarbitID.LEAGUE_AREA_SELECTION_4) > 0) {
             return Map.entry(3, ith(3));
@@ -363,46 +366,46 @@ public class LeaguesNotifier extends BaseNotifier {
         ROMAN_NUMERALS = Map.of("I", 1, "II", 2, "III", 3, "IV", 4, "V", 5, "VI", 6);
 
         AREA_BY_TASKS = Collections.unmodifiableNavigableMap(
-            new TreeMap<>(Map.of(0, 0, FIRST_AREA_TASKS, 1, SECOND_AREA_TASKS, 2, THIRD_AREA_TASKS, 3))
+            new TreeMap<>(Map.of(0, 0, ZEROTH_AREA_TASKS, 0, FIRST_AREA_TASKS, 1, SECOND_AREA_TASKS, 2, THIRD_AREA_TASKS, 3))
         );
 
         NavigableMap<Integer, String> thresholds = new TreeMap<>();
         thresholds.put(2_000, "Bronze");
         thresholds.put(4_000, "Iron");
         thresholds.put(10_000, "Steel");
-        thresholds.put(20_000, "Mithril");
-        thresholds.put(30_000, "Adamant");
-        thresholds.put(45_000, "Rune");
-        thresholds.put(60_000, "Dragon");
+        thresholds.put(22_000, "Mithril");
+        thresholds.put(32_000, "Adamant");
+        thresholds.put(47_500, "Rune");
+        thresholds.put(65_000, "Dragon");
         TROPHY_BY_POINTS = thresholds;
 
         TIER_BY_POINTS = Arrays.stream(LeagueRelicTier.values())
             .collect(Collectors.toMap(LeagueRelicTier::getDefaultPoints, Function.identity(), (a, b) -> null, TreeMap::new));
 
         TIER_BY_RELIC = new HashMap<>(Map.ofEntries(
-            Map.entry("Animal Wrangler", LeagueRelicTier.ONE),
-            Map.entry("Lumberjack", LeagueRelicTier.ONE),
-            Map.entry("Power Miner", LeagueRelicTier.ONE),
-            Map.entry("Corner Cutter", LeagueRelicTier.TWO),
-            Map.entry("Dodgy Deals", LeagueRelicTier.TWO),
+            Map.entry("Endless Harvest", LeagueRelicTier.ONE),
+            Map.entry("Barbarian Gathering", LeagueRelicTier.ONE),
+            Map.entry("Abundance", LeagueRelicTier.ONE),
+            Map.entry("Hotfoot", LeagueRelicTier.TWO),
             Map.entry("Friendly Forager", LeagueRelicTier.TWO),
+            Map.entry("Woodsman", LeagueRelicTier.TWO),
             Map.entry("Bank Heist", LeagueRelicTier.THREE),
-            Map.entry("Clue Compass", LeagueRelicTier.THREE),
-            Map.entry("Fairy's Flight", LeagueRelicTier.THREE),
-            Map.entry("Equilibrium", LeagueRelicTier.FOUR),
-            Map.entry("Golden God", LeagueRelicTier.FOUR),
-            Map.entry("Reloaded", LeagueRelicTier.FOUR),
-            Map.entry("Production Master", LeagueRelicTier.FIVE),
-            Map.entry("Slayer Master", LeagueRelicTier.FIVE),
-            Map.entry("Treasure Arbiter", LeagueRelicTier.FIVE),
-            Map.entry("Total Recall", LeagueRelicTier.SIX),
-            Map.entry("Banker's Note", LeagueRelicTier.SIX),
-            Map.entry("Grimoire", LeagueRelicTier.SEVEN),
-            Map.entry("Overgrown", LeagueRelicTier.SEVEN),
-            Map.entry("Pocket Kingdom", LeagueRelicTier.SEVEN),
-            Map.entry("Guardian", LeagueRelicTier.EIGHT),
-            Map.entry("Last Stand", LeagueRelicTier.EIGHT),
-            Map.entry("Specialist", LeagueRelicTier.EIGHT)
+            Map.entry("Evil Eye", LeagueRelicTier.THREE),
+            Map.entry("Map of Alacrity", LeagueRelicTier.THREE),
+            Map.entry("Transmutation", LeagueRelicTier.FOUR),
+            Map.entry("Conniving Clues", LeagueRelicTier.FOUR),
+            Map.entry("Butler's Bell", LeagueRelicTier.FOUR),
+            Map.entry("Nature's Accord", LeagueRelicTier.FIVE),
+            Map.entry("Larcenist", LeagueRelicTier.FIVE),
+            Map.entry("Soul Harvest", LeagueRelicTier.FIVE),
+            Map.entry("Grimoire", LeagueRelicTier.SIX),
+            Map.entry("Eternal Sustenance", LeagueRelicTier.SIX),
+            Map.entry("Culling Spree", LeagueRelicTier.SIX),
+            Map.entry("Flow State", LeagueRelicTier.SEVEN),
+            Map.entry("Pocket Reloaded", LeagueRelicTier.SEVEN),
+            Map.entry("Executioner", LeagueRelicTier.EIGHT),
+            Map.entry("Minion", LeagueRelicTier.EIGHT),
+            Map.entry("Flask of Fervour", LeagueRelicTier.EIGHT)
         ));
     }
 }
