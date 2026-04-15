@@ -46,13 +46,13 @@ public class LeaguesNotifier extends BaseNotifier {
      * Value associated with {@link VarbitID#LEAGUE_TYPE} for the current league.
      */
     @VisibleForTesting
-    static final int CURRENT_LEAGUE_VERSION = 5;
+    static final int CURRENT_LEAGUE_VERSION = 6;
 
     /**
      * Short name for the current league.
      */
     @VisibleForTesting
-    static final String CURRENT_LEAGUE_NAME = "Raging Echoes";
+    static final String CURRENT_LEAGUE_NAME = "Demonic Pacts";
 
     /**
      * Trophy name by the required points, in a binary search tree.
