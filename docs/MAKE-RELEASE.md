@@ -4,6 +4,7 @@
 
 - [ ] Update the changelog - Make a new section for all previously unreleased changes
 - [ ] Update the version in `build.gradle.kts`
+- [ ] Update the version in `runelite-plugin.properties`
 - [ ] Consider adding an entry to `VersionManager` for particularly noteworthy changes
 - [ ] Make the pull request
 
