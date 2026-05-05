@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add config option to allow ignoring duplicate pets. (#940)
+
 ## 1.14.0
 
 - Minor: Enable the leagues notifier for Demonic Pacts. (#932, #933)
