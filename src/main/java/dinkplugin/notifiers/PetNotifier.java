@@ -185,6 +185,10 @@ public class PetNotifier extends BaseNotifier {
     private void handleNotify() {
         Boolean previouslyOwned;
         if (duplicate) {
+            if (config.petIgnoreDuplicate()) {
+                return;
+            }
+
             previouslyOwned = true;
         } else if (client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM) % 2 == 1) {
             // when collection log chat notification is enabled, presence or absence of notification indicates ownership history
