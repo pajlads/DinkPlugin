@@ -894,14 +894,14 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "petIgnoreDuplicate",
-        name = "Ignore Duplicates",
-        description = "Prevent notifications for pets that are currently owned",
+        keyName = "petIncludeDuplicates",
+        name = "Include Duplicates",
+        description = "Whether to fire notifications for pets that are currently owned",
         position = 12,
         section = petSection
     )
-    default boolean petIgnoreDuplicate() {
-        return false;
+    default boolean petIncludeDuplicates() {
+        return true;
     }
 
     @ConfigItem(

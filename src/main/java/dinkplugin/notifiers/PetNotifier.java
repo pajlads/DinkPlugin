@@ -185,7 +185,7 @@ public class PetNotifier extends BaseNotifier {
     private void handleNotify() {
         Boolean previouslyOwned;
         if (duplicate) {
-            if (config.petIgnoreDuplicate()) {
+            if (!config.petIncludeDuplicates()) {
                 return;
             }
 
