@@ -56,6 +56,7 @@ class PetNotifierTest extends MockedNotifierTest {
         // init config mocks
         when(config.notifyPet()).thenReturn(true);
         when(config.petSendImage()).thenReturn(false);
+        when(config.petIncludeDuplicates()).thenReturn(true);
         when(config.petNotifyMessage()).thenReturn("%USERNAME% got a pet");
     }
 
