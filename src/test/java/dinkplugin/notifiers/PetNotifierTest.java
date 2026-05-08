@@ -464,6 +464,20 @@ class PetNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnoreDuplicate() {
+        // update mocks
+        when(config.petIncludeDuplicates()).thenReturn(false);
+        when(config.petNotifyMessage()).thenReturn("%USERNAME% %GAME_MESSAGE%");
+
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you would have been followed...");
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
     void testNotifyIrrelevantNameIgnore() {
         // ignore notifications for an irrelevant player
         when(config.filteredNames()).thenReturn("xqc");
