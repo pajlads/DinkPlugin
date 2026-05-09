@@ -894,13 +894,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "petIncludeDuplicates",
+        name = "Include Duplicates",
+        description = "Whether to fire notifications for pets that are currently owned",
+        position = 12,
+        section = petSection
+    )
+    default boolean petIncludeDuplicates() {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "petNotifMessage",
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %GAME_MESSAGE% to insert the game message associated with this type of pet drop<br/>" +
             "Use %PET% to insert the pet name (if known)",
-        position = 12,
+        position = 13,
         section = petSection
     )
     default String petNotifyMessage() {
