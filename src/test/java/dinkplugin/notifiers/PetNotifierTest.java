@@ -67,6 +67,7 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        notifier.onChatMessage("Your new pet has been automatically insured. If lost, it can be reclaimed from Probita in Ardougne.");
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // verify handled
@@ -74,7 +75,7 @@ class PetNotifierTest extends MockedNotifierTest {
             PRIMARY_WEBHOOK_URL,
             false,
             NotificationBody.builder()
-                .extra(new PetNotificationData(null, null, false, true, null, null, null))
+                .extra(new PetNotificationData(null, null, false, false, null, null, null))
                 .text(buildTemplate(PLAYER_NAME + " feels something weird sneaking into their backpack"))
                 .type(NotificationType.PET)
                 .build()
