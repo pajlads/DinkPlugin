@@ -56,6 +56,7 @@ class PetNotifierTest extends MockedNotifierTest {
         // init config mocks
         when(config.notifyPet()).thenReturn(true);
         when(config.petSendImage()).thenReturn(false);
+        when(config.petIncludeDuplicates()).thenReturn(true);
         when(config.petNotifyMessage()).thenReturn("%USERNAME% got a pet");
     }
 
@@ -456,6 +457,20 @@ class PetNotifierTest extends MockedNotifierTest {
 
         // send fake message
         notifier.onChatMessage("You feel something weird sneaking into your backpack.");
+        IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
+
+        // ensure no notification occurred
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreDuplicate() {
+        // update mocks
+        when(config.petIncludeDuplicates()).thenReturn(false);
+        when(config.petNotifyMessage()).thenReturn("%USERNAME% %GAME_MESSAGE%");
+
+        // send fake message
+        notifier.onChatMessage("You have a funny feeling like you would have been followed...");
         IntStream.rangeClosed(0, MAX_TICKS_WAIT).forEach(i -> notifier.onTick());
 
         // ensure no notification occurred

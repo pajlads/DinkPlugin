@@ -190,6 +190,10 @@ public class PetNotifier extends BaseNotifier {
     }
 
     private void handleNotify() {
+        if (duplicate && !config.petIncludeDuplicates()) {
+            return;
+        }
+
         if (previouslyOwned == null) {
             previouslyOwned = true; // Probita message has already been triggered for this pet/character combo
         }
