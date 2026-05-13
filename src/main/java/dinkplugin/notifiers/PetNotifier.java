@@ -89,6 +89,16 @@ public class PetNotifier extends BaseNotifier {
 
     private volatile boolean backpack = false;
 
+    /**
+     * Tracks whether the pet has been previously obtained by this character.
+     * <p>
+     * States:
+     * <ul>
+     *     <li>True if the pet is a current duplicate ('would have been followed')</li>
+     *     <li>False once the Probita ('automatically insured') message arrives</li>
+     *     <li>Null if neither of the above phrases have been received (suggests previously owned, but not currently owned)</li>
+     * </ul>
+     */
     private volatile Boolean previouslyOwned = null;
 
     @Override
