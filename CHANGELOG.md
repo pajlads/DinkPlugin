@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Add config option to allow ignoring duplicate pets. (#940)
+- Bugfix: Prevent classification of newly introduced pets as previously owned. (#941)
 
 ## 1.14.0
 

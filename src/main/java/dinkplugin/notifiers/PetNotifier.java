@@ -89,7 +89,17 @@ public class PetNotifier extends BaseNotifier {
 
     private volatile boolean backpack = false;
 
-    private volatile boolean collection = false;
+    /**
+     * Tracks whether the pet has been previously obtained by this character.
+     * <p>
+     * States:
+     * <ul>
+     *     <li>True if the pet is a current duplicate ('would have been followed')</li>
+     *     <li>False once the Probita ('automatically insured') message arrives</li>
+     *     <li>Null if neither of the above phrases have been received (suggests previously owned, but not currently owned)</li>
+     * </ul>
+     */
+    private volatile Boolean previouslyOwned = null;
 
     @Override
     public boolean isEnabled() {
@@ -109,18 +119,25 @@ public class PetNotifier extends BaseNotifier {
                     this.petName = PRIMED_NAME;
                     this.duplicate = chatMessage.contains("would have been");
                     this.backpack = chatMessage.contains(" backpack");
+
+                    if (duplicate) {
+                        this.previouslyOwned = true;
+                    }
                 }
-            } else if (PRIMED_NAME.equals(petName) || !collection) {
-                parseItemFromGameMessage(chatMessage)
-                    .filter(item -> isPetItem(item.getItemName()))
-                    .ifPresent(parseResult -> {
-                        setPetName(parseResult.getItemName());
-                        if (parseResult.isCollectionLog()) {
-                            this.collection = true;
-                        }
-                    });
             } else {
-                // ignore; we already know the pet name
+                if (PRIMED_NAME.equals(petName) || previouslyOwned == null) {
+                    parseItemFromGameMessage(chatMessage)
+                        .filter(item -> isPetItem(item.getItemName()))
+                        .ifPresent(parseResult -> {
+                            setPetName(parseResult.getItemName());
+                            if (parseResult.isCollectionLog()) {
+                                this.previouslyOwned = false;
+                            }
+                        });
+                }
+                if (previouslyOwned == null && chatMessage.contains("automatically insured")) {
+                    this.previouslyOwned = false;
+                }
             }
         }
     }
@@ -154,7 +171,7 @@ public class PetNotifier extends BaseNotifier {
                 var itemName = bottomText.substring(CollectionNotifier.POPUP_PREFIX_LENGTH).trim();
                 if (isPetItem(itemName)) {
                     this.petName = itemName;
-                    this.collection = true;
+                    this.previouslyOwned = false;
                 }
             }
         }
@@ -178,29 +195,23 @@ public class PetNotifier extends BaseNotifier {
         this.milestone = null;
         this.duplicate = false;
         this.backpack = false;
-        this.collection = false;
+        this.previouslyOwned = null;
         this.ticksWaited.set(0);
     }
 
     private void handleNotify() {
-        Boolean previouslyOwned;
-        if (duplicate) {
-            if (!config.petIncludeDuplicates()) {
-                return;
-            }
+        if (duplicate && !config.petIncludeDuplicates()) {
+            return;
+        }
 
-            previouslyOwned = true;
-        } else if (client.getVarbitValue(VarbitID.OPTION_COLLECTION_NEW_ITEM) % 2 == 1) {
-            // when collection log chat notification is enabled, presence or absence of notification indicates ownership history
-            previouslyOwned = !collection;
-        } else {
-            previouslyOwned = null;
+        if (previouslyOwned == null) {
+            previouslyOwned = true; // Probita message has already been triggered for this pet/character combo
         }
 
         String gameMessage;
         if (backpack) {
             gameMessage = "feels something weird sneaking into their backpack";
-        } else if (previouslyOwned != null && previouslyOwned) {
+        } else if (duplicate) {
             gameMessage = "has a funny feeling like they would have been followed...";
         } else {
             gameMessage = "has a funny feeling like they're being followed";
