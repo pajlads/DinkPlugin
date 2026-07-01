@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Add rarity of Maggot marquess for pet notifications. (#950)
 - Minor: Add config option to allow ignoring duplicate pets. (#940)
 - Bugfix: Prevent classification of newly introduced pets as previously owned. (#941)
 
