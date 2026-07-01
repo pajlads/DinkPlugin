@@ -513,6 +513,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Lil' zik", new KcSource(" Theatre of Blood", 1.0 / 650)), // assume normal mode
             entry("Lil'viathan", new KcSource("The Leviathan", 1.0 / 2_500)),
             entry("Little nightmare", new KcSource("Nightmare", 1.0 / 3_200)), // assume team size 4
+            entry("Maggot marquess", new KcSource("Maggot King", 1.0 / 3_600)),
             entry("Moxi", new KcSource("Amoxliatl", 1.0 / 3_000)),
             entry("Muphin", new KcSource("Phantom Muspah", 1.0 / 2_500)),
             entry("Nexling", new KcSource("Nex", 1.0 / 500)),
