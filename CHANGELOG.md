@@ -1,5 +1,9 @@
 ## Unreleased
 
+## 1.14.2
+
+- Dev: Temporarily switch to `gradle` build method. (#952)
+
 ## 1.14.1
 
 - Minor: Add rarity of Maggot marquess for pet notifications. (#950)
