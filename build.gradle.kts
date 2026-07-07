@@ -70,10 +70,29 @@ tasks.withType<AbstractArchiveTask>().configureEach {
     isReproducibleFileOrder = true
 }
 
+val pluginMainClass = "dinkplugin.DinkTest"
+
+tasks.register(name = "run", type = JavaExec::class) {
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set(pluginMainClass)
+
+    jvmArgs(
+        "-ea",
+        "--add-opens=java.desktop/sun.awt=ALL-UNNAMED",
+        "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED",
+        "--add-opens=java.desktop/com.apple.eawt=ALL-UNNAMED"
+    )
+
+    args(
+        "--developer-mode",
+        "--debug"
+    )
+}
+
 tasks.register(name = "shadowJar", type = Jar::class) {
     dependsOn(configurations.testRuntimeClasspath)
     manifest {
-        attributes(mapOf("Main-Class" to "dinkplugin.DinkTest", "Multi-Release" to true))
+        attributes(mapOf("Main-Class" to pluginMainClass, "Multi-Release" to true))
     }
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
