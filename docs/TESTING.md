@@ -12,6 +12,12 @@ At a minimum, JDK 11+ is required for compilation, but you should avoid running 
 
 If you haven't installed a [JDK](https://whichjdk.com/), we typically recommend using [Eclipse Temurin](https://adoptium.net/temurin/releases/).
 
+## Run task
+
+If not using IntelliJ (or the provided run configuration does not work), you can launch the client via `gradlew run`
+
+However, if you need a jar file to distribute to more testers, see below.
+
 ## Shadow Jar task
 
 To create an executable JAR (with dependencies), run `gradlew shadowJar`

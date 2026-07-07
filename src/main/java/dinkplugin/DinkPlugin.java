@@ -126,7 +126,7 @@ public class DinkPlugin extends Plugin {
 
     @Override
     protected void startUp() {
-        log.debug("Started up Dink");
+        log.trace("Started up Dink");
         settingsManager.init();
         versionManager.onStart();
         accountTracker.init();
@@ -139,7 +139,7 @@ public class DinkPlugin extends Plugin {
 
     @Override
     protected void shutDown() {
-        log.debug("Shutting down Dink");
+        log.trace("Shutting down Dink");
         this.resetNotifiers();
         gameState.lazySet(null);
         accountTracker.clear();
