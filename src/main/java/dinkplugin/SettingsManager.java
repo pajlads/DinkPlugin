@@ -164,6 +164,8 @@ public class SettingsManager {
             }
         });
         hiddenConfigKeys.add("importPolicy"); // not hidden, but shouldn't be overwritten
+        hiddenConfigKeys.add("proxyServer"); // not hidden, but should only be explicitly set by the user
+        hiddenConfigKeys.add("proxyAuth"); // not hidden, but should only be explicitly set by the user
         webhookConfigKeys = ImmutableSet.<String>builder()
             .add("discordWebhook") // DinkPluginConfig#primaryWebhook
             .addAll(keysBySection.getOrDefault(DinkPluginConfig.webhookSection.toLowerCase().replace(" ", ""), Collections.emptySet()))
