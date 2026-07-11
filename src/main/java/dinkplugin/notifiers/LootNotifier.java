@@ -368,7 +368,9 @@ public class LootNotifier extends BaseNotifier {
             NpcID.SAILING_TERN_DEAD,
             NpcID.SAILING_SEA_MOGRE_DEAD,
             NpcID.SAILING_DOLPHIN_DEAD,
-            NpcID.SAILING_VEILED_KRAKEN_DEAD
+            NpcID.SAILING_VEILED_KRAKEN_DEAD,
+            NpcID.MAGGOT_KING,
+            NpcID.MAGGOT_KING_CORPSE
         );
     }
 }

@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Bugfix: Use server loot event for Maggot King drops. (#960)
+- Dev: Add gradle `run` task and `logback-test.xml`. (#957)
+
 ## 1.14.2
 
 - Dev: Temporarily switch to `gradle` build method. (#952)
