@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.14.3
+
 - Bugfix: Use server loot event for Maggot King drops. (#960)
 - Dev: Exclude proxy settings from config export or import. (#955)
 - Dev: Switch back to `standard` builds for hub submissions. (#954)
