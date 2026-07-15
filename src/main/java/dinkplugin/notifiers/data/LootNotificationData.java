@@ -34,9 +34,12 @@ public class LootNotificationData extends NotificationData {
     @Nullable
     Integer npcId;
 
+    @Nullable
+    SlayerMetadata slayerMetadata;
+
     @Override
     public List<Field> getFields() {
-        List<Field> fields = new ArrayList<>(4);
+        List<Field> fields = new ArrayList<>(5);
         if (killCount != null) {
             fields.add(
                 new Field(
@@ -56,6 +59,10 @@ public class LootNotificationData extends NotificationData {
         }
         if (party != null && !party.isEmpty()) {
             fields.add(new Field("Party Size", Field.formatBlock("", String.valueOf(party.size()))));
+        }
+        if (slayerMetadata != null) {
+            String slayerStatus = slayerMetadata.isOnTask() ? "On Task" : "Not on task";
+            fields.add(new Field("Slayer Status", Field.formatBlock("", slayerStatus)));
         }
         return fields;
     }
