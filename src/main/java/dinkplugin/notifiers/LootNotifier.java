@@ -12,12 +12,14 @@ import dinkplugin.notifiers.data.AnnotatedItemStack;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.RareItemStack;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.notifiers.data.SlayerMetadata;
 import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.MathUtils;
-import dinkplugin.util.ThievingService;
 import dinkplugin.util.RarityService;
+import dinkplugin.util.SlayerService;
+import dinkplugin.util.ThievingService;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +64,9 @@ public class LootNotifier extends BaseNotifier {
 
     @Inject
     private RarityService rarityService;
+
+    @Inject
+    private SlayerService slayerService;
 
     @Inject
     private ThievingService thievingService;
@@ -303,6 +308,13 @@ public class LootNotifier extends BaseNotifier {
                     .orElse(null);
             }
 
+            Boolean onTask = type == LootRecordType.NPC && slayerService.isTaskActive().filter(b -> b).isPresent()
+                ? slayerService.getTargetName().filter(dropper::equals).isPresent()
+                : null;
+            SlayerMetadata slayerMetadata = onTask != null
+                ? SlayerMetadata.from(onTask, slayerService.getRuneliteService())
+                : null;
+
             String overrideUrl = getWebhookUrl();
             if (config.lootRedirectPlayerKill() && !config.pkWebhook().isBlank()) {
                 if (type == LootRecordType.PLAYER || (type == LootRecordType.EVENT && "Loot Chest".equals(dropper))) {
@@ -328,7 +340,7 @@ public class LootNotifier extends BaseNotifier {
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
-                    .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity, party, npcId))
+                    .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity, party, npcId, slayerMetadata))
                     .type(NotificationType.LOOT)
                     .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
                     .build()
