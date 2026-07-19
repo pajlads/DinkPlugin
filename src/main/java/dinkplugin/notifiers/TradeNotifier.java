@@ -108,6 +108,8 @@ public class TradeNotifier extends BaseNotifier {
             .replacement("%COUNTERPARTY%", Replacements.ofLink(counterparty, config.playerLookupService().getPlayerUrl(counterparty)))
             .replacement("%IN_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(receiveValue)))
             .replacement("%OUT_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(giveValue)))
+            .replacement("%RECEIVED_ITEMS%", ItemUtils.templateItems(received, true))
+            .replacement("%GIVEN_ITEMS%", ItemUtils.templateItems(disbursed, true))
             .build();
 
         createMessage(config.tradeSendImage(), NotificationBody.builder()
@@ -149,7 +151,9 @@ public class TradeNotifier extends BaseNotifier {
         }
         Map<Integer, Integer> quantityById = new HashMap<>(items.length * 4 / 3);
         for (Item item : items) {
-            quantityById.merge(item.getId(), item.getQuantity(), Integer::sum);
+            if (item.getId() >= 0) {
+                quantityById.merge(item.getId(), item.getQuantity(), Integer::sum);
+            }
         }
         List<SerializedItemStack> stacks = new ArrayList<>(quantityById.size());
         quantityById.forEach((id, quantity) -> stacks.add(ItemUtils.stackFromItem(itemManager, id, quantity)));

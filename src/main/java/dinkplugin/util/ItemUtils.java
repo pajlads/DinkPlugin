@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableSet;
 import dinkplugin.message.Embed;
 import dinkplugin.message.Field;
 import dinkplugin.message.templating.Evaluable;
+import dinkplugin.message.templating.LazyEvaluable;
 import dinkplugin.message.templating.Replacements;
+import dinkplugin.message.templating.impl.JoiningReplacement;
 import dinkplugin.notifiers.data.SerializedItemStack;
 import lombok.experimental.UtilityClass;
 import net.runelite.api.Client;
@@ -158,6 +160,21 @@ public class ItemUtils {
             Replacements.ofText(" x "),
             Replacements.ofWiki(item.getName())
         );
+    }
+
+    public Evaluable templateItems(Collection<SerializedItemStack> items, boolean includePrice) {
+        if (items.isEmpty()) {
+            return Replacements.ofText("Absolutely nothing!");
+        }
+        return LazyEvaluable.of(() -> JoiningReplacement.builder()
+            .prefix("* ")
+            .delimiter("\n* ")
+            .components(
+                items.stream()
+                    .map(item -> ItemUtils.templateStack(item, includePrice))
+                    .collect(Collectors.toList())
+            )
+            .build());
     }
 
     public String getItemImageUrl(int itemId) {

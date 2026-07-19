@@ -2124,12 +2124,16 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %COUNTERPARTY% to insert the name of the other player<br/>" +
             "Use %IN_VALUE% to insert the value of the items received from the counterparty<br/>" +
-            "Use %OUT_VALUE% to insert the value of the items given to the counterparty",
+            "Use %OUT_VALUE% to insert the value of the items given to the counterparty<br/>" +
+            "Use %RECEIVED_ITEMS% to list all items received from the counterparty<br/>" +
+            "Use %GIVEN_ITEMS% to list all items given to the counterparty",
         position = 163,
         section = tradeSection
     )
     default String tradeNotifyMessage() {
-        return "%USERNAME% traded with %COUNTERPARTY%";
+        return "%USERNAME% traded with %COUNTERPARTY%\n\n" +
+            "Received:\n%RECEIVED_ITEMS%\n\n" +
+            "Given:\n%GIVEN_ITEMS%\n";
     }
 
     @ConfigItem(

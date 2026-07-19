@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add exchanged items to the trade notification message template. (#962)
+
 ## 1.14.3
 
 - Bugfix: Use server loot event for Maggot King drops. (#960)
