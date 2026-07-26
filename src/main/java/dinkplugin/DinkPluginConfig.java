@@ -2001,7 +2001,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %DEPOSITED% to insert the list of deposited items<br/>" +
-            "Use %WITHDRAWN% to insert the list of withdrawn items",
+            "Use %WITHDRAWN% to insert the list of withdrawn items<br/>" +
+            "Use %COMBINED% to insert a single block with both the deposited and withdrawn items",
         position = 145,
         section = groupStorageSection
     )
