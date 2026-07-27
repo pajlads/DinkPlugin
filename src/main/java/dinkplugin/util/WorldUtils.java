@@ -42,6 +42,7 @@ public class WorldUtils {
     private final int CREATURE_GRAVEYARD_REGION = 13462;
     private final int NMZ_REGION = 9033;
     private final int TZHAAR_CAVE = 9551;
+    private final int CLAN_HALL = 6997;
     public final @VisibleForTesting int TZHAAR_PIT = 9552;
     public final int FORTIS_REGION = 7216;
 
@@ -106,6 +107,10 @@ public class WorldUtils {
 
     public boolean isChambersOfXeric(int regionId) {
         return COX_REGIONS.contains(regionId);
+    }
+
+    public boolean isClanHall(int regionId) {
+        return regionId == CLAN_HALL;
     }
 
     public boolean isClanWars(int regionId) {
@@ -243,7 +248,7 @@ public class WorldUtils {
             return Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN ? Danger.DANGEROUS : Danger.SAFE;
         }
 
-        if (isCastleWars(regionId) || isClanWars(regionId) || isSoulWars(regionId) || isPlayerOwnedHouse(regionId)
+        if (isCastleWars(regionId) || isClanHall(regionId) || isClanWars(regionId) || isSoulWars(regionId) || isPlayerOwnedHouse(regionId)
             || isLastManStanding(client) || isTzHaarFightPit(regionId)) {
             return Danger.SAFE;
         }
