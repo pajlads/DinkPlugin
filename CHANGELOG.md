@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Treat deaths in the clan hall as safe. (#974)
+
 ## 1.14.3
 
 - Bugfix: Use server loot event for Maggot King drops. (#960)
