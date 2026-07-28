@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Add exchanged items to the trade notification message template. (#962)
+- Bugfix: Treat deaths in the clan hall as safe. (#974)
 
 ## 1.14.3
 
