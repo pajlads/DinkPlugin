@@ -390,6 +390,7 @@ Dink powers a variety of third-party projects including:
 - [RuneDiary](https://www.runediary.com/): Online adventure log powered by Dink
 - [OSRS Loot Tracker](https://osrsloottracker.com/): Discord bot that logs Dink notifications in a Google spreadsheet
 - [Cast OSRS](https://github.com/jgresham/cast-osrs): Forwards Dink notifications to a decentralized social media community on Farcaster
+- [WCHB](https://wchb.net/): Web app that uses Dink loot notifications to reroll OSRS drops and track the resulting loot in an alternate timeline
 
 _Want your project listed here? Feel free to open an [issue](https://github.com/pajlads/DinkPlugin/issues/new/choose)!_
 
