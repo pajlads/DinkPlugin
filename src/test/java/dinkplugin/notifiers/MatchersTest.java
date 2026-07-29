@@ -1,5 +1,6 @@
 package dinkplugin.notifiers;
 
+import dinkplugin.util.SlayerService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,7 +22,7 @@ class MatchersTest {
     @ParameterizedTest(name = "Slayer task completion message should trigger {0}")
     @ArgumentsSource(SlayerTaskProvider.class)
     void slayerTaskCompletionRegexFindsMatch(String message, String task) {
-        Matcher matcher = SlayerNotifier.SLAYER_TASK_REGEX.matcher(message);
+        Matcher matcher = SlayerService.SLAYER_TASK_REGEX.matcher(message);
         assertTrue(matcher.find());
         assertEquals(task, matcher.group("task"));
     }
@@ -35,7 +36,7 @@ class MatchersTest {
         }
     )
     void slayerTaskCompletionRegexDoesNotMatch(String message) {
-        Matcher matcher = SlayerNotifier.SLAYER_TASK_REGEX.matcher(message);
+        Matcher matcher = SlayerService.SLAYER_TASK_REGEX.matcher(message);
         assertFalse(matcher.find());
     }
 

@@ -37,6 +37,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.discord.DiscordService;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.NPCManager;
+import net.runelite.client.plugins.slayer.SlayerPluginService;
 import net.runelite.client.ui.DrawManager;
 import net.runelite.client.util.ImageCapture;
 import net.runelite.http.api.RuneLiteAPI;
@@ -93,6 +94,9 @@ abstract class MockedNotifierTest extends MockedTestBase {
 
     @Bind
     protected DiscordService discordService = Mockito.mock(DiscordService.class);
+
+    @Bind
+    protected SlayerPluginService slayerPluginService = Mockito.mock(SlayerPluginService.class);
 
     @Bind
     protected ChatMessageManager chatManager = Mockito.mock(ChatMessageManager.class);

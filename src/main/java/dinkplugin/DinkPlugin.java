@@ -24,6 +24,7 @@ import dinkplugin.notifiers.TradeNotifier;
 import dinkplugin.notifiers.LeaguesNotifier;
 import dinkplugin.util.AccountTypeTracker;
 import dinkplugin.util.KillCountService;
+import dinkplugin.util.SlayerService;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldTypeTracker;
 import lombok.extern.slf4j.Slf4j;
@@ -86,6 +87,7 @@ public class DinkPlugin extends Plugin {
     private @Inject WorldTypeTracker worldTracker;
 
     private @Inject KillCountService killCountService;
+    private @Inject SlayerService slayerService;
 
     private @Inject CollectionNotifier collectionNotifier;
     private @Inject PetNotifier petNotifier;
@@ -145,6 +147,7 @@ public class DinkPlugin extends Plugin {
         accountTracker.clear();
         worldTracker.clear();
         metaNotifier.reset();
+        slayerService.reset();
     }
 
     void resetNotifiers() {
@@ -263,6 +266,7 @@ public class DinkPlugin extends Plugin {
                     return;
                 }
 
+                slayerService.onGameMessage(chatMessage);
                 collectionNotifier.onChatMessage(chatMessage);
                 lootNotifier.onGameMessage(chatMessage);
                 petNotifier.onChatMessage(chatMessage);
@@ -319,6 +323,7 @@ public class DinkPlugin extends Plugin {
     @Subscribe
     public void onInteractingChanged(InteractingChanged event) {
         deathNotifier.onInteraction(event);
+        slayerService.onInteraction(event);
     }
 
     @Subscribe
