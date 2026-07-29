@@ -8,6 +8,7 @@ import dinkplugin.message.templating.Evaluable;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.message.templating.impl.JoiningReplacement;
+import dinkplugin.notifiers.data.AmascutMetadata;
 import dinkplugin.notifiers.data.AnnotatedItemStack;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.RareItemStack;
@@ -295,6 +296,8 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
+            AmascutMetadata toaData = dropper.startsWith(KillCountService.TOA) ? AmascutMetadata.of(client) : null;
+
             if (npcId == null && (type == LootRecordType.NPC || type == LootRecordType.PICKPOCKET)) {
                 npcId = client.getTopLevelWorldView().npcs().stream()
                     .filter(npc -> dropper.equals(npc.getName()))
@@ -311,7 +314,7 @@ public class LootNotifier extends BaseNotifier {
             }
             Double rarity = rarest != null ? rarest.getRarity() : null;
             boolean screenshot = config.lootSendImage() && (totalStackValue >= config.lootImageMinValue() || onAllowList);
-            Collection<String> party = type == LootRecordType.EVENT ? Utils.getBossParty(client, dropper) : null;
+            Collection<String> party = toaData != null ? toaData.getParty() : (type == LootRecordType.EVENT ? Utils.getBossParty(client, dropper) : null);
             Evaluable source = type == LootRecordType.PLAYER
                 ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))
                 : Replacements.ofWiki(dropper);
@@ -328,7 +331,7 @@ public class LootNotifier extends BaseNotifier {
                 NotificationBody.builder()
                     .text(notifyMessage)
                     .embeds(embeds)
-                    .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity, party, npcId))
+                    .extra(new LootNotificationData(serializedItems, dropper, type, kc, rarity, party, npcId, toaData))
                     .type(NotificationType.LOOT)
                     .thumbnailUrl(ItemUtils.getItemImageUrl(max.getId()))
                     .build()

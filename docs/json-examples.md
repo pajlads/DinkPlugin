@@ -248,7 +248,15 @@ JSON for Loot Notifications:
     "category": "EVENT",
     "killCount": 60,
     "rarestProbability": 0.001,
-    "npcId": null
+    "npcId": null,
+    "amascutMetadata": {
+      "teamSize": 3,
+      "rewardPoints": 12345,
+      "raidLevel": 345,
+      "raidDamage": 6789,
+      "petProbability": 0.01,
+      "purpleProbability": 0.1
+    }
   },
   "type": "LOOT"
 }

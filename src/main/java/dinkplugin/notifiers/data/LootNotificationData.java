@@ -34,6 +34,9 @@ public class LootNotificationData extends NotificationData {
     @Nullable
     Integer npcId;
 
+    @Nullable
+    AmascutMetadata amascutMetadata;
+
     @Override
     public List<Field> getFields() {
         List<Field> fields = new ArrayList<>(4);
@@ -70,6 +73,7 @@ public class LootNotificationData extends NotificationData {
         if (rarestProbability != null) m.put("rarestProbability", rarestProbability);
         if (party != null) m.put("party", party);
         if (npcId != null) m.put("npcId", npcId);
+        if (amascutMetadata != null) m.put("amascutMetadata", amascutMetadata.sanitized());
         return m;
     }
 
