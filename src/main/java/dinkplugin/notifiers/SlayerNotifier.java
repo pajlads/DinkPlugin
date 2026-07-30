@@ -25,7 +25,7 @@ public class SlayerNotifier extends BaseNotifier {
     private static final Pattern BOSS_REGEX = Pattern.compile("You are granted .+ Slayer XP for completing your boss task against(?: the)? (?<name>.+)\\.$");
     @VisibleForTesting
     static final Pattern SLAYER_TASK_REGEX = Pattern.compile("You have completed your task! You killed (?<task>[\\d,]+ [^.]+)\\..*");
-    private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness )?tasks?(?: and received (?<points>[\\d,]+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
+    private static final Pattern SLAYER_COMPLETE_REGEX = Pattern.compile("You've completed (?:at least )?(?<taskCount>[\\d,]+) (?:Wilderness |Mortimer )?tasks?(?: and received (?<points>[\\d,]+) points, giving you a total of [\\d,]+|\\.You'll be eligible to earn reward points if you complete tasks from a more advanced Slayer Master\\.| and reached the maximum amount of Slayer points \\((?<points2>[\\d,]+)\\))?");
     private static final Pattern TASK_MONSTER_REGEX = Pattern.compile("^(?<count>\\d*)\\s*(?<monster>.+)$");
 
     private final AtomicReference<String> slayerTask = new AtomicReference<>("");
