@@ -1,6 +1,11 @@
 ## Unreleased
 
 - Minor: Add exchanged items to the trade notification message template. (#962)
+
+## 1.14.4
+
+- Bugfix: Allow Mortimer slayer task completions to trigger notifications. (#983)
+- Bugfix: Use server loot event for Mad Angel drops. (#982)
 - Bugfix: Treat deaths in the clan hall as safe. (#974)
 
 ## 1.14.3
