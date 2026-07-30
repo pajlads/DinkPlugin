@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Allow Mortimer slayer task completions to trigger notifications. (#983)
 - Bugfix: Use server loot event for Mad Angel drops. (#982)
 - Bugfix: Treat deaths in the clan hall as safe. (#974)
 
