@@ -18,8 +18,9 @@ public final class LazyEvaluable implements Evaluable {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Evaluable)) return false;
-        LazyEvaluable that = (LazyEvaluable) o;
-        return Objects.equals(this.resolve(), that.resolve());
+        Evaluable that = (Evaluable) o;
+        return this.evaluate(false).equals(that.evaluate(false))
+            && this.evaluate(true).equals(that.evaluate(true));
     }
 
     @Override
