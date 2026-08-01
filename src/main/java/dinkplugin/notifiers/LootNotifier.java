@@ -384,7 +384,8 @@ public class LootNotifier extends BaseNotifier {
             NpcID.SAILING_DOLPHIN_DEAD,
             NpcID.SAILING_VEILED_KRAKEN_DEAD,
             NpcID.MAGGOT_KING,
-            NpcID.MAGGOT_KING_CORPSE
+            NpcID.MAGGOT_KING_CORPSE,
+            16305, 16306, 16307, 16308, 16309, 16310, 16311, 16312, 16313, 16314, 16315 // Mad Angel
         );
     }
 }
