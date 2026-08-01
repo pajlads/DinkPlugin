@@ -10,6 +10,7 @@ import dinkplugin.notifiers.data.AmascutMetadata;
 import dinkplugin.notifiers.data.AnnotatedItemStack;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.RareItemStack;
+import dinkplugin.util.AmascutTracker;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
 import net.runelite.api.NPC;
@@ -56,6 +57,10 @@ class LootNotifierTest extends MockedNotifierTest {
     @Bind
     @InjectMocks
     LootNotifier notifier;
+
+    @Bind
+    @InjectMocks
+    AmascutTracker amascutTracker;
 
     @Bind
     @InjectMocks
@@ -791,7 +796,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(source))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, null, null, AmascutMetadata.of(client)))
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, null, null, AmascutMetadata.of(amascutTracker)))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -822,7 +827,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(source))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, null, null, AmascutMetadata.of(client)))
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, null, null, AmascutMetadata.of(amascutTracker)))
                 .type(NotificationType.LOOT)
                 .build()
         );

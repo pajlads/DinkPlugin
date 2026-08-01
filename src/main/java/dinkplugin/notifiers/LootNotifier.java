@@ -13,12 +13,13 @@ import dinkplugin.notifiers.data.AnnotatedItemStack;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.RareItemStack;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.AmascutTracker;
 import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.MathUtils;
-import dinkplugin.util.ThievingService;
 import dinkplugin.util.RarityService;
+import dinkplugin.util.ThievingService;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -57,6 +58,9 @@ public class LootNotifier extends BaseNotifier {
 
     @Inject
     private ItemManager itemManager;
+
+    @Inject
+    private AmascutTracker amascutTracker;
 
     @Inject
     private KillCountService killCountService;
@@ -296,7 +300,7 @@ public class LootNotifier extends BaseNotifier {
         }
 
         if (sendMessage) {
-            AmascutMetadata toaData = dropper.startsWith(KillCountService.TOA) ? AmascutMetadata.of(client) : null;
+            AmascutMetadata toaData = dropper.startsWith(KillCountService.TOA) ? AmascutMetadata.of(amascutTracker) : null;
 
             if (npcId == null && (type == LootRecordType.NPC || type == LootRecordType.PICKPOCKET)) {
                 npcId = client.getTopLevelWorldView().npcs().stream()
