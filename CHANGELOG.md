@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add exchanged items to the trade notification message template. (#962)
+
 ## 1.14.4
 
 - Bugfix: Allow Mortimer slayer task completions to trigger notifications. (#983)

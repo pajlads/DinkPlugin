@@ -11,6 +11,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.gameval.ItemID;
+import net.runelite.client.util.QuantityFormatter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -42,7 +43,9 @@ public class TradeNotifierTest extends MockedNotifierTest {
         // init config mocks
         when(config.notifyTrades()).thenReturn(true);
         when(config.tradeMinValue()).thenReturn(2000);
-        when(config.tradeNotifyMessage()).thenReturn("%USERNAME% traded with %COUNTERPARTY%");
+        when(config.tradeNotifyMessage()).thenReturn("%USERNAME% traded with %COUNTERPARTY%\n\n" +
+            "Received:\n%RECEIVED_ITEMS%\n\n" +
+            "Given:\n%GIVEN_ITEMS%\n");
 
         // init item mocks
         mockItem(ItemID.OPAL, OPAL_PRICE, "Opal");
@@ -80,9 +83,23 @@ public class TradeNotifierTest extends MockedNotifierTest {
             NotificationBody.builder()
                 .text(
                     Template.builder()
-                        .template("%USERNAME% traded with %COUNTERPARTY%")
+                        .template("%USERNAME% traded with %COUNTERPARTY%\n\n" +
+                            "Received:\n%RECEIVED_ITEMS%\n\n" +
+                            "Given:\n%GIVEN_ITEMS%\n")
                         .replacement("%USERNAME%", Replacements.ofText(PLAYER_NAME))
                         .replacement("%COUNTERPARTY%", Replacements.ofLink(COUNTERPARTY, config.playerLookupService().getPlayerUrl(COUNTERPARTY)))
+                        .replacement("%RECEIVED_ITEMS%",
+                            Replacements.ofMultiple("",
+                                Replacements.ofText("* 1 x "),
+                                Replacements.ofWiki("Ruby"),
+                                Replacements.ofText(" (" + QuantityFormatter.quantityToStackSize(RUBY_PRICE) + ")"))
+                        )
+                        .replacement("%GIVEN_ITEMS%",
+                            Replacements.ofMultiple("",
+                                Replacements.ofText("* 2 x "),
+                                Replacements.ofWiki("Opal"),
+                                Replacements.ofText(" (" + QuantityFormatter.quantityToStackSize(2 * OPAL_PRICE) + ")"))
+                        )
                         .build()
                 )
                 .extra(new TradeNotificationData(COUNTERPARTY, received, discarded, RUBY_PRICE, 2 * OPAL_PRICE))
