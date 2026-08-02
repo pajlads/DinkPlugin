@@ -5,16 +5,20 @@ import lombok.Builder;
 import lombok.Singular;
 import lombok.Value;
 
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 @Value
 @Builder
 public class JoiningReplacement implements Evaluable {
     @Singular
-    List<Evaluable> components;
+    Collection<Evaluable> components;
     @Builder.Default
     String delimiter = "";
+    @Builder.Default
+    String prefix = "";
+    @Builder.Default
+    String postfix = "";
 
     @Override
     public String evaluate(boolean rich) {
@@ -22,12 +26,14 @@ public class JoiningReplacement implements Evaluable {
             return "";
 
         StringBuilder sb = new StringBuilder();
+        sb.append(prefix);
         Iterator<Evaluable> it = components.iterator();
         sb.append(it.next().evaluate(rich));
         while (it.hasNext()) {
             sb.append(delimiter);
             sb.append(it.next().evaluate(rich));
         }
+        sb.append(postfix);
         return sb.toString();
     }
 }
