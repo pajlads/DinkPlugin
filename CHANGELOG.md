@@ -4,6 +4,7 @@
 - Minor: Calculate Soup pet luck based on port task completions. (#985)
 - Minor: Add loot notifications for rare deep sea trawling drops. (#971)
 - Minor: Add exchanged items to the trade notification message template. (#962)
+- Dev: Add raid metadata for TOA loot notifications. (#978)
 
 ## 1.14.4
 
