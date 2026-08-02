@@ -171,10 +171,14 @@ public class DiscordMessageHandler {
 
     private void sendMessage(HttpUrl url, NotificationBody<?> mBody, @Nullable RequestBody image, int attempt) {
         BiConsumer<NotificationBody<?>, Throwable> retry = (body, e) -> {
-            log.trace(String.format("Failed to send webhook message to %s on attempt %d", url, attempt), e);
+            String urlString = url.toString();
+            String censoredUrl = Utils.truncate(urlString, urlString.length() / 2) +
+                (urlString.length() > 20 ? urlString.substring(urlString.length() - urlString.length() / 20) : "");
+
+            log.trace("Failed to send webhook message to {} on attempt {}", urlString, attempt, e);
 
             if (attempt == 0) {
-                log.warn("There was an error sending the webhook message", e);
+                log.warn("There was an error sending the {} webhook message to {}", mBody.getType(), censoredUrl, e);
             }
 
             int maxRetries = config.maxRetries();
@@ -188,7 +192,7 @@ public class DiscordMessageHandler {
                     log.debug("Skipping retry attempts for failed webhook since base delay is not positive");
                 }
             } else if (maxRetries > 0) {
-                log.warn("Exhausted retry attempts when sending the webhook message", e);
+                log.warn("Exhausted retry attempts when sending the {} webhook message to {}", mBody.getType(), censoredUrl, e);
             } else {
                 log.debug("Skipping retry attempts for failed webhook since max retries is not positive");
             }

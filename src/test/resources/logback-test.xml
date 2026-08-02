@@ -28,6 +28,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
+            <charset>UTF-8</charset>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss zzz} [%thread] %-5level %logger{36} - %msg%n</Pattern>
         </encoder>
     </appender>
@@ -44,6 +45,7 @@
         </rollingPolicy>
 
         <encoder>
+            <charset>UTF-8</charset>
             <Pattern>%d{yyyy-MM-dd HH:mm:ss zzz} [%thread] %-5level %logger{36} - %msg%n</Pattern>
         </encoder>
     </appender>
