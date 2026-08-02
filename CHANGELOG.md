@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Calculate Soup pet luck based on port task completions. (#985)
 - Minor: Add loot notifications for rare deep sea trawling drops. (#971)
 - Minor: Add exchanged items to the trade notification message template. (#962)
 
