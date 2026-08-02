@@ -235,7 +235,7 @@ public class PetNotifier extends BaseNotifier {
         Source source = petName != null ? PET_NAMES_TO_SOURCE.get(pet) : null;
         Double rarity = source != null ? source.getProbability(client, killCountService) : null;
         Integer actions = rarity != null ? source.estimateActions(client, killCountService) : null;
-        Double luck = actions != null && (previouslyOwned == null || !previouslyOwned)
+        Double luck = actions != null && (previouslyOwned != null && !previouslyOwned)
             ? source.calculateLuck(client, killCountService, rarity, actions) : null;
 
         PetNotificationData extra = new PetNotificationData(StringUtils.defaultIfEmpty(petName, null), milestone, duplicate, previouslyOwned, rarity, actions, luck);
@@ -584,7 +584,34 @@ public class PetNotifier extends BaseNotifier {
                     return lootRecord != null ? lootRecord.getQuantity(ItemID.DIZANAS_QUIVER_UNCHARGED) : null;
                 }
             }),
-            entry("Soup", new SkillSource(Skill.SAILING, 0, 0)), // todo: determine drop rate
+            entry("Soup", new MultiSource() {
+                @Override
+                double[] getRates(Client client) {
+                    // https://oldschool.runescape.wiki/w/Soup#Drop_rates
+                    int lvl = client.getRealSkillLevel(Skill.SAILING);
+                    double portTasksRate = 1.0 / (6000 - 2850 * (lvl - 1) / 98.0);
+                    double seaChartingRate = 1.0 / 30_000;
+                    double barracudaRate = 1.0 / (lvl < 55 ? 5334 : lvl < 72 ? 3834 : 3000);
+                    double shipwreckRate = 1.0 / (lvl < 26 ? 800_000 : lvl < 35 ? 500_000 : lvl < 53 ? 300_000 : lvl < 64 ? 280_000 : lvl < 73 ? 275_000 : lvl < 80 ? 260_000 : lvl < 87 ? 230_000 : 160_000);
+                    double deepTrawlingRate = 1.0 / 360_000;
+                    double salvageStationRate = 1.0 / 800_000;
+                    double trimmingRate = 1.0 / 120_000;
+                    return new double[] { portTasksRate, seaChartingRate, barracudaRate, shipwreckRate, deepTrawlingRate, salvageStationRate, trimmingRate };
+                }
+
+                @Override
+                int[] getActions(Client client, KillCountService kcService) {
+                    int portTasksDone = client.getVarpValue(VarPlayerID.PORT_TASKS_COMPLETED);
+                    // TODO: implement more actions below
+                    int seaChartingDone = 0;
+                    int barracudaTrials = 0;
+                    int shipwreckSalvages = 0;
+                    int deepSeaTrawling = 0;
+                    int salvagesSorted = 0;
+                    int sailsTrimmed = 0;
+                    return new int[] { portTasksDone, seaChartingDone, barracudaTrials, shipwreckSalvages, deepSeaTrawling, salvagesSorted, sailsTrimmed };
+                }
+            }),
             entry("Sraracha", new KcSource("Sarachnis", 1.0 / 3_000)),
             entry("Tangleroot", new SkillSource(Skill.FARMING, 7_500, 119)), // mushrooms
             entry("Tiny tempor", new KcSource("Reward pool (Tempoross)", 1.0 / 8_000)),

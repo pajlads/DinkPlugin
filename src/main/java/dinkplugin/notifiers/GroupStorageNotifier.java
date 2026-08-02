@@ -157,12 +157,13 @@ public class GroupStorageNotifier extends BaseNotifier {
         };
         String depositString = formatItems.apply(deposits, "+ ");
         String withdrawalString = formatItems.apply(withdrawals, "- ");
+        String combinedDiff = ((deposits.isEmpty() ? "" : depositString) + "\n" + (withdrawals.isEmpty() ? "" : withdrawalString)).trim();
 
         // Build content
         String playerName = client.getLocalPlayer().getName();
         String content = StringUtils.replaceEach(config.groupStorageNotifyMessage(),
-            new String[] { "%USERNAME%", "%DEPOSITED%", "%WITHDRAWN%" },
-            new String[] { playerName, depositString, withdrawalString }
+            new String[] { "%USERNAME%", "%DEPOSITED%", "%WITHDRAWN%", "%COMBINED%" },
+            new String[] { playerName, depositString, withdrawalString, combinedDiff }
         );
         Template formattedText = Template.builder()
             .template("$s$")

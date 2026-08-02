@@ -195,6 +195,20 @@ public class LootNotifier extends BaseNotifier {
     public void onGameMessage(String message) {
         if ("You have found a Pharaoh's sceptre! It fell on the floor.".equals(message)) {
             this.handleNotify(List.of(new ItemStack(ItemID.PHARAOHS_SCEPTRE, 1)), "Pyramid Plunder", LootRecordType.EVENT, null);
+        } else if ("You catch a giant blue krill!".equals(message)) {
+            this.handleNotify(List.of(new ItemStack(ItemID.POH_TROPHYDROP_GIANT_KRILL, 1)), "Deep sea trawling", LootRecordType.EVENT, null);
+        } else if ("You catch a golden haddock!".equals(message)) {
+            this.handleNotify(List.of(new ItemStack(ItemID.POH_TROPHYDROP_HADDOCK, 1)), "Deep sea trawling", LootRecordType.EVENT, null);
+        } else if ("You catch a orangefin!".equals(message)) {
+            this.handleNotify(List.of(new ItemStack(ItemID.POH_TROPHYDROP_YELLOWFIN, 1)), "Deep sea trawling", LootRecordType.EVENT, null);
+        } else if ("You catch a huge halibut!".equals(message)) {
+            this.handleNotify(List.of(new ItemStack(ItemID.POH_TROPHYDROP_HALIBUT, 1)), "Deep sea trawling", LootRecordType.EVENT, null);
+        } else if ("You catch a purplefin!".equals(message)) {
+            this.handleNotify(List.of(new ItemStack(ItemID.POH_TROPHYDROP_BLUEFIN, 1)), "Deep sea trawling", LootRecordType.EVENT, null);
+        } else if ("You catch a swift marlin!".equals(message)) {
+            this.handleNotify(List.of(new ItemStack(ItemID.POH_TROPHYDROP_MARLIN, 1)), "Deep sea trawling", LootRecordType.EVENT, null);
+        } else if ("You've received some paint!".equals(message)) {
+            this.handleNotify(List.of(new ItemStack(ItemID.SAILING_PAINT_ANGLERS, 1)), "Deep sea trawling", LootRecordType.EVENT, null);
         }
     }
 
@@ -377,7 +391,8 @@ public class LootNotifier extends BaseNotifier {
             NpcID.SAILING_DOLPHIN_DEAD,
             NpcID.SAILING_VEILED_KRAKEN_DEAD,
             NpcID.MAGGOT_KING,
-            NpcID.MAGGOT_KING_CORPSE
+            NpcID.MAGGOT_KING_CORPSE,
+            16305, 16306, 16307, 16308, 16309, 16310, 16311, 16312, 16313, 16314, 16315 // Mad Angel
         );
     }
 }
