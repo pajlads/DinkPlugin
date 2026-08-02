@@ -7,11 +7,13 @@ import dinkplugin.message.NotificationBody;
 import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
+import dinkplugin.notifiers.data.AmascutMetadata;
 import dinkplugin.notifiers.data.AmascutPurpleNotificationData;
 import dinkplugin.notifiers.data.GroupBankContentsNotificationData;
 import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
 import dinkplugin.notifiers.data.SerializedItemStack;
+import dinkplugin.util.AmascutTracker;
 import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.SerializedPet;
@@ -73,6 +75,9 @@ public class MetaNotifier extends BaseNotifier {
 
     @Inject
     private Gson gson;
+
+    @Inject
+    private AmascutTracker amascutTracker;
 
     @Override
     public boolean isEnabled() {
@@ -186,15 +191,7 @@ public class MetaNotifier extends BaseNotifier {
         }
 
         // Gather relevant data
-        var party = Utils.getAmascutTombsParty(client);
-        int rewardPoints = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSCORE);
-        int raidLevels = client.getVarbitValue(VarbitID.TOA_CLIENT_RAID_LEVEL);
-
-        // Calculate probability based on https://oldschool.runescape.wiki/w/Chest_(Tombs_of_Amascut)#Uniques
-        int x = Math.min(raidLevels, 400);
-        int y = Math.max(Math.min(raidLevels, 550) - 400, 0);
-        int partySize = Math.max(party.size(), 1);
-        double probability = Math.min(0.01 * rewardPoints / (10_500 - 20 * (x + y / 3.0)), 0.55) / partySize;
+        AmascutMetadata data = AmascutMetadata.of(amascutTracker);
 
         // Fire notification
         String playerName = Utils.getPlayerName(client);
@@ -203,7 +200,7 @@ public class MetaNotifier extends BaseNotifier {
             .template("%USERNAME% rolled a purple (unique) drop from Tombs of Amascut!")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .build();
-        var extra = new AmascutPurpleNotificationData(party, rewardPoints, raidLevels, probability);
+        var extra = new AmascutPurpleNotificationData(data.getParty(), data.getRewardPoints(), data.getRaidLevel(), data.getPurpleProbability());
         createMessage(false, NotificationBody.builder()
             .type(NotificationType.TOA_UNIQUE)
             .text(message)
