@@ -5,6 +5,7 @@ import dinkplugin.message.NotificationType;
 import dinkplugin.message.templating.Replacements;
 import dinkplugin.message.templating.Template;
 import dinkplugin.notifiers.data.PetNotificationData;
+import dinkplugin.util.AmascutTracker;
 import dinkplugin.util.ItemSearcher;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
@@ -76,6 +77,9 @@ public class PetNotifier extends BaseNotifier {
 
     @Inject
     private ItemSearcher itemSearcher;
+
+    @Inject
+    private AmascutTracker amascutTracker;
 
     @Inject
     private KillCountService killCountService;
@@ -233,7 +237,7 @@ public class PetNotifier extends BaseNotifier {
             .orElse(null);
 
         Source source = petName != null ? PET_NAMES_TO_SOURCE.get(pet) : null;
-        Double rarity = source != null ? source.getProbability(client, killCountService) : null;
+        Double rarity = source != null ? source.getProbability(client, killCountService, amascutTracker) : null;
         Integer actions = rarity != null ? source.estimateActions(client, killCountService) : null;
         Double luck = actions != null && (previouslyOwned != null && !previouslyOwned)
             ? source.calculateLuck(client, killCountService, rarity, actions) : null;
@@ -273,7 +277,7 @@ public class PetNotifier extends BaseNotifier {
     }
 
     private static abstract class Source {
-        abstract Double getProbability(Client client, KillCountService kcService);
+        abstract Double getProbability(Client client, KillCountService kcService, AmascutTracker amascutTracker);
 
         abstract Integer estimateActions(Client client, KillCountService kcService);
 
@@ -294,7 +298,7 @@ public class PetNotifier extends BaseNotifier {
         }
 
         @Override
-        Double getProbability(Client client, KillCountService kcService) {
+        Double getProbability(Client client, KillCountService kcService, AmascutTracker amascutTracker) {
             final int[] actions = getActions(client, kcService);
             if (actions == null) return null;
             final int totalActions = MathUtils.sum(actions);
@@ -368,7 +372,7 @@ public class PetNotifier extends BaseNotifier {
         Double probability;
 
         @Override
-        Double getProbability(Client client, KillCountService kcService) {
+        Double getProbability(Client client, KillCountService kcService, AmascutTracker amascutTracker) {
             return this.probability;
         }
 
@@ -413,7 +417,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Abyssal orphan", new KcSource("Abyssal Sire", 1.0 / 2_560)),
             entry("Abyssal protector", new Source() {
                 @Override
-                Double getProbability(Client client, KillCountService kcService) {
+                Double getProbability(Client client, KillCountService kcService, AmascutTracker amascutTracker) {
                     return 1.0 / 4_000;
                 }
 
@@ -521,7 +525,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Noon", new KcSource("Grotesque Guardians", 1.0 / 3_000)),
             entry("Olmlet", new Source() {
                 @Override
-                Double getProbability(Client client, KillCountService kcService) {
+                Double getProbability(Client client, KillCountService kcService, AmascutTracker amascutTracker) {
                     // https://oldschool.runescape.wiki/w/Ancient_chest#Unique_drop_table
                     int totalPoints = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSCORE);
                     if (totalPoints <= 0) {
@@ -550,7 +554,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Pet kraken", new KcSource("Kraken", 1.0 / 3_000)),
             entry("Pet penance queen", new Source() {
                 @Override
-                Double getProbability(Client client, KillCountService kcService) {
+                Double getProbability(Client client, KillCountService kcService, AmascutTracker amascutTracker) {
                     return 1.0 / 1_000;
                 }
 
@@ -574,7 +578,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Smolcano", new KcSource("Zalcano", 1.0 / 2_250)),
             entry("Smol heredit", new Source() {
                 @Override
-                Double getProbability(Client client, KillCountService kcService) {
+                Double getProbability(Client client, KillCountService kcService, AmascutTracker amascutTracker) {
                     return 1.0 / 200;
                 }
 
@@ -617,13 +621,9 @@ public class PetNotifier extends BaseNotifier {
             entry("Tiny tempor", new KcSource("Reward pool (Tempoross)", 1.0 / 8_000)),
             entry("Tumeken's guardian", new Source() {
                 @Override
-                Double getProbability(Client client, KillCountService kcService) {
-                    // https://oldschool.runescape.wiki/w/Chest_(Tombs_of_Amascut)#Tertiary_rewards
-                    int rewardPoints = client.getVarbitValue(VarbitID.RAIDS_CLIENT_PARTYSCORE);
-                    int raidLevels = Math.min(client.getVarbitValue(VarbitID.TOA_CLIENT_RAID_LEVEL), 550);
-                    int x = Math.min(raidLevels, 400);
-                    int y = Math.max(raidLevels - 400, 0);
-                    return 0.01 * rewardPoints / (350_000 - 700 * (x + y / 3.0)); // assume latest is representative
+                Double getProbability(Client client, KillCountService kcService, AmascutTracker amascutTracker) {
+                    double prob = amascutTracker.getPetProbability();
+                    return prob > 0 ? prob : null;
                 }
 
                 @Override

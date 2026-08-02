@@ -86,4 +86,23 @@ public class AmascutTracker {
             ? personalContribution
             : partyScore / Math.max(teamSize, 1);
     }
+
+    public double getPetProbability() {
+        // See https://oldschool.runescape.wiki/w/Chest_(Tombs_of_Amascut)#Tertiary_rewards
+        return calcProbability(getPersonalContribution(), 350_000, 700,
+            Math.min(raidLevel, 400) + Math.max(Math.min(raidLevel, 550) - 400, 0) / 3.0);
+    }
+
+    public double getPurpleProbability() {
+        // See https://oldschool.runescape.wiki/w/Chest_(Tombs_of_Amascut)#Uniques
+        double weight = 1.0 * getPersonalContribution() / partyScore; // unlike pets, only one party member can receive a unique
+        return weight * calcProbability(partyScore, 10_500, 20,
+            Math.min(raidLevel, 310) + Math.max(Math.min(raidLevel, 430) - 310, 0) / 3.0 + Math.max(raidLevel - 430, 0) / 6.0);
+    }
+
+    private static double calcProbability(int rewardPoints, int baseDivisor, int levelMultiplier, double scaledRaidLevel) {
+        final double maxProbability = 0.55;
+        return Math.min(0.01 * rewardPoints / (baseDivisor - levelMultiplier * scaledRaidLevel), maxProbability);
+    }
+
 }
