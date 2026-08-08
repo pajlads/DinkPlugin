@@ -1,10 +1,12 @@
 ## Unreleased
 
+- Minor: Infer better prices for Araxxor uniques and Doom cloth. (#992)
 - Minor: Add `%COMBINED%` variable for group storage notifications. (#973)
 - Minor: Calculate Soup pet luck based on port task completions. (#985)
 - Minor: Add loot notifications for rare deep sea trawling drops. (#971)
 - Minor: Add exchanged items to the trade notification message template. (#962)
 - Bugfix: Fix TOA pet rarity calculation. (#987)
+- Bugfix: Calculate olmlet pet rarity accounting for multiple unique rolls and group weighting. (#991)
 - Dev: Add raid metadata for TOA loot notifications. (#978)
 
 ## 1.14.4
