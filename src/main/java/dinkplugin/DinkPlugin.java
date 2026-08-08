@@ -23,7 +23,7 @@ import dinkplugin.notifiers.SpeedrunNotifier;
 import dinkplugin.notifiers.TradeNotifier;
 import dinkplugin.notifiers.LeaguesNotifier;
 import dinkplugin.util.AccountTypeTracker;
-import dinkplugin.util.AmascutTracker;
+import dinkplugin.util.RaidTracker;
 import dinkplugin.util.KillCountService;
 import dinkplugin.util.Utils;
 import dinkplugin.util.WorldTypeTracker;
@@ -84,7 +84,7 @@ public class DinkPlugin extends Plugin {
     private @Inject SettingsManager settingsManager;
     private @Inject VersionManager versionManager;
     private @Inject AccountTypeTracker accountTracker;
-    private @Inject AmascutTracker amascutTracker;
+    private @Inject RaidTracker raidTracker;
     private @Inject WorldTypeTracker worldTracker;
 
     private @Inject KillCountService killCountService;
@@ -238,7 +238,7 @@ public class DinkPlugin extends Plugin {
     public void onGameTick(GameTick event) {
         settingsManager.onTick();
         accountTracker.onTick();
-        amascutTracker.onTick();
+        raidTracker.onTick();
         worldTracker.onTick();
         collectionNotifier.onTick();
         petNotifier.onTick();
@@ -381,7 +381,7 @@ public class DinkPlugin extends Plugin {
     public void onVarbitChanged(VarbitChanged event) {
         settingsManager.onVarbitChanged(event);
         accountTracker.onVarbit(event);
-        amascutTracker.onVarbit(event);
+        raidTracker.onVarbit(event);
         metaNotifier.onVarbit(event);
         collectionNotifier.onVarPlayer(event);
         diaryNotifier.onVarbitChanged(event);

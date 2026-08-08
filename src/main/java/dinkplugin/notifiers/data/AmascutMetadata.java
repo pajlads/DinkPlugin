@@ -1,6 +1,6 @@
 package dinkplugin.notifiers.data;
 
-import dinkplugin.util.AmascutTracker;
+import dinkplugin.util.RaidTracker;
 import dinkplugin.util.Sanitizable;
 import lombok.Value;
 
@@ -30,24 +30,9 @@ public class AmascutMetadata implements Sanitizable {
         );
     }
 
-    public static AmascutMetadata of(AmascutTracker tracker) {
-        int rewardPoints = tracker.getPartyScore();
-        int raidLevel = tracker.getRaidLevel();
-        int personalPoints = tracker.getPersonalContribution();
-
-        // See https://oldschool.runescape.wiki/w/Chest_(Tombs_of_Amascut)#Loot_mechanics
-        double petProbability = calcProbability(personalPoints, 350_000, 700,
-                Math.min(raidLevel, 400) + Math.max(Math.min(raidLevel, 550) - 400, 0) / 3.0);
-        double weight = 1.0 * personalPoints / rewardPoints; // unlike pets, only one party member can receive a unique
-        double purpleProbability = weight * calcProbability(rewardPoints, 10_500, 20,
-                Math.min(raidLevel, 310) + Math.max(Math.min(raidLevel, 430) - 310, 0) / 3.0 + Math.max(raidLevel - 430, 0) / 6.0);
-
-        return new AmascutMetadata(tracker.getTeamSize(), tracker.getPartyMembers(), rewardPoints, raidLevel, tracker.getDamageDone(), petProbability, purpleProbability);
-    }
-
-    private static double calcProbability(int rewardPoints, int baseDivisor, int levelMultiplier, double scaledRaidLevel) {
-        final double maxProbability = 0.55;
-        return Math.min(0.01 * rewardPoints / (baseDivisor - levelMultiplier * scaledRaidLevel), maxProbability);
+    public static AmascutMetadata of(RaidTracker tracker) {
+        return new AmascutMetadata(tracker.getTeamSize(), tracker.getPartyMembers(), tracker.getPartyScore(),
+            tracker.getRaidLevel(), tracker.getDamageDone(), tracker.getAmascutPetProbability(), tracker.getAmascutPurpleProbability());
     }
 
 }

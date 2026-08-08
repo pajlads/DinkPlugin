@@ -13,7 +13,7 @@ import dinkplugin.notifiers.data.GroupBankContentsNotificationData;
 import dinkplugin.notifiers.data.LoginNotificationData;
 import dinkplugin.notifiers.data.Progress;
 import dinkplugin.notifiers.data.SerializedItemStack;
-import dinkplugin.util.AmascutTracker;
+import dinkplugin.util.RaidTracker;
 import dinkplugin.util.ConfigUtil;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.SerializedPet;
@@ -77,7 +77,7 @@ public class MetaNotifier extends BaseNotifier {
     private Gson gson;
 
     @Inject
-    private AmascutTracker amascutTracker;
+    private RaidTracker raidTracker;
 
     @Override
     public boolean isEnabled() {
@@ -191,7 +191,7 @@ public class MetaNotifier extends BaseNotifier {
         }
 
         // Gather relevant data
-        AmascutMetadata data = AmascutMetadata.of(amascutTracker);
+        AmascutMetadata data = AmascutMetadata.of(raidTracker);
 
         // Fire notification
         String playerName = Utils.getPlayerName(client);
