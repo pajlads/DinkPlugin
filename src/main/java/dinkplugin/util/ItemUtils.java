@@ -83,6 +83,16 @@ public class ItemUtils {
     }
 
     private int getPrice(@NotNull ItemManager itemManager, int itemId, @Nullable ItemComposition item) {
+        if (itemId == ARAXYTE_FANG) {
+            // Workaround for araxyte fang having low store value - https://github.com/pajlads/DinkPlugin/issues/989
+            return itemManager.getItemPriceWithSource(ETCHED_ARAXYTE_FANG, true);
+        }
+
+        if (itemId == NOXIOUS_HALBERD_PART_1 || itemId == NOXIOUS_HALBERD_PART_2 || itemId == NOXIOUS_HALBERD_PART_3) {
+            // Workaround for halberd parts having low store value - https://github.com/pajlads/DinkPlugin/issues/989
+            return itemManager.getItemPriceWithSource(NOXIOUS_HALBERD, true) / 3;
+        }
+
         // GE price sourced from wiki with anti-manipulation massaging by runelite
         int price = itemManager.getItemPrice(itemId);
         if (price <= 0) {
