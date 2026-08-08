@@ -14,7 +14,7 @@ import java.util.Collections;
 
 @Singleton
 @NoArgsConstructor
-public class AmascutTracker {
+public class RaidTracker {
 
     private static final int[] PARTY_VARBS = {
         VarbitID.TOA_CLIENT_P0, VarbitID.TOA_CLIENT_P1, VarbitID.TOA_CLIENT_P2, VarbitID.TOA_CLIENT_P3,
@@ -58,6 +58,10 @@ public class AmascutTracker {
             this.damageDone = e.getValue();
         } else if (e.getVarbitId() >= PARTY_VARBS[0] && e.getVarbitId() <= PARTY_VARBS[PARTY_VARBS.length - 1]) {
             this.checkPartyMembers = true;
+        } else if (e.getVarbitId() == VarbitID.RAIDS_CLIENT_PARTYSIZE) {
+            this.teamSize = e.getValue();
+        } else if (e.getVarpId() == VarPlayerID.RAIDS_PLAYERSCORE) {
+            this.personalContribution = e.getValue();
         }
     }
 
@@ -87,13 +91,13 @@ public class AmascutTracker {
             : partyScore / Math.max(teamSize, 1);
     }
 
-    public double getPetProbability() {
+    public double getAmascutPetProbability() {
         // See https://oldschool.runescape.wiki/w/Chest_(Tombs_of_Amascut)#Tertiary_rewards
         return calcProbability(getPersonalContribution(), 350_000, 700,
             Math.min(raidLevel, 400) + Math.max(Math.min(raidLevel, 550) - 400, 0) / 3.0);
     }
 
-    public double getPurpleProbability() {
+    public double getAmascutPurpleProbability() {
         // See https://oldschool.runescape.wiki/w/Chest_(Tombs_of_Amascut)#Uniques
         double weight = 1.0 * getPersonalContribution() / partyScore; // unlike pets, only one party member can receive a unique
         return weight * calcProbability(partyScore, 10_500, 20,

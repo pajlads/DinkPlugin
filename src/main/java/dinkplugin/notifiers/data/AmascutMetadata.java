@@ -1,6 +1,6 @@
 package dinkplugin.notifiers.data;
 
-import dinkplugin.util.AmascutTracker;
+import dinkplugin.util.RaidTracker;
 import dinkplugin.util.Sanitizable;
 import lombok.Value;
 
@@ -30,9 +30,9 @@ public class AmascutMetadata implements Sanitizable {
         );
     }
 
-    public static AmascutMetadata of(AmascutTracker tracker) {
+    public static AmascutMetadata of(RaidTracker tracker) {
         return new AmascutMetadata(tracker.getTeamSize(), tracker.getPartyMembers(), tracker.getPartyScore(),
-            tracker.getRaidLevel(), tracker.getDamageDone(), tracker.getPetProbability(), tracker.getPurpleProbability());
+            tracker.getRaidLevel(), tracker.getDamageDone(), tracker.getAmascutPetProbability(), tracker.getAmascutPurpleProbability());
     }
 
 }

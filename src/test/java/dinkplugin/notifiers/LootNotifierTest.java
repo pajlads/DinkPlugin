@@ -10,7 +10,7 @@ import dinkplugin.notifiers.data.AmascutMetadata;
 import dinkplugin.notifiers.data.AnnotatedItemStack;
 import dinkplugin.notifiers.data.LootNotificationData;
 import dinkplugin.notifiers.data.RareItemStack;
-import dinkplugin.util.AmascutTracker;
+import dinkplugin.util.RaidTracker;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
 import net.runelite.api.NPC;
@@ -60,7 +60,7 @@ class LootNotifierTest extends MockedNotifierTest {
 
     @Bind
     @InjectMocks
-    AmascutTracker amascutTracker;
+    RaidTracker raidTracker;
 
     @Bind
     @InjectMocks
@@ -796,7 +796,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(source))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, null, null, AmascutMetadata.of(amascutTracker)))
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, null, null, AmascutMetadata.of(raidTracker)))
                 .type(NotificationType.LOOT)
                 .build()
         );
@@ -827,7 +827,7 @@ class LootNotifierTest extends MockedNotifierTest {
                         .replacement("{{source}}", Replacements.ofWiki(source))
                         .build()
                 )
-                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, null, null, AmascutMetadata.of(amascutTracker)))
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, null, null, AmascutMetadata.of(raidTracker)))
                 .type(NotificationType.LOOT)
                 .build()
         );
