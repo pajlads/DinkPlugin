@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Minor: Infer better prices for Araxxor uniques and Doom cloth. (#992)
 - Minor: Add `%COMBINED%` variable for group storage notifications. (#973)
 - Minor: Calculate Soup pet luck based on port task completions. (#985)
 - Minor: Add loot notifications for rare deep sea trawling drops. (#971)
