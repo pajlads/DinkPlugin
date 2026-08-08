@@ -85,12 +85,19 @@ public class ItemUtils {
     private int getPrice(@NotNull ItemManager itemManager, int itemId, @Nullable ItemComposition item) {
         if (itemId == ARAXYTE_FANG) {
             // Workaround for araxyte fang having low store value - https://github.com/pajlads/DinkPlugin/issues/989
-            return itemManager.getItemPriceWithSource(ETCHED_ARAXYTE_FANG, true);
+            return getGePrice(itemManager, ETCHED_ARAXYTE_FANG);
         }
 
         if (itemId == NOXIOUS_HALBERD_PART_1 || itemId == NOXIOUS_HALBERD_PART_2 || itemId == NOXIOUS_HALBERD_PART_3) {
             // Workaround for halberd parts having low store value - https://github.com/pajlads/DinkPlugin/issues/989
-            return itemManager.getItemPriceWithSource(NOXIOUS_HALBERD, true) / 3;
+            return getGePrice(itemManager, NOXIOUS_HALBERD) / 3;
+        }
+
+        if (itemId == MOKHAIOTL_CLOTH) {
+            // Implied value of Doom Cloth based on upgrade value - https://github.com/pajlads/DinkPlugin/issues/989
+            int upgradePrice = getGePrice(itemManager, CONFLICTION_GAUNTLETS);
+            int inputPrices = getGePrice(itemManager, ZENYTE_BRACELET_ENCHANTED) + getGePrice(itemManager, DEMON_TEAR) * 10000;
+            return upgradePrice - inputPrices;
         }
 
         // GE price sourced from wiki with anti-manipulation massaging by runelite
@@ -101,6 +108,10 @@ public class ItemUtils {
             price = ic.getPrice();
         }
         return price;
+    }
+
+    public int getGePrice(@NotNull ItemManager itemManager, int itemId) {
+        return itemManager.getItemPriceWithSource(itemId, true);
     }
 
     public long getTotalPrice(@NotNull Iterable<SerializedItemStack> items) {
