@@ -526,28 +526,7 @@ public class PetNotifier extends BaseNotifier {
             entry("Olmlet", new Source() {
                 @Override
                 Double getProbability(Client client, KillCountService kcService, RaidTracker raidTracker) {
-                    // https://oldschool.runescape.wiki/w/Ancient_chest#Unique_drop_table
-                    int totalPoints = raidTracker.getPartyScore(); // assume representative
-                    if (totalPoints <= 0) {
-                        totalPoints = 26_025;
-                    }
-
-                    final double uniqueDropPetRate = 1.0 / 53; // likelihood of a pet drop from a successful unique roll
-                    final int maxPointsPerRoll = 570_000; // "chance is capped at 65.7% (570,000 points) - any further points will be sent to roll for a second unique loot"
-                    final double pointsPerPct = 867_600; // "For every 8,676 total points obtained, a 1% chance to obtain a unique loot is given"
-                    final double rarityForMaxRoll = (maxPointsPerRoll / pointsPerPct) * uniqueDropPetRate; // 1.2% is pet chance for unique roll with max points
-                    int numMaxRolls = Math.min(totalPoints / maxPointsPerRoll, 6); // "Up to six unique rewards can be obtained per raid"
-                    int lastRollPoints = totalPoints % maxPointsPerRoll; // remaining points for a non-max unique roll
-                    double lastRollProb = (lastRollPoints / pointsPerPct) * uniqueDropPetRate; // Prob(unique) * P(pet | unique) = P(pet)
-
-                    // Similar to cumulative geometric: 1 - Prob(all rolls failed to produce a unique) = Prob(at least one unique)
-                    double partyProbability = 1 - Math.pow(1 - rarityForMaxRoll, numMaxRolls) * (1 - lastRollProb);
-
-                    // Party adjustment: pet is more likely to be allocated to players with greater points
-                    double weight = 1.0 * raidTracker.getPersonalContribution() / totalPoints;
-
-                    // Prob(party rolls a pet) * P(local player gets pet | party rolls a pet) = P(local player gets pet)
-                    return partyProbability * weight;
+                    return raidTracker.getXericPetProbability();
                 }
 
                 @Override
