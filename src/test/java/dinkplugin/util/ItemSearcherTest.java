@@ -44,10 +44,10 @@ class ItemSearcherTest extends MockedTestBase {
         assertEquals(ItemID.DRAGON_2H_SWORD, itemSearcher.findItemId("Dragon 2h sword"));
         assertEquals(ItemID.DRAGON_PLATELEGS_KIT, itemSearcher.findItemId("Dragon legs/skirt ornament kit"));
 
-        assertEquals(ItemID.PRIMEPET, itemSearcher.findItemId("Pet dagannoth prime"));
-        assertEquals(ItemID.ZAMORAKPET, itemSearcher.findItemId("Pet k'ril tsutsaroth"));
+        assertEquals(ItemID.PRIMEPET, itemSearcher.findItemId("Pet Dagannoth Prime"));
+        assertEquals(ItemID.ZAMORAKPET, itemSearcher.findItemId("Pet K'ril Tsutsaroth"));
         assertEquals(ItemID.HELL_PET, itemSearcher.findItemId("Hellpuppy"));
-        assertEquals(ItemID.MOLEPET, itemSearcher.findItemId("Baby mole"));
+        assertEquals(ItemID.MOLEPET, itemSearcher.findItemId("Baby Mole"));
         assertEquals(ItemID.SCORPIA_PET, itemSearcher.findItemId("Scorpia's offspring"));
         assertEquals(ItemID.VETION_PET, itemSearcher.findItemId("Vet'ion jr."));
 
@@ -55,8 +55,8 @@ class ItemSearcherTest extends MockedTestBase {
 
         assertEquals(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, itemSearcher.findItemId("Seercull"));
 
-        assertEquals(ItemID.JAD_PET, itemSearcher.findItemId("Tzrek-jad"));
-        assertEquals(ItemID.INFERNOPET, itemSearcher.findItemId("Jal-nib-rek"));
+        assertEquals(ItemID.JAD_PET, itemSearcher.findItemId("TzRek-Jad"));
+        assertEquals(ItemID.INFERNOPET, itemSearcher.findItemId("Jal-Nib-Rek"));
         assertEquals(ItemID.TZHAAR_SPIKESHIELD, itemSearcher.findItemId("Toktz-ket-xil"));
 
         assertEquals(ItemID.PRIF_WEAPON_SEED_ENHANCED, itemSearcher.findItemId("Enhanced crystal weapon seed"));
@@ -85,7 +85,7 @@ class ItemSearcherTest extends MockedTestBase {
 
         assertEquals(ItemID.AMULET_OF_DEFENCE_T, itemSearcher.findItemId("Amulet of defence (t)"));
 
-        assertEquals(ItemID.RUNE_SCIMITAR_ORNAMENT_KIT_SARADOMIN, itemSearcher.findItemId("Rune scimitar ornament kit (saradomin)"));
+        assertEquals(ItemID.RUNE_SCIMITAR_ORNAMENT_KIT_SARADOMIN, itemSearcher.findItemId("Rune scimitar ornament kit (Saradomin)"));
 
         assertEquals(ItemID.BLACK_PLATEBODY_H2, itemSearcher.findItemId("Black platebody (h2)"));
 
