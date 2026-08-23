@@ -380,7 +380,7 @@ On login, Dink can submit a character summary containing data that spans multipl
 ## Projects Using Dink
 
 If you intend to share a Discord webhook link to other Dink users, we recommend you use [our official Webhook Filter service](https://dink.pajlada.se/) so you can control an allowlist/denylist of which players can post notifications to your channel (e.g., if a player leaves your clan).
-For increased privacy, you can even deploy your own instance of this Cloudflare Worker as explained in the [GitHub repo](https://github.com/pajlads/dink-url-manager).
+For increased privacy, you can deploy your own instance of this Cloudflare Worker as explained in the [GitHub repo](https://github.com/pajlads/dink-url-manager).
 
 &nbsp;
 
