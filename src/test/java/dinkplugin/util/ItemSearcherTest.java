@@ -32,7 +32,7 @@ class ItemSearcherTest extends MockedTestBase {
         verify(itemSearcher, timeout(30_000).atLeastOnce()).populate(any(), any());
 
         // Ensure correct item mappings are populated
-        assertEquals(ItemID.JAR_OF_MIASMA, itemSearcher.findItemId("Jar of miasma"));
+        assertEquals(ItemID.JAR_OF_MIASMA, itemSearcher.findItemId("Jar of Miasma"));
         assertEquals(ItemID.ABYSSALSIRE_UNSIRED, itemSearcher.findItemId("Unsired"));
 
         assertEquals(ItemID.POH_ALCHEMICAL_HYDRA_HEAD, itemSearcher.findItemId("Alchemical hydra heads"));
@@ -69,17 +69,17 @@ class ItemSearcherTest extends MockedTestBase {
 
         assertEquals(ItemID.HOSDUN_EGG_SAC_FULL, itemSearcher.findItemId("Giant egg sac(full)"));
 
-        assertEquals(ItemID.TOME_OF_WATER_UNCHARGED, itemSearcher.findItemId("Tome of water (empty)"));
+        assertEquals(ItemID.TOME_OF_WATER_UNCHARGED, itemSearcher.findItemId("Tome of Water (empty)"));
 
         assertEquals(ItemID.TELEPORTSCROLL_ZULANDRA, itemSearcher.findItemId("Zul-andra teleport"));
 
-        assertEquals(ItemID.SCYTHE_OF_VITUR_UNCHARGED, itemSearcher.findItemId("Scythe of vitur (uncharged)"));
+        assertEquals(ItemID.SCYTHE_OF_VITUR_UNCHARGED, itemSearcher.findItemId("Scythe of Vitur (uncharged)"));
 
         assertEquals(ItemID.ELIDINIS_WARD, itemSearcher.findItemId("Elidinis' ward"));
 
         assertEquals(ItemID.ICTHLARINS_SHROUD_2, itemSearcher.findItemId("Icthlarin's shroud (tier 2)"));
 
-        assertEquals(ItemID.BREACH_OF_THE_SCARAB, itemSearcher.findItemId("Breach of the scarab"));
+        assertEquals(ItemID.BREACH_OF_THE_SCARAB, itemSearcher.findItemId("Breach of the Scarab"));
 
         assertEquals(ItemID.ELIDINIS_WARD_ORNAMENT_KIT, itemSearcher.findItemId("Menaphite ornament kit"));
 
@@ -89,7 +89,7 @@ class ItemSearcherTest extends MockedTestBase {
 
         assertEquals(ItemID.BLACK_PLATEBODY_H2, itemSearcher.findItemId("Black platebody (h2)"));
 
-        assertEquals(ItemID.RING_OF_3RD_AGE, itemSearcher.findItemId("Ring of 3rd age"));
+        assertEquals(ItemID.RING_OF_3RD_AGE, itemSearcher.findItemId("Ring of 3rd Age"));
 
         assertEquals(ItemID.TZHAAR_CAPE_OBSIDIAN_R, itemSearcher.findItemId("Obsidian cape (r)"));
 
