@@ -43,6 +43,10 @@ class CombatTaskMatcherTest {
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                 Arguments.of(
+                    "Congratulations, you've completed a medium combat task: @ach_comp@Mad Angel Adept.",
+                    Pair.of(MEDIUM, "Mad Angel Adept")
+                ),
+                Arguments.of(
                     "Congratulations, you've completed an easy combat task: Defence? What Defence?.",
                     Pair.of(EASY, "Defence? What Defence?")
                 ),
