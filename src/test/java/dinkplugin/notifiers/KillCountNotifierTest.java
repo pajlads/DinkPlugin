@@ -735,6 +735,29 @@ class KillCountNotifierTest extends MockedNotifierTest {
         );
     }
 
+    @Test
+    void testNotifyBryophytaChestNewFormat() {
+        // update config mocks
+        when(config.killCountInterval()).thenReturn(1);
+
+        // fire events
+        String gameMessage = "Your Bryophyta chests opened count is: @mes_hl_red@63";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .text(buildTemplate("Bryophyta chests", 63))
+                .extra(new BossNotificationData("Bryophyta chests", 63, gameMessage, null, null, null, null))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
     private static Template buildTemplate(String boss, int count) {
         return Template.builder()
             .template(PLAYER_NAME + " has defeated {{boss}} with a completion count of " + count)
