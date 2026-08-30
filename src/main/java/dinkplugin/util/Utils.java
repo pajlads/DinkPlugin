@@ -66,6 +66,11 @@ public class Utils {
 
     public static final String WIKI_IMG_BASE_URL = "https://oldschool.runescape.wiki/images/";
 
+    /**
+     * @see Text#removeTags(String)
+     */
+    private static final Pattern TAG_REGEXP = Pattern.compile("(<[^>]*>)|(@[^@\\s]+@)");
+
     public final Color GREEN = ColorUtil.fromHex("006c4c"); // dark shade of PINK in CIELCh_uv color space
     public final Color PINK = ColorUtil.fromHex("#f40098"); // analogous to RED in CIELCh_uv color space
     public final Color RED = ColorUtil.fromHex("#ca2a2d"); // red used in pajaW
@@ -107,7 +112,10 @@ public class Utils {
 
     public String sanitize(String str) {
         if (str == null || str.isEmpty()) return "";
-        return Text.removeTags(str.replace("<br>", "\n")).replace('\u00A0', ' ').trim();
+        return TAG_REGEXP.matcher(str.replace("<br>", "\n"))
+            .replaceAll("")
+            .replace('\u00A0', ' ')
+            .trim();
     }
 
     /**
