@@ -36,7 +36,7 @@ public class KillCountNotifier extends BaseNotifier {
 
     public static final String SPAM_WARNING = "Kill Count Notifier requires disabling the in-game setting: Filter out boss kill-count with spam-filter";
 
-    private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion|harvest|success|opened)\\s?count is: ?(?<value>[\\d,]+)\\b", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion|harvest|success|opened|lap|Total Ticket)\\s?count is: ?(?<value>[\\d,]+)\\b", Pattern.CASE_INSENSITIVE);
     private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>[\\d,]+)\\b");
     private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(?:.\\d+)?)\\.?(?: Personal best: (?<pbtime>[\\d:+]+(?:.\\d+)?))?", Pattern.CASE_INSENSITIVE);
 
@@ -124,8 +124,14 @@ public class KillCountNotifier extends BaseNotifier {
         // ensure interval met or pb or ba, depending on config
         boolean isPb = data.isPersonalBest() == Boolean.TRUE;
         boolean ba = data.getBoss().equals(BA_BOSS_NAME);
-        if (!checkKillInterval(data.getCount(), isPb) && !ba)
+        boolean lap = isLapMilestone(data.getGameMessage());
+        if (lap) {
+            // agility lap milestones are governed by a separate interval; see https://github.com/pajlads/DinkPlugin/issues/1010
+            if (!config.killCountLaps() || !checkLapInterval(data.getCount()))
+                return;
+        } else if (!checkKillInterval(data.getCount(), isPb) && !ba) {
             return;
+        }
 
         // populate personalBest if absent
         if (data.getPersonalBest() == null && !isPb) {
@@ -139,7 +145,7 @@ public class KillCountNotifier extends BaseNotifier {
         String player = Utils.getPlayerName(client);
         String time = TimeUtils.format(data.getTime(), TimeUtils.isPreciseTiming(client));
         Template content = Template.builder()
-            .template(isPb ? config.killCountBestTimeMessage() : config.killCountMessage())
+            .template(lap ? config.killCountLapMessage() : isPb ? config.killCountBestTimeMessage() : config.killCountMessage())
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(player))
             .replacement("%BOSS%", Replacements.ofWiki(data.getBoss()))
@@ -154,6 +160,21 @@ public class KillCountNotifier extends BaseNotifier {
             .playerName(player)
             .type(NotificationType.KILL_COUNT)
             .build());
+    }
+
+    private boolean checkLapInterval(int lapCount) {
+        int interval = config.killCountIntervalLaps();
+        return interval <= 1 || lapCount % interval == 0;
+    }
+
+    /**
+     * @param gameMessage the game message that yielded the count, if any
+     * @return whether the count corresponds to an agility course
+     * (a completed lap, or a brimhaven agility arena ticket)
+     */
+    @VisibleForTesting
+    static boolean isLapMilestone(@Nullable String gameMessage) {
+        return gameMessage != null && (gameMessage.contains(" lap count is") || gameMessage.contains(" Total Ticket count is"));
     }
 
     private boolean checkKillInterval(int killCount, boolean pb) {
@@ -264,6 +285,8 @@ public class KillCountNotifier extends BaseNotifier {
             case "kill":
             case "success":
             case "opened":
+            case "lap": // agility courses
+            case "total ticket": // brimhaven agility arena
                 return boss;
 
             default:

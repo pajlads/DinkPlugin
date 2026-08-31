@@ -48,6 +48,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
         when(config.killCountSendImage()).thenReturn(true);
         when(config.killCountMessage()).thenReturn("%USERNAME% has defeated %BOSS% with a completion count of %COUNT%");
         when(config.killCountBestTimeMessage()).thenReturn("%USERNAME% has defeated %BOSS% with a new personal best time of %TIME% and a completion count of %COUNT%");
+        when(config.killCountLaps()).thenReturn(true);
+        when(config.killCountLapMessage()).thenReturn("%USERNAME% has completed %COUNT% laps at %BOSS%");
 
         // init client mocks
         when(client.getVarbitValue(TimeUtils.ENABLE_PRECISE_TIMING)).thenReturn(1);
@@ -132,6 +134,82 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // fire event
         String gameMessage = "Your King Black Dragon kill count is: 1.";
         notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // ensure no message
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testNotifyLap() {
+        // more config
+        when(config.killCountIntervalLaps()).thenReturn(100);
+
+        // fire event
+        String gameMessage = "Your Ardougne Rooftop lap count is: 200.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .text(buildLapTemplate("Ardougne Rooftop", 200))
+                .extra(new BossNotificationData("Ardougne Rooftop", 200, gameMessage, null, null, null, null))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyLapTickets() {
+        // more config
+        when(config.killCountIntervalLaps()).thenReturn(1000);
+
+        // fire event
+        String gameMessage = "Your Agility Arena Total Ticket count is: 1,000.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .text(buildLapTemplate("Agility Arena", 1000))
+                .extra(new BossNotificationData("Agility Arena", 1000, gameMessage, null, null, null, null))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
+    void testIgnoreLapInterval() {
+        // more config
+        when(config.killCountIntervalLaps()).thenReturn(100);
+        when(config.killCountNotifyInitial()).thenReturn(true);
+
+        // fire events; laps ignore the initial kill setting and the boss kill interval
+        notifier.onGameMessage("Your Prifddinas Agility Course lap count is: 1.");
+        notifier.onTick();
+        notifier.onGameMessage("Your Prifddinas Agility Course lap count is: 150.");
+        notifier.onTick();
+
+        // ensure no message
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testIgnoreLapDisabled() {
+        // more config
+        when(config.killCountLaps()).thenReturn(false);
+        when(config.killCountIntervalLaps()).thenReturn(100);
+
+        // fire event
+        notifier.onGameMessage("Your Ardougne Rooftop lap count is: 200.");
         notifier.onTick();
 
         // ensure no message
@@ -739,6 +817,13 @@ class KillCountNotifierTest extends MockedNotifierTest {
         return Template.builder()
             .template(PLAYER_NAME + " has defeated {{boss}} with a completion count of " + count)
             .replacement("{{boss}}", Replacements.ofWiki(boss))
+            .build();
+    }
+
+    private static Template buildLapTemplate(String course, int count) {
+        return Template.builder()
+            .template(PLAYER_NAME + " has completed " + count + " laps at {{course}}")
+            .replacement("{{course}}", Replacements.ofWiki(course))
             .build();
     }
 

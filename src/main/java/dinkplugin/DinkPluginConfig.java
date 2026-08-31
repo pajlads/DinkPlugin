@@ -1639,13 +1639,35 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "killCountLaps",
+        name = "Agility Laps",
+        description = "Notify for agility course lap count milestones",
+        position = 96,
+        section = killCountSection
+    )
+    default boolean killCountLaps() {
+        return true;
+    }
+
+    @ConfigItem(
+        keyName = "killCountIntervalLaps",
+        name = "Lap Count Interval",
+        description = "Interval between agility lap count milestone notifications",
+        position = 97,
+        section = killCountSection
+    )
+    default int killCountIntervalLaps() {
+        return 1000;
+    }
+
+    @ConfigItem(
         keyName = "killCountMessage",
         name = "Notification Message",
         description = "The message to be sent to the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %BOSS% to insert the NPC name<br/>" +
             "Use %COUNT% to insert the kill count",
-        position = 96,
+        position = 98,
         section = killCountSection
     )
     default String killCountMessage() {
@@ -1660,11 +1682,25 @@ public interface DinkPluginConfig extends Config {
             "Use %BOSS% to insert the NPC name<br/>" +
             "Use %COUNT% to insert the kill count<br/>" +
             "Use %TIME% to insert the completion time",
-        position = 97,
+        position = 99,
         section = killCountSection
     )
     default String killCountBestTimeMessage() {
         return "%USERNAME% has defeated %BOSS% with a new personal best time of %TIME% and a completion count of %COUNT%";
+    }
+
+    @ConfigItem(
+        keyName = "killCountLapMessage",
+        name = "Lap Notification Message",
+        description = "The message to be sent to the webhook upon an agility lap milestone.<br/>" +
+            "Use %USERNAME% to insert your username<br/>" +
+            "Use %BOSS% to insert the agility course name<br/>" +
+            "Use %COUNT% to insert the lap count",
+        position = 100,
+        section = killCountSection
+    )
+    default String killCountLapMessage() {
+        return "%USERNAME% has completed %COUNT% laps at %BOSS%";
     }
 
     @ConfigItem(
