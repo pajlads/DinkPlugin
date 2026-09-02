@@ -1639,21 +1639,11 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
-        keyName = "killCountLaps",
-        name = "Agility Laps",
-        description = "Notify for agility course lap count milestones",
-        position = 96,
-        section = killCountSection
-    )
-    default boolean killCountLaps() {
-        return true;
-    }
-
-    @ConfigItem(
         keyName = "killCountIntervalLaps",
         name = "Lap Count Interval",
-        description = "Interval between agility lap count milestone notifications",
-        position = 97,
+        description = "Interval between agility lap count milestone notifications.<br/>" +
+            "Set to 0 to disable agility lap notifications",
+        position = 96,
         section = killCountSection
     )
     default int killCountIntervalLaps() {
@@ -1667,7 +1657,7 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %BOSS% to insert the NPC name<br/>" +
             "Use %COUNT% to insert the kill count",
-        position = 98,
+        position = 97,
         section = killCountSection
     )
     default String killCountMessage() {
@@ -1682,7 +1672,7 @@ public interface DinkPluginConfig extends Config {
             "Use %BOSS% to insert the NPC name<br/>" +
             "Use %COUNT% to insert the kill count<br/>" +
             "Use %TIME% to insert the completion time",
-        position = 99,
+        position = 98,
         section = killCountSection
     )
     default String killCountBestTimeMessage() {
@@ -1696,7 +1686,7 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %BOSS% to insert the agility course name<br/>" +
             "Use %COUNT% to insert the lap count",
-        position = 100,
+        position = 99,
         section = killCountSection
     )
     default String killCountLapMessage() {

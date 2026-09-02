@@ -48,7 +48,6 @@ class KillCountNotifierTest extends MockedNotifierTest {
         when(config.killCountSendImage()).thenReturn(true);
         when(config.killCountMessage()).thenReturn("%USERNAME% has defeated %BOSS% with a completion count of %COUNT%");
         when(config.killCountBestTimeMessage()).thenReturn("%USERNAME% has defeated %BOSS% with a new personal best time of %TIME% and a completion count of %COUNT%");
-        when(config.killCountLaps()).thenReturn(true);
         when(config.killCountLapMessage()).thenReturn("%USERNAME% has completed %COUNT% laps at %BOSS%");
 
         // init client mocks
@@ -204,9 +203,8 @@ class KillCountNotifierTest extends MockedNotifierTest {
 
     @Test
     void testIgnoreLapDisabled() {
-        // more config
-        when(config.killCountLaps()).thenReturn(false);
-        when(config.killCountIntervalLaps()).thenReturn(100);
+        // more config; an interval of zero disables lap notifications
+        when(config.killCountIntervalLaps()).thenReturn(0);
 
         // fire event
         notifier.onGameMessage("Your Ardougne Rooftop lap count is: 200.");

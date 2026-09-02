@@ -127,7 +127,7 @@ public class KillCountNotifier extends BaseNotifier {
         boolean lap = isLapMilestone(data.getGameMessage());
         if (lap) {
             // agility lap milestones are governed by a separate interval; see https://github.com/pajlads/DinkPlugin/issues/1010
-            if (!config.killCountLaps() || !checkLapInterval(data.getCount()))
+            if (!checkLapInterval(data.getCount()))
                 return;
         } else if (!checkKillInterval(data.getCount(), isPb) && !ba) {
             return;
@@ -163,8 +163,8 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private boolean checkLapInterval(int lapCount) {
-        int interval = config.killCountIntervalLaps();
-        return interval <= 1 || lapCount % interval == 0;
+        int interval = config.killCountIntervalLaps(); // zero indicates lap notifications are disabled
+        return interval > 0 && lapCount % interval == 0;
     }
 
     /**
