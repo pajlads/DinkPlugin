@@ -15,7 +15,7 @@ import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.gameval.InterfaceID;
 import net.runelite.api.gameval.VarbitID;
 import net.runelite.api.widgets.Widget;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -37,7 +37,7 @@ public class KillCountNotifier extends BaseNotifier {
     public static final String SPAM_WARNING = "Kill Count Notifier requires disabling the in-game setting: Filter out boss kill-count with spam-filter";
 
     private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion|harvest|success|opened|lap|Total Ticket)\\s?count is: ?(?<value>[\\d,]+)\\b", Pattern.CASE_INSENSITIVE);
-    private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?:completed|subdued) (?<key>.+) count is: (?<value>[\\d,]+)\\b");
+    private static final Pattern SECONDARY_REGEX = Pattern.compile("Your (?<type>completed|subdued) (?<key>.+) count is: (?<value>[\\d,]+)\\b");
     private static final Pattern TIME_REGEX = Pattern.compile("(?:Duration|time|Subdued in):? (?<time>[\\d:]+(?:.\\d+)?)\\.?(?: Personal best: (?<pbtime>[\\d:+]+(?:.\\d+)?))?", Pattern.CASE_INSENSITIVE);
 
     private static final String BA_BOSS_NAME = "Penance Queen";
@@ -93,7 +93,7 @@ public class KillCountNotifier extends BaseNotifier {
             // https://oldschool.runescape.wiki/w/Barbarian_Assault/Rewards#Earning_Honour_points
             if (widget != null && widget.getText().contains("80 ") && widget.getText().contains("5 ")) {
                 int gambleCount = client.getVarbitValue(VarbitID.BARBASSAULT_GAMBLECOUNT);
-                this.data.set(new BossNotificationData(BA_BOSS_NAME, gambleCount, "The Queen is dead!", null, null, null, null));
+                this.data.set(new BossNotificationData(BA_BOSS_NAME, gambleCount, "The Queen is dead!", null, null, null, null, null));
             }
         }
     }
@@ -124,7 +124,7 @@ public class KillCountNotifier extends BaseNotifier {
         // ensure interval met or pb or ba, depending on config
         boolean isPb = data.isPersonalBest() == Boolean.TRUE;
         boolean ba = data.getBoss().equals(BA_BOSS_NAME);
-        boolean lap = isLapMilestone(data.getGameMessage());
+        boolean lap = "lap".equals(data.getType()) || "Total Ticket".equals(data.getType());
         if (lap) {
             // agility lap milestones are governed by a separate interval; see https://github.com/pajlads/DinkPlugin/issues/1010
             if (!checkLapInterval(data.getCount()))
@@ -167,16 +167,6 @@ public class KillCountNotifier extends BaseNotifier {
         return interval > 0 && lapCount % interval == 0;
     }
 
-    /**
-     * @param gameMessage the game message that yielded the count, if any
-     * @return whether the count corresponds to an agility course
-     * (a completed lap, or a brimhaven agility arena ticket)
-     */
-    @VisibleForTesting
-    static boolean isLapMilestone(@Nullable String gameMessage) {
-        return gameMessage != null && (gameMessage.contains(" lap count is") || gameMessage.contains(" Total Ticket count is"));
-    }
-
     private boolean checkKillInterval(int killCount, boolean pb) {
         if (pb && config.killCountNotifyBestTime())
             return true;
@@ -205,7 +195,8 @@ public class KillCountNotifier extends BaseNotifier {
                     updated.getTime() == null || (tob && old.getTime() != null) ? old.getTime() : updated.getTime(),
                     updated.isPersonalBest() == null || (tob && old.isPersonalBest() != null) ? old.isPersonalBest() : updated.isPersonalBest(),
                     updated.getPersonalBest() == null || (tob && old.getPersonalBest() != null) ? old.getPersonalBest() : updated.getPersonalBest(),
-                    defaultIfNull(updated.getParty(), old.getParty())
+                    defaultIfNull(updated.getParty(), old.getParty()),
+                    defaultIfNull(updated.getType(), old.getType())
                 );
             }
         });
@@ -213,15 +204,15 @@ public class KillCountNotifier extends BaseNotifier {
 
     private static Optional<BossNotificationData> parse(Client client, String message) {
         if (message.startsWith("Preparation")) return Optional.empty();
-        Optional<Pair<String, Integer>> boss = parseBoss(message);
+        Optional<Triple<String, String, Integer>> boss = parseBoss(message);
         if (boss.isPresent())
-            return boss.map(pair -> new BossNotificationData(pair.getLeft(), pair.getRight(), message, null, null, null, Utils.getBossParty(client, pair.getLeft())));
+            return boss.map(t -> new BossNotificationData(t.getLeft(), t.getRight(), message, null, null, null, Utils.getBossParty(client, t.getLeft()), t.getMiddle()));
 
         // TOB reports final wave duration before challenge time in the same message; skip to the part we care about
         int tobIndex = message.startsWith("Wave") ? message.indexOf(KillCountService.TOB) : -1;
         String msg = tobIndex < 0 ? message : message.substring(tobIndex);
 
-        return parseTime(msg).map(t -> new BossNotificationData(tobIndex < 0 ? null : KillCountService.TOB, null, null, t.getTime(), t.isPb(), t.getPb(), null));
+        return parseTime(msg).map(t -> new BossNotificationData(tobIndex < 0 ? null : KillCountService.TOB, null, null, t.getTime(), t.isPb(), t.getPb(), null, null));
     }
 
     private static Optional<ParsedTime> parseTime(String message) {
@@ -236,25 +227,27 @@ public class KillCountNotifier extends BaseNotifier {
         return Optional.empty();
     }
 
-    public static Optional<Pair<String, Integer>> parseBoss(String message) {
+    public static Optional<Triple<String, String, Integer>> parseBoss(String message) {
         Matcher primary = PRIMARY_REGEX.matcher(message);
         Matcher secondary; // lazy init
         if (primary.find()) {
             String boss = parsePrimaryBoss(primary.group("key"), primary.group("type"));
+            String type = primary.group("type");
             String count = primary.group("value");
-            return result(boss, count);
+            return result(boss, type, count);
         } else if ((secondary = SECONDARY_REGEX.matcher(message)).find()) {
             String key = parseSecondary(secondary.group("key"));
+            String type = secondary.group("type");
             String value = secondary.group("value");
-            return result(key, value);
+            return result(key, type, value);
         }
         return Optional.empty();
     }
 
-    private static Optional<Pair<String, Integer>> result(String boss, String count) {
-        // safely transform (String, String) => (String, Int)
+    private static Optional<Triple<String, String, Integer>> result(String boss, String type, String count) {
+        // safely transform (String, String, String) => (String, String, Int)
         try {
-            return Optional.ofNullable(boss).map(k -> Pair.of(boss, Integer.parseInt(count.replace(",", ""))));
+            return Optional.ofNullable(boss).map(k -> Triple.of(boss, type, Integer.parseInt(count.replace(",", ""))));
         } catch (NumberFormatException e) {
             log.debug("Failed to parse kill count [{}] for boss [{}]", count, boss);
             return Optional.empty();

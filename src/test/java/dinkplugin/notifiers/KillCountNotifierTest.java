@@ -70,7 +70,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // check notification
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
             .text(buildTemplate("King Black Dragon", 420))
-            .extra(new BossNotificationData("King Black Dragon", 420, gameMessage, null, null, Duration.ofSeconds(29).plusMillis(600), null))
+            .extra(new BossNotificationData("King Black Dragon", 420, gameMessage, null, null, Duration.ofSeconds(29).plusMillis(600), null, "kill"))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
             .build();
@@ -101,7 +101,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildTemplate("King Black Dragon", 1))
-                .extra(new BossNotificationData("King Black Dragon", 1, gameMessage, null, null, null, null))
+                .extra(new BossNotificationData("King Black Dragon", 1, gameMessage, null, null, null, null, "kill"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -155,7 +155,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildLapTemplate("Ardougne Rooftop", 200))
-                .extra(new BossNotificationData("Ardougne Rooftop", 200, gameMessage, null, null, null, null))
+                .extra(new BossNotificationData("Ardougne Rooftop", 200, gameMessage, null, null, null, null, "lap"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -178,7 +178,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildLapTemplate("Agility Arena", 1000))
-                .extra(new BossNotificationData("Agility Arena", 1000, gameMessage, null, null, null, null))
+                .extra(new BossNotificationData("Agility Arena", 1000, gameMessage, null, null, null, null, "Total Ticket"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -228,7 +228,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // check notification
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
             .text(buildPbTemplate("Zulrah", "00:56.50", 12))
-            .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(56).plusMillis(500), true, null, null))
+            .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(56).plusMillis(500), true, null, null, "kill"))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
             .build();
@@ -257,7 +257,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // check notification
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
             .text(buildPbTemplate("Grotesque Guardians", "01:54.00", 79))
-            .extra(new BossNotificationData("Grotesque Guardians", 79, gameMessage, Duration.ofMinutes(1).plusSeconds(54), true, null, null))
+            .extra(new BossNotificationData("Grotesque Guardians", 79, gameMessage, Duration.ofMinutes(1).plusSeconds(54), true, null, null, "kill"))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
             .build();
@@ -286,7 +286,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // check notification
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
             .text(buildTemplate("Grotesque Guardians", 80))
-            .extra(new BossNotificationData("Grotesque Guardians", 80, gameMessage, null, null, null, null))
+            .extra(new BossNotificationData("Grotesque Guardians", 80, gameMessage, null, null, null, null, "kill"))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
             .build();
@@ -317,7 +317,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildPbTemplate("Zulrah", "01:00:56.50", 1))
-                .extra(new BossNotificationData("Zulrah", 1, gameMessage, Duration.ofHours(1).plusSeconds(56).plusMillis(500), true, null, null))
+                .extra(new BossNotificationData("Zulrah", 1, gameMessage, Duration.ofHours(1).plusSeconds(56).plusMillis(500), true, null, null, "kill"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -339,7 +339,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // check notification
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
             .text(buildPbTemplate("Zulrah", "00:56", 13))
-            .extra(new BossNotificationData("Zulrah", 13, gameMessage, Duration.ofSeconds(56), true, null, null))
+            .extra(new BossNotificationData("Zulrah", 13, gameMessage, Duration.ofSeconds(56), true, null, null, "kill"))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
             .build();
@@ -370,7 +370,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildPbTemplate("Chambers of Xeric", "36:04.20", 125))
-                .extra(new BossNotificationData("Chambers of Xeric", 125, gameMessage, Duration.ofMinutes(36).plusSeconds(4).plusMillis(200), true, null, Collections.emptyList()))
+                .extra(new BossNotificationData("Chambers of Xeric", 125, gameMessage, Duration.ofMinutes(36).plusSeconds(4).plusMillis(200), true, null, Collections.emptyList(), "completed"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -395,7 +395,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildTemplate("Chambers of Xeric", 150))
-                .extra(new BossNotificationData("Chambers of Xeric", 150, gameMessage, Duration.ofMinutes(46).plusSeconds(31).plusMillis(800), false, Duration.ofMinutes(40).plusSeconds(24).plusMillis(600), Collections.emptyList()))
+                .extra(new BossNotificationData("Chambers of Xeric", 150, gameMessage, Duration.ofMinutes(46).plusSeconds(31).plusMillis(800), false, Duration.ofMinutes(40).plusSeconds(24).plusMillis(600), Collections.emptyList(), "completed"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -421,7 +421,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildPbTemplate("Theatre of Blood", "21:33.60", 1))
-                .extra(new BossNotificationData("Theatre of Blood", 1, gameMessage, Duration.ofMinutes(21).plusSeconds(33).plusMillis(600), true, null, Collections.emptyList()))
+                .extra(new BossNotificationData("Theatre of Blood", 1, gameMessage, Duration.ofMinutes(21).plusSeconds(33).plusMillis(600), true, null, Collections.emptyList(), "completed"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -446,7 +446,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildTemplate("Theatre of Blood", 5))
-                .extra(new BossNotificationData("Theatre of Blood", 5, gameMessage, Duration.ofMinutes(19).plusSeconds(26).plusMillis(400), false, Duration.ofMinutes(19).plusSeconds(24), Collections.emptyList()))
+                .extra(new BossNotificationData("Theatre of Blood", 5, gameMessage, Duration.ofMinutes(19).plusSeconds(26).plusMillis(400), false, Duration.ofMinutes(19).plusSeconds(24), Collections.emptyList(), "completed"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -471,7 +471,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildPbTemplate("Crystalline Hunllef", "10:25.00", 10))
-                .extra(new BossNotificationData("Crystalline Hunllef", 10, gameMessage, Duration.ofMinutes(10).plusSeconds(25), true, null, null))
+                .extra(new BossNotificationData("Crystalline Hunllef", 10, gameMessage, Duration.ofMinutes(10).plusSeconds(25), true, null, null, "completion"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -495,7 +495,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildPbTemplate("Tempoross", "06:30.00", 69))
-                .extra(new BossNotificationData("Tempoross", 69, gameMessage, Duration.ofMinutes(6).plusSeconds(30), true, null, null))
+                .extra(new BossNotificationData("Tempoross", 69, gameMessage, Duration.ofMinutes(6).plusSeconds(30), true, null, null, "kill"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -525,7 +525,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildPbTemplate("Tombs of Amascut: Expert Mode", "25:00.00", 8))
-                .extra(new BossNotificationData("Tombs of Amascut: Expert Mode", 8, gameMessage, Duration.ofMinutes(25), true, null, party))
+                .extra(new BossNotificationData("Tombs of Amascut: Expert Mode", 8, gameMessage, Duration.ofMinutes(25), true, null, party, "completed"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -549,7 +549,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildTemplate("Zulrah", 12))
-                .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(59).plusMillis(300), false, Duration.ofSeconds(56).plusMillis(500), null))
+                .extra(new BossNotificationData("Zulrah", 12, gameMessage, Duration.ofSeconds(59).plusMillis(300), false, Duration.ofSeconds(56).plusMillis(500), null, "kill"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -572,7 +572,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildTemplate("Lunar Chest", 30))
-                .extra(new BossNotificationData("Lunar Chest", 30, gameMessage, null, null, null, null))
+                .extra(new BossNotificationData("Lunar Chest", 30, gameMessage, null, null, null, null, "Chest"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -596,7 +596,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildTemplate("Yama", 4))
-                .extra(new BossNotificationData("Yama", 4, gameMessage, Duration.ofMinutes(6).plusSeconds(50), false, Duration.ofMinutes(6).plusSeconds(41), null))
+                .extra(new BossNotificationData("Yama", 4, gameMessage, Duration.ofMinutes(6).plusSeconds(50), false, Duration.ofMinutes(6).plusSeconds(41), null, "success"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -632,7 +632,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
                         .replacement("{{boss}}", Replacements.ofWiki(boss))
                         .build()
                 )
-                .extra(new BossNotificationData(boss, count, "The Queen is dead!", null, null, null, null))
+                .extra(new BossNotificationData(boss, count, "The Queen is dead!", null, null, null, null, null))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
@@ -746,7 +746,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // check notification
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
             .text(buildTemplate("King Black Dragon", 1337))
-            .extra(new BossNotificationData("King Black Dragon", 1337, gameMessage, null, null, null, null))
+            .extra(new BossNotificationData("King Black Dragon", 1337, gameMessage, null, null, null, null, "kill"))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
             .build();
@@ -774,7 +774,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
         // check notification
         NotificationBody<BossNotificationData> body = NotificationBody.<BossNotificationData>builder()
             .text(buildTemplate("Tempoross", 1337))
-            .extra(new BossNotificationData("Tempoross", 1337, gameMessage, Duration.ofMinutes(6).plusSeconds(13), false, Duration.ofMinutes(5).plusSeconds(57), null))
+            .extra(new BossNotificationData("Tempoross", 1337, gameMessage, Duration.ofMinutes(6).plusSeconds(13), false, Duration.ofMinutes(5).plusSeconds(57), null, "kill"))
             .playerName(PLAYER_NAME)
             .type(NotificationType.KILL_COUNT)
             .build();
@@ -804,7 +804,7 @@ class KillCountNotifierTest extends MockedNotifierTest {
             true,
             NotificationBody.builder()
                 .text(buildTemplate("Bryophyta chests", 5))
-                .extra(new BossNotificationData("Bryophyta chests", 5, gameMessage, null, null, null, null))
+                .extra(new BossNotificationData("Bryophyta chests", 5, gameMessage, null, null, null, null, "opened"))
                 .playerName(PLAYER_NAME)
                 .type(NotificationType.KILL_COUNT)
                 .build()
