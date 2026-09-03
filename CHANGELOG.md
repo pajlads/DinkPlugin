@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Minor: Add agility lap count milestone notifications to the Kill Count notifier, with a configurable lap interval. (#1010)
+- Minor: Add agility lap count milestone notifications to the Kill Count notifier. (#1011)
 
 ## 1.15.0
 
