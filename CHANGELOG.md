@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Minor: Add agility lap count milestone notifications to the Kill Count notifier. (#1011)
+
 ## 1.15.0
 
 - Minor: Infer better prices for Araxxor uniques and Doom cloth. (#992)

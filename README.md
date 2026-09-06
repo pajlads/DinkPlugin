@@ -28,7 +28,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 - [Slayer](#slayer): Send a webhook message upon completing a slayer task (with a customizable point threshold)
 - [Quests](#quests): Send a webhook message upon completing a quest
 - [Clue Scrolls](#clue-scrolls): Send a webhook message upon solving a clue scroll (with customizable tier/value thresholds)
-- [Kill Count](#kill-count): Send a webhook message upon defeating a boss (with special configuration for personal best times)
+- [Kill Count](#kill-count): Send a webhook message upon defeating a boss (with special configuration for personal best times) or reaching an agility lap count milestone
 - [Combat Achievements](#combat-achievements): Send a webhook message upon completing a combat task (with customizable tier threshold)
 - [Achievement Diaries](#achievement-diary): Send a webhook message upon completing an achievement diary (with customizable difficulty threshold)
 - [Pet](#pet): Send a webhook message upon receiving a pet
@@ -257,9 +257,9 @@ This field is already included as a rich embed field, so it is meant for users w
 
 ### Kill Count:
 
-`%BOSS%` will be replaced with the boss name (be it the NPC, raid, etc.)
+`%BOSS%` will be replaced with the boss name (be it the NPC, raid, agility course, etc.)
 
-`%COUNT%` will be replaced with the kill count (or, generically: completion count)
+`%COUNT%` will be replaced with the kill count (or, generically: completion count / lap count)
 
 ### Combat Achievements:
 

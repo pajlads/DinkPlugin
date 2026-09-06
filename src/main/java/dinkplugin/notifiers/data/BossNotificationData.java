@@ -31,6 +31,9 @@ public class BossNotificationData extends NotificationData {
     Duration personalBest;
     @Nullable
     Collection<String> party;
+    @Nullable
+    @EqualsAndHashCode.Include
+    transient String type;
 
     @Override
     public List<Field> getFields() {

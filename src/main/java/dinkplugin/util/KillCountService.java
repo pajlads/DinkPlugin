@@ -174,9 +174,9 @@ public class KillCountService {
         }
 
         // update cached KC via boss chat message with robustness for chat event coming before OR after the loot event
-        KillCountNotifier.parseBoss(message).ifPresent(pair -> {
-            String boss = pair.getKey();
-            Integer kc = pair.getValue();
+        KillCountNotifier.parseBoss(message).ifPresent(triple -> {
+            String boss = triple.getLeft();
+            Integer kc = triple.getRight();
 
             // Update cache. We store kc - 1 since onNpcLootReceived will increment; kc - 1 + 1 == kc
             String cacheKey = getCacheKey(LootRecordType.UNKNOWN, boss);
