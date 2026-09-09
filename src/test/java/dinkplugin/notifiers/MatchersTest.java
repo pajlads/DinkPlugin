@@ -1,6 +1,6 @@
 package dinkplugin.notifiers;
 
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -103,7 +103,7 @@ class MatchersTest {
 
     @ParameterizedTest(name = "Kill count message should trigger on: {0}")
     @ArgumentsSource(KillCountProvider.class)
-    void killCountRegexFindsMatch(String message, Pair<String, Integer> expected) {
+    void killCountRegexFindsMatch(String message, Triple<String, String, Integer> expected) {
         assertEquals(expected, KillCountNotifier.parseBoss(message).orElse(null));
     }
 
@@ -122,29 +122,29 @@ class MatchersTest {
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
                 // standard kill count string
-                Arguments.of("Your King Black Dragon kill count is: 581.", Pair.of("King Black Dragon", 581)),
-                Arguments.of("Your Cerberus kill count is: 3273.", Pair.of("Cerberus", 3273)),
-                Arguments.of("Your K'ril Tsutsaroth kill count is: 481", Pair.of("K'ril Tsutsaroth", 481)),
-                Arguments.of("Your TzTok-Jad kill count is: 46", Pair.of("TzTok-Jad", 46)),
+                Arguments.of("Your King Black Dragon kill count is: 581.", Triple.of("King Black Dragon", "kill", 581)),
+                Arguments.of("Your Cerberus kill count is: 3273.", Triple.of("Cerberus", "kill", 3273)),
+                Arguments.of("Your K'ril Tsutsaroth kill count is: 481", Triple.of("K'ril Tsutsaroth", "kill", 481)),
+                Arguments.of("Your TzTok-Jad kill count is: 46", Triple.of("TzTok-Jad", "kill", 46)),
 
                 // skilling special case
-                Arguments.of("Your subdued Wintertodt count is: 359", Pair.of("Wintertodt", 359)),
-                Arguments.of("Your herbiboar harvest count is: 2332.", Pair.of("Herbiboar", 2332)),
+                Arguments.of("Your subdued Wintertodt count is: 359", Triple.of("Wintertodt", "subdued", 359)),
+                Arguments.of("Your herbiboar harvest count is: 2332.", Triple.of("Herbiboar", "harvest", 2332)),
 
                 // minigame special cases
-                Arguments.of("Your Barrows chest count is: 268", Pair.of("Barrows", 268)),
-                Arguments.of("Your Gauntlet completion count is: 8", Pair.of("Crystalline Hunllef", 8)),
-                Arguments.of("Your Corrupted Gauntlet completion count is: 109", Pair.of("Corrupted Hunllef", 109)),
+                Arguments.of("Your Barrows chest count is: 268", Triple.of("Barrows", "chest", 268)),
+                Arguments.of("Your Gauntlet completion count is: 8", Triple.of("Crystalline Hunllef", "completion", 8)),
+                Arguments.of("Your Corrupted Gauntlet completion count is: 109", Triple.of("Corrupted Hunllef", "completion", 109)),
 
                 // raid special cases
-                Arguments.of("Your completed Theatre of Blood: Entry Mode count is: 1", Pair.of("Theatre of Blood: Entry Mode", 1)),
-                Arguments.of("Your completed Theatre of Blood count is: 951", Pair.of("Theatre of Blood", 951)),
-                Arguments.of("Your completed Theatre of Blood: Hard Mode count is: 2", Pair.of("Theatre of Blood: Hard Mode", 2)),
-                Arguments.of("Your completed Chambers of Xeric count is: 138", Pair.of("Chambers of Xeric", 138)),
-                Arguments.of("Your completed Chambers of Xeric Challenge Mode count is: 138", Pair.of("Chambers of Xeric Challenge Mode", 138)),
-                Arguments.of("Your completed Tombs of Amascut: Entry Mode count is: 7", Pair.of("Tombs of Amascut: Entry Mode", 7)),
-                Arguments.of("Your completed Tombs of Amascut count is: 101", Pair.of("Tombs of Amascut", 101)),
-                Arguments.of("Your completed Tombs of Amascut: Expert Mode count is: 3", Pair.of("Tombs of Amascut: Expert Mode", 3))
+                Arguments.of("Your completed Theatre of Blood: Entry Mode count is: 1", Triple.of("Theatre of Blood: Entry Mode", "completed", 1)),
+                Arguments.of("Your completed Theatre of Blood count is: 951", Triple.of("Theatre of Blood", "completed", 951)),
+                Arguments.of("Your completed Theatre of Blood: Hard Mode count is: 2", Triple.of("Theatre of Blood: Hard Mode", "completed", 2)),
+                Arguments.of("Your completed Chambers of Xeric count is: 138", Triple.of("Chambers of Xeric", "completed", 138)),
+                Arguments.of("Your completed Chambers of Xeric Challenge Mode count is: 138", Triple.of("Chambers of Xeric Challenge Mode", "completed", 138)),
+                Arguments.of("Your completed Tombs of Amascut: Entry Mode count is: 7", Triple.of("Tombs of Amascut: Entry Mode", "completed", 7)),
+                Arguments.of("Your completed Tombs of Amascut count is: 101", Triple.of("Tombs of Amascut", "completed", 101)),
+                Arguments.of("Your completed Tombs of Amascut: Expert Mode count is: 3", Triple.of("Tombs of Amascut: Expert Mode", "completed", 3))
             );
         }
     }

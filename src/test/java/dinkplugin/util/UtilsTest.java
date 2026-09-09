@@ -123,6 +123,8 @@ class UtilsTest {
         assertEquals("foo\nbar", Utils.sanitize("foo<br>bar"));
 
         assertEquals("foo bar", Utils.sanitize("foo\u00A0bar"));
+
+        assertEquals("You have been frozen!", Utils.sanitize("@mes_hl_red@You have been frozen!</col>"));
     }
 
 }

@@ -16,10 +16,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Check formatting with Prettier
-        uses: Nerixyz/actionsx-prettier@v4
+        uses: Nerixyz/actionsx-prettier@a16066052c86f47f54dcb752e42d53a5d8e65c86 # v4.0.0+prettier3.9.5
         with:
           # prettier CLI arguments.
           args: --write .
