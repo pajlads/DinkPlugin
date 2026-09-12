@@ -379,7 +379,12 @@ On login, Dink can submit a character summary containing data that spans multipl
 
 ## Projects Using Dink
 
-Dink powers a variety of third-party projects including:
+If you intend to share a Discord webhook link to other Dink users, we recommend you use [our official Webhook Filter service](https://dink.pajlada.se/) so you can control an allowlist/denylist of which players can post notifications to your channel (e.g., if a player leaves your clan).
+For increased privacy, you can deploy your own instance of this Cloudflare Worker as explained in the [GitHub repo](https://github.com/pajlads/dink-url-manager).
+
+&nbsp;
+
+Dink also powers a variety of third-party projects including:
 
 - [Watchdog](https://github.com/adamk33n3r/runelite-watchdog): RuneLite hub plugin that can trigger custom Dink notifications
 - [Leppunen's Dink Handler](https://git.ivr.fi/Leppunen/runelite-dink-api): JS-based (Fastify) webhook handler that forwards Dink notifications to a Twitch chatbot
