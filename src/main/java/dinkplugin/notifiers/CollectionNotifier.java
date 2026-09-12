@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Item;
-import net.runelite.api.ItemComposition;
 import net.runelite.api.ScriptID;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.VarClientID;
@@ -266,14 +265,17 @@ public class CollectionNotifier extends BaseNotifier {
     }
 
     private Integer findItemId(String itemName) {
-        return ItemUtils.getItems(client)
-            .stream()
-            .mapToInt(Item::getId)
-            .mapToObj(itemManager::getItemComposition)
-            .filter(i -> itemName.equals(i.getName()))
-            .findFirst()
-            .map(ItemComposition::getId)
-            .orElseGet(() -> itemSearcher.findItemId(itemName));
+        // first try to find the item in the player's inventory/equipment
+        var items = ItemUtils.getItems(client);
+        for (Item item : items) {
+            var comp = itemManager.getItemComposition(item.getId());
+            if (itemName.equals(comp.getName())) {
+                return item.getId();
+            }
+        }
+
+        // fallback to our cache of name => id based on runelite's hosted items json
+        return itemSearcher.findItemId(itemName);
     }
 
     @Nullable
