@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Add agility lap count milestone notifications to the Kill Count notifier. (#1011)
+- Dev: Populate item ID in collection notification metadata based on player inventory. (#1016)
 
 ## 1.15.0
 
