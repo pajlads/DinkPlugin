@@ -151,6 +151,7 @@ public class KillCountNotifier extends BaseNotifier {
             .replacement("%BOSS%", Replacements.ofWiki(data.getBoss()))
             .replacement("%COUNT%", Replacements.ofText(data.getCount() + (ba ? " high gambles" : "")))
             .replacement("%TIME%", Replacements.ofText(time))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         // Call webhook

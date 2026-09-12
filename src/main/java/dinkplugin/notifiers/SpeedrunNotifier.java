@@ -60,6 +60,7 @@ public class SpeedrunNotifier extends BaseNotifier {
             .replacement("%QUEST%", Replacements.ofWiki(questName))
             .replacement("%TIME%", Replacements.ofText(duration))
             .replacement("%BEST%", Replacements.ofText(pb))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         // Reformat the durations for the extra object

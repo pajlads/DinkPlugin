@@ -164,6 +164,7 @@ public class MetaNotifier extends BaseNotifier {
             .replacement("%ITEM_COUNT%", Replacements.ofText(String.valueOf(items.size())))
             .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalValue)))
             .replacement("%SLOT_COUNT%", Replacements.ofText(String.valueOf(slots)))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
         var extra = new GroupBankContentsNotificationData(items, slots);
         createMessage(false, NotificationBody.builder()
@@ -199,6 +200,7 @@ public class MetaNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .template("%USERNAME% rolled a purple (unique) drop from Tombs of Amascut!")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
         var extra = new AmascutPurpleNotificationData(data.getParty(), data.getRewardPoints(), data.getRaidLevel(), data.getPurpleProbability());
         createMessage(false, NotificationBody.builder()
@@ -296,6 +298,7 @@ public class MetaNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .template("%USERNAME% logged out")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         createMessage(false, NotificationBody.builder()

@@ -162,8 +162,8 @@ public class GroupStorageNotifier extends BaseNotifier {
         // Build content
         String playerName = client.getLocalPlayer().getName();
         String content = StringUtils.replaceEach(config.groupStorageNotifyMessage(),
-            new String[] { "%USERNAME%", "%DEPOSITED%", "%WITHDRAWN%", "%COMBINED%" },
-            new String[] { playerName, depositString, withdrawalString, combinedDiff }
+            new String[] { "%USERNAME%", "%DEPOSITED%", "%WITHDRAWN%", "%COMBINED%", "%WORLD%" },
+            new String[] { playerName, depositString, withdrawalString, combinedDiff, String.valueOf(client.getWorld()) }
         );
         Template formattedText = Template.builder()
             .template("$s$")

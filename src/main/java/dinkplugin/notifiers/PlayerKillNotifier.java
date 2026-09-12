@@ -140,6 +140,7 @@ public class PlayerKillNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(localPlayer))
             .replacement("%TARGET%", Replacements.ofLink(target.getName(), config.playerLookupService().getPlayerUrl(target.getName())))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         createMessage(config.pkSendImage(), NotificationBody.builder()

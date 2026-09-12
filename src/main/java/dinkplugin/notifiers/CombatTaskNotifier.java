@@ -102,6 +102,7 @@ public class CombatTaskNotifier extends BaseNotifier {
                 .replacement("%POINTS%", Replacements.ofText(String.valueOf(taskPoints)))
                 .replacement("%TOTAL_POINTS%", Replacements.ofText(String.valueOf(totalPoints)))
                 .replacement("%COMPLETED%", Replacements.ofText(completedTierName))
+                .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
                 .build();
 
             createMessage(config.combatTaskSendImage(), NotificationBody.<CombatAchievementData>builder()

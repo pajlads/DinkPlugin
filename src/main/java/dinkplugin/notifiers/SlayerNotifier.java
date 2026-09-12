@@ -115,6 +115,7 @@ public class SlayerNotifier extends BaseNotifier {
                 .replacement("%TASK%", buildTask(task, monster, marginalKillCount))
                 .replacement("%TASKCOUNT%", Replacements.ofText(slayerCompleted))
                 .replacement("%POINTS%", Replacements.ofText(slayerPoints))
+                .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
                 .build();
 
             createMessage(config.slayerSendImage(), NotificationBody.builder()

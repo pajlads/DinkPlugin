@@ -130,6 +130,7 @@ public class GrandExchangeNotifier extends BaseNotifier {
             .replacement("%TYPE%", Replacements.ofText(type.getDisplayName()))
             .replacement("%ITEM%", ItemUtils.templateStack(item, true))
             .replacement("%STATUS%", Replacements.ofText(getHumanStatus(offer.getState())))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
         createMessage(config.grandExchangeSendImage(), NotificationBody.builder()
             .type(NotificationType.GRAND_EXCHANGE)

@@ -413,7 +413,8 @@ public interface DinkPluginConfig extends Config {
         description = "Thread name template to use for Discord Forum Channels<br/>" +
             "Use %TYPE% to insert the notification type<br/>" +
             "Use %MESSAGE% to insert the notification message<br/>" +
-            "Use %USERNAME% to insert the player name",
+            "Use %USERNAME% to insert the player name<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 1013,
         section = advancedSection
     )
@@ -428,7 +429,8 @@ public interface DinkPluginConfig extends Config {
             "Leave empty for default filenames.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %TYPE% to insert the notification type<br/>" +
-            "Use %CLAN% to insert your clan name",
+            "Use %CLAN% to insert your clan name<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 1013,
         section = advancedSection
     )
@@ -863,7 +865,8 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %ITEM% to insert the item name<br/>" +
             "Use %COMPLETED% to insert the number of completed entries<br/>" +
-            "Use %TOTAL_POSSIBLE% to insert the number of possible entries",
+            "Use %TOTAL_POSSIBLE% to insert the number of possible entries<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 4,
         section = collectionSection
     )
@@ -910,7 +913,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %GAME_MESSAGE% to insert the game message associated with this type of pet drop<br/>" +
-            "Use %PET% to insert the pet name (if known)",
+            "Use %PET% to insert the pet name (if known)<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 13,
         section = petSection
     )
@@ -1035,7 +1039,8 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %SKILL% to insert the levelled skill(s)<br/>" +
             "Use %TOTAL_LEVEL% to insert the updated total level<br/>" +
-            "Use %TOTAL_XP% to insert the updated overall experience",
+            "Use %TOTAL_XP% to insert the updated overall experience<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 29,
         section = levelSection
     )
@@ -1217,7 +1222,8 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %LOOT% to insert the loot<br/>" +
             "Use %SOURCE% to show the source of the loot<br/>" +
-            "Use %COUNT% to insert the associated kill count (unnecessary if rich embeds are enabled)",
+            "Use %COUNT% to insert the associated kill count (unnecessary if rich embeds are enabled)<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 40,
         section = lootSection
     )
@@ -1312,7 +1318,8 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %VALUELOST% to insert the GE value of the stuff you lost",
+            "Use %VALUELOST% to insert the GE value of the stuff you lost<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 47,
         section = deathSection
     )
@@ -1337,7 +1344,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %PKER% to insert the killer<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %VALUELOST% to insert the GE value of the stuff you lost",
+            "Use %VALUELOST% to insert the GE value of the stuff you lost<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 49,
         section = deathSection
     )
@@ -1385,7 +1393,8 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %TASK% to insert your task<br/>" +
             "Use %POINTS% to show how many points you obtained<br/>" +
-            "Use %TASKCOUNT% to show how many tasks you have completed",
+            "Use %TASKCOUNT% to show how many tasks you have completed<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 53,
         section = slayerSection
     )
@@ -1420,7 +1429,8 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %QUEST% to insert the quest that you completed",
+            "Use %QUEST% to insert the quest that you completed<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 62,
         section = questSection
     )
@@ -1502,7 +1512,8 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %CLUE% to insert the clue type<br/>" +
             "Use %LOOT% to show the loot obtained<br/>" +
-            "Use %COUNT% to insert how many of those clue types you have completed",
+            "Use %COUNT% to insert how many of those clue types you have completed<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 76,
         section = clueSection
     )
@@ -1549,7 +1560,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/> +" +
             "Use %QUEST% to insert the quest name<br/>" +
-            "Use %TIME% to insert your new time",
+            "Use %TIME% to insert your new time<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 83,
         section = speedrunSection
     )
@@ -1564,7 +1576,8 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %QUEST% to insert the quest name<br/>" +
             "Use %TIME% to insert your new time<br/>" +
-            "Use %BEST% to insert your PB",
+            "Use %BEST% to insert your PB<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 84,
         section = speedrunSection
     )
@@ -1656,7 +1669,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent to the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %BOSS% to insert the NPC name<br/>" +
-            "Use %COUNT% to insert the kill count",
+            "Use %COUNT% to insert the kill count<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 97,
         section = killCountSection
     )
@@ -1671,7 +1685,8 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username,<br/>" +
             "Use %BOSS% to insert the NPC name<br/>" +
             "Use %COUNT% to insert the kill count<br/>" +
-            "Use %TIME% to insert the completion time",
+            "Use %TIME% to insert the completion time<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 98,
         section = killCountSection
     )
@@ -1685,7 +1700,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent to the webhook upon an agility lap milestone.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %BOSS% to insert the agility course name<br/>" +
-            "Use %COUNT% to insert the lap count",
+            "Use %COUNT% to insert the lap count<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 99,
         section = killCountSection
     )
@@ -1734,7 +1750,8 @@ public interface DinkPluginConfig extends Config {
             "Use %TIER% to insert the task tier<br/>" +
             "Use %TASK% to insert the task name<br/>" +
             "Use %POINTS% to insert the task points<br/>" +
-            "Use %TOTAL_POINTS% to insert the total points earned across tasks",
+            "Use %TOTAL_POINTS% to insert the total points earned across tasks<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 103,
         section = combatTaskSection
     )
@@ -1751,7 +1768,8 @@ public interface DinkPluginConfig extends Config {
             "Use %TASK% to insert the task name<br/>" +
             "Use %POINTS% to insert the task points<br/>" +
             "Use %TOTAL_POINTS% to insert the total points earned across tasks<br/>" +
-            "Use %COMPLETED% to insert the completed tier",
+            "Use %COMPLETED% to insert the completed tier<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 104,
         section = combatTaskSection
     )
@@ -1803,7 +1821,8 @@ public interface DinkPluginConfig extends Config {
             "Use %TASKS_COMPLETE% to insert the tasks completed across all diaries<br/>" +
             "Use %TASKS_TOTAL% to insert the total tasks possible across all diaries<br/>" +
             "Use %AREA_TASKS_COMPLETE% to insert the tasks completed within the area<br/>" +
-            "Use %AREA_TASKS_TOTAL% to insert the total tasks possible within the area",
+            "Use %AREA_TASKS_TOTAL% to insert the total tasks possible within the area<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 113,
         section = diarySection
     )
@@ -1862,7 +1881,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook every gamble interval.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %COUNT% to insert the gamble count<br/>" +
-            "Use %LOOT% to insert the loot",
+            "Use %LOOT% to insert the loot<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 124,
         section = gambleSection
     )
@@ -1876,7 +1896,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook for rare loot.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %COUNT% to insert the gamble count<br/>" +
-            "Use %LOOT% to insert the loot",
+            "Use %LOOT% to insert the loot<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 125,
         section = gambleSection
     )
@@ -1957,7 +1978,8 @@ public interface DinkPluginConfig extends Config {
         name = "Notification Message",
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
-            "Use %TARGET% to insert the victim's username",
+            "Use %TARGET% to insert the victim's username<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 136,
         section = pkSection
     )
@@ -2028,7 +2050,8 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %DEPOSITED% to insert the list of deposited items<br/>" +
             "Use %WITHDRAWN% to insert the list of withdrawn items<br/>" +
-            "Use %COMBINED% to insert a single block with both the deposited and withdrawn items",
+            "Use %COMBINED% to insert a single block with both the deposited and withdrawn items<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 145,
         section = groupStorageSection
     )
@@ -2103,7 +2126,8 @@ public interface DinkPluginConfig extends Config {
             "Use %USERNAME% to insert your username<br/>" +
             "Use %TYPE% to insert the type of transaction (bought or sold)<br/>" +
             "Use %ITEM% to insert the transacted item<br/>" +
-            "Use %STATUS% to insert the trade status (e.g., Completed, In Progress, Cancelled)",
+            "Use %STATUS% to insert the trade status (e.g., Completed, In Progress, Cancelled)<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 155,
         section = grandExchangeSection
     )
@@ -2153,7 +2177,8 @@ public interface DinkPluginConfig extends Config {
             "Use %IN_VALUE% to insert the value of the items received from the counterparty<br/>" +
             "Use %OUT_VALUE% to insert the value of the items given to the counterparty<br/>" +
             "Use %RECEIVED_ITEMS% to list all items received from the counterparty<br/>" +
-            "Use %GIVEN_ITEMS% to list all items given to the counterparty",
+            "Use %GIVEN_ITEMS% to list all items given to the counterparty<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 163,
         section = tradeSection
     )
@@ -2201,7 +2226,8 @@ public interface DinkPluginConfig extends Config {
         name = "Message Filters",
         description = "The chat message patterns that should trigger notifications.<br/>" +
             "Place one pattern per line (case-insensitive; asterisks are wildcards).<br/>" +
-            "Use %USERNAME% to dynamically insert your username",
+            "Use %USERNAME% to dynamically insert your username<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 173,
         section = chatSection
     )
@@ -2223,7 +2249,8 @@ public interface DinkPluginConfig extends Config {
         description = "The message to be sent through the webhook.<br/>" +
             "Use %USERNAME% to insert your username<br/>" +
             "Use %MESSAGE% to insert the chat message<br/>" +
-            "Use %SENDER% to insert the sender of the message",
+            "Use %SENDER% to insert the sender of the message<br/>" +
+            "Use %WORLD% to insert the active world",
         position = 174,
         section = chatSection
     )

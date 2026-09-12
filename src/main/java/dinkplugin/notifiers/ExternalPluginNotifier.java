@@ -94,6 +94,7 @@ public class ExternalPluginNotifier extends BaseNotifier {
             .template(input.getText())
             .replacements(Objects.requireNonNullElseGet(input.getReplacements(), () -> new HashMap<>(2)))
             .replacement("%USERNAME%", Replacements.ofText(player))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         var footer = String.format("Sent by %s via Dink", input.getSourcePlugin());

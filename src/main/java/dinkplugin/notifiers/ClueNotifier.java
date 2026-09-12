@@ -120,6 +120,7 @@ public class ClueNotifier extends BaseNotifier {
                 .replacement("%COUNT%", Replacements.ofText(String.valueOf(clueCount)))
                 .replacement("%TOTAL_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(totalPrice.get())))
                 .replacement("%LOOT%", lootMessage.build())
+                .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
                 .build();
             String icon = String.format("https://oldschool.runescape.wiki/images/Clue_scroll_(%s).png", clueType.toLowerCase());
             createMessage(screenshot,
