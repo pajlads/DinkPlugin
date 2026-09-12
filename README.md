@@ -28,7 +28,7 @@ To use this plugin, a webhook URL is required; you can obtain one from Discord w
 - [Slayer](#slayer): Send a webhook message upon completing a slayer task (with a customizable point threshold)
 - [Quests](#quests): Send a webhook message upon completing a quest
 - [Clue Scrolls](#clue-scrolls): Send a webhook message upon solving a clue scroll (with customizable tier/value thresholds)
-- [Kill Count](#kill-count): Send a webhook message upon defeating a boss (with special configuration for personal best times)
+- [Kill Count](#kill-count): Send a webhook message upon defeating a boss (with special configuration for personal best times) or reaching an agility lap count milestone
 - [Combat Achievements](#combat-achievements): Send a webhook message upon completing a combat task (with customizable tier threshold)
 - [Achievement Diaries](#achievement-diary): Send a webhook message upon completing an achievement diary (with customizable difficulty threshold)
 - [Pet](#pet): Send a webhook message upon receiving a pet
@@ -257,9 +257,9 @@ This field is already included as a rich embed field, so it is meant for users w
 
 ### Kill Count:
 
-`%BOSS%` will be replaced with the boss name (be it the NPC, raid, etc.)
+`%BOSS%` will be replaced with the boss name (be it the NPC, raid, agility course, etc.)
 
-`%COUNT%` will be replaced with the kill count (or, generically: completion count)
+`%COUNT%` will be replaced with the kill count (or, generically: completion count / lap count)
 
 ### Combat Achievements:
 
@@ -379,7 +379,12 @@ On login, Dink can submit a character summary containing data that spans multipl
 
 ## Projects Using Dink
 
-Dink powers a variety of third-party projects including:
+If you intend to share a Discord webhook link to other Dink users, we recommend you use [our official Webhook Filter service](https://dink.pajlada.se/) so you can control an allowlist/denylist of which players can post notifications to your channel (e.g., if a player leaves your clan).
+For increased privacy, you can deploy your own instance of this Cloudflare Worker as explained in the [GitHub repo](https://github.com/pajlads/dink-url-manager).
+
+&nbsp;
+
+Dink also powers a variety of third-party projects including:
 
 - [Watchdog](https://github.com/adamk33n3r/runelite-watchdog): RuneLite hub plugin that can trigger custom Dink notifications
 - [Leppunen's Dink Handler](https://git.ivr.fi/Leppunen/runelite-dink-api): JS-based (Fastify) webhook handler that forwards Dink notifications to a Twitch chatbot

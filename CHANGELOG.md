@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Minor: Add agility lap count milestone notifications to the Kill Count notifier. (#1011)
+- Bugfix: Disable notifications for deep sea trawling paint until we can distinguish Angler's paint. (#1018)
+- Dev: Populate item ID in collection notification metadata based on player inventory. (#1016)
+
 ## 1.15.0
 
 - Minor: Infer better prices for Araxxor uniques and Doom cloth. (#992)

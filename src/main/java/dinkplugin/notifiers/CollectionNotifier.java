@@ -16,6 +16,7 @@ import dinkplugin.util.Utils;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.Item;
 import net.runelite.api.ScriptID;
 import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.VarClientID;
@@ -141,7 +142,7 @@ public class CollectionNotifier extends BaseNotifier {
         Matcher collectionMatcher = COLLECTION_LOG_REGEX.matcher(chatMessage);
         if (collectionMatcher.find()) {
             String item = collectionMatcher.group("itemName");
-            clientThread.invokeLater(() -> handleNotify(item));
+            clientThread.invokeAtTickEnd(() -> handleNotify(item));
         }
     }
 
@@ -232,7 +233,7 @@ public class CollectionNotifier extends BaseNotifier {
             .build();
 
         // populate metadata
-        Integer itemId = itemSearcher.findItemId(itemName);
+        Integer itemId = findItemId(itemName);
         Long price = itemId != null ? ItemUtils.getPrice(itemManager, itemId) : null;
         Drop loot = itemId != null ? getLootSource(itemId) : null;
         Integer killCount = loot != null ? killCountService.getKillCount(loot.getCategory(), loot.getSource()) : null;
@@ -261,6 +262,20 @@ public class CollectionNotifier extends BaseNotifier {
             .extra(extra)
             .type(NotificationType.COLLECTION)
             .build());
+    }
+
+    private Integer findItemId(String itemName) {
+        // first try to find the item in the player's inventory/equipment
+        var items = ItemUtils.getItems(client);
+        for (Item item : items) {
+            var comp = itemManager.getItemComposition(item.getId());
+            if (itemName.equals(comp.getName())) {
+                return item.getId();
+            }
+        }
+
+        // fallback to our cache of name => id based on runelite's hosted items json
+        return itemSearcher.findItemId(itemName);
     }
 
     @Nullable
