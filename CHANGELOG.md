@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.15.1
+
 - Minor: Add agility lap count milestone notifications to the Kill Count notifier. (#1011)
 - Minor: Add `%WORLD%` template variable for all notifiers. (#1017)
 - Bugfix: Restore TOA purple notifications to metadata endpoint when party score is unknown. (#1014)
