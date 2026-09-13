@@ -207,9 +207,11 @@ public class LootNotifier extends BaseNotifier {
             this.handleNotify(List.of(new ItemStack(ItemID.POH_TROPHYDROP_BLUEFIN, 1)), "Deep sea trawling", LootRecordType.EVENT, null);
         } else if ("You catch a swift marlin!".equals(message)) {
             this.handleNotify(List.of(new ItemStack(ItemID.POH_TROPHYDROP_MARLIN, 1)), "Deep sea trawling", LootRecordType.EVENT, null);
-        } else if ("You've received some paint!".equals(message)) {
-            this.handleNotify(List.of(new ItemStack(ItemID.SAILING_PAINT_ANGLERS, 1)), "Deep sea trawling", LootRecordType.EVENT, null);
         }
+
+        // TODO: need a way to distinguish Angler's paint from other paints
+        // if ("You've received some paint!".equals(message))
+        //     this.handleNotify(List.of(new ItemStack(ItemID.SAILING_PAINT_ANGLERS, 1)), "Deep sea trawling", LootRecordType.EVENT, null);
     }
 
     private void handleNotify(Collection<ItemStack> items, String dropper, LootRecordType type, Integer npcId) {
