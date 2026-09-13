@@ -139,6 +139,7 @@ public class ChatNotifier extends BaseNotifier {
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%MESSAGE%", Replacements.ofText(message))
             .replacement("%SENDER%", Replacements.ofText(getSender(dinkType, source)))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
         createMessage(config.chatSendImage(), NotificationBody.builder()
             .text(template)

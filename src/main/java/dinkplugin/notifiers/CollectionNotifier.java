@@ -230,6 +230,7 @@ public class CollectionNotifier extends BaseNotifier {
             .replacement("%COMPLETED%", Replacements.ofText(completed > 0 ? String.valueOf(completed) : "?"))
             .replacement("%TOTAL_POSSIBLE%", Replacements.ofText(String.valueOf(total > 0 ? total : TOTAL_ENTRIES)))
             .replacement("%RANK%", Replacements.ofText(rank != null ? rank.toString() : "Unknown"))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         // populate metadata

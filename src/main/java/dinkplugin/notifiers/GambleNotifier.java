@@ -78,6 +78,7 @@ public class GambleNotifier extends BaseNotifier {
             .replacement("%USERNAME%", Replacements.ofText(player))
             .replacement("%COUNT%", Replacements.ofText(String.valueOf(data.gambleCount)))
             .replacement("%LOOT%", lootSummary(items))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
         createMessage(config.gambleSendImage(), NotificationBody.builder()
             .text(message)

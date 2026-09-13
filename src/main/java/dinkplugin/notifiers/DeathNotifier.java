@@ -273,6 +273,7 @@ public class DeathNotifier extends BaseNotifier {
             .template(template)
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .replacement("%VALUELOST%", Replacements.ofText(QuantityFormatter.quantityToStackSize(losePrice)));
         if (pvp) {
             builder.replacement("%PKER%", Replacements.ofText(killer));

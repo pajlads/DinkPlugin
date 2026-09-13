@@ -110,6 +110,7 @@ public class TradeNotifier extends BaseNotifier {
             .replacement("%OUT_VALUE%", Replacements.ofText(QuantityFormatter.quantityToStackSize(giveValue)))
             .replacement("%RECEIVED_ITEMS%", ItemUtils.templateItems(received, true))
             .replacement("%GIVEN_ITEMS%", ItemUtils.templateItems(disbursed, true))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         createMessage(config.tradeSendImage(), NotificationBody.builder()

@@ -152,6 +152,7 @@ public class LeaguesNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%MASTERY%", Replacements.ofWiki(type + " " + romanTier))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
         createMessage(config.leaguesSendImage(), NotificationBody.builder()
             .type(NotificationType.LEAGUES_MASTERY)
@@ -181,6 +182,7 @@ public class LeaguesNotifier extends BaseNotifier {
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%I_TH%", Replacements.ofText(unlocked.getValue()))
             .replacement("%AREA%", Replacements.ofWiki(area, CURRENT_LEAGUE_NAME + " League/Areas/" + area))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
         createMessage(config.leaguesSendImage(), NotificationBody.builder()
             .type(NotificationType.LEAGUES_AREA)
@@ -207,6 +209,7 @@ public class LeaguesNotifier extends BaseNotifier {
             .replacement("%USERNAME%", Replacements.ofText(playerName))
             .replacement("%TIER%", Replacements.ofText(String.valueOf(tier)))
             .replacement("%RELIC%", Replacements.ofWiki(relic))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
         createMessage(config.leaguesSendImage(), NotificationBody.builder()
             .type(NotificationType.LEAGUES_RELIC)
@@ -252,6 +255,7 @@ public class LeaguesNotifier extends BaseNotifier {
             .replacement("%TROPHY%", newTrophy
                 ? Replacements.ofWiki(trophy.getValue(), String.format("%s %s trophy", CURRENT_LEAGUE_NAME, trophy.getValue().toLowerCase()))
                 : Replacements.ofText("?"))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
         createMessage(config.leaguesSendImage(), NotificationBody.builder()
             .type(NotificationType.LEAGUES_TASK)

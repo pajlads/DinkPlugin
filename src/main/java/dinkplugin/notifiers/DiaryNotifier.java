@@ -197,6 +197,7 @@ public class DiaryNotifier extends BaseNotifier {
             .replacement("%TASKS_TOTAL%", Replacements.ofText(String.valueOf(totalTasks)))
             .replacement("%AREA_TASKS_COMPLETE%", Replacements.ofText(String.valueOf(completedAreaTasks)))
             .replacement("%AREA_TASKS_TOTAL%", Replacements.ofText(String.valueOf(totalAreaTasks)))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         createMessage(config.diarySendImage(), NotificationBody.builder()

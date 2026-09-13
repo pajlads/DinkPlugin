@@ -59,6 +59,7 @@ public class QuestNotifier extends BaseNotifier {
             .replacementBoundary("%")
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%QUEST%", Replacements.ofWiki(parsed))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         QuestNotificationData extra = new QuestNotificationData(

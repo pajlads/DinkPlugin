@@ -240,6 +240,7 @@ public class LevelNotifier extends BaseNotifier {
             .replacement("%SKILL%", skillMessage.build())
             .replacement("%TOTAL_LEVEL%", Replacements.ofText(String.valueOf(client.getTotalLevel())))
             .replacement("%TOTAL_XP%", Replacements.ofText(totalXp))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         createMessage(config.levelSendImage(), NotificationBody.builder()
@@ -327,6 +328,7 @@ public class LevelNotifier extends BaseNotifier {
             .replacement("%SKILL%", skillMessage.build())
             .replacement("%TOTAL_LEVEL%", Replacements.ofText(String.valueOf(totalLevel)))
             .replacement("%TOTAL_XP%", Replacements.ofText(QuantityFormatter.formatNumber(client.getOverallExperience())))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         // Fire notification

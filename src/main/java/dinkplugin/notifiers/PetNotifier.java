@@ -227,6 +227,7 @@ public class PetNotifier extends BaseNotifier {
             .replacement("%USERNAME%", Replacements.ofText(Utils.getPlayerName(client)))
             .replacement("%GAME_MESSAGE%", Replacements.ofText(gameMessage))
             .replacement("%PET%", Replacements.ofText(StringUtils.defaultIfEmpty(petName, "Unknown")))
+            .replacement("%WORLD%", Replacements.ofText(String.valueOf(client.getWorld())))
             .build();
 
         String pet = petName != null ? Utils.ucFirst(petName) : null;
