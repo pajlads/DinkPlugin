@@ -121,7 +121,9 @@ public class RaidTracker {
 
     public double getAmascutPurpleProbability() {
         // See https://oldschool.runescape.wiki/w/Chest_(Tombs_of_Amascut)#Uniques
-        double weight = 1.0 * getPersonalContribution() / partyScore; // unlike pets, only one party member can receive a unique
+        int personalContribution = getPersonalContribution();
+        double weight = personalContribution > 0 && partyScore > 0
+            ? 1.0 * personalContribution / partyScore : 1.0; // unlike pets, only one party member can receive a unique
         return weight * calcProbability(partyScore, 10_500, 20,
             Math.min(raidLevel, 310) + Math.max(Math.min(raidLevel, 430) - 310, 0) / 3.0 + Math.max(raidLevel - 430, 0) / 6.0);
     }

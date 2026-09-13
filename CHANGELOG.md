@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Minor: Add agility lap count milestone notifications to the Kill Count notifier. (#1011)
+- Bugfix: Restore TOA purple notifications to metadata endpoint when party score is unknown. (#1014)
 - Bugfix: Disable notifications for deep sea trawling paint until we can distinguish Angler's paint. (#1018)
 - Dev: Populate item ID in collection notification metadata based on player inventory. (#1016)
 
