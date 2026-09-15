@@ -15,7 +15,7 @@ import java.util.Set;
 public class RareItemStack extends AnnotatedItemStack implements Sanitizable {
     private final double rarity;
 
-    public RareItemStack(int id, int quantity, int priceEach, String name, Set<LootCriteria> criteria, double rarity) {
+    public RareItemStack(int id, int quantity, long priceEach, String name, Set<LootCriteria> criteria, double rarity) {
         super(id, quantity, priceEach, name, criteria);
         this.rarity = rarity;
     }

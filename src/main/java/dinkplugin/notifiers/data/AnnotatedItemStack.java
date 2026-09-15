@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class AnnotatedItemStack extends SerializedItemStack implements Sanitizable {
     private final Set<LootCriteria> criteria;
 
-    public AnnotatedItemStack(int id, int quantity, int priceEach, String name, Set<LootCriteria> criteria) {
+    public AnnotatedItemStack(int id, int quantity, long priceEach, String name, Set<LootCriteria> criteria) {
         super(id, quantity, priceEach, name);
         this.criteria = criteria;
     }
