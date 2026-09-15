@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Support item prices that exceed 2,147,483,647. (#1020)
+
 ## 1.15.1
 
 - Minor: Add agility lap count milestone notifications to the Kill Count notifier. (#1011)
