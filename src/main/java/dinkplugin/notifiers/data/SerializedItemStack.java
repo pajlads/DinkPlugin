@@ -13,11 +13,11 @@ import java.util.Map;
 public class SerializedItemStack implements Sanitizable {
     private int id;
     private int quantity;
-    private int priceEach;
+    private long priceEach;
     private String name;
 
     public long getTotalPrice() {
-        return (long) priceEach * quantity;
+        return priceEach * quantity;
     }
 
     @Override

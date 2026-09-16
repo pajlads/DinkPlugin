@@ -82,7 +82,7 @@ public class ItemUtils {
         return getPrice(itemManager, itemId, null);
     }
 
-    private int getPrice(@NotNull ItemManager itemManager, int itemId, @Nullable ItemComposition item) {
+    private long getPrice(@NotNull ItemManager itemManager, int itemId, @Nullable ItemComposition item) {
         if (itemId == ARAXYTE_FANG) {
             // Workaround for araxyte fang having low store value - https://github.com/pajlads/DinkPlugin/issues/989
             return getGePrice(itemManager, ETCHED_ARAXYTE_FANG);
@@ -95,8 +95,8 @@ public class ItemUtils {
 
         if (itemId == MOKHAIOTL_CLOTH) {
             // Implied value of Doom Cloth based on upgrade value - https://github.com/pajlads/DinkPlugin/issues/989
-            int upgradePrice = getGePrice(itemManager, CONFLICTION_GAUNTLETS);
-            int inputPrices = getGePrice(itemManager, ZENYTE_BRACELET_ENCHANTED) + getGePrice(itemManager, DEMON_TEAR) * 10000;
+            long upgradePrice = getGePrice(itemManager, CONFLICTION_GAUNTLETS);
+            long inputPrices = getGePrice(itemManager, ZENYTE_BRACELET_ENCHANTED) + getGePrice(itemManager, DEMON_TEAR) * 10000;
             return upgradePrice - inputPrices;
         }
 
@@ -110,7 +110,7 @@ public class ItemUtils {
         return price;
     }
 
-    public int getGePrice(@NotNull ItemManager itemManager, int itemId) {
+    public long getGePrice(@NotNull ItemManager itemManager, int itemId) {
         return itemManager.getItemPriceWithSource(itemId, true);
     }
 
@@ -154,7 +154,7 @@ public class ItemUtils {
 
     public SerializedItemStack stackFromItem(ItemManager itemManager, int id, int quantity) {
         ItemComposition composition = itemManager.getItemComposition(id);
-        int price = getPrice(itemManager, id, composition);
+        long price = getPrice(itemManager, id, composition);
         return new SerializedItemStack(id, quantity, price, String.valueOf(composition.getMembersName()));
     }
 

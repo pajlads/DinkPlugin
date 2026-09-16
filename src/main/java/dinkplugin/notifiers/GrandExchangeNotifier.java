@@ -264,20 +264,20 @@ public class GrandExchangeNotifier extends BaseNotifier {
         return spent > 0 ? spent : (long) offer.getQuantitySold() * offer.getPrice();
     }
 
-    private static int getUnitPrice(GrandExchangeOffer offer) {
+    private static long getUnitPrice(GrandExchangeOffer offer) {
         int quantity = offer.getQuantitySold();
-        int spent = offer.getSpent();
-        return quantity > 0 && spent > 0 ? spent / quantity : offer.getPrice();
+        long spent = offer.getSpent();
+        return quantity > 0 && spent > 0 ? spent / quantity : (long) offer.getPrice();
     }
 
-    private static long calculateTax(int unitPrice, int quantity, int itemId) {
+    private static long calculateTax(long unitPrice, int quantity, int itemId) {
         // https://secure.runescape.com/m=news/grand-exchange-tax--item-sink?oldschool=1
         if (unitPrice < 50 || TAX_EXEMPT_ITEMS.contains(itemId)) {
             return 0L;
         }
-        int price = Math.min(unitPrice, 250_000_000);
-        int unitTax = (int) Math.floor(price * 0.02);
-        return (long) unitTax * quantity;
+        long price = Math.min(unitPrice, 250_000_000L);
+        long unitTax = (long) Math.floor(price * 0.02);
+        return unitTax * quantity;
     }
 
     @Getter
