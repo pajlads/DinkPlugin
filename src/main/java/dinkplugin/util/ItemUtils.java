@@ -101,7 +101,7 @@ public class ItemUtils {
         }
 
         // GE price sourced from wiki with anti-manipulation massaging by runelite
-        int price = itemManager.getItemPrice(itemId);
+        long price = itemManager.getItemPrice(itemId);
         if (price <= 0) {
             // fallback: store price
             ItemComposition ic = item != null ? item : itemManager.getItemComposition(itemId);
