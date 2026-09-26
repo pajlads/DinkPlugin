@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Dev: Support item prices that exceed 2,147,483,647. (#1020)
+- Dev: Support item prices that exceed 2,147,483,647. (#1020, #1025)
 
 ## 1.15.1
 
