@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import lombok.Data;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.client.util.Text;
 import okhttp3.OkHttpClient;
@@ -33,6 +34,7 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Tag("generator")
 class RarityCalculator {
 
@@ -91,7 +93,13 @@ class RarityCalculator {
                 .collect(Collectors.toSet());
             for (Drop drop : drops) {
                 if (alwaysDropped.contains(drop.getItemId())) continue;
-                Transformed transformed = drop.transform();
+                Transformed transformed;
+                try {
+                    transformed = drop.transform();
+                } catch (Exception e) {
+                    log.warn("Failed to transform drop: {}", drop, e);
+                    continue;
+                }
                 if (transformed == null) continue;
                 if (!alwaysDropped.isEmpty() && transformed.getItemId() < 0) continue;
                 set.add(transformed);
@@ -122,14 +130,15 @@ class RarityCalculator {
                 this.itemId = ItemID.VARLAMORE_KEY_HALF_1;
             }
             if (itemId == null || rarity == null || quantity == null) return null;
-            if (rarity.equals("Always") || rarity.equals("Varies") || rarity.equals("Random") || rarity.equals("Once") || rarity.equals("Unknown") || rarity.equals("?")) return null;
-            if (quantity.equals("Unknown") || quantity.equals("N/A")) return null;
+            rarity = StringUtils.removeStart(rarity, "rarity="); // https://github.com/Flipping-Utilities/parsed-osrs/issues/8
+            if (rarity.isEmpty() || rarity.equalsIgnoreCase("Always") || rarity.equalsIgnoreCase("Varies") || rarity.equalsIgnoreCase("Random") || rarity.equalsIgnoreCase("Once") || rarity.equalsIgnoreCase("Unknown") || rarity.equals("?")) return null;
+            if (quantity.equalsIgnoreCase("Unknown") || quantity.equalsIgnoreCase("N/A")) return null;
 
             int item = COINS.contains(itemId) ? ItemID.FAKE_COINS : itemId;
 
-            String cleanQuantity = StringUtils.removeEnd(quantity, "\u00A0");
+            String cleanQuantity = StringUtils.removeEnd(StringUtils.removeEnd(quantity, "(noted)"), "\u00A0");
             Integer q, min, max;
-            String[] quantParts = StringUtils.split(cleanQuantity, "–;");
+            String[] quantParts = StringUtils.split(cleanQuantity, "–;-,");
             if (quantParts.length == 1) {
                 q = Integer.parseInt(cleanQuantity.trim());
                 min = max = null;
@@ -168,7 +177,7 @@ class RarityCalculator {
                     String fraction = cleanRarity.endsWith("%") ? cleanRarity.substring(0, cleanRarity.length() - 1) + "/100" : cleanRarity;
                     String[] parts = StringUtils.split(fraction, '/');
                     if (parts.length != 2) throw new IllegalArgumentException(rarity);
-                    double d = Double.parseDouble(parts[1]) / Double.parseDouble(parts[0]);
+                    double d = Double.parseDouble(parts[1].replace(",", "")) / Double.parseDouble(parts[0].replace(",", ""));
                     denom = BigDecimal.valueOf(d).setScale(2, RoundingMode.HALF_EVEN);
                     break;
             }
