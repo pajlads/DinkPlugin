@@ -242,7 +242,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
     void testNotifyPopup() {
         // prepare item
         String item = "Seercull";
-        int price = 23_000;
+        long price = 23_000;
         when(itemSearcher.findItemId(item)).thenReturn(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW);
         when(itemManager.getItemPrice(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW)).thenReturn(price);
 
@@ -289,7 +289,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
         when(client.getVarpValue(VarPlayerID.COLLECTION_COUNT_MAX)).thenReturn(0);
 
         String item = "Seercull";
-        int price = 23_000;
+        long price = 23_000;
         when(itemSearcher.findItemId(item)).thenReturn(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW);
         when(itemManager.getItemPrice(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW)).thenReturn(price);
 
@@ -337,7 +337,7 @@ class CollectionNotifierTest extends MockedNotifierTest {
          * a later notification occurs
          */
         String item2 = "Seers ring";
-        int price2 = 420_000;
+        long price2 = 420_000;
         when(itemSearcher.findItemId(item2)).thenReturn(ItemID.SEER_RING);
         when(itemManager.getItemPrice(ItemID.SEER_RING)).thenReturn(price2);
 

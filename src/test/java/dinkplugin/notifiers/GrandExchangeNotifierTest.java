@@ -239,8 +239,8 @@ public class GrandExchangeNotifierTest extends MockedNotifierTest {
         int quantitySold;
         int itemId;
         int totalQuantity;
-        int price;
-        int spent;
+        long price;
+        long spent;
         GrandExchangeOfferState state;
     }
 }

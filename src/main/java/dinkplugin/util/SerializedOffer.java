@@ -19,6 +19,6 @@ public class SerializedOffer {
 
     public boolean equalsOffer(@NotNull GrandExchangeOffer o) {
         return state == o.getState() && id == o.getItemId() && quantity == o.getTotalQuantity()
-            && price == (long) o.getPrice() && spent == (long) o.getSpent();
+            && price == o.getPrice() && spent == o.getSpent();
     }
 }
