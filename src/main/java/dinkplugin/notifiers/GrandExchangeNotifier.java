@@ -261,13 +261,13 @@ public class GrandExchangeNotifier extends BaseNotifier {
 
     private static long getTransactedValue(GrandExchangeOffer offer) {
         long spent = offer.getSpent();
-        return spent > 0 ? spent : (long) offer.getQuantitySold() * offer.getPrice();
+        return spent > 0 ? spent : offer.getQuantitySold() * offer.getPrice();
     }
 
     private static long getUnitPrice(GrandExchangeOffer offer) {
         int quantity = offer.getQuantitySold();
         long spent = offer.getSpent();
-        return quantity > 0 && spent > 0 ? spent / quantity : (long) offer.getPrice();
+        return quantity > 0 && spent > 0 ? spent / quantity : offer.getPrice();
     }
 
     private static long calculateTax(long unitPrice, int quantity, int itemId) {

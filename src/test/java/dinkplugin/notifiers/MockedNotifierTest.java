@@ -169,7 +169,7 @@ abstract class MockedNotifierTest extends MockedTestBase {
     }
 
     protected void mockItem(int id, long price, String name) {
-        when(itemManager.getItemPrice(id)).thenReturn((int) price);
+        when(itemManager.getItemPrice(id)).thenReturn(price);
         ItemComposition item = mock(ItemComposition.class);
         when(item.getName()).thenReturn(name);
         when(item.getMembersName()).thenReturn(name);
