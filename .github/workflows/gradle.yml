@@ -72,3 +72,8 @@ jobs:
           prerelease: true
           name: Nightly Release
           tag: nightly-build
+      - name: Update nightly-build tag
+        run: |
+          git tag -f nightly-build
+          git push -f origin nightly-build
+        shell: bash
