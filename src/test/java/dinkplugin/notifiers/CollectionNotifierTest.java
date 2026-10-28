@@ -380,6 +380,47 @@ class CollectionNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnoreMinValue() {
+        when(config.minCollectionValue()).thenReturn(50_000);
+
+        String item = "Seercull";
+        int price = 23_000;
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW);
+        mockItem(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, price, item);
+
+        notifier.onChatMessage("New item added to your collection log: " + item);
+
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testNotifyMinValue() {
+        when(config.minCollectionValue()).thenReturn(20_000);
+
+        String item = "Seercull";
+        int price = 23_000;
+        when(itemSearcher.findItemId(item)).thenReturn(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW);
+        mockItem(ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, price, item);
+
+        notifier.onChatMessage("New item added to your collection log: " + item);
+
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has added {{item}} to their collection", PLAYER_NAME))
+                        .replacement("{{item}}", Replacements.ofWiki(item))
+                        .build()
+                )
+                .extra(new CollectionNotificationData(item, ItemID.DAGANOTH_CAVE_MAGIC_SHORTBOW, (long) price, 1, TOTAL_ENTRIES, CollectionLogRank.NONE, 1, 99, CollectionLogRank.BRONZE, null, null, null, null, null))
+                .type(NotificationType.COLLECTION)
+                .build()
+        );
+    }
+
+    @Test
     void testDisabled() {
         // disable notifier
         when(config.notifyCollectionLog()).thenReturn(false);

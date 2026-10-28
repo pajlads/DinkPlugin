@@ -847,11 +847,24 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "minCollectionValue",
+        name = "Min Loot value",
+        description = "The minimum GE value of a collection log item for a notification to be sent.<br/>" +
+            "Has no effect when set to zero.<br/>" +
+            "Items whose price cannot be determined are still notified",
+        position = 3,
+        section = collectionSection
+    )
+    default int minCollectionValue() {
+        return 0;
+    }
+
+    @ConfigItem(
         keyName = "collectionDenylist",
         name = "Item Denylist",
         description = "Never fire notifications for these items.<br/>" +
             "Place one item name per line (case-insensitive; asterisks are wildcards)",
-        position = 3,
+        position = 4,
         section = collectionSection
     )
     default String collectionDenylist() {
@@ -867,7 +880,7 @@ public interface DinkPluginConfig extends Config {
             "Use %COMPLETED% to insert the number of completed entries<br/>" +
             "Use %TOTAL_POSSIBLE% to insert the number of possible entries<br/>" +
             "Use %WORLD% to insert the active world",
-        position = 4,
+        position = 5,
         section = collectionSection
     )
     default String collectionNotifyMessage() {
@@ -1094,11 +1107,23 @@ public interface DinkPluginConfig extends Config {
     }
 
     @ConfigItem(
+        keyName = "lootExcludeStacks",
+        name = "Exclude Stacks",
+        description = "Do not notify for items with quantity greater than 1 (shown as 'N x item' in loot messages).<br/>" +
+            "Items on the allowlist are still notified",
+        position = 34,
+        section = lootSection
+    )
+    default boolean lootExcludeStacks() {
+        return false;
+    }
+
+    @ConfigItem(
         keyName = "lootImageMinValue",
         name = "Screenshot Min Value",
         description = "The minimum combined loot value to send a screenshot.<br/>" +
             "Must have 'Send Image' enabled",
-        position = 34,
+        position = 35,
         section = lootSection
     )
     default int lootImageMinValue() {

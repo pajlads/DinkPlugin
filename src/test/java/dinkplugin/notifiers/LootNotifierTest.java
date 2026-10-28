@@ -706,6 +706,94 @@ class LootNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testIgnoreStacks() {
+        when(config.lootExcludeStacks()).thenReturn(true);
+        when(config.minLootValue()).thenReturn(TUNA_PRICE); // stack total would otherwise notify
+
+        LootReceived event = new LootReceived(
+            LOOTED_NAME,
+            99,
+            LootRecordType.EVENT,
+            Arrays.asList(
+                new ItemStack(ItemID.TUNA, 1),
+                new ItemStack(ItemID.TUNA, 1),
+                new ItemStack(ItemID.TUNA, 1),
+                new ItemStack(ItemID.TUNA, 1),
+                new ItemStack(ItemID.TUNA, 1)
+            ),
+            5,
+            null
+        );
+        plugin.onLootReceived(event);
+
+        verify(messageHandler, never()).createMessage(any(), anyBoolean(), any());
+    }
+
+    @Test
+    void testNotifySingleDespiteExcludeStacks() {
+        when(config.lootExcludeStacks()).thenReturn(true);
+
+        LootReceived event = new LootReceived(
+            LOOTED_NAME,
+            99,
+            LootRecordType.EVENT,
+            List.of(new ItemStack(ItemID.RUBY, 1)),
+            1,
+            null
+        );
+        plugin.onLootReceived(event);
+
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: 1 x {{ruby}} (%d) from {{source}} for %s gp", PLAYER_NAME, RUBY_PRICE, QuantityFormatter.quantityToStackSize(RUBY_PRICE)))
+                        .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
+                        .replacement("{{source}}", Replacements.ofWiki(LOOTED_NAME))
+                        .build()
+                )
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, 1, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), LOOTED_NAME, LootRecordType.EVENT, 1, null, null, null, null))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyStackedAllowlistDespiteExcludeStacks() {
+        when(config.lootExcludeStacks()).thenReturn(true);
+        notifier.onConfigChanged("lootItemAllowlist", "Tuna\n");
+
+        LootReceived event = new LootReceived(
+            LOOTED_NAME,
+            99,
+            LootRecordType.EVENT,
+            List.of(new ItemStack(ItemID.TUNA, 5)),
+            1,
+            null
+        );
+        plugin.onLootReceived(event);
+
+        int total = 5 * TUNA_PRICE;
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: 5 x {{tuna}} (%d) from {{source}} for %s gp", PLAYER_NAME, total, QuantityFormatter.quantityToStackSize(total)))
+                        .replacement("{{tuna}}", Replacements.ofWiki("Tuna"))
+                        .replacement("{{source}}", Replacements.ofWiki(LOOTED_NAME))
+                        .build()
+                )
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.TUNA, 5, TUNA_PRICE, "Tuna", EnumSet.of(LootCriteria.VALUE, LootCriteria.ALLOWLIST))), LOOTED_NAME, LootRecordType.EVENT, 1, null, null, null, null))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyGauntlet() {
         // prepare data
         int kc = 123;
