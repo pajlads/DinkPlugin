@@ -202,6 +202,9 @@ public class CollectionNotifier extends BaseNotifier {
             return;
         }
 
+        Integer itemId = findItemId(itemName);
+        Long price = itemId != null ? ItemUtils.getPrice(itemManager, itemId) : null;
+
         // varp isn't updated for a few ticks, so we increment the count locally.
         // this approach also has the benefit of yielding incrementing values even when
         // multiple collection log entries are completed within a single tick.
@@ -221,6 +224,12 @@ public class CollectionNotifier extends BaseNotifier {
             log.debug("Collection log progress varps were invalid ({} / {})", completed, total);
         }
 
+        int minValue = config.minCollectionValue();
+        if (minValue > 0 && price != null && price < minValue) {
+            log.debug("Skipping clog notif due to min value ({} < {}): {}", price, minValue, itemName);
+            return;
+        }
+
         // build message
         Template notifyMessage = Template.builder()
             .template(config.collectionNotifyMessage())
@@ -234,8 +243,6 @@ public class CollectionNotifier extends BaseNotifier {
             .build();
 
         // populate metadata
-        Integer itemId = findItemId(itemName);
-        Long price = itemId != null ? ItemUtils.getPrice(itemManager, itemId) : null;
         Drop loot = itemId != null ? getLootSource(itemId) : null;
         Integer killCount = loot != null ? killCountService.getKillCount(loot.getCategory(), loot.getSource()) : null;
         OptionalDouble rarity = loot != null && loot.getCategory() == LootRecordType.NPC ?
