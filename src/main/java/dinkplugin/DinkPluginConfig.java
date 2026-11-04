@@ -1588,7 +1588,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "killCountEnabled",
         name = "Enable Kill Count",
-        description = "Enable notifications for boss kill count milestones",
+        description = "Enable notifications for boss kill count milestones.<br/>" +
+            "Requires in-game setting 'Filter out boss kill-count with spam-filter' to be disabled.",
         position = 90,
         section = killCountSection
     )
@@ -1621,7 +1622,8 @@ public interface DinkPluginConfig extends Config {
     @ConfigItem(
         keyName = "killCountPB",
         name = "Personal Best",
-        description = "Notify on achieving a new personal best time",
+        description = "Notify on achieving a new personal best time.<br/>" +
+            "Requires in-game setting 'Filter out boss kill-count with spam-filter' to be disabled.",
         position = 93,
         section = killCountSection
     )
