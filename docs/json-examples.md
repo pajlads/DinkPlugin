@@ -53,6 +53,7 @@ JSON sent with every notification but only in certain circumstances:
     "avatarHash": "abc123def345abc123def345abc123de"
   },
   "world": 518,
+  "worldTypes": ["MEMBERS", "HARDCORE_MAIN"],
   "regionId": 12850
 }
 ```
@@ -60,7 +61,8 @@ JSON sent with every notification but only in certain circumstances:
 `clanName` is only sent when the player is in a clan and has the advanced setting `Send Clan Name` enabled.  
 `groupIronClanName` is only sent when the player is a GIM and has the advanced setting `Send GIM Clan Name` enabled.  
 The `discordUser` object is only sent when Discord is open and the advanced setting `Send Discord Profile` is enabled.  
-`world` and `regionId` are only sent when the advanced setting `Include Location` is enabled (default: true).
+`world`, `worldTypes`, and `regionId` are only sent when the advanced setting `Include Location` is enabled (default: true).  
+`worldTypes` lists the names of the [`WorldType`](https://github.com/runelite/runelite/blob/master/runelite-api/src/main/java/net/runelite/api/WorldType.java) values that apply to the current world, and is empty for worlds without any (e.g., a standard free-to-play world).
 
 Note: The examples below omit `playerName`, `accountType`, and `dinkAccountHash` keys because they are always the same.
 
