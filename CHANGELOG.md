@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Add raid party members to Fractured Archive loot notification metadata.
+
 ## 1.15.2
 
 - Dev: Support item prices that exceed 2,147,483,647. (#1020, #1025)

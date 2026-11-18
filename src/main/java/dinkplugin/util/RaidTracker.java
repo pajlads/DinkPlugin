@@ -21,6 +21,11 @@ public class RaidTracker {
         VarbitID.TOA_CLIENT_P4, VarbitID.TOA_CLIENT_P5, VarbitID.TOA_CLIENT_P6, VarbitID.TOA_CLIENT_P7
     };
 
+    private static final int[] ARCHIVE_PARTY_VARBS = {
+        VarbitID.TFA_CLIENT_P0, VarbitID.TFA_CLIENT_P1, VarbitID.TFA_CLIENT_P2, VarbitID.TFA_CLIENT_P3,
+        VarbitID.TFA_CLIENT_P4, VarbitID.TFA_CLIENT_P5, VarbitID.TFA_CLIENT_P6, VarbitID.TFA_CLIENT_P7
+    };
+
     @Inject
     private Client client;
 
@@ -43,6 +48,10 @@ public class RaidTracker {
 
     private boolean checkPartyMembers;
 
+    private Collection<String> archivePartyMembers = Collections.emptyList();
+
+    private boolean checkArchivePartyMembers;
+
     public void onVarbit(VarbitChanged e) {
         if (e.getValue() <= 0) {
             return;
@@ -58,6 +67,8 @@ public class RaidTracker {
             this.damageDone = e.getValue();
         } else if (e.getVarbitId() >= PARTY_VARBS[0] && e.getVarbitId() <= PARTY_VARBS[PARTY_VARBS.length - 1]) {
             this.checkPartyMembers = true;
+        } else if (e.getVarbitId() >= ARCHIVE_PARTY_VARBS[0] && e.getVarbitId() <= ARCHIVE_PARTY_VARBS[ARCHIVE_PARTY_VARBS.length - 1]) {
+            this.checkArchivePartyMembers = true;
         } else if (e.getVarbitId() == VarbitID.RAIDS_CLIENT_PARTYSIZE) {
             this.teamSize = e.getValue();
         } else if (e.getVarpId() == VarPlayerID.RAIDS_PLAYERSCORE) {
@@ -83,6 +94,24 @@ public class RaidTracker {
                 this.partyMembers = Utils.getAmascutTombsParty(client);
             }
         }
+
+        if (this.checkArchivePartyMembers) {
+            this.checkArchivePartyMembers = false;
+
+            Collection<String> members = Utils.getFracturedArchiveParty(client);
+            if (!members.isEmpty()) {
+                this.archivePartyMembers = members;
+            }
+        }
+    }
+
+    /**
+     * @return the Fractured Archive party, falling back to the last roster seen during the raid
+     * in case the game has already cleared the party names (e.g., once the raid HUD is hidden at the end of the raid)
+     */
+    public Collection<String> getFracturedArchiveParty() {
+        Collection<String> members = Utils.getFracturedArchiveParty(client);
+        return members.isEmpty() ? archivePartyMembers : members;
     }
 
     public int getPersonalContribution() {

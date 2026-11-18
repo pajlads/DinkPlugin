@@ -334,7 +334,16 @@ public class LootNotifier extends BaseNotifier {
             }
             Double rarity = rarest != null ? rarest.getRarity() : null;
             boolean screenshot = config.lootSendImage() && (totalStackValue >= config.lootImageMinValue() || onAllowList);
-            Collection<String> party = toaData != null ? toaData.getParty() : (type == LootRecordType.EVENT ? Utils.getBossParty(client, dropper) : null);
+            Collection<String> party;
+            if (toaData != null) {
+                party = toaData.getParty();
+            } else if (type != LootRecordType.EVENT) {
+                party = null;
+            } else if (KillCountService.TFA.equals(dropper)) {
+                party = raidTracker.getFracturedArchiveParty();
+            } else {
+                party = Utils.getBossParty(client, dropper);
+            }
             Evaluable source = type == LootRecordType.PLAYER
                 ? Replacements.ofLink(dropper, config.playerLookupService().getPlayerUrl(dropper))
                 : Replacements.ofWiki(dropper);

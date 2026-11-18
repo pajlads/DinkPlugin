@@ -13,11 +13,14 @@ import dinkplugin.notifiers.data.RareItemStack;
 import dinkplugin.util.RaidTracker;
 import dinkplugin.util.ItemUtils;
 import dinkplugin.util.KillCountService;
+import dinkplugin.util.Utils;
 import net.runelite.api.NPC;
 import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.api.gameval.ItemID;
 import net.runelite.api.gameval.NpcID;
+import net.runelite.api.gameval.VarbitID;
 import net.runelite.client.events.NpcLootReceived;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.game.ItemStack;
@@ -828,6 +831,86 @@ class LootNotifierTest extends MockedNotifierTest {
                         .build()
                 )
                 .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, null, null, AmascutMetadata.of(raidTracker)))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyFracturedArchive() {
+        // prepare data
+        int quantity = 24;
+        String total = QuantityFormatter.quantityToStackSize(quantity * RUBY_PRICE);
+        String source = "Fractured Archive";
+        List<ItemStack> items = List.of(new ItemStack(ItemID.RUBY, quantity));
+
+        // mock party
+        List<String> party = List.of(PLAYER_NAME, "Rasmus", "Romy");
+        for (int i = 0; i < party.size(); i++) {
+            when(client.getVarcStrValue(Utils.TFA_MEMBER_NAME + i)).thenReturn(party.get(i));
+        }
+
+        // fire event
+        plugin.onLootReceived(new LootReceived(source, -1, LootRecordType.EVENT, items, 1, null));
+
+        // verify notification message
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: %d x {{ruby}} (%s) from {{source}} for %s gp", PLAYER_NAME, quantity, total, total))
+                        .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
+                        .replacement("{{source}}", Replacements.ofWiki(source))
+                        .build()
+                )
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, 1, null, party, null, null))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyFracturedArchiveClearedParty() {
+        // prepare data
+        int quantity = 24;
+        String total = QuantityFormatter.quantityToStackSize(quantity * RUBY_PRICE);
+        String source = "Fractured Archive";
+        List<ItemStack> items = List.of(new ItemStack(ItemID.RUBY, quantity));
+
+        // mock party during the raid
+        List<String> party = List.of(PLAYER_NAME, "Rasmus", "Romy");
+        for (int i = 0; i < party.size(); i++) {
+            when(client.getVarcStrValue(Utils.TFA_MEMBER_NAME + i)).thenReturn(party.get(i));
+        }
+        VarbitChanged orb = new VarbitChanged();
+        orb.setVarbitId(VarbitID.TFA_CLIENT_P1);
+        orb.setValue(27);
+        raidTracker.onVarbit(orb);
+        raidTracker.onTick();
+
+        // game clears the party names before the chest is looted
+        for (int i = 0; i < party.size(); i++) {
+            when(client.getVarcStrValue(Utils.TFA_MEMBER_NAME + i)).thenReturn("");
+        }
+
+        // fire event
+        plugin.onLootReceived(new LootReceived(source, -1, LootRecordType.EVENT, items, 1, null));
+
+        // verify notification message
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: %d x {{ruby}} (%s) from {{source}} for %s gp", PLAYER_NAME, quantity, total, total))
+                        .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
+                        .replacement("{{source}}", Replacements.ofWiki(source))
+                        .build()
+                )
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, 1, null, party, null, null))
                 .type(NotificationType.LOOT)
                 .build()
         );

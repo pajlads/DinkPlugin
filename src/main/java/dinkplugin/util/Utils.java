@@ -78,8 +78,8 @@ public class Utils {
     private final char ELLIPSIS = '\u2026'; // '…'
 
     @VisibleForTesting
-    public final @VarCStr int TOA_MEMBER_NAME = 1099, TOB_MEMBER_NAME = 330;
-    private final int TOA_PARTY_MAX_SIZE = 8, TOB_PARTY_MAX_SIZE = 5;
+    public final @VarCStr int TOA_MEMBER_NAME = 1099, TOB_MEMBER_NAME = 330, TFA_MEMBER_NAME = 1573;
+    private final int TOA_PARTY_MAX_SIZE = 8, TOB_PARTY_MAX_SIZE = 5, TFA_PARTY_MAX_SIZE = 8;
 
     /**
      * Custom padding for applying SHA-256 to a long.
@@ -245,6 +245,9 @@ public class Utils {
             case "Theatre of Blood: Entry Mode":
             case "Theatre of Blood: Hard Mode":
                 return Utils.getBloodTheatreParty(client);
+            case "Fractured Archive":
+            case "The Fractured Archive":
+                return Utils.getFracturedArchiveParty(client);
             default:
                 return null;
         }
@@ -273,6 +276,10 @@ public class Utils {
 
     private Collection<String> getBloodTheatreParty(@NotNull Client client) {
         return getVarcStrings(client, TOB_MEMBER_NAME, TOB_PARTY_MAX_SIZE);
+    }
+
+    public Collection<String> getFracturedArchiveParty(@NotNull Client client) {
+        return getVarcStrings(client, TFA_MEMBER_NAME, TFA_PARTY_MAX_SIZE);
     }
 
     private List<String> getVarcStrings(@NotNull Client client, @VarCStr final int initialVarcId, final int maxSize) {
