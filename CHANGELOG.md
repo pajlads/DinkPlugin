@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Dev: Add raid party members to Fractured Archive loot notification metadata.
+- Dev: Add raid party members to Fractured Archive loot notification metadata. (#1045)
 
 ## 1.15.2
 
