@@ -48,8 +48,6 @@ public class RaidTracker {
 
     private boolean checkPartyMembers;
 
-    private Collection<String> archivePartyMembers = Collections.emptyList();
-
     private boolean checkArchivePartyMembers;
 
     public void onVarbit(VarbitChanged e) {
@@ -100,7 +98,7 @@ public class RaidTracker {
 
             Collection<String> members = Utils.getFracturedArchiveParty(client);
             if (!members.isEmpty()) {
-                this.archivePartyMembers = members;
+                this.partyMembers = members;
             }
         }
     }
@@ -111,7 +109,7 @@ public class RaidTracker {
      */
     public Collection<String> getFracturedArchiveParty() {
         Collection<String> members = Utils.getFracturedArchiveParty(client);
-        return members.isEmpty() ? archivePartyMembers : members;
+        return members.isEmpty() ? partyMembers : members;
     }
 
     public int getPersonalContribution() {
