@@ -11,12 +11,14 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import lombok.With;
+import net.runelite.api.WorldType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.Image;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 @Value
 @With
@@ -41,6 +43,8 @@ public class NotificationBody<T extends NotificationData> {
     boolean seasonalWorld;
     @Nullable
     Integer world;
+    @Nullable
+    Set<WorldType> worldTypes;
     @Nullable
     Integer regionId;
     @Nullable

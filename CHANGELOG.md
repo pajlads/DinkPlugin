@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Dev: Add `worldTypes` to notification metadata when location is included.
+
 ## 1.15.2
 
 - Dev: Support item prices that exceed 2,147,483,647. (#1020, #1025)
