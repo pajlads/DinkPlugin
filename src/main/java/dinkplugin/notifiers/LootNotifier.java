@@ -273,6 +273,9 @@ public class LootNotifier extends BaseNotifier {
                     shouldSend = true;
                     onAllowList = true;
                     criteria.add(LootCriteria.ALLOWLIST);
+                } else if (config.lootExcludeStacks() && stack.getQuantity() > 1) {
+                    // Exclude multi-quantity drops (formatted as "N x item"); allowlist can still override above
+                    shouldSend = false;
                 }
                 if (max == null || totalPrice > max.getTotalPrice()) {
                     max = stack;
