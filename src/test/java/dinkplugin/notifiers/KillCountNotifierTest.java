@@ -604,6 +604,54 @@ class KillCountNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyTFA() {
+        // update config mocks
+        when(config.killCountInterval()).thenReturn(2);
+
+        // fire events
+        String gameMessage = "Your completed Fractured Archive count is: 2.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onGameMessage("The Fractured Archive: Total completion time: 25:21.80. Personal best: 25:21.60");
+        notifier.onTick();
+
+        // check notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .text(buildTemplate("Fractured Archive", 2))
+                .extra(new BossNotificationData("Fractured Archive", 2, gameMessage, Duration.ofMinutes(25).plusSeconds(21).plusMillis(800), false, Duration.ofMinutes(25).plusSeconds(21).plusMillis(600), Collections.emptyList(), "completed"))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
+    void testNotifyPbTFA() {
+        // update config mocks
+        when(config.killCountInterval()).thenReturn(99);
+
+        // fire events
+        notifier.onGameMessage("The Fractured Archive: Total completion time: 25:21.60 (new personal best)");
+        String gameMessage = "Your completed Fractured Archive count is: 1.";
+        notifier.onGameMessage(gameMessage);
+        notifier.onTick();
+
+        // check notification
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            true,
+            NotificationBody.builder()
+                .text(buildPbTemplate("Fractured Archive", "25:21.60", 1))
+                .extra(new BossNotificationData("Fractured Archive", 1, gameMessage, Duration.ofMinutes(25).plusSeconds(21).plusMillis(600), true, null, Collections.emptyList(), "completed"))
+                .playerName(PLAYER_NAME)
+                .type(NotificationType.KILL_COUNT)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyBarbarianAssault() {
         // update mocks
         int count = 420;
