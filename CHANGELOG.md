@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Dev: Automatically use server loot event for more recent NPCs. (#1046)
 - Dev: Add raid party members to Fractured Archive loot notification metadata. (#1045)
 
 ## 1.15.2

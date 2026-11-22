@@ -69,6 +69,8 @@ import java.awt.Color;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static dinkplugin.notifiers.KillCountNotifier.SERVER_LOOT_NPC_ID_THRESHOLD;
+
 @Slf4j
 @PluginDescriptor(
     name = "Dink",
@@ -336,7 +338,7 @@ public class DinkPlugin extends Plugin {
         // temporarily only use new event when needed
         int npcId = event.getComposition().getId();
         var name = event.getComposition().getName();
-        if (!LootNotifier.SERVER_LOOT_NPC_IDS.contains(npcId) && !name.startsWith("Hallowed Sepulchre")) {
+        if (npcId <= SERVER_LOOT_NPC_ID_THRESHOLD && !LootNotifier.SERVER_LOOT_NPC_IDS.contains(npcId) && !name.startsWith("Hallowed Sepulchre")) {
             return;
         }
 
@@ -346,7 +348,8 @@ public class DinkPlugin extends Plugin {
 
     @Subscribe(priority = 1) // run before the base loot tracker plugin
     public void onNpcLootReceived(NpcLootReceived npcLootReceived) {
-        if (LootNotifier.SERVER_LOOT_NPC_IDS.contains(npcLootReceived.getNpc().getId())) {
+        int id = npcLootReceived.getNpc().getId();
+        if (id >= SERVER_LOOT_NPC_ID_THRESHOLD || LootNotifier.SERVER_LOOT_NPC_IDS.contains(id)) {
             // handled by ServerNpcLoot, but return just in case
             return;
         }
