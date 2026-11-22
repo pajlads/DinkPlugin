@@ -274,6 +274,10 @@ public class DiscordMessageHandler {
                 builder.world(client.getWorld());
             }
 
+            if (mBody.getWorldTypes() == null) {
+                builder.worldTypes(client.getWorldType());
+            }
+
             if (mBody.getRegionId() == null) {
                 var loc = WorldUtils.getLocation(client);
                 if (loc != null) {
