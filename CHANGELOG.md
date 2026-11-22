@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bugfix: Treat deaths on hardcore worlds as following hardcore group ironman rules. (#1048)
 - Dev: Add `worldTypes` to notification metadata when location is included. (#1040)
 - Dev: Automatically use server loot event for more recent NPCs. (#1046)
 - Dev: Add raid party members to Fractured Archive loot notification metadata. (#1045)
