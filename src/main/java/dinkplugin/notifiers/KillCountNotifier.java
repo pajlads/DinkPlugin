@@ -34,6 +34,12 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Singleton
 public class KillCountNotifier extends BaseNotifier {
 
+    /**
+     * NPCs with IDs greater than this threshold use {@link net.runelite.client.events.ServerNpcLoot}
+     * instead of {@link net.runelite.client.events.NpcLootReceived}
+     */
+    public static final int SERVER_LOOT_NPC_ID_THRESHOLD = 15000;
+
     public static final String SPAM_WARNING = "Kill Count Notifier requires disabling the in-game setting: Filter out boss kill-count with spam-filter";
 
     private static final Pattern PRIMARY_REGEX = Pattern.compile("Your (?<key>.+)\\s(?<type>kill|chest|completion|harvest|success|opened|lap|Total Ticket)\\s?count is: ?(?<value>[\\d,]+)\\b", Pattern.CASE_INSENSITIVE);
