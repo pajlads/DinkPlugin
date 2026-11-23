@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.15.4
+
 - Bugfix: Avoid reporting a Fractured Archive loot kill count one too high. (#1051)
 
 ## 1.15.3
