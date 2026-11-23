@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Bugfix: Avoid reporting a Fractured Archive loot kill count one too high. (#1051)
+
 ## 1.15.3
 
 - Bugfix: Treat deaths on hardcore worlds as following hardcore group ironman rules. (#1048)
