@@ -191,40 +191,42 @@ public class WorldUtils {
     }
 
     public Danger getDangerLevel(Client client, int regionId, Set<ExceptionalDeath> exceptions) {
+        final boolean hardcoreWorld = client.getWorldType().contains(WorldType.HARDCORE_MAIN);
+
         if (isGauntlet(regionId)) {
             // Players can't take items in or out of (Corrupted) Gauntlet, so these deaths are effectively safe
             // However: any Gauntlet death is still dangerous for hardcore (group) ironmen
-            return checkException(Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.GAUNTLET);
+            return checkException(hardcoreWorld || Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.GAUNTLET);
         }
 
         if (isAmascutTombs(regionId)) {
             // ToA is technically a dangerous activity, but multiple attempts can be permitted
             // the real TOA death is detected via game message in death notifier
             // However: any TOA death is still dangerous for hardcore (group) ironmen
-            return checkException(Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.TOA);
+            return checkException(hardcoreWorld || Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.TOA);
         }
 
         if (isTheatreOfBlood(regionId)) {
             // ToB is another dangerous activity, but the whole party needs to wipe for it to be a dangerous event
             // So we use HUD text to detect the real tob death in the notifier itself
             // However: any TOB death is still dangerous for hardcore (group) ironmen
-            return checkException(Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.TOB);
+            return checkException(hardcoreWorld || Utils.getAccountType(client).isHardcore(), exceptions, ExceptionalDeath.TOB);
         }
 
         if (isChambersOfXeric(regionId)) {
-            return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.COX);
+            return checkException(hardcoreWorld || Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.COX);
         }
 
         if (isInferno(client, regionId)) {
-            return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.INFERNO);
+            return checkException(hardcoreWorld || Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.INFERNO);
         }
 
         if (isJadChallenges(client, regionId)) {
-            return checkException(Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.JAD_CHALLENGES);
+            return checkException(hardcoreWorld || Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN, exceptions, ExceptionalDeath.JAD_CHALLENGES);
         }
 
         if (isTzHaarFightCave(regionId)) {
-            if (Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN) {
+            if (hardcoreWorld || Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN) {
                 return Danger.DANGEROUS;
             }
             if (exceptions.contains(ExceptionalDeath.FIGHT_CAVE)) {
@@ -243,12 +245,12 @@ public class WorldUtils {
         }
 
         if (isBarbarianAssault(regionId) || isNightmareZone(regionId)  || isMageTrainingArena(regionId)
-            || isPestControl(client) || isGalvekRematch(client, regionId)) {
+            || isPestControl(client) || isGalvekRematch(client, regionId) || isPlayerOwnedHouse(regionId)) {
             // All PvM activities are dangerous for Hardcore group iron players
-            return Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN ? Danger.DANGEROUS : Danger.SAFE;
+            return hardcoreWorld || Utils.getAccountType(client) == AccountType.HARDCORE_GROUP_IRONMAN ? Danger.DANGEROUS : Danger.SAFE;
         }
 
-        if (isCastleWars(regionId) || isClanHall(regionId) || isClanWars(regionId) || isSoulWars(regionId) || isPlayerOwnedHouse(regionId)
+        if (isCastleWars(regionId) || isClanHall(regionId) || isClanWars(regionId) || isSoulWars(regionId)
             || isLastManStanding(client) || isTzHaarFightPit(regionId)) {
             return Danger.SAFE;
         }
