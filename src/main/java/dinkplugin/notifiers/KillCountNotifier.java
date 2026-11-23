@@ -295,7 +295,7 @@ public class KillCountNotifier extends BaseNotifier {
     }
 
     private static String parseSecondary(String boss) {
-        if (boss == null || "Wintertodt".equalsIgnoreCase(boss))
+        if (boss == null || "Wintertodt".equalsIgnoreCase(boss) || "Fractured Archive".equalsIgnoreCase(boss))
             return boss;
 
         int modeSeparator = boss.lastIndexOf(':');
