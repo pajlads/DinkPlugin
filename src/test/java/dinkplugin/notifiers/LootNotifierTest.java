@@ -872,6 +872,43 @@ class LootNotifierTest extends MockedNotifierTest {
     }
 
     @Test
+    void testNotifyFracturedArchiveKillCount() {
+        // prepare data
+        int kc = 401;
+        int quantity = 24;
+        String total = QuantityFormatter.quantityToStackSize(quantity * RUBY_PRICE);
+        String source = "Fractured Archive";
+        List<ItemStack> items = List.of(new ItemStack(ItemID.RUBY, quantity));
+
+        // mock party
+        List<String> party = List.of(PLAYER_NAME, "Rasmus", "Romy");
+        for (int i = 0; i < party.size(); i++) {
+            when(client.getVarcStrValue(Utils.TFA_MEMBER_NAME + i)).thenReturn(party.get(i));
+        }
+
+        // fire events: the completion count is printed before the chest is looted
+        killCountService.onGameMessage(String.format("Your completed %s count is: %d.", source, kc));
+        plugin.onLootReceived(new LootReceived(source, -1, LootRecordType.EVENT, items, 1, null));
+
+        // verify notification message
+        verifyCreateMessage(
+            PRIMARY_WEBHOOK_URL,
+            false,
+            NotificationBody.builder()
+                .text(
+                    Template.builder()
+                        .template(String.format("%s has looted: %d x {{ruby}} (%s) from {{source}} for %s gp", PLAYER_NAME, quantity, total, total))
+                        .replacement("{{ruby}}", Replacements.ofWiki("Ruby"))
+                        .replacement("{{source}}", Replacements.ofWiki(source))
+                        .build()
+                )
+                .extra(new LootNotificationData(List.of(new AnnotatedItemStack(ItemID.RUBY, quantity, RUBY_PRICE, "Ruby", EnumSet.of(LootCriteria.VALUE))), source, LootRecordType.EVENT, kc, null, party, null, null))
+                .type(NotificationType.LOOT)
+                .build()
+        );
+    }
+
+    @Test
     void testNotifyFracturedArchiveClearedParty() {
         // prepare data
         int quantity = 24;

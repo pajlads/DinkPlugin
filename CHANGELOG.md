@@ -1,5 +1,12 @@
 ## Unreleased
 
+## 1.15.4
+
+- Bugfix: Avoid reporting a Fractured Archive loot kill count one too high. (#1051)
+
+## 1.15.3
+
+- Bugfix: Treat deaths on hardcore worlds as following hardcore group ironman rules. (#1048)
 - Bugfix: Notify for TFA completions and personal best times. (#1047)
 - Dev: Add `worldTypes` to notification metadata when location is included. (#1040)
 - Dev: Automatically use server loot event for more recent NPCs. (#1046)
